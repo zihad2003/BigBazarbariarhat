@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Big Bazar Admin</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<header>
+  <img src="image/logo.png">
+  <h1>    Big Bazar - Admin</h1>
+</header>
+
+<section class="page-header">
+  <h2>Admin Panel</h2>
+  <p>Manage products for your shop</p>
+</section>
+
+<section class="admin-form">
+  <form id="product-form">
+    <label>Category</label>
+    <select id="category" required>
+      <option value="men">Men</option>
+      <option value="women">Women</option>
+      <option value="kids">Kids</option>
+      <option value="home">Home Decor</option>
+    </select>
+    <label>Product Name</label>
+    <input type="text" id="name" required>
+    <label>Price (৳)</label>
+    <input type="number" id="price" required>
+    <label>Discount (%)</label>
+    <input type="number" id="discount" min="0" max="100" value="0">
+    <label><input type="checkbox" id="freeShipping"> Free Shipping</label>
+    <label>Upload Image</label>
+    <input type="file" id="imageFile" accept="image/*" required>
+    <button type="submit">Add Product</button>
+  </form>
+</section>
+
+<section class="admin-preview">
+  <h3>All Products (from localStorage)</h3>
+  <div id="product-list" class="grid"></div>
+</section>
+
+<footer>
+  <p>© 2025 Big Bazar | Admin Panel</p>
+</footer>
+
+<script src="js/admin.js"></script>
+</body>
+</html>

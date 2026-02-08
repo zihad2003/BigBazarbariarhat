@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Big Bazar - Women’s Collection</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <img src="image/logo.png" alt="Big Bazar Logo">
+    <h1>Big Bazar</h1>
+  </div>
+  <nav>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="men.html">Men</a></li>
+      <li><a href="women.html" class="active">Women</a></li>
+      <li><a href="kids.html">Kids</a></li>
+      <li><a href="home-decor.html">Home Decor</a></li>
+      <li><a href="cart.html" class="cart-btn">🛒 Cart (<span id="cart-count">0</span>)</a></li>
+    </ul>
+  </nav>
+</header>
+
+<section class="page-header">
+  <h2>Women’s Collection</h2>
+  <p>Saree • Three Piece • Lehenga • Gown • Kurti</p>
+</section>
+
+<section class="products">
+  <div class="grid">
+    <div class="product-card">
+      <img src="women_product/sharee1.jpg" alt="Silk Saree">
+      <h3>Silk Saree</h3>
+      <p>৳4999</p>
+      <button class="add-to-cart" 
+              data-name="Silk Saree" 
+              data-price="4999" 
+              data-image="women_product/sharee1.jpg">Add to Cart</button>
+    </div>
+    </div>
+</section>
+
+<section class="contact-social">
+  <h2>Contact & Visit Us</h2>
+  <div class="contact-items">
+    <a href="https://www.facebook.com/profile.php?id=100063541603515" target="_blank" class="facebook-btn">
+      <img src="image/facebook-app-symbol.png" alt="Facebook" class="icon">
+      Follow us on Facebook
+    </a>
+    <a href="https://www.google.com/maps?q=22.894359,91.535009" target="_blank" class="location-btn">
+      <img src="image/location.png" alt="Location" class="icon">
+      Visit our store (Chittagong)
+    </a>
+  </div>
+</section>
+
+<footer>
+  <p>© 2025 Big Bazar | Designed by Zihad</p>
+</footer>
+
+<div class="popup-overlay" id="popup">
+  <div class="popup-box">
+  <img id="popup-img" src="image/default.jpg" alt="">
+    <h3 id="popup-name"></h3>
+    <p>Price: ৳<span id="popup-price"></span></p>
+    <p>Quantity: <input type="number" id="popup-qty" value="1" min="1"></p>
+    <div class="popup-actions">
+      <button class="cancel-btn" id="popup-cancel">Cancel</button>
+      <button class="confirm-btn" id="popup-confirm">Add Item</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/script.js"></script>
+</body>
+</html>
