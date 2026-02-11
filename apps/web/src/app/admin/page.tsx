@@ -1,110 +1,254 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { formatPrice } from '@/lib/utils'
+'use client';
 
-const stats = [
-    { title: 'Total Revenue', value: 125000, icon: '💰', change: '+12.5%' },
-    { title: 'Total Products', value: 48, icon: '📦', change: '+3' },
-    { title: 'Total Orders', value: 156, icon: '🛒', change: '+8' },
-    { title: 'Customers', value: 89, icon: '👥', change: '+5' },
-]
+import { useState, useEffect } from 'react';
+import {
+    DollarSign,
+    ShoppingCart,
+    Package,
+    Users,
+    AlertTriangle,
+    Clock,
+    Loader2
+} from 'lucide-react';
+import { StatsCard } from '@/components/admin/stats-card';
+import { Order } from '@bigbazar/shared';
 
-const recentOrders = [
-    { id: 'ORD-001', customer: 'Karim Ahmed', items: 3, total: 3297, status: 'delivered' },
-    { id: 'ORD-002', customer: 'Fatima Khan', items: 2, total: 2598, status: 'shipped' },
-    { id: 'ORD-003', customer: 'Rahman Ali', items: 1, total: 999, status: 'processing' },
-    { id: 'ORD-004', customer: 'Nadia Islam', items: 4, total: 4596, status: 'pending' },
-]
+interface LowStockProduct {
+    id: string;
+    name: string;
+    sku: string;
+    stockQuantity: number;
+}
 
-const topProducts = [
-    { name: 'Signature Tee', category: 'Men', stock: 45, price: 999 },
-    { name: 'Classic Polo', category: 'Men', stock: 32, price: 1299 },
-    { name: 'Essential Dress', category: 'Women', stock: 28, price: 1899 },
-]
+interface DashboardStats {
+    totalRevenue: number;
+    totalOrders: number;
+    activeProducts: number;
+    totalCustomers: number;
+    recentOrders: Order[];
+    lowStockProducts: LowStockProduct[];
+}
 
-export default function AdminDashboard() {
+export default function AdminDashboardPage() {
+    const [stats, setStats] = useState<DashboardStats | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                // Fetch from the API
+                const res = await fetch('/api/admin/stats');
+                const result = await res.json();
+                if (result.success) {
+                    setStats(result.data);
+                }
+            } catch (error) {
+                console.error('Failed to fetch dashboard stats:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchStats();
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="h-[60vh] flex flex-col items-center justify-center gap-4">
+                <Loader2 className="h-12 w-12 animate-spin text-indigo-600" />
+                <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">Synchronizing Store Data...</p>
+            </div>
+        );
+    }
+
+    const statusColors: Record<string, string> = {
+        PENDING: 'bg-amber-100 text-amber-700',
+        PROCESSING: 'bg-indigo-100 text-indigo-700',
+        SHIPPED: 'bg-blue-100 text-blue-700',
+        DELIVERED: 'bg-emerald-100 text-emerald-700',
+        CANCELLED: 'bg-rose-100 text-rose-700',
+    };
+
     return (
-        <div className="space-y-8">
+        <div className="space-y-12 pb-10">
+            {/* Page Header */}
+            <div className="flex flex-col md:flex-row justify-between items-end gap-4">
+                <div>
+                    <h1 className="text-4xl md:text-5xl font-black text-gray-900 tracking-tighter">Command Center</h1>
+                    <p className="text-gray-400 font-bold uppercase tracking-[0.2em] text-xs mt-2">Real-time store performance overview</p>
+                </div>
+                <div className="flex gap-4">
+                    <button className="bg-white border border-gray-100 px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest shadow-sm hover:shadow-md transition-all">Download Report</button>
+                    <button className="bg-black text-white px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-black/10 hover:bg-gray-800 transition-all">Manage Orders</button>
+                </div>
+            </div>
+
             {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {stats.map((stat) => (
-                    <Card key={stat.title}>
-                        <CardContent className="p-6">
-                            <div className="flex items-start gap-4">
-                                <span className="text-4xl">{stat.icon}</span>
-                                <div>
-                                    <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
-                                        {stat.title}
-                                    </p>
-                                    <p className="text-2xl font-bold">
-                                        {stat.title === 'Total Revenue' ? formatPrice(stat.value) : stat.value}
-                                    </p>
-                                    <p className="text-xs text-green-600 font-semibold mt-1">
-                                        {stat.change}
-                                    </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <StatsCard
+                    title="Gross Revenue"
+                    value={`৳${stats?.totalRevenue?.toLocaleString() || '0'}`}
+                    change="+12.4%"
+                    changeType="positive"
+                    icon={DollarSign}
+                />
+                <StatsCard
+                    title="Volume Orders"
+                    value={stats?.totalOrders || '0'}
+                    change="+5.2%"
+                    changeType="positive"
+                    icon={ShoppingCart}
+                />
+                <StatsCard
+                    title="Active Stock"
+                    value={stats?.activeProducts || '0'}
+                    change="0%"
+                    changeType="neutral"
+                    icon={Package}
+                />
+                <StatsCard
+                    title="Loyal Base"
+                    value={stats?.totalCustomers || '0'}
+                    change="+8.9%"
+                    changeType="positive"
+                    icon={Users}
+                />
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                {/* Recent Orders */}
+                <div className="lg:col-span-2 bg-white rounded-[3rem] border border-gray-100 p-10 shadow-sm overflow-hidden">
+                    <div className="flex justify-between items-center mb-10">
+                        <h3 className="text-2xl font-black">Incoming Orders</h3>
+                        <button className="text-indigo-600 font-black text-xs uppercase tracking-widest hover:underline">Full Analytics</button>
+                    </div>
+                    <div className="overflow-x-auto">
+                        <table className="w-full">
+                            <thead>
+                                <tr className="text-left text-[10px] text-gray-400 border-b border-gray-50 pb-4 block mb-4">
+                                    <th className="w-[15%] font-black uppercase tracking-widest">UID</th>
+                                    <th className="w-[30%] font-black uppercase tracking-widest">Identity</th>
+                                    <th className="w-[20%] font-black uppercase tracking-widest">Amount</th>
+                                    <th className="w-[20%] font-black uppercase tracking-widest">Status</th>
+                                    <th className="w-[15%] font-black uppercase tracking-widest">Temporal</th>
+                                </tr>
+                            </thead>
+                            <tbody className="space-y-4 block">
+                                {stats?.recentOrders?.map((order: Order) => (
+                                    <tr key={order.id} className="flex items-center p-4 bg-gray-50/50 rounded-2xl hover:bg-gray-100 transition-all group cursor-pointer">
+                                        <td className="w-[15%] font-black text-gray-900">#{order.orderNumber?.slice(-4)}</td>
+                                        <td className="w-[30%]">
+                                            <div className="font-bold text-gray-900 truncate">{order.user?.firstName || order.guestName || 'Anonymous'}</div>
+                                            <div className="text-[10px] text-gray-400 font-black truncate uppercase">{order.user?.email || order.guestEmail}</div>
+                                        </td>
+                                        <td className="w-[20%] font-black text-gray-900">৳{order.totalAmount.toLocaleString()}</td>
+                                        <td className="w-[20%]">
+                                            <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${statusColors[order.status] || 'bg-gray-100'}`}>
+                                                {order.status}
+                                            </span>
+                                        </td>
+                                        <td className="w-[15%] text-[10px] font-black text-gray-400 uppercase">{new Date(order.createdAt).toLocaleDateString()}</td>
+                                    </tr>
+                                ))}
+                                {(!stats?.recentOrders || stats.recentOrders.length === 0) && (
+                                    <tr>
+                                        <td colSpan={5} className="text-center py-10 text-gray-400 font-bold uppercase text-xs">
+                                            No Recent Traffic Detected
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {/* Critical Stock Alert */}
+                <div className="bg-white rounded-[3rem] border border-gray-100 p-10 shadow-sm">
+                    <div className="flex items-center gap-4 mb-10">
+                        <div className="p-3 bg-rose-50 rounded-2xl">
+                            <AlertTriangle className="h-7 w-7 text-rose-600" />
+                        </div>
+                        <div>
+                            <h3 className="text-2xl font-black">Stock Crisis</h3>
+                            <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest">Immediate restock required</p>
+                        </div>
+                    </div>
+                    <div className="space-y-4">
+                        {stats?.lowStockProducts?.map((item: LowStockProduct) => (
+                            <div key={item.id} className="flex items-center justify-between p-5 bg-rose-50/50 rounded-2xl border border-rose-100/50 group hover:bg-rose-50 transition-all">
+                                <div className="min-w-0 flex-1">
+                                    <p className="text-sm font-black text-gray-900 truncate">{item.name}</p>
+                                    <p className="text-[10px] text-rose-400 font-bold uppercase tracking-widest mt-1">SKU: {item.sku}</p>
+                                </div>
+                                <div className="text-right ml-4">
+                                    <span className="block text-xl font-black text-rose-600 leading-none">{item.stockQuantity}</span>
+                                    <span className="text-[8px] font-black text-rose-300 uppercase tracking-tighter">Units Left</span>
                                 </div>
                             </div>
-                        </CardContent>
-                    </Card>
-                ))}
+                        ))}
+                        {(!stats?.lowStockProducts || stats.lowStockProducts.length === 0) && (
+                            <div className="text-center py-20 bg-emerald-50 rounded-2xl border border-emerald-100">
+                                <p className="text-emerald-600 font-black uppercase tracking-[0.2em] text-xs">Inventory Optimized</p>
+                            </div>
+                        )}
+                    </div>
+                    <button className="w-full mt-10 py-5 bg-black text-white rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-black/10 hover:bg-gray-800 transition-all">
+                        Bulk Inventory Update
+                    </button>
+                </div>
             </div>
 
-            {/* Dashboard Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Recent Orders */}
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between">
-                        <CardTitle className="text-sm uppercase tracking-wide">Recent Orders</CardTitle>
-                        <a href="/admin/orders" className="text-sm font-semibold text-gray-600 hover:text-black">
-                            View All →
-                        </a>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-4">
-                            {recentOrders.map((order) => (
-                                <div key={order.id} className="flex items-center justify-between py-3 border-b last:border-b-0">
-                                    <div>
-                                        <p className="font-semibold">{order.id}</p>
-                                        <p className="text-sm text-gray-500">{order.customer} • {order.items} items</p>
-                                    </div>
-                                    <div className="text-right">
-                                        <p className="font-semibold">{formatPrice(order.total)}</p>
-                                        <span className={`text-xs font-semibold px-2 py-1 rounded-full ${order.status === 'delivered' ? 'bg-green-100 text-green-800' :
-                                                order.status === 'shipped' ? 'bg-blue-100 text-blue-800' :
-                                                    order.status === 'processing' ? 'bg-yellow-100 text-yellow-800' :
-                                                        'bg-gray-100 text-gray-800'
-                                            }`}>
-                                            {order.status}
-                                        </span>
-                                    </div>
+            {/* Bottom Row - Efficiency & Logistics */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                <div className="bg-gray-900 rounded-[3rem] p-12 text-white relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/20 rounded-full blur-[100px]" />
+                    <div className="relative z-10 flex flex-col md:flex-row items-center gap-10">
+                        <div className="flex-1">
+                            <h4 className="text-3xl font-black mb-4">Logistics Performance</h4>
+                            <p className="text-gray-400 font-medium text-lg leading-relaxed mb-10">Average delivery window has decreased by <span className="text-indigo-400 font-black">1.2 days</span> this month compared to last quarter.</p>
+                            <div className="flex gap-8">
+                                <div>
+                                    <div className="text-4xl font-black mb-1">2.4d</div>
+                                    <div className="text-[10px] text-gray-500 font-black uppercase tracking-widest">Avg. Cycle Time</div>
                                 </div>
-                            ))}
+                                <div>
+                                    <div className="text-4xl font-black mb-1 text-emerald-400">98%</div>
+                                    <div className="text-[10px] text-gray-500 font-black uppercase tracking-widest">On-time Surcharge</div>
+                                </div>
+                            </div>
                         </div>
-                    </CardContent>
-                </Card>
+                        <div className="w-40 h-40 border-8 border-gray-800 rounded-full flex items-center justify-center relative">
+                            <div className="text-2xl font-black">74%</div>
+                            <svg className="absolute inset-0 w-full h-full -rotate-90">
+                                <circle cx="50%" cy="50%" r="44%" fill="none" stroke="#6366f1" strokeWidth="8" strokeDasharray="276" strokeDashoffset="72" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
 
-                {/* Top Products */}
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between">
-                        <CardTitle className="text-sm uppercase tracking-wide">Top Products</CardTitle>
-                        <a href="/admin/products" className="text-sm font-semibold text-gray-600 hover:text-black">
-                            View All →
-                        </a>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-4">
-                            {topProducts.map((product) => (
-                                <div key={product.name} className="flex items-center justify-between py-3 border-b last:border-b-0">
-                                    <div>
-                                        <p className="font-semibold">{product.name}</p>
-                                        <p className="text-sm text-gray-500">{product.category} • Stock: {product.stock}</p>
-                                    </div>
-                                    <p className="font-semibold">{formatPrice(product.price)}</p>
+                <div className="bg-white rounded-[3rem] border border-gray-100 p-12 shadow-sm flex flex-col justify-between">
+                    <div className="flex items-center justify-between mb-8">
+                        <h3 className="text-2xl font-black">Operational Velocity</h3>
+                        <Clock className="h-8 w-8 text-gray-200" />
+                    </div>
+                    <div className="space-y-6">
+                        {[
+                            { label: 'Order Processing', value: 'High', color: 'bg-emerald-500' },
+                            { label: 'Customer Inquiry Response', value: 'Medium', color: 'bg-amber-500' },
+                            { label: 'Inventory Restocking', value: 'Excellent', color: 'bg-indigo-500' },
+                        ].map((item) => (
+                            <div key={item.label} className="space-y-3">
+                                <div className="flex justify-between items-center text-xs font-black uppercase tracking-widest">
+                                    <span className="text-gray-400">{item.label}</span>
+                                    <span className="text-gray-900">{item.value}</span>
                                 </div>
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
+                                <div className="h-3 w-full bg-gray-50 rounded-full overflow-hidden">
+                                    <div className={`h-full ${item.color}`} style={{ width: item.value === 'High' ? '85%' : item.value === 'Medium' ? '45%' : '95%' }} />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
             </div>
         </div>
-    )
+    );
 }

@@ -15,10 +15,10 @@ import {
     Check
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useCartStore } from '@/lib/stores/cart-store';
+import { useCartStore, ProductsService } from '@bigbazar/shared';
 import { useWishlistStore } from '@/lib/stores/wishlist-store';
 import { useUIStore } from '@/lib/stores/ui-store';
-import type { Product, ProductVariant } from '@/types';
+import type { Product, ProductVariant } from '@bigbazar/shared';
 
 export default function ProductDetailPage({ params }: { params: { slug: string } }) {
     const [product, setProduct] = useState<Product | null>(null);
@@ -35,9 +35,8 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
     useEffect(() => {
         const fetchProduct = async () => {
             try {
-                const res = await fetch(`/api/products/${params.slug}`);
-                const result = await res.json();
-                if (result.success) {
+                const result = await ProductsService.getProduct(params.slug);
+                if (result.success && result.data) {
                     setProduct(result.data);
                     if (result.data.variants && result.data.variants.length > 0) {
                         setSelectedVariant(result.data.variants[0]);
@@ -186,8 +185,8 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
                                         key={variant.id}
                                         onClick={() => setSelectedVariant(variant)}
                                         className={`px-6 py-3 rounded-xl text-sm font-medium transition-all ${selectedVariant?.id === variant.id
-                                                ? 'bg-black text-white shadow-lg scale-105'
-                                                : 'bg-white text-gray-700 border border-gray-200 hover:border-gray-400 hover:bg-gray-50'
+                                            ? 'bg-black text-white shadow-lg scale-105'
+                                            : 'bg-white text-gray-700 border border-gray-200 hover:border-gray-400 hover:bg-gray-50'
                                             }`}
                                     >
                                         {variant.name}
@@ -228,10 +227,10 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
 
                             <Button
                                 variant="outline"
-                                onClick={() => toggleWishlist(product)}
+                                onClick={() => toggleWishlist(product as any)}
                                 className={`h-16 w-16 p-0 rounded-xl border-2 transition-all active:scale-90 ${isInWishlist(product.id)
-                                        ? 'bg-red-50 border-red-200 text-red-500 hover:bg-red-100 hover:text-red-600'
-                                        : 'border-gray-200 text-gray-400 hover:bg-gray-50 hover:text-black'
+                                    ? 'bg-red-50 border-red-200 text-red-500 hover:bg-red-100 hover:text-red-600'
+                                    : 'border-gray-200 text-gray-400 hover:bg-gray-50 hover:text-black'
                                     }`}
                             >
                                 <Heart className={`h-6 w-6 ${isInWishlist(product.id) ? 'fill-current' : ''}`} />

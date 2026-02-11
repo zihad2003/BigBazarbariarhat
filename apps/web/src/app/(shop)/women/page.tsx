@@ -23,7 +23,7 @@ export default function WomenPage() {
             {/* Products */}
             <section className="py-16 px-6 lg:px-8">
                 <div className="max-w-7xl mx-auto">
-                    <ProductGrid products={womenProducts} />
+                    <ProductGrid products={womenProducts as any} />
                 </div>
             </section>
         </>

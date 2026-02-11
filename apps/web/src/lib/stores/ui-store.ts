@@ -43,6 +43,12 @@ interface UIState {
     openQuickView: (productId: string) => void;
     closeQuickView: () => void;
 
+    // Cart drawer
+    isCartOpen: boolean;
+    openCart: () => void;
+    closeCart: () => void;
+    toggleCart: () => void;
+
     // Notifications
     notifications: Array<{
         id: string;
@@ -98,6 +104,12 @@ export const useUIStore = create<UIState>()((set, get) => ({
     quickViewProductId: null,
     openQuickView: (productId) => set({ quickViewProductId: productId }),
     closeQuickView: () => set({ quickViewProductId: null }),
+
+    // Cart drawer
+    isCartOpen: false,
+    openCart: () => set({ isCartOpen: true }),
+    closeCart: () => set({ isCartOpen: false }),
+    toggleCart: () => set((state) => ({ isCartOpen: !state.isCartOpen })),
 
     // Notifications
     notifications: [],

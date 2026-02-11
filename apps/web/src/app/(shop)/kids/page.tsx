@@ -21,7 +21,7 @@ export default function KidsPage() {
             {/* Products */}
             <section className="py-16 px-6 lg:px-8">
                 <div className="max-w-7xl mx-auto">
-                    <ProductGrid products={kidsProducts} />
+                    <ProductGrid products={kidsProducts as any} />
                 </div>
             </section>
         </>

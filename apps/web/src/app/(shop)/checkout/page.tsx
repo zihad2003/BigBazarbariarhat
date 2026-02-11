@@ -11,11 +11,11 @@ import {
     CheckCircle2,
     Lock,
     ArrowLeft,
-    InformationCircle,
+    Info,
     Loader2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useCartStore } from '@/lib/stores/cart-store';
+import { useCartStore } from '@bigbazar/shared';
 import { useUIStore } from '@/lib/stores/ui-store';
 import { useUser } from '@clerk/nextjs';
 
@@ -435,7 +435,7 @@ export default function CheckoutPage() {
                                 </div>
 
                                 <div className="p-6 bg-gray-900 rounded-[2rem] text-white flex gap-5 group/promo items-center">
-                                    <InformationCircle className="h-8 w-8 text-indigo-400 shrink-0 group-hover/promo:rotate-12 transition-transform" />
+                                    <Info className="h-8 w-8 text-indigo-400 shrink-0 group-hover/promo:rotate-12 transition-transform" />
                                     <p className="text-xs text-gray-300 leading-relaxed font-medium">
                                         Guaranteed safe and secure checkout with 256-bit SSL encryption. We protect your payment details.
                                     </p>

@@ -1,70 +1,214 @@
-import Link from 'next/link'
+'use client';
+
+import { useState } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import {
     LayoutDashboard,
     Package,
     ShoppingCart,
     Users,
-    BarChart3,
+    Tag,
+    Image,
     Settings,
-    ArrowLeft
-} from 'lucide-react'
+    LogOut,
+    Menu,
+    X,
+    ChevronDown,
+    TrendingUp,
+    Truck,
+    Percent,
+    Bell,
+    Search
+} from 'lucide-react';
+import { UserButton } from '@clerk/nextjs';
 
-const navigation = [
-    { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
-    { name: 'Products', href: '/admin/products', icon: Package },
+interface NavigationItem {
+    name: string;
+    href?: string;
+    icon: any;
+    children?: { name: string; href: string }[];
+}
+
+const navigation: NavigationItem[] = [
+    { name: 'Overview', href: '/admin', icon: LayoutDashboard },
+    {
+        name: 'Catalog',
+        icon: Package,
+        children: [
+            { name: 'Products', href: '/admin/products' },
+            { name: 'Categories', href: '/admin/categories' },
+            { name: 'Brands', href: '/admin/brands' },
+            { name: 'Inventory', href: '/admin/inventory' },
+        ]
+    },
     { name: 'Orders', href: '/admin/orders', icon: ShoppingCart },
     { name: 'Customers', href: '/admin/customers', icon: Users },
-    { name: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
+    {
+        name: 'Marketing',
+        icon: Percent,
+        children: [
+            { name: 'Coupons', href: '/admin/marketing/coupons' },
+            { name: 'Banners', href: '/admin/marketing/banners' },
+        ]
+    },
+    { name: 'Analytics', href: '/admin/analytics', icon: TrendingUp },
     { name: 'Settings', href: '/admin/settings', icon: Settings },
-]
+];
 
-export default function AdminLayout({
+export default function AdminDashboardLayout({
     children,
 }: {
-    children: React.ReactNode
+    children: React.ReactNode;
 }) {
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [expandedItems, setExpandedItems] = useState<string[]>(['Catalog']);
+    const pathname = usePathname();
+
+    const toggleExpanded = (name: string) => {
+        setExpandedItems((prev) =>
+            prev.includes(name) ? prev.filter((item) => item !== name) : [...prev, name]
+        );
+    };
+
+    const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/');
+
     return (
-        <div className="flex min-h-screen bg-gray-100">
+        <div className="min-h-screen bg-gray-50 flex">
+            {/* Mobile sidebar backdrop */}
+            {sidebarOpen && (
+                <div
+                    className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+                    onClick={() => setSidebarOpen(false)}
+                />
+            )}
+
             {/* Sidebar */}
-            <aside className="w-64 bg-black text-white flex flex-col fixed h-full">
-                <div className="p-6 border-b border-gray-800">
-                    <h1 className="text-xl font-bold uppercase">Big Bazar</h1>
-                    <p className="text-xs text-gray-500 uppercase tracking-wide mt-1">Admin Panel</p>
+            <aside
+                className={`fixed top-0 left-0 z-50 h-full w-64 bg-gray-900 text-white transform transition-transform duration-300 lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+                    }`}
+            >
+                {/* Logo */}
+                <div className="flex items-center justify-between h-16 px-6 border-b border-gray-800">
+                    <Link href="/admin" className="flex items-center gap-2">
+                        <span className="text-xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+                            Big Bazar
+                        </span>
+                        <span className="text-xs bg-indigo-500 text-white px-2 py-0.5 rounded-full">
+                            Admin
+                        </span>
+                    </Link>
+                    <button
+                        className="lg:hidden p-1 hover:bg-gray-800 rounded"
+                        onClick={() => setSidebarOpen(false)}
+                    >
+                        <X className="h-5 w-5" />
+                    </button>
                 </div>
 
-                <nav className="flex-1 py-6">
+                {/* Navigation */}
+                <nav className="p-4 space-y-1 overflow-y-auto h-[calc(100vh-4rem)]">
                     {navigation.map((item) => (
-                        <Link
-                            key={item.name}
-                            href={item.href}
-                            className="flex items-center gap-3 px-6 py-3 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
-                        >
-                            <item.icon className="h-5 w-5" />
-                            {item.name}
-                        </Link>
+                        <div key={item.name}>
+                            {item.children ? (
+                                <>
+                                    <button
+                                        onClick={() => toggleExpanded(item.name)}
+                                        className={`w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${item.href && isActive(item.href)
+                                            ? 'bg-indigo-600 text-white'
+                                            : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                                            }`}
+                                    >
+                                        <span className="flex items-center gap-3">
+                                            <item.icon className="h-5 w-5" />
+                                            {item.name}
+                                        </span>
+                                        <ChevronDown
+                                            className={`h-4 w-4 transition-transform ${expandedItems.includes(item.name) ? 'rotate-180' : ''
+                                                }`}
+                                        />
+                                    </button>
+                                    {expandedItems.includes(item.name) && (
+                                        <div className="ml-4 mt-1 space-y-1">
+                                            {item.children.map((child) => (
+                                                <Link
+                                                    key={child.name}
+                                                    href={child.href}
+                                                    className={`block px-4 py-2 rounded-lg text-sm transition-colors ${pathname === child.href
+                                                        ? 'bg-gray-800 text-white'
+                                                        : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+                                                        }`}
+                                                >
+                                                    {child.name}
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    )}
+                                </>
+                            ) : (
+                                <Link
+                                    href={item.href || '#'}
+                                    className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${item.href && isActive(item.href)
+                                        ? 'bg-indigo-600 text-white'
+                                        : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                                        }`}
+                                >
+                                    <item.icon className="h-5 w-5" />
+                                    {item.name}
+                                </Link>
+                            )}
+                        </div>
                     ))}
                 </nav>
-
-                <div className="p-6 border-t border-gray-800">
-                    <Link
-                        href="/"
-                        className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors"
-                    >
-                        <ArrowLeft className="h-4 w-4" />
-                        Back to Store
-                    </Link>
-                </div>
             </aside>
 
-            {/* Main Content */}
-            <main className="flex-1 ml-64">
-                <header className="bg-white border-b px-8 py-6 sticky top-0 z-10">
-                    <h2 className="text-xl font-bold">Dashboard</h2>
+            {/* Main content */}
+            <div className="flex-1 lg:pl-64">
+                {/* Header */}
+                <header className="sticky top-0 z-30 bg-white border-b border-gray-200 h-16">
+                    <div className="flex items-center justify-between h-full px-4 lg:px-8">
+                        <div className="flex items-center gap-4">
+                            <button
+                                className="lg:hidden p-2 hover:bg-gray-100 rounded-lg"
+                                onClick={() => setSidebarOpen(true)}
+                            >
+                                <Menu className="h-5 w-5" />
+                            </button>
+
+                            {/* Search */}
+                            <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-lg w-80">
+                                <Search className="h-4 w-4 text-gray-400" />
+                                <input
+                                    type="text"
+                                    placeholder="Search products, orders, customers..."
+                                    className="flex-1 bg-transparent border-none outline-none text-sm"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-4">
+                            {/* Back to Store */}
+                            <Link href="/" className="hidden sm:block text-sm text-gray-500 hover:text-indigo-600 font-medium">
+                                Back to Store
+                            </Link>
+
+                            {/* Notifications */}
+                            <button className="relative p-2 hover:bg-gray-100 rounded-lg">
+                                <Bell className="h-5 w-5 text-gray-600" />
+                                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
+                            </button>
+
+                            {/* User */}
+                            <UserButton afterSignOutUrl="/" />
+                        </div>
+                    </div>
                 </header>
-                <div className="p-8">
+
+                {/* Page content */}
+                <main className="p-6 lg:p-8">
                     {children}
-                </div>
-            </main>
+                </main>
+            </div>
         </div>
-    )
+    );
 }

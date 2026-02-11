@@ -5,30 +5,34 @@ import Link from 'next/link'
 import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { formatPrice } from '@/lib/utils'
+import { Product, useCartStore } from '@bigbazar/shared'
 
 interface ProductCardProps {
-    id: string
-    name: string
-    price: number
-    image: string
-    category: string
+    product: Product
 }
 
-export function ProductCard({ id, name, price, image, category }: ProductCardProps) {
+export function ProductCard({ product }: ProductCardProps) {
+    const addItem = useCartStore((state) => state.addItem)
+    // useUIStore might not be in shared yet, check if it's local. 
+    // It was local in ProductDetailPage. Let's use local if needed or shared if I moved it.
+    // I haven't moved ui-store.ts. So I should remove it from shared import above and import from local.
+
     const handleAddToCart = (e: React.MouseEvent) => {
         e.preventDefault()
-        // TODO: Implement add to cart
-        console.log('Add to cart:', id)
+        addItem(product, 1) // Default quantity 1, no variant
     }
 
+    const price = product.salePrice || product.basePrice
+    const image = product.images?.[0]?.url || '/placeholder.png'
+
     return (
-        <Link href={`/product/${id}`} className="group">
-            <div className="relative aspect-[3/4] overflow-hidden bg-gray-100 mb-4">
+        <Link href={`/products/${product.slug}`} className="group block">
+            <div className="relative aspect-[3/4] overflow-hidden bg-gray-100 mb-4 rounded-xl">
                 <Image
                     src={image}
-                    alt={name}
+                    alt={product.name}
                     fill
-                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
                 />
                 <Button
                     size="icon"
@@ -40,14 +44,21 @@ export function ProductCard({ id, name, price, image, category }: ProductCardPro
             </div>
             <div className="space-y-1">
                 <span className="text-xs text-gray-500 uppercase tracking-wide">
-                    Big Bazar
+                    {product.category?.name || 'Big Bazar'}
                 </span>
-                <h3 className="text-sm font-semibold uppercase tracking-wide group-hover:underline">
-                    {name}
+                <h3 className="text-sm font-bold uppercase tracking-wide group-hover:underline line-clamp-1">
+                    {product.name}
                 </h3>
-                <p className="text-sm font-medium">
-                    {formatPrice(price)}
-                </p>
+                <div className="flex items-center gap-2">
+                    <p className="text-sm font-bold text-black">
+                        {formatPrice(price)}
+                    </p>
+                    {product.salePrice && (
+                        <p className="text-xs font-medium text-gray-400 line-through">
+                            {formatPrice(product.basePrice)}
+                        </p>
+                    )}
+                </div>
             </div>
         </Link>
     )

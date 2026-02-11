@@ -1,49 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { supabaseAdmin } from '@/lib/supabase';
 
 export async function GET(
     request: NextRequest,
-    { params }: { params: { slug: string } }
+    { params }: { params: Promise<{ slug: string }> }
 ) {
-    const slug = params.slug;
+    const { slug } = await params;
 
     try {
-        const product = await prisma.product.findUnique({
-            where: { slug },
-            include: {
-                category: true,
-                brand: true,
-                images: {
-                    orderBy: { displayOrder: 'asc' },
-                },
-                variants: {
-                    where: { isActive: true },
-                },
-                reviews: {
-                    take: 5,
-                    orderBy: { createdAt: 'desc' },
-                    include: {
-                        user: {
-                            select: {
-                                firstName: true,
-                                lastName: true,
-                                avatar: true,
-                            }
-                        }
-                    }
-                }
-            }
-        });
+        const { data: product, error } = await supabaseAdmin
+            .from('products')
+            .select('*, categories(*)')
+            .eq('slug', slug)
+            .single() as any;
 
-        if (!product) {
+        if (error || !product) {
             return NextResponse.json({ success: false, error: 'Product not found' }, { status: 404 });
         }
-
-        // Increment view count
-        await prisma.product.update({
-            where: { id: product.id },
-            data: { viewCount: { increment: 1 } }
-        });
 
         return NextResponse.json({
             success: true,

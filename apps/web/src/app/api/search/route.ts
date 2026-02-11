@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { supabaseAdmin } from '@/lib/supabase';
 
 export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
@@ -11,55 +11,31 @@ export async function GET(request: NextRequest) {
 
     try {
         // Fetch products matching the query
-        const products = await prisma.product.findMany({
-            where: {
-                OR: [
-                    { name: { contains: query, mode: 'insensitive' } },
-                    { description: { contains: query, mode: 'insensitive' } },
-                    { brand: { name: { contains: query, mode: 'insensitive' } } },
-                ],
-                isActive: true,
-            },
-            select: {
-                id: true,
-                name: true,
-                slug: true,
-                basePrice: true,
-                salePrice: true,
-                images: {
-                    take: 1,
-                    orderBy: { displayOrder: 'asc' }
-                }
-            },
-            take: 5,
-        });
+        const { data: products } = await supabaseAdmin
+            .from('products')
+            .select('id, name, slug, base_price, sale_price')
+            .eq('is_active', true)
+            .or(`name.ilike.%${query}%,description.ilike.%${query}%`)
+            .limit(5) as any;
 
         // Fetch categories matching the query
-        const categories = await prisma.category.findMany({
-            where: {
-                name: { contains: query, mode: 'insensitive' },
-                isActive: true,
-            },
-            select: {
-                id: true,
-                name: true,
-                slug: true,
-            },
-            take: 3,
-        });
+        const { data: categories } = await supabaseAdmin
+            .from('categories')
+            .select('id, name, slug')
+            .ilike('name', `%${query}%`)
+            .limit(3) as any;
 
-        // Generate text suggestions (names of products and categories)
         const suggestions = [
-            ...products.map(p => p.name),
-            ...categories.map(c => c.name)
+            ...(products || []).map((p: any) => p.name),
+            ...(categories || []).map((c: any) => c.name)
         ].slice(0, 8);
 
         return NextResponse.json({
             success: true,
             data: {
                 suggestions,
-                products,
-                categories,
+                products: products || [],
+                categories: categories || [],
             }
         });
     } catch (error) {

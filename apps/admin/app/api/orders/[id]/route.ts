@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { updateOrderStatusSchema } from '@bigbazar/validation';
 
 export async function GET(
     request: NextRequest,
@@ -47,7 +48,8 @@ export async function PATCH(
     { params }: { params: { id: string } }
 ) {
     try {
-        const body = await request.json();
+        const json = await request.json();
+        const body = updateOrderStatusSchema.parse(json);
         const { status, paymentStatus, trackingNumber, adminNotes, estimatedDelivery } = body;
 
         const order = await prisma.order.update({

@@ -14,15 +14,15 @@ const isPublicRoute = createRouteMatcher([
 
 const isAdminRoute = createRouteMatcher(['/admin(.*)'])
 
-export default clerkMiddleware((auth, request) => {
+export default clerkMiddleware(async (auth, request) => {
     // Protect admin routes
     if (isAdminRoute(request)) {
-        auth().protect()
+        await auth.protect()
     }
 
     // Protect non-public routes
     if (!isPublicRoute(request)) {
-        auth().protect()
+        await auth.protect()
     }
 })
 

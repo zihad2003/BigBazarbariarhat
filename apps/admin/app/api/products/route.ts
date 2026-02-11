@@ -1,33 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { ProductService } from '@bigbazar/database';
+import { createProductSchema, productFilterSchema } from '@bigbazar/validation';
 
 export async function POST(request: NextRequest) {
     try {
-        const body = await request.json();
-
-        const product = await prisma.product.create({
-            data: {
-                name: body.name,
-                slug: body.slug,
-                description: body.description,
-                shortDescription: body.shortDescription,
-                categoryId: body.categoryId,
-                brandId: body.brandId || null,
-                sku: body.sku,
-                barcode: body.barcode || null,
-                basePrice: body.basePrice,
-                salePrice: body.salePrice || null,
-                costPrice: body.costPrice || null,
-                stockQuantity: parseInt(body.stockQuantity) || 0,
-                lowStockThreshold: parseInt(body.lowStockThreshold) || 10,
-                isActive: body.isActive ?? true,
-                isFeatured: body.isFeatured ?? false,
-                isNewArrival: body.isNewArrival ?? true,
-                metaTitle: body.metaTitle || null,
-                metaDescription: body.metaDescription || null,
-                metaKeywords: body.metaKeywords || null,
-            }
-        });
+        const json = await request.json();
+        const body = createProductSchema.parse(json);
+        const product = await ProductService.create(body);
 
         return NextResponse.json({ success: true, data: product });
     } catch (error: any) {
@@ -42,46 +21,20 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
-        const q = searchParams.get('q') || '';
-        const page = parseInt(searchParams.get('page') || '1');
-        const limit = parseInt(searchParams.get('limit') || '10');
-        const skip = (page - 1) * limit;
+        const filters = productFilterSchema.parse({
+            category: searchParams.get('category') || undefined,
+            brand: searchParams.get('brand') || undefined,
+            page: parseInt(searchParams.get('page') || '1'),
+            limit: parseInt(searchParams.get('limit') || '10'),
+            sortBy: searchParams.get('sortBy') || 'newest',
+            q: searchParams.get('q') || undefined,
+        });
 
-        const [products, total] = await Promise.all([
-            prisma.product.findMany({
-                where: {
-                    OR: [
-                        { name: { contains: q, mode: 'insensitive' } },
-                        { sku: { contains: q, mode: 'insensitive' } },
-                    ]
-                },
-                include: {
-                    category: { select: { name: true } },
-                    images: { where: { isPrimary: true }, take: 1 }
-                },
-                orderBy: { createdAt: 'desc' },
-                skip,
-                take: limit
-            }),
-            prisma.product.count({
-                where: {
-                    OR: [
-                        { name: { contains: q, mode: 'insensitive' } },
-                        { sku: { contains: q, mode: 'insensitive' } },
-                    ]
-                }
-            })
-        ]);
+        const result = await ProductService.list(filters as any);
 
         return NextResponse.json({
             success: true,
-            data: products,
-            pagination: {
-                total,
-                page,
-                limit,
-                totalPages: Math.ceil(total / limit)
-            }
+            ...result
         });
     } catch (error) {
         console.error('Admin Products List API Error:', error);

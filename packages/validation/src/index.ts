@@ -152,8 +152,10 @@ export const createOrderSchema = z.object({
 
 export const updateOrderStatusSchema = z.object({
     status: orderStatusSchema,
+    paymentStatus: paymentStatusSchema.optional(),
     trackingNumber: z.string().optional(),
     adminNotes: z.string().optional(),
+    estimatedDelivery: z.string().or(z.date()).optional(),
 });
 
 // ==================== REVIEW SCHEMAS ====================

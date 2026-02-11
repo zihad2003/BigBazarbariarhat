@@ -1,36 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { auth } from '@clerk/nextjs';
+import { auth } from '@clerk/nextjs/server';
+import { supabaseAdmin } from '@/lib/supabase';
 
 export async function GET(
     request: NextRequest,
-    { params }: { params: { orderNumber: string } }
+    { params }: { params: Promise<{ orderNumber: string }> }
 ) {
     try {
-        const { userId } = auth();
-        const { orderNumber } = params;
+        const { userId } = await auth();
+        const { orderNumber } = await params;
 
-        const order = await prisma.order.findUnique({
-            where: { orderNumber },
-            include: {
-                items: true,
-                user: {
-                    select: {
-                        firstName: true,
-                        lastName: true,
-                        email: true
-                    }
-                }
-            }
-        });
+        const { data: order, error } = await supabaseAdmin
+            .from('orders')
+            .select('*')
+            .eq('order_number', orderNumber)
+            .single() as any;
 
-        if (!order) {
+        if (error || !order) {
             return NextResponse.json({ success: false, error: 'Order not found' }, { status: 404 });
         }
 
         // Security: If the order has a userId, only the owner can see it
-        // Except for guest orders which use guestEmail check (or orderNumber knowledge as authentication)
-        if (order.userId && order.userId !== userId) {
+        if (order.user_id && order.user_id !== userId) {
             return NextResponse.json({ success: false, error: 'Unauthorized access to order' }, { status: 401 });
         }
 

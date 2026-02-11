@@ -5,7 +5,8 @@ import { supabaseAdmin } from '@/lib/supabase'
 
 export async function POST(request: NextRequest) {
     const body = await request.text()
-    const signature = headers().get('stripe-signature')!
+    const headersList = await headers()
+    const signature = headersList.get('stripe-signature')!
 
     let event
 
@@ -39,14 +40,14 @@ export async function POST(request: NextRequest) {
                         status: 'processing',
                         total: (session.amount_total || 0) / 100,
                         shipping_address: JSON.parse(shippingAddress || '{}'),
-                    })
+                    } as any)
                     .select()
                     .single()
 
                 if (error) {
                     console.error('Failed to create order:', error)
                 } else {
-                    console.log('Order created:', order.id)
+                    console.log('Order created:', (order as any)?.id)
                 }
             }
             break

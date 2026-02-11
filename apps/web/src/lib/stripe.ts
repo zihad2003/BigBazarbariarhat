@@ -5,19 +5,19 @@ if (!process.env.STRIPE_SECRET_KEY) {
 }
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-    apiVersion: '2023-10-16',
+    apiVersion: '2026-01-28.clover',
     typescript: true,
 });
 
 export const formatAmountForStripe = (amount: number, currency: string) => {
-    let numberFormat = new Intl.NumberFormat(['en-US'], {
+    const numberFormat = new Intl.NumberFormat(['en-US'], {
         style: 'currency',
         currency: currency,
         currencyDisplay: 'symbol',
     });
     const parts = numberFormat.formatToParts(amount);
     let zeroDecimalCurrency: boolean = true;
-    for (let part of parts) {
+    for (const part of parts) {
         if (part.type === 'decimal') {
             zeroDecimalCurrency = false;
         }

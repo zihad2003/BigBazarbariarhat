@@ -29,7 +29,11 @@
         "react-hook-form": "^7.50.0",
         "recharts": "^2.10.4",
         "tailwind-merge": "^2.2.1",
-        "zod": "^3.22.4"
+        "zod": "^3.22.4",
+        "@bigbazar/types": "*",
+        "@bigbazar/validation": "*",
+        "@bigbazar/database": "*",
+        "@bigbazar/ui": "*"
     },
     "devDependencies": {
         "@types/node": "^20",

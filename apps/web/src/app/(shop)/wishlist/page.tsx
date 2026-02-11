@@ -40,15 +40,11 @@ export default function WishlistPage() {
 
     const handleAddToCart = (product: any) => {
         addItem({
-            productId: product.id,
-            quantity: 1,
-            product: {
-                id: product.id,
-                name: product.name,
-                basePrice: product.price,
-                images: [{ url: product.image }]
-            } as any
-        });
+            id: product.id,
+            name: product.name,
+            basePrice: product.price,
+            images: [{ url: product.image }],
+        } as any, 1);
         addNotification({ type: 'success', message: 'Added to your curation' });
     };
 

@@ -1,123 +1,69 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { supabaseAdmin } from '@/lib/supabase';
 
 export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
 
-    // Core filters
     const category = searchParams.get('category');
-    const brand = searchParams.get('brand');
-    const query = searchParams.get('q') || searchParams.get('search');
-
-    // Performance filters
+    const search = searchParams.get('q') || searchParams.get('search');
     const featured = searchParams.get('featured') === 'true';
-    const newArrivals = searchParams.get('new') === 'true' || searchParams.get('newArrivals') === 'true';
-
-    // Value filters
     const minPrice = searchParams.get('minPrice') ? parseFloat(searchParams.get('minPrice')!) : undefined;
     const maxPrice = searchParams.get('maxPrice') ? parseFloat(searchParams.get('maxPrice')!) : undefined;
-
-    // Attribute filters (comma separated)
-    const sizes = searchParams.get('sizes')?.split(',').filter(Boolean);
-    const colors = searchParams.get('colors')?.split(',').filter(Boolean);
-
-    // Pagination & Sort
     const sortBy = searchParams.get('sortBy') || 'newest';
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '12');
-    const skip = (page - 1) * limit;
+    const offset = (page - 1) * limit;
 
     try {
-        const where: any = {
-            isActive: true,
-        };
+        let query = supabaseAdmin
+            .from('products')
+            .select('*, categories(*)', { count: 'exact' })
+            .eq('is_active', true);
 
-        if (query) {
-            where.OR = [
-                { name: { contains: query, mode: 'insensitive' } },
-                { description: { contains: query, mode: 'insensitive' } },
-                { sku: { contains: query, mode: 'insensitive' } },
-            ];
+        if (search) {
+            query = query.or(`name.ilike.%${search}%,description.ilike.%${search}%`);
         }
 
         if (category) {
-            where.category = { slug: category };
-        }
-
-        if (brand) {
-            where.brand = { slug: brand };
+            query = query.eq('category_id', category);
         }
 
         if (featured) {
-            where.isFeatured = true;
+            query = query.eq('is_featured', true);
         }
 
-        if (newArrivals) {
-            where.isNewArrival = true;
+        if (minPrice !== undefined) {
+            query = query.gte('base_price', minPrice);
         }
 
-        if (minPrice !== undefined || maxPrice !== undefined) {
-            where.salePrice = {};
-            if (minPrice !== undefined) where.salePrice.gte = minPrice;
-            if (maxPrice !== undefined) where.salePrice.lte = maxPrice;
+        if (maxPrice !== undefined) {
+            query = query.lte('base_price', maxPrice);
         }
 
-        // Filtering by variants (size/color)
-        if (sizes || colors) {
-            where.variants = {
-                some: {
-                    isActive: true,
-                }
-            };
-            if (sizes && sizes.length > 0) {
-                where.variants.some.size = { in: sizes };
-            }
-            if (colors && colors.length > 0) {
-                where.variants.some.color = { in: colors };
-            }
-        }
-
-        let orderBy: any = {};
+        // Sorting
         switch (sortBy) {
             case 'price_asc':
-                orderBy = { salePrice: 'asc' };
+                query = query.order('base_price', { ascending: true });
                 break;
             case 'price_desc':
-                orderBy = { salePrice: 'desc' };
-                break;
-            case 'popular':
-                orderBy = { viewCount: 'desc' };
-                break;
-            case 'rating':
-                orderBy = { averageRating: 'desc' };
+                query = query.order('base_price', { ascending: false });
                 break;
             case 'newest':
             default:
-                orderBy = { createdAt: 'desc' };
+                query = query.order('created_at', { ascending: false });
                 break;
         }
 
-        const [products, total] = await Promise.all([
-            prisma.product.findMany({
-                where,
-                include: {
-                    category: true,
-                    brand: true,
-                    images: {
-                        orderBy: { displayOrder: 'asc' },
-                        take: 1,
-                    },
-                    variants: {
-                        where: { isActive: true },
-                    }
-                },
-                orderBy,
-                skip,
-                take: limit,
-            }),
-            prisma.product.count({ where }),
-        ]);
+        query = query.range(offset, offset + limit - 1);
 
+        const { data: products, count, error } = await query as any;
+
+        if (error) {
+            console.error('Products query error:', error);
+            return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+        }
+
+        const total = count || 0;
         const totalPages = Math.ceil(total / limit);
 
         return NextResponse.json({
@@ -142,29 +88,27 @@ export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
 
-        const product = await prisma.product.create({
-            data: {
+        const { data: product, error } = await supabaseAdmin
+            .from('products')
+            .insert({
                 name: body.name,
                 slug: body.slug || body.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
                 description: body.description,
-                shortDescription: body.shortDescription,
-                categoryId: body.categoryId,
-                brandId: body.brandId,
+                category_id: body.categoryId,
                 sku: body.sku,
-                barcode: body.barcode,
-                basePrice: body.basePrice,
-                salePrice: body.salePrice,
-                costPrice: body.costPrice,
-                stockQuantity: body.stockQuantity,
-                lowStockThreshold: body.lowStockThreshold,
-                isActive: body.isActive !== undefined ? body.isActive : true,
-                isFeatured: body.isFeatured || false,
-                isNewArrival: body.isNewArrival || false,
-                metaTitle: body.metaTitle,
-                metaDescription: body.metaDescription,
-                metaKeywords: body.metaKeywords,
-            }
-        });
+                base_price: body.basePrice,
+                sale_price: body.salePrice,
+                stock_quantity: body.stockQuantity || 0,
+                is_active: body.isActive !== undefined ? body.isActive : true,
+                is_featured: body.isFeatured || false,
+            } as any)
+            .select()
+            .single();
+
+        if (error) {
+            console.error('Create product error:', error);
+            return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+        }
 
         return NextResponse.json({
             success: true,

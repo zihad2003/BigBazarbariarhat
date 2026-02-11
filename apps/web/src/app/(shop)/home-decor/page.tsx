@@ -21,7 +21,7 @@ export default function HomeDecorPage() {
             {/* Products */}
             <section className="py-16 px-6 lg:px-8">
                 <div className="max-w-7xl mx-auto">
-                    <ProductGrid products={homeDecorProducts} />
+                    <ProductGrid products={homeDecorProducts as any} />
                 </div>
             </section>
         </>
