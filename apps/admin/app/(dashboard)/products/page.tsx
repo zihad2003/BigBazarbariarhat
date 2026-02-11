@@ -102,7 +102,7 @@ export default function ProductsPage() {
                         Export
                     </button>
                     <Link
-                        href="/dashboard/products/new"
+                        href="/products/new"
                         className="px-8 py-3 bg-black text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-gray-800 transition-all flex items-center gap-3 shadow-xl shadow-black/10"
                     >
                         <Plus className="h-5 w-5" />
@@ -218,7 +218,7 @@ export default function ProductsPage() {
                                             <button className="p-3 bg-white shadow-sm border border-gray-100 rounded-xl hover:bg-black hover:text-white transition-all" title="View">
                                                 <Eye className="h-5 w-5" />
                                             </button>
-                                            <Link href={`/dashboard/products/${product.id}`} className="p-3 bg-white shadow-sm border border-gray-100 rounded-xl hover:bg-indigo-600 hover:text-white transition-all" title="Edit">
+                                            <Link href={`/products/${product.id}`} className="p-3 bg-white shadow-sm border border-gray-100 rounded-xl hover:bg-indigo-600 hover:text-white transition-all" title="Edit">
                                                 <Edit className="h-5 w-5" />
                                             </Link>
                                             <button className="p-3 bg-white shadow-sm border border-gray-100 rounded-xl hover:bg-rose-500 hover:text-white transition-all" title="Delete">

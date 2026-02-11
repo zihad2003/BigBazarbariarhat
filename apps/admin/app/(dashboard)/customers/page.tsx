@@ -132,10 +132,10 @@ export default function CustomersPage() {
                                     <td className="px-8 py-6">
                                         <div className="flex items-center gap-5">
                                             <div className="w-14 h-14 bg-indigo-50 border-2 border-white shadow-lg rounded-2xl flex items-center justify-center text-indigo-600 font-black text-xl overflow-hidden group-hover:scale-110 transition-transform">
-                                                {customer.image ? <img src={customer.image} alt="" className="w-full h-full object-cover" /> : customer.firstName[0]}
+                                                {customer.avatar ? <img src={customer.avatar} alt="" className="w-full h-full object-cover" /> : (customer.firstName?.[0] || 'U')}
                                             </div>
                                             <div>
-                                                <div className="font-black text-gray-900 tracking-tight text-lg">{customer.firstName} {customer.lastName}</div>
+                                                <div className="font-black text-gray-900 tracking-tight text-lg">{customer.firstName || 'Unknown'} {customer.lastName || ''}</div>
                                                 <div className="text-[10px] text-gray-400 font-black uppercase tracking-widest flex items-center gap-2">
                                                     <Mail className="h-3 w-3" />
                                                     {customer.email}
@@ -169,7 +169,7 @@ export default function CustomersPage() {
                                     </td>
                                     <td className="px-8 py-6">
                                         <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-all">
-                                            <Link href={`/dashboard/customers/${customer.id}`}>
+                                            <Link href={`/customers/${customer.id}`}>
                                                 <button className="p-3 bg-white shadow-xl border border-gray-100 rounded-2xl hover:bg-black hover:text-white transition-all">
                                                     <Eye className="h-5 w-5" />
                                                 </button>

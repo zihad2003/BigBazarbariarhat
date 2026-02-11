@@ -180,7 +180,7 @@ export default function OrderDetailPage() {
                                 Catalog Items
                                 <span className="ml-2 px-3 py-1 bg-white text-gray-400 rounded-xl text-xs border border-gray-100 font-black">{order.items.length}</span>
                             </h3>
-                            <Link href={`/dashboard/products`} className="text-xs font-black text-indigo-600 uppercase tracking-widest hover:underline flex items-center gap-2">
+                            <Link href={`/products`} className="text-xs font-black text-indigo-600 uppercase tracking-widest hover:underline flex items-center gap-2">
                                 Inventory Master <ExternalLink className="h-3 w-3" />
                             </Link>
                         </div>
@@ -286,7 +286,7 @@ export default function OrderDetailPage() {
                             <div className="space-y-8">
                                 <div className="flex items-center gap-6">
                                     <div className="w-20 h-20 bg-indigo-100 rounded-[2rem] overflow-hidden border-4 border-white shadow-xl">
-                                        {order.user.image ? <img src={order.user.image} alt="" /> : <div className="w-full h-full flex items-center justify-center text-indigo-600 font-black text-xl">{order.user.firstName[0]}</div>}
+                                        {order.user.avatar ? <img src={order.user.avatar} alt="" /> : <div className="w-full h-full flex items-center justify-center text-indigo-600 font-black text-xl">{order.user.firstName?.[0] || 'U'}</div>}
                                     </div>
                                     <div>
                                         <h4 className="text-2xl font-black text-gray-900 tracking-tighter italic">{order.user.firstName} {order.user.lastName}</h4>

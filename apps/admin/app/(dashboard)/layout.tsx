@@ -31,29 +31,29 @@ interface NavigationItem {
 }
 
 const navigation: NavigationItem[] = [
-    { name: 'Overview', href: '/dashboard', icon: LayoutDashboard },
+    { name: 'Overview', href: '/', icon: LayoutDashboard },
     {
         name: 'Catalog',
         icon: Package,
         children: [
-            { name: 'Products', href: '/dashboard/products' },
-            { name: 'Categories', href: '/dashboard/categories' },
-            { name: 'Brands', href: '/dashboard/brands' },
-            { name: 'Inventory', href: '/dashboard/inventory' },
+            { name: 'Products', href: '/products' },
+            { name: 'Categories', href: '/categories' },
+            { name: 'Brands', href: '/brands' },
+            { name: 'Inventory', href: '/inventory' },
         ]
     },
-    { name: 'Orders', href: '/dashboard/orders', icon: ShoppingCart },
-    { name: 'Customers', href: '/dashboard/customers', icon: Users },
+    { name: 'Orders', href: '/orders', icon: ShoppingCart },
+    { name: 'Customers', href: '/customers', icon: Users },
     {
         name: 'Marketing',
         icon: Percent,
         children: [
-            { name: 'Coupons', href: '/dashboard/marketing/coupons' },
-            { name: 'Banners', href: '/dashboard/marketing/banners' },
+            { name: 'Coupons', href: '/marketing/coupons' },
+            { name: 'Banners', href: '/marketing/banners' },
         ]
     },
-    { name: 'Analytics', href: '/dashboard/analytics', icon: TrendingUp },
-    { name: 'Settings', href: '/dashboard/settings', icon: Settings },
+    { name: 'Analytics', href: '/analytics', icon: TrendingUp },
+    { name: 'Settings', href: '/settings', icon: Settings },
 ];
 
 export default function DashboardLayout({
@@ -90,7 +90,7 @@ export default function DashboardLayout({
             >
                 {/* Logo */}
                 <div className="flex items-center justify-between h-16 px-6 border-b border-gray-800">
-                    <Link href="/dashboard" className="flex items-center gap-2">
+                    <Link href="/" className="flex items-center gap-2">
                         <span className="text-xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
                             Big Bazar
                         </span>

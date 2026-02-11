@@ -81,7 +81,7 @@ export default function CustomerDetailPage() {
                     </button>
                     <div className="flex items-center gap-8">
                         <div className="w-24 h-24 bg-indigo-50 border-4 border-white shadow-2xl rounded-[2.5rem] flex items-center justify-center text-indigo-600 font-black text-3xl overflow-hidden">
-                            {customer.image ? <img src={customer.image} alt="" className="w-full h-full object-cover" /> : customer.firstName[0]}
+                            {customer.avatar ? <img src={customer.avatar} alt="" className="w-full h-full object-cover" /> : (customer.firstName?.[0] || 'U')}
                         </div>
                         <div>
                             <div className="flex items-center gap-4 mb-2">
@@ -160,7 +160,7 @@ export default function CustomerDetailPage() {
                                         <Badge variant="secondary" className="bg-white border-gray-100 text-[9px] font-black uppercase tracking-widest">
                                             {order.status}
                                         </Badge>
-                                        <Link href={`/dashboard/orders/${order.id}`}>
+                                        <Link href={`/orders/${order.id}`}>
                                             <button className="h-12 px-6 bg-gray-50 border border-gray-100 rounded-xl text-[9px] font-black uppercase tracking-widest hover:border-black transition-all">
                                                 Examine
                                             </button>

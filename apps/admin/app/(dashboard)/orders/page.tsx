@@ -162,7 +162,7 @@ export default function OrdersPage() {
                                     </td>
                                     <td className="px-8 py-6">
                                         <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-all">
-                                            <Link href={`/dashboard/orders/${order.id}`}>
+                                            <Link href={`/orders/${order.id}`}>
                                                 <button className="p-3 bg-white shadow-sm border border-gray-100 rounded-xl hover:bg-black hover:text-white transition-all">
                                                     <Eye className="h-5 w-5" />
                                                 </button>
