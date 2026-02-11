@@ -1,74 +1,102 @@
 # Big Bazar - Premium E-commerce Platform
 
-A modern, full-stack e-commerce platform with web and mobile applications.
+A modern, full-stack e-commerce platform for a multi-brand clothing retail shop built with Next.js 14+, TypeScript, and a modular Bento architecture.
 
 ## 🚀 Tech Stack
 
 | Layer | Technology |
 |-------|------------|
-| **Frontend (Web)** | Next.js 14, React, TypeScript |
-| **Styling** | Tailwind CSS, shadcn/ui |
+| **Frontend (Web)** | Next.js 16, React 19, TypeScript |
+| **Styling** | Tailwind CSS 4, shadcn/ui |
+| **State Management** | Zustand, TanStack Query |
+| **Form Validation** | React Hook Form, Zod |
+| **Animation** | Framer Motion |
 | **Authentication** | Clerk |
-| **Database** | Supabase (PostgreSQL) |
-| **Payments** | Stripe |
-| **3rd Party** | Composio |
+| **Database** | PostgreSQL (Prisma ORM) |
+| **Payments** | Stripe, bKash, Nagad |
 | **Mobile** | Expo (React Native) |
 
 ## 📁 Project Structure
 
 ```
 BigBazarbariarhat/
-├── web/                    # Next.js Web Application
-│   ├── src/
-│   │   ├── app/            # App Router pages
-│   │   │   ├── (auth)/     # Authentication pages
-│   │   │   ├── (shop)/     # Shop pages
-│   │   │   ├── admin/      # Admin dashboard
-│   │   │   └── api/        # API routes
-│   │   ├── components/     # React components
-│   │   │   ├── ui/         # shadcn/ui components
-│   │   │   ├── layout/     # Layout components
-│   │   │   └── shop/       # Shop components
-│   │   ├── lib/            # Utilities
-│   │   ├── hooks/          # Custom hooks
-│   │   └── types/          # TypeScript types
-│   └── supabase/           # Database schema
+├── apps/
+│   ├── web/                    # Customer-facing Next.js app
+│   │   ├── src/
+│   │   │   ├── app/            # App Router pages
+│   │   │   │   ├── (auth)/     # Auth pages (sign-in, sign-up)
+│   │   │   │   ├── (shop)/     # Shop pages (home, products, cart)
+│   │   │   │   ├── admin/      # Admin dashboard
+│   │   │   │   └── api/        # API routes
+│   │   │   ├── components/
+│   │   │   │   ├── ui/         # shadcn/ui components
+│   │   │   │   ├── layout/     # Header, Footer, etc.
+│   │   │   │   ├── shop/       # Product cards, cart, etc.
+│   │   │   │   └── features/   # Feature-specific components
+│   │   │   ├── lib/
+│   │   │   │   ├── stores/     # Zustand stores
+│   │   │   │   ├── hooks/      # Custom hooks
+│   │   │   │   └── utils/      # Utility functions
+│   │   │   └── types/          # TypeScript types
+│   │   └── supabase/           # Database schema
+│   │
+│   ├── admin/                  # Admin dashboard (separate app)
+│   │
+│   └── mobile/                 # Expo React Native app
+│       ├── app/                # Expo Router
+│       └── components/
 │
-├── mobile/                 # Expo Mobile App
-│   ├── app/                # Expo Router pages
-│   │   ├── (tabs)/         # Tab navigation
-│   │   └── (auth)/         # Auth screens
-│   └── components/         # Mobile components
+├── packages/
+│   ├── database/               # Prisma schema & client
+│   │   └── prisma/
+│   ├── types/                  # Shared TypeScript types
+│   ├── validation/             # Zod schemas
+│   └── config/                 # Shared configurations
 │
-└── assets/                 # Shared assets (images)
+├── services/
+│   └── api/                    # Backend API services
+│
+└── infrastructure/
+    └── docker/                 # Docker configurations
 ```
 
-## 🛠️ Setup Instructions
+## 🛠️ Getting Started
 
 ### Prerequisites
 
-- Node.js 18+
-- npm or yarn
+- Node.js 20+
+- npm or pnpm
 - Accounts: Supabase, Clerk, Stripe
 
-### 1. Clone & Install
+### Installation
 
 ```bash
-# Install web dependencies
-cd web
+# Clone the repository
+git clone https://github.com/zihad2003/BigBazarbariarhat.git
+cd BigBazarbariarhat
+
+# Install dependencies for the entire project
 npm install
 
-# Install mobile dependencies
-cd ../mobile
-npm install
+# Run the web application
+npm run dev:web
+
+# Run the admin dashboard
+npm run dev:admin
+
+# Run the mobile application
+npm run dev:mobile
+
+# Create environment files in respective app directories
+# Edit .env.local with your API keys in apps/web and apps/admin
 ```
 
-### 2. Environment Variables
+### Environment Variables
 
-Create `.env.local` in the `web` directory:
+Create `.env.local` in `apps/web/`:
 
 ```env
-# Clerk
+# Clerk Authentication
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_xxx
 CLERK_SECRET_KEY=sk_test_xxx
 
@@ -83,98 +111,119 @@ STRIPE_SECRET_KEY=sk_test_xxx
 STRIPE_WEBHOOK_SECRET=whsec_xxx
 
 # App
-NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_APP_URL=http://localhost:3004
 ```
 
-### 3. Database Setup
-
-1. Go to your Supabase dashboard
-2. Open the SQL Editor
-3. Run the schema from `web/supabase/schema.sql`
-
-### 4. Run the Applications
+### Running the App
 
 ```bash
-# Web (Next.js)
-cd web
-npm run dev
+# Development (Web)
+cd apps/web
+npm run dev -- -p 3004
 
-# Mobile (Expo)
-cd mobile
+# Build for production
+npm run build
+npm start
+```
+
+Access the app at [http://localhost:3004](http://localhost:3004)
+
+## 🎨 Features
+
+### Customer Features
+- ✅ Hero banner carousel with auto-rotation
+- ✅ Featured categories with hover effects
+- ✅ New arrivals & bestsellers sections
+- ✅ Product cards with quick actions
+- ✅ Mega menu navigation
+- ✅ Search with suggestions
+- ✅ Shopping cart drawer
+- ✅ Wishlist functionality
+- ✅ User authentication (Clerk)
+- ✅ Responsive design
+
+### Admin Features (In Progress)
+- 📋 Dashboard with analytics
+- 📋 Product management (CRUD)
+- 📋 Order management
+- 📋 Customer management
+- 📋 Coupon & promotions
+- 📋 Banner management
+- 📋 Reports & analytics
+
+### Payment Methods
+- 💳 Credit/Debit Cards (Stripe)
+- 📱 bKash
+- 📱 Nagad
+- 📱 Rocket
+- 💵 Cash on Delivery
+
+## 🗄️ Database Schema
+
+The database uses Prisma ORM with PostgreSQL. Key models include:
+
+- **User** - Customer accounts and profiles
+- **Product** - Products with variants, images, attributes
+- **Category** - Hierarchical product categories
+- **Brand** - Product brands
+- **Order** - Order management with items
+- **Cart** - Shopping cart (user & guest)
+- **Review** - Product reviews and ratings
+- **Coupon** - Discount codes
+- **Banner** - Promotional banners
+
+Run database migrations:
+```bash
+cd packages/database
+npx prisma generate
+npx prisma db push
+```
+
+## 📱 Mobile App
+
+The mobile app uses Expo with React Native:
+
+```bash
+cd apps/mobile
+npm install
 npx expo start
 ```
 
-## 🔐 Authentication (Clerk)
+## 🔧 State Management
 
-- Sign up at [clerk.com](https://clerk.com)
-- Create a new application
-- Copy your API keys to `.env.local`
-- Configure OAuth providers (Google, Facebook, etc.)
+Using Zustand for lightweight, performant state:
 
-## 💳 Payments (Stripe)
-
-- Sign up at [stripe.com](https://stripe.com)
-- Get your API keys from the Dashboard
-- Set up webhook endpoint: `https://yourdomain.com/api/webhooks/stripe`
-- Listen for events: `checkout.session.completed`, `payment_intent.succeeded`
-
-## 📱 Mobile App (Expo)
-
-The mobile app uses Expo Router for navigation and shares:
-- Authentication (Clerk)
-- Database (Supabase)
-- Payments (Stripe React Native)
-
-To build for production:
-```bash
-npx eas build --platform all
-```
-
-## 🎨 UI Components (shadcn/ui)
-
-Add more components:
-```bash
-npx shadcn@latest add button card input dialog sheet table
-```
-
-## 📊 Admin Dashboard
-
-Access at `/admin`:
-- Dashboard overview
-- Products management
-- Orders management
-- Customers list
-- Analytics
-- Settings
+- **Cart Store** - Cart items, add/remove/update
+- **Wishlist Store** - Saved products
+- **UI Store** - Modals, filters, view settings
 
 ## 🚀 Deployment
 
 ### Web (Vercel)
 ```bash
-cd web
+cd apps/web
 vercel
 ```
 
-### Mobile (EAS)
-```bash
-cd mobile
-npx eas build --platform all
-npx eas submit
-```
+### Database (Supabase)
+- Create a Supabase project
+- Run the Prisma migrations
+- Update environment variables
 
 ## 📝 API Routes
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
-| `/api/products` | GET | List products |
-| `/api/products` | POST | Create product |
+| `/api/products` | GET | List products with filters |
+| `/api/products/[id]` | GET | Get product details |
+| `/api/cart` | GET/POST | Cart operations |
 | `/api/checkout` | POST | Create checkout session |
-| `/api/webhooks/stripe` | POST | Stripe webhook |
+| `/api/orders` | GET/POST | Order management |
 
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create your feature branch
+2. Create a feature branch
 3. Commit your changes
 4. Push to the branch
 5. Open a Pull Request
@@ -182,3 +231,7 @@ npx eas submit
 ## 📄 License
 
 MIT License - feel free to use for personal or commercial projects.
+
+---
+
+Made with ❤️ for Big Bazar, Bariarhat

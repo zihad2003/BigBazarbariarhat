@@ -1,0 +1,16 @@
+{
+    "name": "bigbazar-monorepo",
+    "private": true,
+    "workspaces": [
+        "apps/*",
+        "packages/*",
+        "services/*"
+    ],
+    "scripts": {
+        "dev:web": "npm run dev -w apps/web",
+        "dev:admin": "npm run dev -w apps/admin",
+        "dev:mobile": "npm run start -w apps/mobile",
+        "build:web": "npm run build -w apps/web",
+        "lint": "npm run lint -w apps/web"
+    }
+}
