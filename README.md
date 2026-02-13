@@ -16,7 +16,11 @@
 
 ### Environment Variables
 
-Create `.env.local` in `apps/web/`:
+Copy the example file and fill in your values:
+
+```bash
+cp apps/web/.env.example apps/web/.env.local
+```
 
 ```env
 # Supabase
