@@ -121,6 +121,9 @@ const nextConfig: NextConfig = {
       '@tanstack/react-query',
     ],
   },
+
+  // ─── Turbopack Config ────────────────────────────────────────
+  turbopack: {},
 };
 
 export default withBundleAnalyzer(nextConfig);
