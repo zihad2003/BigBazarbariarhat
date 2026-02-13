@@ -76,14 +76,35 @@ CREATE TABLE public.addresses (
 -- ORDERS Table
 CREATE TABLE public.orders (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  order_number TEXT UNIQUE NOT NULL,
   user_id TEXT REFERENCES public.users(id),
+  guest_name TEXT,
+  guest_email TEXT,
+  guest_phone TEXT,
   status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'processing', 'shipped', 'delivered', 'cancelled', 'refunded')),
+  subtotal DECIMAL(10, 2) NOT NULL,
+  shipping_cost DECIMAL(10, 2) NOT NULL,
+  tax_amount DECIMAL(10, 2) NOT NULL,
   total_amount DECIMAL(10, 2) NOT NULL,
-  shipping_address_id UUID REFERENCES public.addresses(id), 
-  payment_status TEXT DEFAULT 'unpaid' CHECK (payment_status IN ('unpaid', 'paid', 'refunded')),
+  payment_method TEXT,
+  payment_status TEXT DEFAULT 'unpaid' CHECK (payment_status IN ('unpaid', 'paid', 'refunded', 'pending', 'failed')),
   payment_intent_id TEXT, -- Stripe
+  shipping_address_id UUID REFERENCES public.addresses(id),
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- GUEST ADDRESSES Table
+CREATE TABLE public.guest_addresses (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  order_id UUID REFERENCES public.orders(id) ON DELETE CASCADE,
+  address_line1 TEXT NOT NULL,
+  address_line2 TEXT,
+  city TEXT NOT NULL,
+  state TEXT,
+  postal_code TEXT,
+  country TEXT DEFAULT 'Bangladesh',
+  created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- ORDER ITEMS Table
@@ -190,15 +211,36 @@ CREATE POLICY "Authenticated users write reviews" ON public.reviews
 
 -- Triggers for updated_at
 CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER AS $
 BEGIN
    NEW.updated_at = NOW();
    RETURN NEW;
 END;
-$$ language 'plpgsql';
+$ language 'plpgsql';
 
 CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON public.users FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
 CREATE TRIGGER update_products_updated_at BEFORE UPDATE ON public.products FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
 CREATE TRIGGER update_variants_updated_at BEFORE UPDATE ON public.product_variants FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
 CREATE TRIGGER update_orders_updated_at BEFORE UPDATE ON public.orders FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
 CREATE TRIGGER update_cart_items_updated_at BEFORE UPDATE ON public.cart_items FOR EACH ROW EXECUTE PROCEDURE update_updated_at_column();
+
+-- Functions for inventory management
+CREATE OR REPLACE FUNCTION decrement_product_inventory(product_id UUID, quantity INTEGER)
+RETURNS VOID AS $
+BEGIN
+    UPDATE public.products
+    SET inventory_count = inventory_count - quantity
+    WHERE id = product_id
+    AND inventory_count >= quantity;
+END;
+$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION decrement_variant_inventory(variant_id UUID, quantity INTEGER)
+RETURNS VOID AS $
+BEGIN
+    UPDATE public.product_variants
+    SET inventory_count = inventory_count - quantity
+    WHERE id = variant_id
+    AND inventory_count >= quantity;
+END;
+$ LANGUAGE plpgsql;

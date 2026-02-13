@@ -104,6 +104,7 @@ export default function CheckoutPage() {
                 shippingCost: shipping,
                 taxAmount: tax,
                 totalAmount: total,
+                userId: user?.id || null,
             };
 
             const res = await fetch('/api/orders', {
