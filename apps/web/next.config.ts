@@ -35,6 +35,7 @@ const nextConfig: NextConfig = {
   // ─── Performance ──────────────────────────────────────────────
   reactStrictMode: true,
   poweredByHeader: false, // Security: remove X-Powered-By header
+  output: 'standalone',
 
   // ─── Caching Headers ──────────────────────────────────────────
   async headers() {

@@ -80,7 +80,7 @@ Vercel is the recommended deployment platform for Next.js applications.
 
 ### Dockerfile
 
-Create `apps/web/Dockerfile`:
+Use the provided `apps/web/Dockerfile`:
 
 ```dockerfile
 FROM node:18-alpine AS base
