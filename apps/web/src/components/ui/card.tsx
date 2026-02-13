@@ -9,7 +9,7 @@ const Card = React.forwardRef<
     <div
         ref={ref}
         className={cn(
-            "rounded-lg border bg-card text-card-foreground shadow-sm",
+            "rounded-sm border border-luxury-black-lighter bg-luxury-black-card text-card-foreground shadow-luxury transition-all duration-300",
             className
         )}
         {...props}
@@ -23,7 +23,7 @@ const CardHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
     <div
         ref={ref}
-        className={cn("flex flex-col space-y-1.5 p-6", className)}
+        className={cn("flex flex-col space-y-1.5 p-6 border-b border-luxury-black-lighter", className)}
         {...props}
     />
 ))
@@ -36,7 +36,7 @@ const CardTitle = React.forwardRef<
     <h3
         ref={ref}
         className={cn(
-            "text-2xl font-semibold leading-none tracking-tight",
+            "text-2xl font-semibold leading-none tracking-tight text-white font-playfair",
             className
         )}
         {...props}
@@ -50,7 +50,7 @@ const CardDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
     <p
         ref={ref}
-        className={cn("text-sm text-muted-foreground", className)}
+        className={cn("text-sm text-gray-400 font-lato", className)}
         {...props}
     />
 ))
@@ -70,10 +70,29 @@ const CardFooter = React.forwardRef<
 >(({ className, ...props }, ref) => (
     <div
         ref={ref}
-        className={cn("flex items-center p-6 pt-0", className)}
+        className={cn("flex items-center p-6 pt-0 border-t border-luxury-black-lighter", className)}
         {...props}
     />
 ))
 CardFooter.displayName = "CardFooter"
 
-export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent }
+// Luxury Card Variants
+const LuxuryCard = React.forwardRef<
+    HTMLDivElement,
+    React.HTMLAttributes<HTMLDivElement> & { variant?: 'gold' | 'red' | 'glass' }
+>(({ className, variant = 'gold', ...props }, ref) => (
+    <div
+        ref={ref}
+        className={cn(
+            "rounded-sm shadow-luxury transition-all duration-300 card-luxury-hover",
+            variant === 'gold' && "border-luxury border-luxury-gold/20 bg-luxury-black-card",
+            variant === 'red' && "border-luxury-red border-luxury-red/20 bg-luxury-black-card",
+            variant === 'glass' && "glass-luxury border-luxury-gold/30",
+            className
+        )}
+        {...props}
+    />
+))
+LuxuryCard.displayName = "LuxuryCard"
+
+export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent, LuxuryCard }
