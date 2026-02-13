@@ -79,63 +79,64 @@ export function Header() {
     return (
         <>
             {/* Announcement Bar */}
-            <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-center py-2.5 text-xs font-semibold tracking-wider uppercase">
-                <span className="animate-pulse">🔥</span> Flash Sale: Up to 50% Off - Limited Time Only! <span className="animate-pulse">🔥</span>
+            <div className="bg-luxury-red text-white text-center py-2.5 text-xs font-bold tracking-[0.2em] uppercase">
+                <span className="text-luxury-gold">✦</span> Exclusive Collection: Up to 50% Off <span className="text-luxury-gold">✦</span>
             </div>
 
             {/* Header */}
             <header
-                className={`sticky top-0 z-50 transition-all duration-300 ${isScrolled
-                        ? 'bg-white/95 backdrop-blur-md shadow-md'
-                        : 'bg-white border-b border-gray-100'
+                className={`sticky top-0 z-50 transition-all duration-300 border-b border-luxury-black-lighter ${isScrolled
+                    ? 'bg-luxury-black/90 backdrop-blur-md shadow-2xl'
+                    : 'bg-luxury-black'
                     }`}
             >
-                <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3 lg:px-8">
+                <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
                     {/* Logo */}
-                    <Link href="/" className="flex items-center gap-2">
+                    <Link href="/" className="flex items-center gap-2 group">
                         <div className="relative">
-                            <span className="text-2xl font-black uppercase tracking-tighter bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                            <span className="text-2xl font-black uppercase tracking-[0.15em] text-white group-hover:text-luxury-gold transition-colors duration-300 font-playfair">
                                 Big Bazar
                             </span>
-                            <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full"></span>
+                            <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-luxury-gold scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-center"></span>
                         </div>
                     </Link>
 
                     {/* Desktop Navigation */}
-                    <div className="hidden lg:flex lg:gap-x-1">
+                    <div className="hidden lg:flex lg:gap-x-8">
                         {navigation.map((item) => (
                             <div
                                 key={item.name}
-                                className="relative"
+                                className="relative group"
                                 onMouseEnter={() => setActiveSubmenu(item.name)}
                                 onMouseLeave={() => setActiveSubmenu(null)}
                             >
                                 <Link
                                     href={item.href}
-                                    className={`flex items-center gap-1 px-4 py-2 text-sm font-semibold uppercase tracking-wide transition-colors rounded-lg ${item.highlight
-                                            ? 'text-red-600 hover:bg-red-50'
-                                            : 'text-gray-600 hover:text-black hover:bg-gray-50'
+                                    className={`flex items-center gap-1 py-2 text-xs font-bold uppercase tracking-[0.15em] transition-all duration-300 ${item.highlight
+                                        ? 'text-luxury-red-bright hover:text-white'
+                                        : 'text-gray-300 hover:text-luxury-gold'
                                         }`}
                                 >
                                     {item.name}
-                                    {item.submenu && <ChevronDown className="h-3 w-3" />}
+                                    {item.submenu && <ChevronDown className="h-3 w-3 opacity-50 group-hover:opacity-100 transition-opacity" />}
                                 </Link>
 
                                 {/* Submenu */}
                                 <AnimatePresence>
                                     {item.submenu && activeSubmenu === item.name && (
                                         <motion.div
-                                            initial={{ opacity: 0, y: 10 }}
+                                            initial={{ opacity: 0, y: 15 }}
                                             animate={{ opacity: 1, y: 0 }}
-                                            exit={{ opacity: 0, y: 10 }}
-                                            transition={{ duration: 0.15 }}
-                                            className="absolute top-full left-0 min-w-[200px] bg-white rounded-xl shadow-xl border border-gray-100 py-2 mt-1"
+                                            exit={{ opacity: 0, y: 15 }}
+                                            transition={{ duration: 0.2, ease: "easeOut" }}
+                                            className="absolute top-full left-1/2 -translate-x-1/2 min-w-[220px] bg-luxury-black-card rounded-sm shadow-2xl border border-luxury-black-lighter py-4 mt-2"
                                         >
+                                            <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-luxury-black-card border-t border-l border-luxury-black-lighter rotate-45"></div>
                                             {item.submenu.map((subitem) => (
                                                 <Link
                                                     key={subitem.name}
                                                     href={subitem.href}
-                                                    className="block px-4 py-2 text-sm text-gray-600 hover:text-black hover:bg-gray-50 transition-colors"
+                                                    className="block px-6 py-2.5 text-xs font-medium text-gray-400 hover:text-luxury-gold hover:bg-luxury-black-lighter transition-colors tracking-wider uppercase"
                                                 >
                                                     {subitem.name}
                                                 </Link>
@@ -148,12 +149,12 @@ export function Header() {
                     </div>
 
                     {/* Right Actions */}
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-4">
                         {/* Search Button */}
                         <Button
                             variant="ghost"
-                            size="sm"
-                            className="rounded-full"
+                            size="icon"
+                            className="text-white hover:text-luxury-gold hover:bg-transparent transition-colors"
                             onClick={() => openSearch()}
                         >
                             <Search className="h-5 w-5" />
@@ -161,10 +162,10 @@ export function Header() {
 
                         {/* Wishlist */}
                         <Link href="/wishlist" className="relative hidden sm:block">
-                            <Button variant="ghost" size="sm" className="rounded-full">
+                            <Button variant="ghost" size="icon" className="text-white hover:text-luxury-gold hover:bg-transparent transition-colors">
                                 <Heart className="h-5 w-5" />
                                 {wishlistCount > 0 && (
-                                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
+                                    <span className="absolute -top-1 -right-1 bg-luxury-red text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
                                         {wishlistCount}
                                     </span>
                                 )}
@@ -177,14 +178,14 @@ export function Header() {
                                 afterSignOutUrl="/"
                                 appearance={{
                                     elements: {
-                                        avatarBox: 'w-8 h-8',
+                                        avatarBox: 'w-8 h-8 ring-2 ring-luxury-gold/50',
                                     },
                                 }}
                             />
                         </SignedIn>
                         <SignedOut>
                             <Link href="/sign-in">
-                                <Button variant="ghost" size="sm" className="rounded-full">
+                                <Button variant="ghost" size="icon" className="text-white hover:text-luxury-gold hover:bg-transparent transition-colors">
                                     <User className="h-5 w-5" />
                                 </Button>
                             </Link>
@@ -192,15 +193,14 @@ export function Header() {
 
                         {/* Cart */}
                         <Button
-                            variant="default"
-                            size="sm"
-                            className="relative flex items-center gap-2 rounded-full bg-black text-white hover:bg-gray-800"
+                            variant="ghost"
+                            size="icon"
+                            className="relative text-white hover:text-luxury-gold hover:bg-transparent transition-colors group"
                             onClick={() => openCart()}
                         >
-                            <ShoppingBag className="h-4 w-4" />
-                            <span className="hidden sm:inline text-sm font-semibold">Cart</span>
+                            <ShoppingBag className="h-5 w-5" />
                             {cartItemCount > 0 && (
-                                <span className="bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
+                                <span className="absolute -top-1 -right-1 bg-luxury-gold text-luxury-black text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
                                     {cartItemCount}
                                 </span>
                             )}
@@ -209,8 +209,8 @@ export function Header() {
                         {/* Mobile menu button */}
                         <Button
                             variant="ghost"
-                            size="sm"
-                            className="lg:hidden rounded-full"
+                            size="icon"
+                            className="lg:hidden text-white hover:text-luxury-gold hover:bg-transparent"
                             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                         >
                             {mobileMenuOpen ? (
@@ -229,26 +229,26 @@ export function Header() {
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: 'auto' }}
                             exit={{ opacity: 0, height: 0 }}
-                            className="lg:hidden border-t border-gray-100 bg-white"
+                            className="lg:hidden border-t border-luxury-black-lighter bg-luxury-black"
                         >
-                            <div className="space-y-1 px-6 pb-4 pt-2">
+                            <div className="space-y-1 px-6 pb-8 pt-4">
                                 {navigation.map((item) => (
-                                    <div key={item.name}>
+                                    <div key={item.name} className="border-b border-luxury-black-lighter last:border-0">
                                         <Link
                                             href={item.href}
-                                            className={`block py-3 text-sm font-semibold uppercase tracking-wide transition-colors ${item.highlight ? 'text-red-600' : 'text-gray-600 hover:text-black'
+                                            className={`block py-4 text-sm font-bold uppercase tracking-[0.15em] transition-colors ${item.highlight ? 'text-luxury-red-bright' : 'text-white hover:text-luxury-gold'
                                                 }`}
                                             onClick={() => setMobileMenuOpen(false)}
                                         >
                                             {item.name}
                                         </Link>
                                         {item.submenu && (
-                                            <div className="pl-4 space-y-1">
+                                            <div className="pl-4 pb-4 space-y-2 border-l border-luxury-black-lighter ml-1">
                                                 {item.submenu.map((subitem) => (
                                                     <Link
                                                         key={subitem.name}
                                                         href={subitem.href}
-                                                        className="block py-2 text-sm text-gray-500 hover:text-black"
+                                                        className="block py-1 text-xs text-gray-400 hover:text-luxury-gold uppercase tracking-wider"
                                                         onClick={() => setMobileMenuOpen(false)}
                                                     >
                                                         {subitem.name}
@@ -265,4 +265,5 @@ export function Header() {
             </header>
         </>
     );
+
 }

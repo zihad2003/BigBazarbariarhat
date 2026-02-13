@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter } from 'next/font/google';
+import { Inter, Playfair_Display, Lato } from 'next/font/google';
 import Providers from './providers';
 import { ToastContainer } from '@/components/toast-container';
 import './globals.css';
@@ -8,6 +8,19 @@ const inter = Inter({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-inter',
+});
+
+const playfair = Playfair_Display({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-playfair',
+});
+
+const lato = Lato({
+  weight: ['100', '300', '400', '700', '900'],
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-lato',
 });
 
 export const metadata: Metadata = {
@@ -65,8 +78,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={inter.variable}>
-      <body className={inter.className}>
+    <html lang="en" className={`${inter.variable} ${playfair.variable} ${lato.variable}`}>
+      <body className={`${lato.className} bg-luxury-black text-foreground`}>
         <Providers>
           {children}
           <ToastContainer />

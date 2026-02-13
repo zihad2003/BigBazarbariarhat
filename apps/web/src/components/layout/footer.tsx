@@ -53,19 +53,19 @@ const features = [
 
 export function Footer() {
     return (
-        <footer className="bg-gray-900 text-gray-300">
+        <footer className="bg-luxury-black text-gray-300 border-t border-luxury-black-lighter font-lato">
             {/* Features Bar */}
-            <div className="border-b border-gray-800">
-                <div className="max-w-7xl mx-auto px-6 lg:px-8 py-8">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="border-b border-luxury-black-lighter">
+                <div className="max-w-7xl mx-auto px-6 lg:px-8 py-10">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                         {features.map((feature) => (
-                            <div key={feature.title} className="flex items-center gap-4">
-                                <div className="flex-shrink-0 w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center">
-                                    <feature.icon className="h-6 w-6 text-indigo-400" />
+                            <div key={feature.title} className="flex items-center gap-4 group">
+                                <div className="flex-shrink-0 w-12 h-12 bg-luxury-black-card rounded-full flex items-center justify-center border border-luxury-black-lighter group-hover:border-luxury-gold transition-colors duration-300">
+                                    <feature.icon className="h-5 w-5 text-luxury-gold" />
                                 </div>
                                 <div>
-                                    <h4 className="font-semibold text-white text-sm">{feature.title}</h4>
-                                    <p className="text-xs text-gray-400">{feature.description}</p>
+                                    <h4 className="font-playfair font-bold text-white text-sm uppercase tracking-wider mb-1">{feature.title}</h4>
+                                    <p className="text-xs text-gray-400 group-hover:text-gray-300 transition-colors">{feature.description}</p>
                                 </div>
                             </div>
                         ))}
@@ -74,78 +74,79 @@ export function Footer() {
             </div>
 
             {/* Main Footer */}
-            <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12">
-                <div className="grid grid-cols-2 md:grid-cols-6 gap-8">
+            <div className="max-w-7xl mx-auto px-6 lg:px-8 py-16">
+                <div className="grid grid-cols-2 md:grid-cols-6 gap-10">
                     {/* Brand Column */}
-                    <div className="col-span-2">
-                        <Link href="/" className="inline-block mb-6">
-                            <span className="text-2xl font-black uppercase tracking-tighter bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+                    <div className="col-span-2 space-y-8">
+                        <Link href="/" className="inline-block group">
+                            <span className="text-3xl font-black uppercase tracking-[0.15em] text-white font-playfair group-hover:text-luxury-gold transition-colors duration-300">
                                 Big Bazar
                             </span>
+                            <div className="h-0.5 w-12 bg-luxury-gold mt-2 group-hover:w-full transition-all duration-500"></div>
                         </Link>
-                        <p className="text-sm text-gray-400 mb-6 max-w-xs">
+                        <p className="text-sm text-gray-400 max-w-xs leading-relaxed">
                             Your one-stop destination for premium fashion from top brands. Quality clothing for the whole family.
                         </p>
 
                         {/* Contact Info */}
-                        <div className="space-y-3 mb-6">
-                            <a href="tel:+8801234567890" className="flex items-center gap-3 text-sm hover:text-white transition-colors">
-                                <Phone className="h-4 w-4" />
+                        <div className="space-y-4">
+                            <a href="tel:+8801234567890" className="flex items-center gap-3 text-sm text-gray-400 hover:text-luxury-gold transition-colors">
+                                <Phone className="h-4 w-4 text-luxury-gold" />
                                 +880 1234-567890
                             </a>
-                            <a href="mailto:support@bigbazar.com" className="flex items-center gap-3 text-sm hover:text-white transition-colors">
-                                <Mail className="h-4 w-4" />
+                            <a href="mailto:support@bigbazar.com" className="flex items-center gap-3 text-sm text-gray-400 hover:text-luxury-gold transition-colors">
+                                <Mail className="h-4 w-4 text-luxury-gold" />
                                 support@bigbazar.com
                             </a>
                             <a
                                 href="https://www.google.com/maps?q=22.894359,91.535009"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-center gap-3 text-sm hover:text-white transition-colors"
+                                className="flex items-center gap-3 text-sm text-gray-400 hover:text-luxury-gold transition-colors"
                             >
-                                <MapPin className="h-4 w-4" />
+                                <MapPin className="h-4 w-4 text-luxury-gold" />
                                 Bariarhat, Mirsharai, Chattogram
                             </a>
                         </div>
 
                         {/* Social Links */}
-                        <div className="flex gap-3">
+                        <div className="flex gap-4 pt-2">
                             <a
                                 href="https://www.facebook.com/profile.php?id=100063541603515"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors"
+                                className="w-10 h-10 bg-luxury-black-card border border-luxury-black-lighter rounded-full flex items-center justify-center text-gray-400 hover:text-white hover:bg-luxury-gold hover:border-luxury-gold transition-all duration-300"
                             >
-                                <Facebook className="h-5 w-5" />
+                                <Facebook className="h-4 w-4" />
                             </a>
                             <a
                                 href="#"
-                                className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-gradient-to-r hover:from-purple-600 hover:to-pink-600 transition-colors"
+                                className="w-10 h-10 bg-luxury-black-card border border-luxury-black-lighter rounded-full flex items-center justify-center text-gray-400 hover:text-white hover:bg-luxury-gold hover:border-luxury-gold transition-all duration-300"
                             >
-                                <Instagram className="h-5 w-5" />
+                                <Instagram className="h-4 w-4" />
                             </a>
                             <a
                                 href="#"
-                                className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-sky-500 transition-colors"
+                                className="w-10 h-10 bg-luxury-black-card border border-luxury-black-lighter rounded-full flex items-center justify-center text-gray-400 hover:text-white hover:bg-luxury-gold hover:border-luxury-gold transition-all duration-300"
                             >
-                                <Twitter className="h-5 w-5" />
+                                <Twitter className="h-4 w-4" />
                             </a>
                             <a
                                 href="#"
-                                className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
+                                className="w-10 h-10 bg-luxury-black-card border border-luxury-black-lighter rounded-full flex items-center justify-center text-gray-400 hover:text-white hover:bg-luxury-gold hover:border-luxury-gold transition-all duration-300"
                             >
-                                <Youtube className="h-5 w-5" />
+                                <Youtube className="h-4 w-4" />
                             </a>
                         </div>
                     </div>
 
                     {/* Shop Links */}
-                    <div>
-                        <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">Shop</h3>
-                        <ul className="space-y-2">
+                    <div className="mt-2">
+                        <h3 className="text-sm font-bold text-luxury-gold uppercase tracking-[0.2em] mb-6 font-playfair">Shop</h3>
+                        <ul className="space-y-3">
                             {footerLinks.shop.map((link) => (
                                 <li key={link.name}>
-                                    <Link href={link.href} className="text-sm hover:text-white transition-colors">
+                                    <Link href={link.href} className="text-sm text-gray-400 hover:text-white hover:pl-2 transition-all duration-300 block">
                                         {link.name}
                                     </Link>
                                 </li>
@@ -154,12 +155,12 @@ export function Footer() {
                     </div>
 
                     {/* Help Links */}
-                    <div>
-                        <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">Help</h3>
-                        <ul className="space-y-2">
+                    <div className="mt-2">
+                        <h3 className="text-sm font-bold text-luxury-gold uppercase tracking-[0.2em] mb-6 font-playfair">Help</h3>
+                        <ul className="space-y-3">
                             {footerLinks.help.map((link) => (
                                 <li key={link.name}>
-                                    <Link href={link.href} className="text-sm hover:text-white transition-colors">
+                                    <Link href={link.href} className="text-sm text-gray-400 hover:text-white hover:pl-2 transition-all duration-300 block">
                                         {link.name}
                                     </Link>
                                 </li>
@@ -168,12 +169,12 @@ export function Footer() {
                     </div>
 
                     {/* Company Links */}
-                    <div>
-                        <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">Company</h3>
-                        <ul className="space-y-2">
+                    <div className="mt-2">
+                        <h3 className="text-sm font-bold text-luxury-gold uppercase tracking-[0.2em] mb-6 font-playfair">Company</h3>
+                        <ul className="space-y-3">
                             {footerLinks.company.map((link) => (
                                 <li key={link.name}>
-                                    <Link href={link.href} className="text-sm hover:text-white transition-colors">
+                                    <Link href={link.href} className="text-sm text-gray-400 hover:text-white hover:pl-2 transition-all duration-300 block">
                                         {link.name}
                                     </Link>
                                 </li>
@@ -182,12 +183,12 @@ export function Footer() {
                     </div>
 
                     {/* Legal Links */}
-                    <div>
-                        <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">Legal</h3>
-                        <ul className="space-y-2">
+                    <div className="mt-2">
+                        <h3 className="text-sm font-bold text-luxury-gold uppercase tracking-[0.2em] mb-6 font-playfair">Legal</h3>
+                        <ul className="space-y-3">
                             {footerLinks.legal.map((link) => (
                                 <li key={link.name}>
-                                    <Link href={link.href} className="text-sm hover:text-white transition-colors">
+                                    <Link href={link.href} className="text-sm text-gray-400 hover:text-white hover:pl-2 transition-all duration-300 block">
                                         {link.name}
                                     </Link>
                                 </li>
@@ -198,20 +199,20 @@ export function Footer() {
             </div>
 
             {/* Bottom Bar */}
-            <div className="border-t border-gray-800">
+            <div className="border-t border-luxury-black-lighter bg-luxury-black-card">
                 <div className="max-w-7xl mx-auto px-6 lg:px-8 py-6">
                     <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-                        <p className="text-sm text-gray-500">
-                            © {new Date().getFullYear()} Big Bazar. All rights reserved.
+                        <p className="text-xs text-gray-500 tracking-wide">
+                            © {new Date().getFullYear()} Big Bazar. Crafted for the extraordinary.
                         </p>
 
                         {/* Payment Methods */}
                         <div className="flex items-center gap-2">
-                            <span className="text-xs text-gray-500 mr-2">We Accept:</span>
+                            <span className="text-xs text-gray-500 mr-2 uppercase tracking-wider">We Accept:</span>
                             {paymentMethods.map((method) => (
                                 <div
                                     key={method.name}
-                                    className="w-10 h-6 bg-gray-800 rounded flex items-center justify-center text-xs"
+                                    className="w-10 h-6 bg-luxury-black border border-luxury-black-lighter rounded flex items-center justify-center text-xs text-gray-400"
                                     title={method.name}
                                 >
                                     {method.icon}
