@@ -16,7 +16,9 @@ import {
     Loader2,
     Database,
     Palette,
-    Lock
+    Lock,
+    Languages,
+    RefreshCw
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -96,6 +98,7 @@ export default function SettingsPage() {
                         { id: 'PAYMENTS', label: 'Remittance Nodes', icon: CreditCard },
                         { id: 'SECURITY', label: 'Access Protocols', icon: Shield },
                         { id: 'APPEARANCE', label: 'Aesthetic Config', icon: Palette },
+                        { id: 'LANGUAGE', label: 'Locale Settings', icon: Languages },
                     ].map((tab) => (
                         <button
                             key={tab.id}
@@ -210,6 +213,88 @@ export default function SettingsPage() {
                                     </div>
                                 ))}
                             </div>
+                        </div>
+                    )}
+
+                    {activeTab === 'LANGUAGE' && (
+                        <div className="space-y-10 animate-in slide-in-from-right-10 duration-500">
+                            <section className="bg-white rounded-[4rem] border border-gray-100 p-12 shadow-sm">
+                                <h3 className="text-2xl font-black text-gray-900 mb-10 tracking-tight italic flex items-center gap-4">
+                                    <Languages className="h-6 w-6 text-indigo-600" />
+                                    Default Language Configuration
+                                </h3>
+                                <p className="text-gray-500 text-sm mb-8">
+                                    Set the default language for the storefront. Users can still toggle between languages manually.
+                                </p>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    {[
+                                        { code: 'en', name: 'English', flag: '🇬🇧', description: 'English - United States' },
+                                        { code: 'bn', name: 'Bengali', flag: '🇧🇩', description: 'বাংলা - Bangladesh' }
+                                    ].map((lang) => (
+                                        <div
+                                            key={lang.code}
+                                            onClick={() => setSettings({ ...settings, default_language: lang.code })}
+                                            className={`p-8 rounded-[2rem] border-2 cursor-pointer transition-all duration-300 ${settings.default_language === lang.code
+                                                ? 'bg-indigo-50 border-indigo-500 shadow-xl shadow-indigo-500/10'
+                                                : 'bg-gray-50 border-gray-200 hover:border-gray-300'
+                                            }`}
+                                        >
+                                            <div className="flex items-center gap-4 mb-4">
+                                                <span className="text-5xl">{lang.flag}</span>
+                                                <div>
+                                                    <h4 className="text-2xl font-black text-gray-900 tracking-tight">{lang.name}</h4>
+                                                    <p className="text-xs text-gray-500 uppercase tracking-widest mt-1">{lang.code.toUpperCase()}</p>
+                                                </div>
+                                            </div>
+                                            <p className="text-sm text-gray-400 font-medium">{lang.description}</p>
+                                            {settings.default_language === lang.code && (
+                                                <div className="mt-6 flex items-center gap-2 text-indigo-600 text-xs font-black uppercase tracking-widest">
+                                                    <CheckCircle2 className="h-4 w-4" />
+                                                    Currently Active
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            </section>
+
+                            <section className="bg-gradient-to-br from-indigo-600 to-purple-600 rounded-[4rem] p-12 text-white shadow-2xl shadow-indigo-600/20 relative overflow-hidden">
+                                <div className="absolute top-0 right-0 p-12 opacity-10">
+                                    <RefreshCw className="h-40 w-40" />
+                                </div>
+                                <div className="relative z-10">
+                                    <div className="flex items-center gap-4 mb-6">
+                                        <div className="p-4 bg-white/20 backdrop-blur-sm rounded-2xl">
+                                            <Languages className="h-8 w-8" />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-2xl font-black tracking-tight italic">Language Toggle Mode</h3>
+                                            <p className="text-indigo-200 text-sm uppercase tracking-widest">User Control</p>
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-6 mt-8">
+                                        <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                                            <h4 className="text-xs font-black uppercase tracking-widest mb-3 text-indigo-200">Current Status</h4>
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                                                <span className="text-lg font-bold">Enabled</span>
+                                            </div>
+                                        </div>
+                                        <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                                            <h4 className="text-xs font-black uppercase tracking-widest mb-3 text-indigo-200">Available Languages</h4>
+                                            <div className="flex items-center gap-3">
+                                                <span className="text-lg font-bold">2</span>
+                                                <span className="text-indigo-200 text-sm">(EN, BN)</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="mt-8 p-6 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10">
+                                        <p className="text-sm text-indigo-100 leading-relaxed">
+                                            Users can switch between English and Bengali using the language toggle button on the landing page. The language preference is saved in local storage.
+                                        </p>
+                                    </div>
+                                </div>
+                            </section>
                         </div>
                     )}
                 </main>

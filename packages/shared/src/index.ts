@@ -54,3 +54,5 @@ export { useProducts } from './hooks/use-products';
 // Store
 export { useCartStore } from './store/cart.store';
 export type { CartItem } from './store/cart.store';
+export { useLanguageStore, useTranslation, translations } from './store/language.store';
+export type { Language } from './store/language.store';
