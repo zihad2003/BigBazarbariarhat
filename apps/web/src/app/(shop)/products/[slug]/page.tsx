@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import Image from 'next/image';
 import {
     Star,
@@ -20,7 +20,8 @@ import { useWishlistStore } from '@/lib/stores/wishlist-store';
 import { useUIStore } from '@/lib/stores/ui-store';
 import type { Product, ProductVariant } from '@bigbazar/shared';
 
-export default function ProductDetailPage({ params }: { params: { slug: string } }) {
+export default function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+    const { slug } = use(params);
     const [product, setProduct] = useState<Product | null>(null);
     const [loading, setLoading] = useState(true);
     const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);
@@ -35,7 +36,7 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
     useEffect(() => {
         const fetchProduct = async () => {
             try {
-                const result = await ProductsService.getProduct(params.slug);
+                const result = await ProductsService.getProduct(slug);
                 if (result.success && result.data) {
                     setProduct(result.data);
                     if (result.data.variants && result.data.variants.length > 0) {
@@ -50,7 +51,7 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
         };
 
         fetchProduct();
-    }, [params.slug]);
+    }, [slug]);
 
     if (loading) {
         return (

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, use } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
@@ -22,7 +22,8 @@ import { useWishlistStore } from '@/lib/stores/wishlist-store';
 import { useUIStore } from '@/lib/stores/ui-store';
 import type { Product, Category } from '@/types';
 
-export default function ShopPage({ params }: { params: { slug?: string } }) {
+export default function ShopPage({ params: paramsPromise }: { params: Promise<{ slug?: string }> }) {
+    const params = use(paramsPromise);
     const [products, setProducts] = useState<Product[]>([]);
     const [category, setCategory] = useState<Category | null>(null);
     const [categories, setCategories] = useState<Category[]>([]);
