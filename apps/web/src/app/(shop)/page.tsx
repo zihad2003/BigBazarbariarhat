@@ -3,10 +3,11 @@
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { Star, Heart, ShoppingBag, ArrowRight, TrendingUp, Sparkles, Zap, Tag, Crown, Gem, Award, ShieldCheck } from 'lucide-react';
+import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+import { Star, Heart, ShoppingBag, ArrowRight, TrendingUp, Sparkles, Zap, Tag, Crown, Gem, Award, ShieldCheck, Languages } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, LuxuryCard } from '@/components/ui/card';
+import { useLanguageStore, useTranslation } from '@bigbazar/shared';
 
 const featuredProduct = {
     id: '1',
@@ -25,10 +26,10 @@ const trendingProducts = [
 ];
 
 const quickCategories = [
-    { name: 'Men', href: '/men', icon: '👔', description: 'Refined masculinity', color: 'from-luxury-black-card to-luxury-black-lighter' },
-    { name: 'Women', href: '/women', icon: '👗', description: 'Elegant femininity', color: 'from-luxury-black-card to-luxury-black-lighter' },
-    { name: 'Kids', href: '/kids', icon: '🧸', description: 'Premium comfort', color: 'from-luxury-black-card to-luxury-black-lighter' },
-    { name: 'Accessories', href: '/accessories', icon: '👜', description: 'Finishing touches', color: 'from-luxury-black-card to-luxury-black-lighter' },
+    { key: 'men', href: '/men', icon: '👔', color: 'from-luxury-black-card to-luxury-black-lighter' },
+    { key: 'women', href: '/women', icon: '👗', color: 'from-luxury-black-card to-luxury-black-lighter' },
+    { key: 'kids', href: '/kids', icon: '🧸', color: 'from-luxury-black-card to-luxury-black-lighter' },
+    { key: 'accessories', href: '/accessories', icon: '👜', color: 'from-luxury-black-card to-luxury-black-lighter' },
 ];
 
 const collections = [
@@ -44,10 +45,10 @@ const newArrivals = [
 ];
 
 const features = [
-    { icon: Award, title: 'Premium Quality', description: 'Crafted with finest materials' },
-    { icon: Crown, title: 'Exclusive Designs', description: 'Limited edition collections' },
-    { icon: Gem, title: 'Luxury Experience', description: 'White-glove service' },
-    { icon: ShieldCheck, title: 'Authentic Guarantee', description: '100% genuine products' },
+    { icon: Award, key: 'premiumQuality', description: 'Crafted with finest materials' },
+    { icon: Crown, key: 'exclusiveDesigns', description: 'Limited edition collections' },
+    { icon: Gem, key: 'luxuryExperience', description: 'White-glove service' },
+    { icon: ShieldCheck, key: 'authenticGuarantee', description: '100% genuine products' },
 ];
 
 // Parallax Section Component
@@ -68,6 +69,8 @@ function ParallaxSection({ children, className }: { children: React.ReactNode; c
 
 export default function HomePage() {
     const [mounted, setMounted] = useState(false);
+    const { language, toggleLanguage } = useLanguageStore();
+    const t = useTranslation();
 
     useEffect(() => {
         setMounted(true);
@@ -79,6 +82,20 @@ export default function HomePage() {
         <main className="min-h-screen bg-luxury-black text-gray-200">
             {/* Hero Section with Parallax */}
             <section className="relative overflow-hidden py-12 md:py-20 lg:py-28">
+                {/* Language Toggle Button */}
+                <motion.button
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.5, delay: 0.3 }}
+                    onClick={toggleLanguage}
+                    className="fixed top-6 right-6 z-50 flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-luxury-gold/20 to-luxury-gold/10 border border-luxury-gold/30 backdrop-blur-lg rounded-full text-luxury-gold hover:from-luxury-gold/30 hover:to-luxury-gold/20 transition-all duration-300 shadow-luxury-gold hover:shadow-lg"
+                >
+                    <Languages className="h-4 w-4" />
+                    <span className="text-sm font-bold uppercase tracking-wider">
+                        {language === 'en' ? 'BN' : 'EN'}
+                    </span>
+                </motion.button>
+
                 {/* Background gradient */}
                 <div className="absolute inset-0 bg-luxury-gradient opacity-50" />
                 <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-luxury-gold/5 to-transparent" />
@@ -119,18 +136,16 @@ export default function HomePage() {
                             <div className="h-px w-20 bg-gradient-to-r from-transparent to-luxury-gold" />
                             <span className="text-luxury-gold text-xs font-bold uppercase tracking-[0.3em] flex items-center gap-2">
                                 <Sparkles className="h-4 w-4" />
-                                Premium Collection
+                                {t.hero.premiumCollection}
                                 <Sparkles className="h-4 w-4" />
                             </span>
                             <div className="h-px w-20 bg-gradient-to-l from-transparent to-luxury-gold" />
                         </div>
                         <h1 className="text-5xl md:text-7xl lg:text-8xl font-playfair font-black text-white mb-6 leading-tight">
-                            <span className="text-gradient-gold">Elevate</span> Your
-                            <br />
-                            <span className="italic font-light">Style</span>
+                            <span className="text-gradient-gold">{t.hero.title}</span>
                         </h1>
-                        <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto font-lato leading-relaxed">
-                            Discover timeless elegance and contemporary luxury. Each piece is crafted for those who appreciate the finer things in life.
+                        <p className="text-lg md:text-xl text-white max-w-2xl mx-auto font-lato leading-relaxed">
+                            {t.hero.subtitle}
                         </p>
                     </motion.div>
 
@@ -143,7 +158,7 @@ export default function HomePage() {
                     >
                         {features.map((feature, index) => (
                             <motion.div
-                                key={feature.title}
+                                key={feature.key}
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.3 + index * 0.1 }}
@@ -151,10 +166,10 @@ export default function HomePage() {
                             >
                                 <feature.icon className="h-8 w-8 text-luxury-gold mx-auto mb-4" />
                                 <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-2 font-playfair">
-                                    {feature.title}
+                                    {t.features[feature.key as keyof typeof t.features]}
                                 </h3>
-                                <p className="text-xs text-gray-400 leading-relaxed">
-                                    {feature.description}
+                                <p className="text-xs text-gray-300 leading-relaxed">
+                                    {t.features[feature.key + 'Desc' as keyof typeof t.features] || feature.description}
                                 </p>
                             </motion.div>
                         ))}
@@ -189,7 +204,7 @@ export default function HomePage() {
                                     <div className="relative h-full flex flex-col justify-end p-8 md:p-10 text-white">
                                         <span className="inline-flex items-center gap-2 w-fit px-4 py-1.5 mb-4 text-xs font-bold bg-luxury-gold/20 text-luxury-gold backdrop-blur-sm border border-luxury-gold/30 uppercase tracking-widest rounded-sm">
                                             <Sparkles className="h-3 w-3" />
-                                            Featured
+                                            {t.hero.featured}
                                         </span>
                                         <p className="text-luxury-gold/80 text-sm uppercase tracking-widest mb-2 font-lato">{featuredProduct.tagline}</p>
                                         <h2 className="text-4xl md:text-5xl font-playfair font-black mb-3 leading-tight group-hover:text-gradient-gold transition-all duration-500">
@@ -209,7 +224,7 @@ export default function HomePage() {
                                             )}
                                         </div>
                                         <Button variant="luxury" size="lg" className="w-full md:w-auto font-bold uppercase tracking-widest px-8 rounded-sm">
-                                            Shop Now
+                                            {t.hero.cta}
                                             <ArrowRight className="ml-2 h-4 w-4" />
                                         </Button>
                                     </div>
@@ -233,10 +248,10 @@ export default function HomePage() {
                                     <CardContent className="p-6 h-full flex flex-col justify-between text-white relative z-10">
                                         <span className="text-4xl mb-2 filter drop-shadow-md">{category.icon}</span>
                                         <div>
-                                            <h3 className="text-xl font-playfair font-bold mb-1 uppercase tracking-wider group-hover:text-gradient-gold transition-all duration-300">{category.name}</h3>
-                                            <p className="text-xs text-gray-400 mb-2 group-hover:text-gray-300 transition-colors">{category.description}</p>
+                                            <h3 className="text-xl font-playfair font-bold mb-1 uppercase tracking-wider group-hover:text-gradient-gold transition-all duration-300 text-white">{t.categories[category.key as keyof typeof t.categories] || category.key}</h3>
+                                            <p className="text-xs text-gray-200 mb-2 group-hover:text-white transition-colors">{t.categories[category.key + 'Desc' as keyof typeof t.categories]}</p>
                                             <div className="flex items-center gap-2 text-luxury-gold text-xs group-hover:gap-3 transition-all uppercase tracking-widest">
-                                                <span>Explore</span>
+                                                <span>{language === 'en' ? 'Explore' : 'অন্বেষণ করুন'}</span>
                                                 <ArrowRight className="h-3 w-3" />
                                             </div>
                                         </div>
@@ -261,9 +276,9 @@ export default function HomePage() {
                                     <div className="flex items-center justify-between mb-6 border-b border-luxury-black-lighter pb-4">
                                         <div className="flex items-center gap-3">
                                             <TrendingUp className="h-5 w-5 text-luxury-gold" />
-                                            <h3 className="text-xl font-playfair font-bold text-white uppercase tracking-wider">Trending</h3>
+                                            <h3 className="text-xl font-playfair font-bold text-white uppercase tracking-wider">{t.trending.title}</h3>
                                         </div>
-                                        <Link href="/trending" className="text-xs text-luxury-gold hover:text-white uppercase tracking-widest link-luxury transition-colors">View All</Link>
+                                        <Link href="/trending" className="text-xs text-luxury-gold hover:text-white uppercase tracking-widest link-luxury transition-colors">{t.trending.viewAll}</Link>
                                     </div>
                                     <div className="grid grid-cols-2 gap-6">
                                         {trendingProducts.map((product) => (
@@ -397,12 +412,12 @@ export default function HomePage() {
                                 <CardContent className="p-0">
                                     <div className="flex justify-between items-end mb-10 border-b border-luxury-black-lighter pb-4">
                                         <div>
-                                            <h3 className="text-3xl md:text-4xl font-playfair font-bold text-gradient-gold mb-2">New Arrivals</h3>
-                                            <p className="text-luxury-gold text-sm uppercase tracking-widest">Curated for the discerning</p>
+                                            <h3 className="text-3xl md:text-4xl font-playfair font-bold text-gradient-gold mb-2">{t.newArrivals.title}</h3>
+                                            <p className="text-luxury-gold text-sm uppercase tracking-widest">{t.newArrivals.subtitle}</p>
                                         </div>
                                         <Link href="/new-arrivals">
                                             <Button variant="outline" className="group border-luxury-gold text-luxury-gold hover:bg-luxury-gold hover:text-luxury-black uppercase tracking-widest text-xs font-bold px-6">
-                                                View All
+                                                {t.newArrivals.viewAll}
                                                 <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                                             </Button>
                                         </Link>
@@ -419,10 +434,10 @@ export default function HomePage() {
 
                     {/* Stats/Info Cards */}
                     {[
-                        { value: 'Free', label: 'Shipping over ৳1000' },
-                        { value: '24/7', label: 'Concierge Support' },
-                        { value: '30', label: 'Days Easy Returns' },
-                        { value: '100%', label: 'Secure Payment' }
+                        { key: 'freeShipping', value: language === 'en' ? 'Free' : 'ফ্রি', labelKey: 'freeShippingDesc' },
+                        { key: 'support', value: language === 'en' ? '24/7' : '২৪/৭', labelKey: 'supportDesc' },
+                        { key: 'returns', value: language === 'en' ? '30' : '৩০', labelKey: 'returnsDesc' },
+                        { key: 'secure', value: language === 'en' ? '100%' : '১০০%', labelKey: 'secureDesc' }
                     ].map((stat, index) => (
                         <motion.div
                             key={index}
@@ -436,8 +451,8 @@ export default function HomePage() {
                                     <p className="text-3xl font-playfair font-black mb-1 text-gradient-gold group-hover:scale-110 transition-transform duration-300">
                                         {stat.value}
                                     </p>
-                                    <p className="text-xs text-gray-400 uppercase tracking-widest group-hover:text-luxury-gold/80 transition-colors">
-                                        {stat.label}
+                                    <p className="text-xs text-gray-300 uppercase tracking-widest group-hover:text-luxury-gold/80 transition-colors">
+                                        {t.footer[stat.labelKey as keyof typeof t.footer]}
                                     </p>
                                 </CardContent>
                             </LuxuryCard>

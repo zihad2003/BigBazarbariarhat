@@ -5,10 +5,11 @@
     "types": "src/index.ts",
     "license": "MIT",
     "dependencies": {
-        "@supabase/supabase-js": "^2.95.3",
-        "clsx": "^2.1.0",
-        "tailwind-merge": "^2.2.1",
-        "zod": "^3.22.4"
+      "@supabase/supabase-js": "^2.95.3",
+      "clsx": "^2.1.0",
+      "tailwind-merge": "^2.2.1",
+      "zod": "^3.22.4",
+      "zustand": "^5.0.0"
     },
     "devDependencies": {
         "typescript": "^5.0.0"
