@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
 import { useUser, SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { useCartStore } from '@/lib/stores/cart-store';
+import { useCartStore } from '@bigbazar/shared';
 import { useWishlistStore } from '@/lib/stores/wishlist-store';
 import { useUIStore } from '@/lib/stores/ui-store';
 

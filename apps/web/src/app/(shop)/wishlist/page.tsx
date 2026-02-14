@@ -10,7 +10,7 @@ import {
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { useCartStore } from '@/lib/stores/cart-store';
+import { useCartStore } from '@bigbazar/shared';
 import { useUIStore } from '@/lib/stores/ui-store';
 
 export default function WishlistPage() {
