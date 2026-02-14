@@ -17,7 +17,7 @@ import {
     Loader2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useCartStore } from '@/lib/stores/cart-store';
+import { useCartStore } from '@bigbazar/shared';
 import { useWishlistStore } from '@/lib/stores/wishlist-store';
 import { useUIStore } from '@/lib/stores/ui-store';
 import type { Product, Category } from '@/types';
