@@ -9,6 +9,10 @@
         "lint": "next lint"
     },
     "dependencies": {
+        "@bigbazar/database": "*",
+        "@bigbazar/types": "*",
+        "@bigbazar/ui": "*",
+        "@bigbazar/validation": "*",
         "@clerk/nextjs": "^4.29.0",
         "@hookform/resolvers": "^3.3.4",
         "@radix-ui/react-dialog": "^1.0.5",
@@ -24,17 +28,13 @@
         "clsx": "^2.1.0",
         "lucide-react": "^0.312.0",
         "next": "14.1.0",
+        "next-themes": "^0.4.6",
         "react": "^18",
         "react-dom": "^18",
         "react-hook-form": "^7.50.0",
         "recharts": "^2.10.4",
-        "next-themes": "^0.3.0",
         "tailwind-merge": "^2.2.1",
-        "zod": "^3.22.4",
-        "@bigbazar/types": "*",
-        "@bigbazar/validation": "*",
-        "@bigbazar/database": "*",
-        "@bigbazar/ui": "*"
+        "zod": "^3.22.4"
     },
     "devDependencies": {
         "@types/node": "^20",
