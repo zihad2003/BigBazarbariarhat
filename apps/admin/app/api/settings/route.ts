@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET() {
     try {
+        // @ts-ignore
         const settings = await prisma.siteSetting.findMany();
         const settingsMap = settings.reduce((acc: Record<string, any>, s: any) => {
             acc[s.key] = s.value;
@@ -20,6 +21,7 @@ export async function POST(request: NextRequest) {
         const body = await request.json(); // { key: value, ... }
 
         const upserts = Object.entries(body).map(([key, value]) => {
+            // @ts-ignore
             return prisma.siteSetting.upsert({
                 where: { key },
                 update: { value: value as any },

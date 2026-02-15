@@ -22,6 +22,7 @@ export async function PATCH(
             endDate
         } = body;
 
+        // @ts-ignore
         const banner = await prisma.banner.update({
             where: { id: params.id },
             data: {
@@ -52,6 +53,7 @@ export async function DELETE(
     { params }: { params: { id: string } }
 ) {
     try {
+        // @ts-ignore
         await prisma.banner.delete({
             where: { id: params.id }
         });

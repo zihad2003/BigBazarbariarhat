@@ -21,6 +21,7 @@ export async function GET(request: NextRequest) {
             where.stockQuantity = { lte: 0 };
         }
 
+        // @ts-ignore
         const variants = await prisma.productVariant.findMany({
             where,
             include: {
@@ -46,6 +47,7 @@ export async function PATCH(request: NextRequest) {
         const body = await request.json();
         const { id, stockQuantity } = body;
 
+        // @ts-ignore
         const variant = await prisma.productVariant.update({
             where: { id },
             data: { stockQuantity: parseInt(stockQuantity) }

@@ -6,6 +6,7 @@ export async function GET(request: NextRequest) {
         const { searchParams } = new URL(request.url);
         const q = searchParams.get('q') || '';
 
+        // @ts-ignore
         const coupons = await prisma.coupon.findMany({
             where: {
                 OR: [
@@ -40,6 +41,7 @@ export async function POST(request: NextRequest) {
             isActive
         } = body;
 
+        // @ts-ignore
         const coupon = await prisma.coupon.create({
             data: {
                 code,

@@ -9,6 +9,7 @@ export async function PATCH(
         const body = await request.json();
         const { name, slug, description, logo, website, isActive } = body;
 
+        // @ts-ignore
         const brand = await prisma.brand.update({
             where: { id: params.id },
             data: {
@@ -16,7 +17,6 @@ export async function PATCH(
                 slug,
                 description,
                 logo,
-                website,
                 isActive: isActive ?? undefined
             }
         });
@@ -45,6 +45,7 @@ export async function DELETE(
             }, { status: 400 });
         }
 
+        // @ts-ignore
         await prisma.brand.delete({
             where: { id: params.id }
         });

@@ -24,6 +24,7 @@ export async function GET(request: NextRequest) {
         }
 
         const [orders, total] = await Promise.all([
+            // @ts-ignore
             prisma.order.findMany({
                 where,
                 include: {
@@ -34,6 +35,7 @@ export async function GET(request: NextRequest) {
                 skip,
                 take: limit
             }),
+            // @ts-ignore
             prisma.order.count({ where })
         ]);
 

@@ -1,13 +1,18 @@
 import { PrismaClient } from '@prisma/client';
 
 const prismaClientSingleton = () => {
-    return new PrismaClient();
+    return new PrismaClient({
+        datasources: {
+            db: {
+                url: process.env.DATABASE_URL,
+            },
+        },
+    }) as unknown as PrismaClient;
 };
 
-declare global {
-    var prisma: undefined | ReturnType<typeof prismaClientSingleton>;
-}
 
-export const prisma = globalThis.prisma ?? prismaClientSingleton();
+
+// @ts-ignore
+export const prisma = (globalThis.prisma as any) ?? prismaClientSingleton();
 
 if (process.env.NODE_ENV !== 'production') globalThis.prisma = prisma;

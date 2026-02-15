@@ -277,7 +277,7 @@ export default function CustomerDetailPage() {
                                             </div>
                                             <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">{new Date(review.createdAt).toLocaleDateString()}</span>
                                         </div>
-                                        <p className="text-sm font-bold text-gray-900 italic">"{review.comment}"</p>
+                                        <p className="text-sm font-bold text-gray-900 italic">&quot;{review.comment}&quot;</p>
                                         <div className="pt-4 border-t border-gray-100 flex items-center justify-between">
                                             <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">Product: {review.product.name}</p>
                                             <ExternalLink className="h-3 w-3 text-gray-300 group-hover:text-black transition-colors" />
@@ -300,7 +300,7 @@ export default function CustomerDetailPage() {
                         </h3>
                         <div className="space-y-6">
                             {customer.addresses.length === 0 ? (
-                                <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest text-center py-10 italic">No destination nodes sync'd.</p>
+                                <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest text-center py-10 italic">No destination nodes sync&apos;d.</p>
                             ) : customer.addresses.map((address: any) => (
                                 <div key={address.id} className="p-8 bg-gray-50/50 rounded-[2.5rem] border border-gray-50 group/item relative">
                                     <div className="flex justify-between items-start mb-4">

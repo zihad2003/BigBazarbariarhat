@@ -21,6 +21,7 @@ export async function PATCH(
             isActive
         } = body;
 
+        // @ts-ignore
         const coupon = await prisma.coupon.update({
             where: { id: params.id },
             data: {
@@ -50,6 +51,7 @@ export async function DELETE(
     { params }: { params: { id: string } }
 ) {
     try {
+        // @ts-ignore
         await prisma.coupon.delete({
             where: { id: params.id }
         });

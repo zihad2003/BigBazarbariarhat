@@ -362,7 +362,7 @@ export default function OrderDetailPage() {
                                             )}
                                         </>
                                     ) : (
-                                        <span className="text-gray-400">Coordinates Not Sync'd</span>
+                                        <span className="text-gray-400">Coordinates Not Sync&apos;d</span>
                                     )}
                                 </p>
                             </div>

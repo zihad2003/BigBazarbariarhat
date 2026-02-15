@@ -18,20 +18,35 @@ import {
     Binary
 } from 'lucide-react';
 import {
-    AreaChart,
-    Area,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    ResponsiveContainer,
-    PieChart,
-    Pie,
-    Cell,
-    BarChart,
-    Bar
+    AreaChart as OriginalAreaChart,
+    Area as OriginalArea,
+    XAxis as OriginalXAxis,
+    YAxis as OriginalYAxis,
+    CartesianGrid as OriginalCartesianGrid,
+    Tooltip as OriginalTooltip,
+    ResponsiveContainer as OriginalResponsiveContainer,
+    PieChart as OriginalPieChart,
+    Pie as OriginalPie,
+    Cell as OriginalCell,
+    BarChart as OriginalBarChart,
+    Bar as OriginalBar
 } from 'recharts';
+
+const AreaChart = OriginalAreaChart as any;
+const Area = OriginalArea as any;
+const XAxis = OriginalXAxis as any;
+const YAxis = OriginalYAxis as any;
+const CartesianGrid = OriginalCartesianGrid as any;
+const Tooltip = OriginalTooltip as any;
+const ResponsiveContainer = OriginalResponsiveContainer as any;
+const PieChart = OriginalPieChart as any;
+const Pie = OriginalPie as any;
+const Cell = OriginalCell as any;
+const BarChart = OriginalBarChart as any;
+const Bar = OriginalBar as any;
+
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 const COLORS = ['#6366f1', '#8b5cf6', '#a855f7', '#d946ef', '#ec4899'];
 

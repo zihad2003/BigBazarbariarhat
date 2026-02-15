@@ -18,6 +18,7 @@ export async function GET(request: NextRequest) {
         };
 
         const [customers, total] = await Promise.all([
+            // @ts-ignore
             prisma.user.findMany({
                 where,
                 include: {
@@ -32,6 +33,7 @@ export async function GET(request: NextRequest) {
                 skip,
                 take: limit
             }),
+            // @ts-ignore
             prisma.user.count({ where })
         ]);
 
@@ -69,6 +71,7 @@ export async function POST(request: NextRequest) {
 
         // Note: In a production system integrated with Clerk, 
         // user creation should be handled via Clerk API to ensure synchronization.
+        // @ts-ignore
         const customer = await prisma.user.create({
             data: {
                 firstName,

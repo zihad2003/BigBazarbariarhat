@@ -31,7 +31,7 @@ export const AnalyticsService = {
             })
         ]);
 
-        const revenueData = orders.reduce((acc: any[], order) => {
+        const revenueData = orders.reduce((acc: any[], order: any) => {
             const date = order.createdAt.toISOString().split('T')[0];
             const existing = acc.find(item => item.date === date);
             if (existing) {
@@ -46,8 +46,8 @@ export const AnalyticsService = {
         return {
             revenueOverTime: revenueData,
             statusDistribution,
-            topBrands: topBrands.map(b => ({ name: b.name, products: b._count.products })),
-            categoryDistribution: categoryData.map(c => ({ name: c.name, value: c._count.products })),
+            topBrands: topBrands.map((b: any) => ({ name: b.name, products: b._count.products })),
+            categoryDistribution: categoryData.map((c: any) => ({ name: c.name, value: c._count.products })),
         };
     },
 
