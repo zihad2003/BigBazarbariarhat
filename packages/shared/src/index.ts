@@ -46,6 +46,7 @@ export * from './api/customers.service';
 export * from './api/categories.service';
 export * from './api/marketing.service';
 export * from './api/payments.service';
+export * from './api/settings.service';
 
 // Hooks
 export { useAuth } from './hooks/use-auth';

@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function InventoryPage() {
     const [variants, setVariants] = useState<any[]>([]);
@@ -164,11 +165,32 @@ export default function InventoryPage() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50">
-                            {loading ? (
+                            {loading && variants.length === 0 ? (
+                                [...Array(5)].map((_, i) => (
+                                    <tr key={i} className="animate-pulse">
+                                        <td className="px-10 py-8">
+                                            <div className="flex items-center gap-6">
+                                                <Skeleton className="w-16 h-16 rounded-2xl" />
+                                                <div className="space-y-2">
+                                                    <Skeleton className="h-5 w-48" />
+                                                    <Skeleton className="h-3 w-32" />
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className="px-10 py-8"><Skeleton className="h-6 w-24 rounded-lg" /></td>
+                                        <td className="px-10 py-8"><Skeleton className="h-4 w-32" /></td>
+                                        <td className="px-10 py-8"><Skeleton className="h-8 w-24 rounded-xl" /></td>
+                                        <td className="px-10 py-8"><Skeleton className="h-8 w-16" /></td>
+                                        <td className="px-10 py-8 flex justify-end gap-2"><Skeleton className="h-12 w-12 rounded-2xl" /><Skeleton className="h-12 w-12 rounded-2xl" /></td>
+                                    </tr>
+                                ))
+                            ) : variants.length === 0 ? (
                                 <tr>
                                     <td colSpan={6} className="py-40 text-center">
-                                        <Loader2 className="h-16 w-16 animate-spin mx-auto text-indigo-600 mb-6" />
-                                        <p className="text-[10px] text-gray-400 font-black uppercase tracking-[0.3em]">Interrogating Logistics Grid...</p>
+                                        <div className="w-20 h-20 bg-gray-50 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                                            <Package className="h-10 w-10 text-gray-200" />
+                                        </div>
+                                        <p className="text-[10px] text-gray-400 font-black uppercase tracking-[0.3em]">No artifact variants detected in current sector.</p>
                                     </td>
                                 </tr>
                             ) : variants.map((v) => {

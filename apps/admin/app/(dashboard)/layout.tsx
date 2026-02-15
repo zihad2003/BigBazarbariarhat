@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useTheme } from 'next-themes';
 import {
     LayoutDashboard,
     Package,
@@ -19,7 +20,9 @@ import {
     Truck,
     Percent,
     Bell,
-    Search
+    Search,
+    Sun,
+    Moon
 } from 'lucide-react';
 import { UserButton } from '@clerk/nextjs';
 
@@ -64,6 +67,7 @@ export default function DashboardLayout({
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [expandedItems, setExpandedItems] = useState<string[]>(['Products']);
     const pathname = usePathname();
+    const { theme, setTheme } = useTheme();
 
     const toggleExpanded = (name: string) => {
         setExpandedItems((prev) =>
@@ -74,7 +78,7 @@ export default function DashboardLayout({
     const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/');
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors duration-300">
             {/* Mobile sidebar backdrop */}
             {sidebarOpen && (
                 <div
@@ -85,7 +89,7 @@ export default function DashboardLayout({
 
             {/* Sidebar */}
             <aside
-                className={`fixed top-0 left-0 z-50 h-full w-64 bg-gray-900 text-white transform transition-transform duration-300 lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+                className={`fixed top-0 left-0 z-50 h-full w-64 bg-gray-900 dark:bg-black text-white transform transition-transform duration-300 lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
                     }`}
             >
                 {/* Logo */}
@@ -116,7 +120,7 @@ export default function DashboardLayout({
                                         onClick={() => toggleExpanded(item.name)}
                                         className={`w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${item.href && isActive(item.href)
                                             ? 'bg-indigo-600 text-white'
-                                            : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                                            : 'text-gray-300 hover:bg-gray-800 dark:hover:bg-gray-900 hover:text-white'
                                             }`}
                                     >
                                         <span className="flex items-center gap-3">
@@ -135,8 +139,8 @@ export default function DashboardLayout({
                                                     key={child.name}
                                                     href={child.href}
                                                     className={`block px-4 py-2 rounded-lg text-sm transition-colors ${pathname === child.href
-                                                        ? 'bg-gray-800 text-white'
-                                                        : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+                                                        ? 'bg-gray-800 dark:bg-gray-900 text-white'
+                                                        : 'text-gray-400 hover:bg-gray-800 dark:hover:bg-gray-900 hover:text-white'
                                                         }`}
                                                 >
                                                     {child.name}
@@ -150,7 +154,7 @@ export default function DashboardLayout({
                                     href={item.href || '#'}
                                     className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${item.href && isActive(item.href)
                                         ? 'bg-indigo-600 text-white'
-                                        : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                                        : 'text-gray-300 hover:bg-gray-800 dark:hover:bg-gray-900 hover:text-white'
                                         }`}
                                 >
                                     <item.icon className="h-5 w-5" />
@@ -165,31 +169,43 @@ export default function DashboardLayout({
             {/* Main content */}
             <div className="lg:pl-64">
                 {/* Header */}
-                <header className="sticky top-0 z-30 bg-white border-b border-gray-200 h-16">
+                <header className="sticky top-0 z-30 bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800 h-16">
                     <div className="flex items-center justify-between h-full px-4 lg:px-8">
                         <div className="flex items-center gap-4">
                             <button
-                                className="lg:hidden p-2 hover:bg-gray-100 rounded-lg"
+                                className="lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
                                 onClick={() => setSidebarOpen(true)}
                             >
                                 <Menu className="h-5 w-5" />
                             </button>
 
                             {/* Search */}
-                            <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-lg w-80">
+                            <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-900 rounded-lg w-80">
                                 <Search className="h-4 w-4 text-gray-400" />
                                 <input
                                     type="text"
                                     placeholder="Search products, orders, customers..."
-                                    className="flex-1 bg-transparent border-none outline-none text-sm"
+                                    className="flex-1 bg-transparent border-none outline-none text-sm text-gray-900 dark:text-gray-100"
                                 />
                             </div>
                         </div>
 
                         <div className="flex items-center gap-4">
+                            {/* Theme Toggle */}
+                            <button
+                                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all"
+                            >
+                                {theme === 'dark' ? (
+                                    <Sun className="h-5 w-5 text-gray-400 hover:text-amber-400" />
+                                ) : (
+                                    <Moon className="h-5 w-5 text-gray-600 hover:text-indigo-600" />
+                                )}
+                            </button>
+
                             {/* Notifications */}
-                            <button className="relative p-2 hover:bg-gray-100 rounded-lg">
-                                <Bell className="h-5 w-5 text-gray-600" />
+                            <button className="relative p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg">
+                                <Bell className="h-5 w-5 text-gray-600 dark:text-gray-400" />
                                 <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
                             </button>
 

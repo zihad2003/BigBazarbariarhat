@@ -142,7 +142,7 @@ export default function EditProductPage() {
             });
             const result = await res.json();
             if (result.success) {
-                router.push('/dashboard/products');
+                router.push('/products');
             }
         } catch (error) {
             console.error('Submission failed:', error);

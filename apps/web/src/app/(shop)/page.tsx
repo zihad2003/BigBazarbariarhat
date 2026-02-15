@@ -69,7 +69,7 @@ function ParallaxSection({ children, className }: { children: React.ReactNode; c
 
 export default function HomePage() {
     const [mounted, setMounted] = useState(false);
-    const { language, toggleLanguage } = useLanguageStore();
+    const { language } = useLanguageStore();
     const t = useTranslation();
 
     useEffect(() => {
@@ -82,20 +82,6 @@ export default function HomePage() {
         <main className="min-h-screen bg-luxury-black text-gray-200">
             {/* Hero Section with Parallax */}
             <section className="relative overflow-hidden py-12 md:py-20 lg:py-28">
-                {/* Language Toggle Button */}
-                <motion.button
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.5, delay: 0.3 }}
-                    onClick={toggleLanguage}
-                    className="fixed top-6 right-6 z-50 flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-luxury-gold/20 to-luxury-gold/10 border border-luxury-gold/30 backdrop-blur-lg rounded-full text-luxury-gold hover:from-luxury-gold/30 hover:to-luxury-gold/20 transition-all duration-300 shadow-luxury-gold hover:shadow-lg"
-                >
-                    <Languages className="h-4 w-4" />
-                    <span className="text-sm font-bold uppercase tracking-wider">
-                        {language === 'en' ? 'BN' : 'EN'}
-                    </span>
-                </motion.button>
-
                 {/* Background gradient */}
                 <div className="absolute inset-0 bg-luxury-gradient opacity-50" />
                 <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-luxury-gold/5 to-transparent" />

@@ -9,7 +9,7 @@ export class ApiError extends Error {
     }
 }
 
-export const fetchHandler = async (url: string, options: RequestInit = {}) => {
+export const fetchHandler = async <T = any>(url: string, options: RequestInit = {}): Promise<T> => {
     try {
         const response = await fetch(url, {
             ...options,
@@ -30,4 +30,33 @@ export const fetchHandler = async (url: string, options: RequestInit = {}) => {
         if (error instanceof ApiError) throw error;
         throw new ApiError(error instanceof Error ? error.message : 'Network error', 500);
     }
+};
+
+export const ApiClient = {
+    get: <T>(url: string, options?: RequestInit): Promise<T> =>
+        fetchHandler<T>(url, { ...options, method: 'GET' }),
+
+    post: <T>(url: string, body?: any, options?: RequestInit): Promise<T> =>
+        fetchHandler<T>(url, {
+            ...options,
+            method: 'POST',
+            body: body ? JSON.stringify(body) : undefined
+        }),
+
+    put: <T>(url: string, body?: any, options?: RequestInit): Promise<T> =>
+        fetchHandler<T>(url, {
+            ...options,
+            method: 'PUT',
+            body: body ? JSON.stringify(body) : undefined
+        }),
+
+    patch: <T>(url: string, body?: any, options?: RequestInit): Promise<T> =>
+        fetchHandler<T>(url, {
+            ...options,
+            method: 'PATCH',
+            body: body ? JSON.stringify(body) : undefined
+        }),
+
+    delete: <T>(url: string, options?: RequestInit): Promise<T> =>
+        fetchHandler<T>(url, { ...options, method: 'DELETE' }),
 };

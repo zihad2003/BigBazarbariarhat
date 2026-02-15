@@ -11,6 +11,7 @@ import {
     ChevronLeft,
     ChevronRight,
     Loader2,
+    Plus,
     Users,
     UserPlus,
     Mail,
@@ -18,9 +19,11 @@ import {
     Trophy,
     ShoppingBag,
     Star,
-    ExternalLink
+    ExternalLink,
+    Trash2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 
 export default function CustomersPage() {
@@ -49,6 +52,20 @@ export default function CustomersPage() {
         }
     };
 
+    const handleDelete = async (id: string) => {
+        if (!confirm('Are you absolutely certain you wish to decommission this entity? This action is irreversible.')) return;
+
+        try {
+            const res = await fetch(`/api/customers/${id}`, { method: 'DELETE' });
+            const result = await res.json();
+            if (result.success) {
+                setCustomers(prev => prev.filter(c => c.id !== id));
+            }
+        } catch (error) {
+            console.error('Decommissioning failed:', error);
+        }
+    };
+
     useEffect(() => {
         const timer = setTimeout(() => {
             fetchCustomers(1);
@@ -69,6 +86,12 @@ export default function CustomersPage() {
                         <Download className="h-4 w-4" />
                         Export Ledger
                     </Button>
+                    <Link href="/customers/new">
+                        <Button className="h-16 px-10 bg-black text-white rounded-3xl text-[10px] font-black uppercase tracking-widest gap-3 shadow-2xl shadow-black/20 hover:scale-105 active:scale-95 transition-all">
+                            <Plus className="h-5 w-5" />
+                            Integrate New Associate
+                        </Button>
+                    </Link>
                     <Button className="h-14 px-10 bg-indigo-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest gap-3 shadow-xl shadow-indigo-500/20 hover:scale-105 active:scale-95 transition-all">
                         <UserPlus className="h-4 w-4" />
                         Internal Registration
@@ -120,11 +143,37 @@ export default function CustomersPage() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50">
-                            {loading ? (
+                            {loading && customers.length === 0 ? (
+                                [...Array(5)].map((_, i) => (
+                                    <tr key={i} className="animate-pulse">
+                                        <td className="px-8 py-6">
+                                            <div className="flex items-center gap-4">
+                                                <Skeleton className="h-12 w-12 rounded-2xl" />
+                                                <div className="space-y-2">
+                                                    <Skeleton className="h-4 w-32" />
+                                                    <Skeleton className="h-3 w-40" />
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className="px-8 py-6"><Skeleton className="h-4 w-24" /></td>
+                                        <td className="px-8 py-6"><Skeleton className="h-6 w-20 rounded-lg" /></td>
+                                        <td className="px-8 py-6">
+                                            <div className="space-y-2">
+                                                <Skeleton className="h-4 w-16" />
+                                                <Skeleton className="h-3 w-20" />
+                                            </div>
+                                        </td>
+                                        <td className="px-8 py-6"><Skeleton className="h-4 w-10" /></td>
+                                        <td className="px-8 py-6 flex justify-end gap-2"><Skeleton className="h-10 w-10 rounded-xl" /><Skeleton className="h-10 w-10 rounded-xl" /></td>
+                                    </tr>
+                                ))
+                            ) : customers.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6} className="py-24 text-center">
-                                        <Loader2 className="h-12 w-12 animate-spin mx-auto text-indigo-600 mb-4" />
-                                        <p className="text-[10px] text-gray-400 font-black uppercase tracking-[0.2em]">Interrogating Entity Database...</p>
+                                    <td colSpan={6} className="py-20 text-center">
+                                        <div className="w-20 h-20 bg-gray-50 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                                            <Users className="h-10 w-10 text-gray-200" />
+                                        </div>
+                                        <p className="text-gray-400 font-bold uppercase tracking-widest text-xs">No entities found in registry</p>
                                     </td>
                                 </tr>
                             ) : customers.map((customer) => (
@@ -174,6 +223,13 @@ export default function CustomersPage() {
                                                     <Eye className="h-5 w-5" />
                                                 </button>
                                             </Link>
+                                            <button
+                                                onClick={() => handleDelete(customer.id)}
+                                                className="p-3 bg-white shadow-sm border border-gray-100 rounded-xl hover:bg-rose-500 hover:text-white transition-all group/del"
+                                                title="Decommission Associate"
+                                            >
+                                                <Trash2 className="h-5 w-5" />
+                                            </button>
                                             <button className="p-3 bg-white shadow-xl border border-gray-100 rounded-2xl hover:bg-gray-100 transition-all">
                                                 <MoreVertical className="h-5 w-5 text-gray-400" />
                                             </button>

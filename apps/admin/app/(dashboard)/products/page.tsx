@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import {
     Plus,
+    Package,
     Search,
     Filter,
     Download,
@@ -19,6 +20,7 @@ import {
     Loader2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function ProductsPage() {
     const [products, setProducts] = useState<any[]>([]);
@@ -162,10 +164,38 @@ export default function ProductsPage() {
                         </thead>
                         <tbody className="divide-y divide-gray-50">
                             {loading && products.length === 0 ? (
+                                [...Array(5)].map((_, i) => (
+                                    <tr key={i} className="animate-pulse">
+                                        <td className="px-8 py-6"><Skeleton className="h-5 w-5 rounded" /></td>
+                                        <td className="px-8 py-6">
+                                            <div className="flex items-center gap-5">
+                                                <Skeleton className="w-16 h-16 rounded-2xl" />
+                                                <div className="space-y-2">
+                                                    <Skeleton className="h-4 w-40" />
+                                                    <Skeleton className="h-3 w-24" />
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className="px-8 py-6"><Skeleton className="h-4 w-20" /></td>
+                                        <td className="px-8 py-6"><Skeleton className="h-6 w-24 rounded-lg" /></td>
+                                        <td className="px-8 py-6">
+                                            <div className="space-y-2">
+                                                <Skeleton className="h-4 w-16" />
+                                                <Skeleton className="h-3 w-12" />
+                                            </div>
+                                        </td>
+                                        <td className="px-8 py-6"><Skeleton className="h-4 w-8" /></td>
+                                        <td className="px-8 py-6"><Skeleton className="h-6 w-20 rounded-lg" /></td>
+                                        <td className="px-8 py-6 flex justify-end gap-2"><Skeleton className="h-10 w-10 rounded-xl" /><Skeleton className="h-10 w-10 rounded-xl" /></td>
+                                    </tr>
+                                ))
+                            ) : products.length === 0 ? (
                                 <tr>
                                     <td colSpan={8} className="py-20 text-center">
-                                        <Loader2 className="h-10 w-10 animate-spin mx-auto text-indigo-600" />
-                                        <p className="text-gray-400 font-bold uppercase tracking-widest text-xs mt-4">Retrieving Masterpieces...</p>
+                                        <div className="w-20 h-20 bg-gray-50 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                                            <Package className="h-10 w-10 text-gray-200" />
+                                        </div>
+                                        <p className="text-gray-400 font-bold uppercase tracking-widest text-xs">No masterpieces found in inventory</p>
                                     </td>
                                 </tr>
                             ) : products.map((product) => (

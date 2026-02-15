@@ -223,8 +223,8 @@ export default function SettingsPage() {
                                     <Languages className="h-6 w-6 text-indigo-600" />
                                     Default Language Configuration
                                 </h3>
-                                <p className="text-gray-500 text-sm mb-8">
-                                    Set the default language for the storefront. Users can still toggle between languages manually.
+                                <p className="text-gray-500 text-sm mb-8 italic">
+                                    Define the architectural default language. Manual customer-side toggles are currently operational restricted to ensure brand consistency.
                                 </p>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                     {[
@@ -237,7 +237,7 @@ export default function SettingsPage() {
                                             className={`p-8 rounded-[2rem] border-2 cursor-pointer transition-all duration-300 ${settings.default_language === lang.code
                                                 ? 'bg-indigo-50 border-indigo-500 shadow-xl shadow-indigo-500/10'
                                                 : 'bg-gray-50 border-gray-200 hover:border-gray-300'
-                                            }`}
+                                                }`}
                                         >
                                             <div className="flex items-center gap-4 mb-4">
                                                 <span className="text-5xl">{lang.flag}</span>
@@ -276,8 +276,8 @@ export default function SettingsPage() {
                                         <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                                             <h4 className="text-xs font-black uppercase tracking-widest mb-3 text-indigo-200">Current Status</h4>
                                             <div className="flex items-center gap-3">
-                                                <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-                                                <span className="text-lg font-bold">Enabled</span>
+                                                <div className="w-3 h-3 bg-red-400 rounded-full"></div>
+                                                <span className="text-lg font-bold">Disabled</span>
                                             </div>
                                         </div>
                                         <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
@@ -290,7 +290,7 @@ export default function SettingsPage() {
                                     </div>
                                     <div className="mt-8 p-6 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10">
                                         <p className="text-sm text-indigo-100 leading-relaxed">
-                                            Users can switch between English and Bengali using the language toggle button on the landing page. The language preference is saved in local storage.
+                                            The storefront currently operates in the default language set above. The manual language toggle has been disabled to ensure a consistent brand experience as per administration policy.
                                         </p>
                                     </div>
                                 </div>

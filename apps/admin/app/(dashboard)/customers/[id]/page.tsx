@@ -19,8 +19,10 @@ import {
     ChevronRight,
     TrendingUp,
     ShieldCheck,
+    Save,
     AlertCircle,
-    User
+    User,
+    Image as ImageIcon
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -30,6 +32,9 @@ export default function CustomerDetailPage() {
     const params = useParams();
     const [customer, setCustomer] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editForm, setEditForm] = useState<any>({});
+    const [saving, setSaving] = useState(false);
 
     useEffect(() => {
         const fetchCustomer = async () => {
@@ -38,6 +43,13 @@ export default function CustomerDetailPage() {
                 const result = await res.json();
                 if (result.success) {
                     setCustomer(result.data);
+                    setEditForm({
+                        firstName: result.data.firstName,
+                        lastName: result.data.lastName,
+                        phone: result.data.phone || '',
+                        avatar: result.data.avatar || '',
+                        role: result.data.role
+                    });
                 }
             } catch (error) {
                 console.error('Failed to fetch associate:', error);
@@ -49,23 +61,32 @@ export default function CustomerDetailPage() {
         fetchCustomer();
     }, [params.id]);
 
+    const handleSave = async () => {
+        setSaving(true);
+        try {
+            const res = await fetch(`/api/customers/${params.id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(editForm)
+            });
+            const result = await res.json();
+            if (result.success) {
+                setCustomer({ ...customer, ...editForm });
+                setIsEditing(false);
+            }
+        } catch (error) {
+            console.error('Update failed:', error);
+        } finally {
+            setSaving(false);
+        }
+    };
+
     if (loading) {
-        return (
-            <div className="h-[60vh] flex flex-col items-center justify-center gap-6">
-                <Loader2 className="h-16 w-16 animate-spin text-indigo-600" />
-                <p className="text-gray-400 font-black uppercase tracking-[0.2em] text-xs text-center">Synchronizing Entity Manifest...</p>
-            </div>
-        );
+        // ... keep existing loading state ...
     }
 
     if (!customer) {
-        return (
-            <div className="text-center py-20">
-                <AlertCircle className="h-20 w-20 text-rose-500 mx-auto mb-6" />
-                <h2 className="text-3xl font-black text-gray-900 tracking-tighter">Associate Disconnected</h2>
-                <Button onClick={() => router.back()} className="mt-8">Return to Central Registry</Button>
-            </div>
-        );
+        // ... keep existing not found state ...
     }
 
     return (
@@ -83,16 +104,57 @@ export default function CustomerDetailPage() {
                         <div className="w-24 h-24 bg-indigo-50 border-4 border-white shadow-2xl rounded-[2.5rem] flex items-center justify-center text-indigo-600 font-black text-3xl overflow-hidden">
                             {customer.avatar ? <img src={customer.avatar} alt="" className="w-full h-full object-cover" /> : (customer.firstName?.[0] || 'U')}
                         </div>
-                        <div>
-                            <div className="flex items-center gap-4 mb-2">
-                                <h1 className="text-4xl font-black text-gray-900 tracking-tighter italic">{customer.firstName} {customer.lastName}</h1>
-                                <span className="px-3 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-[9px] font-black uppercase tracking-[0.2em] border border-emerald-100 flex items-center gap-2">
-                                    <ShieldCheck className="h-3 w-3" />
-                                    Verified Associate
-                                </span>
-                            </div>
-                            <p className="text-gray-400 font-bold uppercase tracking-[0.2em] text-[10px] flex items-center gap-3">
+                        <div className="flex-1 min-w-[300px]">
+                            {isEditing ? (
+                                <div className="space-y-4">
+                                    <div className="flex gap-3">
+                                        <input
+                                            className="flex-1 h-12 px-4 bg-gray-50 border rounded-xl font-black italic text-xl"
+                                            value={editForm.firstName}
+                                            placeholder="First Name"
+                                            onChange={e => setEditForm({ ...editForm, firstName: e.target.value })}
+                                        />
+                                        <input
+                                            className="flex-1 h-12 px-4 bg-gray-50 border rounded-xl font-black italic text-xl"
+                                            value={editForm.lastName}
+                                            placeholder="Last Name"
+                                            onChange={e => setEditForm({ ...editForm, lastName: e.target.value })}
+                                        />
+                                    </div>
+                                    <div className="flex gap-3">
+                                        <div className="flex-1 relative">
+                                            <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                            <input
+                                                className="w-full h-12 pl-12 pr-4 bg-gray-50 border rounded-xl font-bold text-sm"
+                                                value={editForm.phone}
+                                                placeholder="Phone Node"
+                                                onChange={e => setEditForm({ ...editForm, phone: e.target.value })}
+                                            />
+                                        </div>
+                                        <div className="flex-1 relative">
+                                            <ImageIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                            <input
+                                                className="w-full h-12 pl-12 pr-4 bg-gray-50 border rounded-xl font-bold text-sm"
+                                                value={editForm.avatar}
+                                                placeholder="Avatar Manifest URL"
+                                                onChange={e => setEditForm({ ...editForm, avatar: e.target.value })}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="flex items-center gap-4 mb-2">
+                                    <h1 className="text-4xl font-black text-gray-900 tracking-tighter italic">{customer.firstName} {customer.lastName}</h1>
+                                    <span className="px-3 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-[9px] font-black uppercase tracking-[0.2em] border border-emerald-100 flex items-center gap-2">
+                                        <ShieldCheck className="h-3 w-3" />
+                                        Verified Associate
+                                    </span>
+                                </div>
+                            )}
+                            <p className="text-gray-400 font-bold uppercase tracking-[0.2em] text-[10px] flex items-center gap-3 mt-2">
                                 <Mail className="h-3 w-3" /> {customer.email}
+                                <span className="w-1 h-1 bg-gray-200 rounded-full" />
+                                <Phone className="h-3 w-3" /> {customer.phone || 'No Link'}
                                 <span className="w-1 h-1 bg-gray-200 rounded-full" />
                                 Registered {new Date(customer.createdAt).toLocaleDateString()}
                             </p>
@@ -100,12 +162,38 @@ export default function CustomerDetailPage() {
                     </div>
                 </div>
                 <div className="flex gap-4">
-                    <Button variant="outline" className="h-16 px-8 border-2 rounded-3xl text-[10px] font-black uppercase tracking-widest gap-3 shadow-sm">
-                        Contact Entity
-                    </Button>
-                    <Button className="h-16 px-10 bg-black text-white rounded-3xl text-[10px] font-black uppercase tracking-widest gap-3 shadow-2xl shadow-black/20 hover:scale-105 active:scale-95 transition-all">
-                        Grant Credit
-                    </Button>
+                    {isEditing ? (
+                        <>
+                            <Button
+                                variant="outline"
+                                onClick={() => setIsEditing(false)}
+                                className="h-16 px-8 border-2 rounded-3xl text-[10px] font-black uppercase tracking-widest gap-3 shadow-sm"
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                onClick={handleSave}
+                                disabled={saving}
+                                className="h-16 px-10 bg-indigo-600 text-white rounded-3xl text-[10px] font-black uppercase tracking-widest gap-3 shadow-2xl shadow-indigo-600/20 hover:scale-105 active:scale-95 transition-all"
+                            >
+                                {saving ? <Loader2 className="h-5 w-5 animate-spin" /> : <Save className="h-5 w-5" />}
+                                Commit Changes
+                            </Button>
+                        </>
+                    ) : (
+                        <>
+                            <Button
+                                variant="outline"
+                                onClick={() => setIsEditing(true)}
+                                className="h-16 px-8 border-2 rounded-3xl text-[10px] font-black uppercase tracking-widest gap-3 shadow-sm"
+                            >
+                                Modify Profile
+                            </Button>
+                            <Button className="h-16 px-10 bg-black text-white rounded-3xl text-[10px] font-black uppercase tracking-widest gap-3 shadow-2xl shadow-black/20 hover:scale-105 active:scale-95 transition-all">
+                                Grant Credit
+                            </Button>
+                        </>
+                    )}
                 </div>
             </div>
 

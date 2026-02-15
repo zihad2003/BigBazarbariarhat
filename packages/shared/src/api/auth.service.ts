@@ -4,10 +4,10 @@ import { User } from '../types/user.types';
 
 export const AuthService = {
     async getCurrentUser(): Promise<ApiResponse<User>> {
-        return fetchHandler('/api/auth/me');
+        return fetchHandler<ApiResponse<User>>('/api/auth/me');
     },
 
     async logout(): Promise<ApiResponse<void>> {
-        return fetchHandler('/api/auth/logout', { method: 'POST' });
+        return fetchHandler<ApiResponse<void>>('/api/auth/logout', { method: 'POST' });
     }
 };

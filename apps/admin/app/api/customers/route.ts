@@ -36,9 +36,9 @@ export async function GET(request: NextRequest) {
         ]);
 
         // Calculate Customer Lifetime Value (CLV)
-        const formattedCustomers = customers.map(customer => {
-            const clv = customer.orders.reduce((sum, order) => sum + Number(order.totalAmount), 0);
-            const { orders, ...rest } = customer;
+        const formattedCustomers = customers.map((customer: any) => {
+            const clv = customer.orders.reduce((sum: number, order: any) => sum + Number(order.totalAmount), 0);
+            const { orders: _orders, ...rest } = customer;
             return {
                 ...rest,
                 orderCount: customer._count.orders,
@@ -59,5 +59,34 @@ export async function GET(request: NextRequest) {
     } catch (error) {
         console.error('Admin Customers List API Error:', error);
         return NextResponse.json({ success: false, error: 'Failed to fetch entities' }, { status: 500 });
+    }
+}
+
+export async function POST(request: NextRequest) {
+    try {
+        const body = await request.json();
+        const { firstName, lastName, email, phone, avatar, role } = body;
+
+        // Note: In a production system integrated with Clerk, 
+        // user creation should be handled via Clerk API to ensure synchronization.
+        const customer = await prisma.user.create({
+            data: {
+                firstName,
+                lastName,
+                email,
+                phone,
+                avatar,
+                role: role || 'CUSTOMER',
+                passwordHash: 'clerk_managed', // Database constraint requires a value
+            }
+        });
+
+        return NextResponse.json({
+            success: true,
+            data: customer
+        });
+    } catch (error) {
+        console.error('Admin Customer Creation API Error:', error);
+        return NextResponse.json({ success: false, error: 'Failed to integrate entity' }, { status: 500 });
     }
 }
