@@ -41,6 +41,7 @@ export default function CheckoutPage() {
         phone: '',
     });
     const [paymentMethod, setPaymentMethod] = useState('CASH_ON_DELIVERY');
+    const [agreedToTerms, setAgreedToTerms] = useState(false);
 
     const { items, getSubtotal, clearCart } = useCartStore();
     const { addNotification } = useUIStore();
@@ -51,7 +52,7 @@ export default function CheckoutPage() {
                 ...prev,
                 firstName: user.firstName || '',
                 lastName: user.lastName || '',
-                email: user.emailAddresses[0].emailAddress || '',
+                email: user.primaryEmailAddress?.emailAddress || '',
             }));
         }
     }, [isLoaded, user]);
@@ -79,6 +80,17 @@ export default function CheckoutPage() {
     }
 
     const handlePlaceOrder = async () => {
+        if (!shippingData.firstName || !shippingData.lastName || !shippingData.email || !shippingData.address || !shippingData.phone) {
+            addNotification({ type: 'error', message: 'Please complete your shipping details before confirming.' });
+            setCurrentStep('shipping');
+            return;
+        }
+
+        if (!agreedToTerms) {
+            addNotification({ type: 'error', message: 'Please agree to the terms before placing your order.' });
+            return;
+        }
+
         setLoading(true);
         try {
             const orderPayload = {
@@ -249,7 +261,7 @@ export default function CheckoutPage() {
                                 <div className="mt-12 flex justify-end">
                                     <Button
                                         onClick={() => {
-                                            if (!shippingData.firstName || !shippingData.address || !shippingData.phone) {
+                                            if (!shippingData.firstName || !shippingData.lastName || !shippingData.email || !shippingData.address || !shippingData.phone) {
                                                 addNotification({ type: 'error', message: 'Please fill in all shipping details' });
                                                 return;
                                             }
@@ -354,15 +366,20 @@ export default function CheckoutPage() {
                             {currentStep === 'review' && (
                                 <div className="mt-12 space-y-8">
                                     <label className="flex items-start gap-4 cursor-pointer group p-4 bg-indigo-50/30 rounded-2xl border border-indigo-50">
-                                        <input type="checkbox" className="mt-1.5 w-6 h-6 rounded-lg border-2 border-indigo-200 text-indigo-600 focus:ring-indigo-500" />
+                                        <input
+                                            type="checkbox"
+                                            checked={agreedToTerms}
+                                            onChange={(event) => setAgreedToTerms(event.target.checked)}
+                                            className="mt-1.5 w-6 h-6 rounded-lg border-2 border-indigo-200 text-indigo-600 focus:ring-indigo-500"
+                                        />
                                         <span className="text-sm text-gray-500 leading-relaxed font-medium">
                                             By clicking "Confirm Order", I agree to Big Bazar's <Link href="/terms" className="text-black font-black underline">Terms of Service</Link>, <Link href="/privacy" className="text-black font-black underline">Privacy Policy</Link> and <Link href="/return" className="text-black font-black underline">Return Policy</Link>.
                                         </span>
                                     </label>
                                     <Button
-                                        disabled={loading}
+                                        disabled={loading || !agreedToTerms}
                                         onClick={handlePlaceOrder}
-                                        className="w-full bg-indigo-600 text-white hover:bg-indigo-700 rounded-[2rem] h-20 text-2xl font-black shadow-2xl shadow-indigo-500/20 active:scale-[0.98] transition-all"
+                                        className="w-full bg-indigo-600 text-white hover:bg-indigo-700 rounded-[2rem] h-20 text-2xl font-black shadow-2xl shadow-indigo-500/20 active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                                     >
                                         {loading ? <Loader2 className="h-8 w-8 animate-spin" /> : `Confirm Order • ৳${total.toLocaleString()}`}
                                     </Button>
