@@ -98,7 +98,7 @@ export default function SettingsPage() {
                                         <input
                                             type="email"
                                             disabled
-                                            defaultValue={user?.emailAddresses[0].emailAddress}
+                                            defaultValue={user?.primaryEmailAddress?.emailAddress || ''}
                                             className="w-full px-6 py-4 bg-gray-100 border border-transparent rounded-[1.5rem] text-gray-400 font-bold cursor-not-allowed"
                                         />
                                         <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2 bg-green-100 text-green-600 px-3 py-1 rounded-full text-[10px] font-black uppercase">

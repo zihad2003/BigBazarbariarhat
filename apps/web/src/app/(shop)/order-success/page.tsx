@@ -11,7 +11,8 @@ import {
     Box,
     CreditCard,
     MapPin,
-    Loader2
+    Loader2,
+    Info
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -20,26 +21,29 @@ function OrderSuccessContent() {
     const orderNumber = searchParams.get('orderId');
     const [order, setOrder] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     useEffect(() => {
         if (orderNumber) {
-            // Fetch order details for confirmation
             const fetchOrder = async () => {
                 try {
-                    // We might need a specific endpoint for order lookup by number
                     const res = await fetch(`/api/orders/${orderNumber}`);
                     const result = await res.json();
                     if (result.success) {
                         setOrder(result.data);
+                    } else {
+                        setErrorMessage(result.error || 'We could not verify this order.');
                     }
                 } catch (error) {
                     console.error('Error fetching order details:', error);
+                    setErrorMessage('We could not load the order details. Please try again later.');
                 } finally {
                     setLoading(false);
                 }
             };
             fetchOrder();
         } else {
+            setErrorMessage('Missing order reference. Please check your confirmation email.');
             setLoading(false);
         }
     }, [orderNumber]);
@@ -49,6 +53,32 @@ function OrderSuccessContent() {
             <div className="h-[60vh] flex flex-col items-center justify-center gap-6">
                 <Loader2 className="h-16 w-16 animate-spin text-indigo-600" />
                 <p className="text-gray-400 font-black uppercase tracking-[0.2em] text-xs">Confirming your Masterpiece...</p>
+            </div>
+        );
+    }
+
+    if (errorMessage) {
+        return (
+            <div className="bg-gray-50 min-h-screen pt-20 pb-40">
+                <div className="max-w-3xl mx-auto px-6 text-center">
+                    <div className="w-24 h-24 bg-white rounded-[2rem] flex items-center justify-center mx-auto mb-8 shadow-xl">
+                        <Info className="h-10 w-10 text-gray-300" />
+                    </div>
+                    <h1 className="text-4xl font-black text-gray-900 mb-4">We couldn't confirm your order</h1>
+                    <p className="text-gray-500 text-lg font-medium mb-12">{errorMessage}</p>
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+                        <Link href="/account/orders" className="w-full sm:w-auto">
+                            <Button className="w-full sm:w-auto h-16 px-10 bg-black text-white rounded-2xl text-lg font-black shadow-xl shadow-black/20">
+                                View Orders
+                            </Button>
+                        </Link>
+                        <Link href="/shop" className="w-full sm:w-auto">
+                            <Button variant="outline" className="w-full sm:w-auto h-16 px-10 border-4 border-gray-100 rounded-2xl text-lg font-black">
+                                Return to Shop
+                            </Button>
+                        </Link>
+                    </div>
+                </div>
             </div>
         );
     }
