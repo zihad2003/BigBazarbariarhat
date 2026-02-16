@@ -35,6 +35,10 @@ export const ProductsService = {
             query = query.ilike('name', `%${filter.search}%`);
         }
 
+        if (filter.onSale) {
+            query = query.not('sale_price', 'is', null);
+        }
+
         const page = filter.page || 1;
         const limit = filter.limit || 20;
         const from = (page - 1) * limit;

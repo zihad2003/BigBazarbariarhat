@@ -29,9 +29,11 @@ export default function ProductsPage() {
     const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
     const [filterOpen, setFilterOpen] = useState(false);
     const [pagination, setPagination] = useState({ page: 1, totalPages: 1, totalItems: 0 });
+    const [error, setError] = useState<string | null>(null);
 
     const fetchProducts = async (page = 1) => {
         setLoading(true);
+        setError(null);
         try {
             const queryParams = new URLSearchParams({
                 page: page.toString(),
@@ -39,6 +41,8 @@ export default function ProductsPage() {
                 q: searchQuery
             });
             const res = await fetch(`/api/products?${queryParams.toString()}`);
+            if (!res.ok) throw new Error('Failed to connect to the server');
+
             const result = await res.json();
             if (result.success) {
                 setProducts(result.data);
@@ -47,9 +51,12 @@ export default function ProductsPage() {
                     totalPages: result.pagination.totalPages,
                     totalItems: result.pagination.total
                 });
+            } else {
+                throw new Error(result.error || 'Failed to fetch data');
             }
         } catch (error) {
             console.error('Failed to fetch products:', error);
+            setError('Could not load inventory. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -95,11 +102,17 @@ export default function ProductsPage() {
                     <p className="text-gray-400 font-bold uppercase tracking-[0.2em] text-xs mt-2">Manage and monitor your product catalog</p>
                 </div>
                 <div className="flex flex-wrap gap-3">
-                    <button className="px-6 py-3 bg-white border border-gray-100 rounded-2xl text-xs font-black uppercase tracking-widest hover:shadow-md transition-all flex items-center gap-2">
+                    <button
+                        onClick={() => alert('Bulk Import feature coming soon!')}
+                        className="px-6 py-3 bg-white border border-gray-100 rounded-2xl text-xs font-black uppercase tracking-widest hover:shadow-md transition-all flex items-center gap-2"
+                    >
                         <Upload className="h-4 w-4" />
                         Bulk Import
                     </button>
-                    <button className="px-6 py-3 bg-white border border-gray-100 rounded-2xl text-xs font-black uppercase tracking-widest hover:shadow-md transition-all flex items-center gap-2">
+                    <button
+                        onClick={() => alert('Export feature coming soon!')}
+                        className="px-6 py-3 bg-white border border-gray-100 rounded-2xl text-xs font-black uppercase tracking-widest hover:shadow-md transition-all flex items-center gap-2"
+                    >
                         <Download className="h-4 w-4" />
                         Export
                     </button>
@@ -163,7 +176,18 @@ export default function ProductsPage() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50">
-                            {loading && products.length === 0 ? (
+                            {error ? (
+                                <tr>
+                                    <td colSpan={8} className="py-20 text-center">
+                                        <div className="w-20 h-20 bg-rose-50 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                                            <Trash2 className="h-10 w-10 text-rose-500" />
+                                        </div>
+                                        <p className="text-gray-900 font-bold mb-2">Something went wrong</p>
+                                        <p className="text-gray-400 text-xs mb-6">{error}</p>
+                                        <Button onClick={() => fetchProducts(pagination.page)} variant="outline">Retry Connection</Button>
+                                    </td>
+                                </tr>
+                            ) : loading ? (
                                 [...Array(5)].map((_, i) => (
                                     <tr key={i} className="animate-pulse">
                                         <td className="px-8 py-6"><Skeleton className="h-5 w-5 rounded" /></td>

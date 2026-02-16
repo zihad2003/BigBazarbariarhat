@@ -35,8 +35,8 @@ function StatsCard({
                     <p className="text-3xl font-black mt-3 text-gray-900">{value}</p>
                     <div className="flex items-center gap-2 mt-4">
                         <div className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black uppercase whitespace-nowrap ${changeType === 'positive' ? 'bg-green-100 text-green-600' :
-                                changeType === 'negative' ? 'bg-red-100 text-red-600' :
-                                    'bg-gray-100 text-gray-500'
+                            changeType === 'negative' ? 'bg-red-100 text-red-600' :
+                                'bg-gray-100 text-gray-500'
                             }`}>
                             {changeType === 'positive' && <TrendingUp className="h-3 w-3" />}
                             {changeType === 'negative' && <TrendingDown className="h-3 w-3" />}
@@ -46,8 +46,8 @@ function StatsCard({
                     </div>
                 </div>
                 <div className={`p-4 rounded-[1.5rem] transition-transform group-hover:scale-110 ${changeType === 'positive' ? 'bg-green-50 text-green-600' :
-                        changeType === 'negative' ? 'bg-red-50 text-red-600' :
-                            'bg-indigo-50 text-indigo-600'
+                    changeType === 'negative' ? 'bg-red-50 text-red-600' :
+                        'bg-indigo-50 text-indigo-600'
                     }`}>
                     <Icon className="h-8 w-8" />
                 </div>
@@ -59,17 +59,22 @@ function StatsCard({
 export default function DashboardPage() {
     const [stats, setStats] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchStats = async () => {
             try {
                 const res = await fetch('/api/stats');
+                if (!res.ok) throw new Error('Failed to fetch stats');
                 const result = await res.json();
                 if (result.success) {
                     setStats(result.data);
+                } else {
+                    throw new Error(result.error);
                 }
             } catch (error) {
                 console.error('Failed to fetch dashboard stats:', error);
+                setError('Failed to load dashboard data');
             } finally {
                 setLoading(false);
             }
@@ -82,6 +87,17 @@ export default function DashboardPage() {
             <div className="h-[60vh] flex flex-col items-center justify-center gap-4">
                 <Loader2 className="h-12 w-12 animate-spin text-indigo-600" />
                 <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">Synchronizing Store Data...</p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="h-[60vh] flex flex-col items-center justify-center gap-4">
+                <AlertTriangle className="h-12 w-12 text-rose-500" />
+                <h3 className="text-xl font-bold text-gray-900">Dashboard Unavailable</h3>
+                <p className="text-gray-500 text-sm">{error}</p>
+                <button onClick={() => window.location.reload()} className="px-6 py-2 bg-indigo-600 text-white rounded-lg text-sm font-bold">Reload</button>
             </div>
         );
     }
@@ -103,8 +119,8 @@ export default function DashboardPage() {
                     <p className="text-gray-400 font-bold uppercase tracking-[0.2em] text-xs mt-2">Real-time store performance overview</p>
                 </div>
                 <div className="flex gap-4">
-                    <button className="bg-white border border-gray-100 px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest shadow-sm hover:shadow-md transition-all">Download Report</button>
-                    <button className="bg-black text-white px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-black/10 hover:bg-gray-800 transition-all">Manage Orders</button>
+                    <button onClick={() => alert('Download Report feature coming soon!')} className="bg-white border border-gray-100 px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest shadow-sm hover:shadow-md transition-all">Download Report</button>
+                    <button onClick={() => alert('Manage Orders feature coming soon!')} className="bg-black text-white px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-black/10 hover:bg-gray-800 transition-all">Manage Orders</button>
                 </div>
             </div>
 
@@ -148,38 +164,39 @@ export default function DashboardPage() {
                         <button className="text-indigo-600 font-black text-xs uppercase tracking-widest hover:underline">Full Analytics</button>
                     </div>
                     <div className="overflow-x-auto">
-                        <table className="w-full">
-                            <thead>
-                                <tr className="text-left text-[10px] text-gray-400 border-b border-gray-50 pb-4 block mb-4">
-                                    <th className="w-[15%] font-black uppercase tracking-widest">UID</th>
-                                    <th className="w-[30%] font-black uppercase tracking-widest">Identity</th>
-                                    <th className="w-[20%] font-black uppercase tracking-widest">Amount</th>
-                                    <th className="w-[20%] font-black uppercase tracking-widest">Status</th>
-                                    <th className="w-[15%] font-black uppercase tracking-widest">Temporal</th>
-                                </tr>
-                            </thead>
-                            <tbody className="space-y-4 block">
+                        <div className="min-w-[600px]">
+                            {/* Header */}
+                            <div className="flex text-[10px] text-gray-400 border-b border-gray-50 pb-4 mb-4 px-4">
+                                <div className="w-[15%] font-black uppercase tracking-widest">UID</div>
+                                <div className="w-[30%] font-black uppercase tracking-widest">Identity</div>
+                                <div className="w-[20%] font-black uppercase tracking-widest">Amount</div>
+                                <div className="w-[20%] font-black uppercase tracking-widest">Status</div>
+                                <div className="w-[15%] font-black uppercase tracking-widest">Temporal</div>
+                            </div>
+
+                            {/* Rows */}
+                            <div className="space-y-4">
                                 {stats?.recentOrders?.map((order: any) => (
-                                    <tr key={order.id} className="flex items-center p-4 bg-gray-50/50 rounded-2xl hover:bg-gray-100 transition-all group cursor-pointer">
-                                        <td className="w-[15%] font-black text-gray-900">#{order.orderNumber?.slice(-4)}</td>
-                                        <td className="w-[30%]">
+                                    <div key={order.id} className="flex items-center p-4 bg-gray-50/50 rounded-2xl hover:bg-gray-100 transition-all group cursor-pointer">
+                                        <div className="w-[15%] font-black text-gray-900">#{order.orderNumber?.slice(-4)}</div>
+                                        <div className="w-[30%]">
                                             <div className="font-bold text-gray-900 truncate">{order.user?.firstName || order.guestName || 'Anonymous'}</div>
                                             <div className="text-[10px] text-gray-400 font-black truncate uppercase">{order.user?.email || order.guestEmail}</div>
-                                        </td>
-                                        <td className="w-[20%] font-black text-gray-900">৳{order.totalAmount.toLocaleString()}</td>
-                                        <td className="w-[20%]">
+                                        </div>
+                                        <div className="w-[20%] font-black text-gray-900">৳{order.totalAmount.toLocaleString()}</div>
+                                        <div className="w-[20%]">
                                             <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${statusColors[order.status] || 'bg-gray-100'}`}>
                                                 {order.status}
                                             </span>
-                                        </td>
-                                        <td className="w-[15%] text-[10px] font-black text-gray-400 uppercase">{new Date(order.createdAt).toLocaleDateString()}</td>
-                                    </tr>
+                                        </div>
+                                        <div className="w-[15%] text-[10px] font-black text-gray-400 uppercase">{new Date(order.createdAt).toLocaleDateString()}</div>
+                                    </div>
                                 ))}
                                 {(!stats?.recentOrders || stats.recentOrders.length === 0) && (
                                     <div className="text-center py-10 text-gray-400 font-bold uppercase text-xs">No Recent Traffic Detected</div>
                                 )}
-                            </tbody>
-                        </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -213,7 +230,7 @@ export default function DashboardPage() {
                             </div>
                         )}
                     </div>
-                    <button className="w-full mt-10 py-5 bg-black text-white rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-black/10 hover:bg-gray-800 transition-all">
+                    <button onClick={() => alert('Inventory Update feature coming soon!')} className="w-full mt-10 py-5 bg-black text-white rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-black/10 hover:bg-gray-800 transition-all">
                         Bulk Inventory Update
                     </button>
                 </div>

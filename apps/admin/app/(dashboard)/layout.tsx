@@ -25,6 +25,7 @@ import {
     Moon
 } from 'lucide-react';
 import { UserButton } from '@clerk/nextjs';
+import { ThemeSwitcher } from '@/components/theme-switcher';
 
 interface NavigationItem {
     name: string;
@@ -78,7 +79,7 @@ export default function DashboardLayout({
     const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/');
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+        <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 transition-colors duration-300">
             {/* Mobile sidebar backdrop */}
             {sidebarOpen && (
                 <div
@@ -192,16 +193,7 @@ export default function DashboardLayout({
 
                         <div className="flex items-center gap-4">
                             {/* Theme Toggle */}
-                            <button
-                                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all"
-                            >
-                                {theme === 'dark' ? (
-                                    <Sun className="h-5 w-5 text-gray-400 hover:text-amber-400" />
-                                ) : (
-                                    <Moon className="h-5 w-5 text-gray-600 hover:text-indigo-600" />
-                                )}
-                            </button>
+                            <ThemeSwitcher />
 
                             {/* Notifications */}
                             <button className="relative p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg">

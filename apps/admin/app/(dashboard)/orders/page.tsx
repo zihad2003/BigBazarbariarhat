@@ -23,14 +23,18 @@ export default function OrdersPage() {
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [pagination, setPagination] = useState({ page: 1, totalPages: 1, totalItems: 0 });
+    const [error, setError] = useState<string | null>(null);
 
     const fetchOrders = async (page = 1) => {
         setLoading(true);
+        setError(null);
         try {
             const res = await fetch(`/api/orders?page=${page}&limit=10&q=${searchQuery}`);
+            if (!res.ok) throw new Error('Failed to connect to server');
+
             const result = await res.json();
             if (result.success) {
-                setOrders(result.data);
+                setOrders(result.data || []);
                 if (result.pagination) {
                     setPagination({
                         page: result.pagination.page,
@@ -38,12 +42,14 @@ export default function OrdersPage() {
                         totalItems: result.pagination.total
                     });
                 } else {
-                    // Fallback if pagination metadata omitted
-                    setPagination({ page: 1, totalPages: 1, totalItems: result.data.length });
+                    setPagination({ page: 1, totalPages: 1, totalItems: result.data?.length || 0 });
                 }
+            } else {
+                throw new Error(result.error || 'Failed to fetch orders');
             }
         } catch (error) {
             console.error('Failed to fetch orders:', error);
+            setError('Could not retrieve logistics data. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -84,7 +90,10 @@ export default function OrdersPage() {
                     <p className="text-gray-400 font-bold uppercase tracking-[0.2em] text-xs mt-2">Oversee logistics and customer transactions</p>
                 </div>
                 <div className="flex gap-3">
-                    <button className="px-8 py-3 bg-white border border-gray-100 rounded-2xl text-xs font-black uppercase tracking-widest hover:shadow-md transition-all flex items-center gap-3">
+                    <button
+                        onClick={() => alert('Export feature coming soon!')}
+                        className="px-8 py-3 bg-white border border-gray-100 rounded-2xl text-xs font-black uppercase tracking-widest hover:shadow-md transition-all flex items-center gap-3"
+                    >
                         <Download className="h-4 w-4" />
                         Export Logistics
                     </button>
@@ -127,7 +136,23 @@ export default function OrdersPage() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50">
-                            {loading ? (
+                            {error ? (
+                                <tr>
+                                    <td colSpan={7} className="py-20 text-center">
+                                        <div className="w-20 h-20 bg-rose-50 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                                            <XCircle className="h-10 w-10 text-rose-500" />
+                                        </div>
+                                        <p className="text-gray-900 font-bold mb-2">Connection Failure</p>
+                                        <p className="text-gray-400 text-xs mb-6 max-w-xs mx-auto">{error}</p>
+                                        <button
+                                            onClick={() => fetchOrders(pagination.page)}
+                                            className="px-6 py-2 bg-indigo-600 text-white rounded-xl font-bold text-xs"
+                                        >
+                                            Retry Connection
+                                        </button>
+                                    </td>
+                                </tr>
+                            ) : loading ? (
                                 <tr>
                                     <td colSpan={7} className="py-20 text-center">
                                         <Loader2 className="h-10 w-10 animate-spin mx-auto text-indigo-600" />

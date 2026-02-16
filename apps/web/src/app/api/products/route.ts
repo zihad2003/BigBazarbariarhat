@@ -9,6 +9,7 @@ export async function GET(request: NextRequest) {
     const featured = searchParams.get('featured') === 'true';
     const minPrice = searchParams.get('minPrice') ? parseFloat(searchParams.get('minPrice')!) : undefined;
     const maxPrice = searchParams.get('maxPrice') ? parseFloat(searchParams.get('maxPrice')!) : undefined;
+    const onSale = searchParams.get('onSale') === 'true';
     const sortBy = searchParams.get('sortBy') || 'newest';
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '12');
@@ -38,6 +39,10 @@ export async function GET(request: NextRequest) {
 
         if (maxPrice !== undefined) {
             query = query.lte('base_price', maxPrice);
+        }
+
+        if (onSale) {
+            query = query.not('sale_price', 'is', null);
         }
 
         // Sorting

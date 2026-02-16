@@ -79,6 +79,7 @@ export interface ProductFilter {
     sortBy?: 'price_asc' | 'price_desc' | 'newest' | 'rating';
     page?: number;
     limit?: number;
+    onSale?: boolean;
 }
 
 
