@@ -150,6 +150,42 @@ export default function ProductsPage() {
                         Refine Results
                     </button>
                 </div>
+
+                {/* Bulk Actions Toolbar */}
+                {selectedProducts.length > 0 && (
+                    <div className="mt-6 pt-6 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4 animate-in slide-in-from-top-2 duration-200">
+                        <div className="flex items-center gap-4">
+                            <span className="bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-indigo-200">
+                                {selectedProducts.length} Selected
+                            </span>
+                            <span className="text-gray-400 text-[10px] font-bold uppercase tracking-widest hidden sm:block">
+                                Batch Operations Active
+                            </span>
+                        </div>
+                        <div className="flex items-center gap-3 w-full sm:w-auto">
+                            <button
+                                className="flex-1 sm:flex-none px-5 py-3 bg-white border border-rose-100 text-rose-600 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-rose-50 transition-all flex items-center justify-center gap-2"
+                                onClick={() => {
+                                    if (confirm(`Delete ${selectedProducts.length} items?`)) {
+                                        // Logic would go here
+                                        alert('Bulk delete not implemented yet');
+                                    }
+                                }}
+                            >
+                                <Trash2 className="h-4 w-4" />
+                                <span className="hidden sm:inline">Delete Selection</span>
+                            </button>
+                            <button className="flex-1 sm:flex-none px-5 py-3 bg-white border border-gray-100 text-gray-900 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-gray-50 transition-all flex items-center justify-center gap-2" onClick={() => alert('Bulk Edit feature coming soon!')}>
+                                <Edit className="h-4 w-4" />
+                                <span className="hidden sm:inline">Bulk Edit</span>
+                            </button>
+                            <button className="flex-1 sm:flex-none px-5 py-3 bg-black text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-gray-800 transition-all flex items-center justify-center gap-2 shadow-lg shadow-black/10" onClick={() => alert('Bulk Export feature coming soon!')}>
+                                <Upload className="h-4 w-4" />
+                                <span className="hidden sm:inline">Export Data</span>
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* Products Table */}

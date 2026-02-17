@@ -1,87 +1,46 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase';
+import { ProductService } from '@bigbazar/database';
+import { productFilterSchema } from '@bigbazar/validation';
 
 export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
 
-    const category = searchParams.get('category');
-    const search = searchParams.get('q') || searchParams.get('search');
-    const featured = searchParams.get('featured') === 'true';
-    const minPrice = searchParams.get('minPrice') ? parseFloat(searchParams.get('minPrice')!) : undefined;
-    const maxPrice = searchParams.get('maxPrice') ? parseFloat(searchParams.get('maxPrice')!) : undefined;
-    const onSale = searchParams.get('onSale') === 'true';
-    const sortBy = searchParams.get('sortBy') || 'newest';
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '12');
-    const offset = (page - 1) * limit;
+    // Helper to get array parameters
+    const getArray = (key: string) => {
+        const val = searchParams.getAll(key);
+        if (val.length === 1 && val[0].includes(',')) {
+            return val[0].split(',');
+        }
+        return val;
+    };
+
+    const filters = {
+        q: searchParams.get('q') || searchParams.get('search') || undefined,
+        category: searchParams.get('category') || undefined,
+        brand: searchParams.get('brand') || undefined,
+        minPrice: searchParams.get('minPrice') ? parseFloat(searchParams.get('minPrice')!) : undefined,
+        maxPrice: searchParams.get('maxPrice') ? parseFloat(searchParams.get('maxPrice')!) : undefined,
+        sizes: getArray('sizes'),
+        colors: getArray('colors'),
+        rating: searchParams.get('rating') ? parseFloat(searchParams.get('rating')!) : undefined,
+        inStock: searchParams.get('inStock') === 'true' ? true : searchParams.get('inStock') === 'false' ? false : undefined,
+        sortBy: searchParams.get('sortBy') as any || 'newest',
+        page: parseInt(searchParams.get('page') || '1'),
+        limit: parseInt(searchParams.get('limit') || '12'),
+    };
 
     try {
-        let query = supabaseAdmin
-            .from('products')
-            .select('*, categories(*)', { count: 'exact' })
-            .eq('is_active', true);
-
-        if (search) {
-            query = query.or(`name.ilike.%${search}%,description.ilike.%${search}%`);
+        const validation = productFilterSchema.safeParse(filters);
+        if (!validation.success) {
+            return NextResponse.json({ success: false, error: validation.error.format() }, { status: 400 });
         }
 
-        if (category) {
-            query = query.eq('category_id', category);
-        }
-
-        if (featured) {
-            query = query.eq('is_featured', true);
-        }
-
-        if (minPrice !== undefined) {
-            query = query.gte('base_price', minPrice);
-        }
-
-        if (maxPrice !== undefined) {
-            query = query.lte('base_price', maxPrice);
-        }
-
-        if (onSale) {
-            query = query.not('sale_price', 'is', null);
-        }
-
-        // Sorting
-        switch (sortBy) {
-            case 'price_asc':
-                query = query.order('base_price', { ascending: true });
-                break;
-            case 'price_desc':
-                query = query.order('base_price', { ascending: false });
-                break;
-            case 'newest':
-            default:
-                query = query.order('created_at', { ascending: false });
-                break;
-        }
-
-        query = query.range(offset, offset + limit - 1);
-
-        const { data: products, count, error } = await query as any;
-
-        if (error) {
-            console.error('Products query error:', error);
-            return NextResponse.json({ success: false, error: error.message }, { status: 500 });
-        }
-
-        const total = count || 0;
-        const totalPages = Math.ceil(total / limit);
+        const result = await ProductService.list(validation.data);
 
         return NextResponse.json({
             success: true,
-            data: products,
-            pagination: {
-                page,
-                limit,
-                total,
-                totalPages,
-                hasNext: page < totalPages,
-                hasPrev: page > 1,
-            }
+            data: result.products,
+            pagination: result.pagination
         });
     } catch (error) {
         console.error('Products API Error:', error);
@@ -93,37 +52,31 @@ export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
 
-        const { data: product, error } = await supabaseAdmin
-            .from('products')
-            .insert({
-                name: body.name,
-                slug: body.slug || body.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-                description: body.description,
-                category_id: body.categoryId,
-                sku: body.sku,
-                base_price: body.basePrice,
-                sale_price: body.salePrice,
-                stock_quantity: body.stockQuantity || 0,
-                is_active: body.isActive !== undefined ? body.isActive : true,
-                is_featured: body.isFeatured || false,
-            } as any)
-            .select()
-            .single();
-
-        if (error) {
-            console.error('Create product error:', error);
-            return NextResponse.json({ success: false, error: error.message }, { status: 500 });
-        }
+        // Basic validation (ideally use createProductSchema)
+        const product = await ProductService.create({
+            name: body.name,
+            slug: body.slug,
+            description: body.description,
+            shortDescription: body.shortDescription,
+            categoryId: body.categoryId,
+            brandId: body.brandId,
+            sku: body.sku,
+            basePrice: body.basePrice,
+            salePrice: body.salePrice,
+            stockQuantity: body.stockQuantity,
+            isActive: body.isActive,
+            isFeatured: body.isFeatured,
+        });
 
         return NextResponse.json({
             success: true,
             data: product,
             message: 'Product created successfully',
         }, { status: 201 });
-    } catch (error) {
+    } catch (error: any) {
         console.error('Create Product Error:', error);
         return NextResponse.json(
-            { success: false, error: 'Failed to create product' },
+            { success: false, error: error.message || 'Failed to create product' },
             { status: 500 }
         );
     }

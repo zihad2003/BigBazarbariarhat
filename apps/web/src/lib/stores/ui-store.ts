@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { toast } from 'sonner';
 import type { ProductFilters } from '@/types';
 
 type ViewMode = 'grid' | 'list';
@@ -111,15 +112,32 @@ export const useUIStore = create<UIState>()((set, get) => ({
     closeCart: () => set({ isCartOpen: false }),
     toggleCart: () => set((state) => ({ isCartOpen: !state.isCartOpen })),
 
-    // Notifications
+    // Notifications - Integrated with Sonner
     notifications: [],
     addNotification: (notification) => {
+        // Use Sonner toast directly
+        switch (notification.type) {
+            case 'success':
+                toast.success(notification.message);
+                break;
+            case 'error':
+                toast.error(notification.message);
+                break;
+            case 'warning':
+                toast.warning(notification.message);
+                break;
+            case 'info':
+            default:
+                toast.message(notification.message); // Use neutral for info
+                break;
+        }
+
+        // Keep internal state just in case, or for a notification center UI
         const id = `notification-${Date.now()}`;
         set((state) => ({
             notifications: [...state.notifications, { ...notification, id }],
         }));
 
-        // Auto-remove after duration
         const duration = notification.duration || 5000;
         setTimeout(() => {
             get().removeNotification(id);

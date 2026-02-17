@@ -186,33 +186,134 @@ export default function SettingsPage() {
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                {shippingZones.map((zone) => (
-                                    <div key={zone.id} className="bg-white rounded-[3.5rem] border border-gray-100 p-10 shadow-sm hover:shadow-2xl hover:shadow-indigo-900/5 transition-all group">
-                                        <div className="flex justify-between items-start mb-8">
-                                            <div className="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 shadow-sm group-hover:bg-indigo-600 group-hover:text-white transition-all">
-                                                <Truck className="h-7 w-7" />
+                                {shippingZones.length === 0 ? (
+                                    <div className="col-span-2 text-center py-20 bg-gray-50 rounded-[3rem] border border-dashed border-gray-200">
+                                        <Truck className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                                        <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px]">No logistics zones mapped</p>
+                                    </div>
+                                ) : (
+                                    shippingZones.map((zone) => (
+                                        <div key={zone.id} className="bg-white rounded-[3.5rem] border border-gray-100 p-10 shadow-sm hover:shadow-2xl hover:shadow-indigo-900/5 transition-all group">
+                                            <div className="flex justify-between items-start mb-8">
+                                                <div className="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 shadow-sm group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                                                    <Truck className="h-7 w-7" />
+                                                </div>
+                                                <Badge className="bg-emerald-50 text-emerald-600 border-emerald-100 uppercase tracking-widest text-[8px] font-black">
+                                                    Active Manifest
+                                                </Badge>
                                             </div>
-                                            <Badge className="bg-emerald-50 text-emerald-600 border-emerald-100 uppercase tracking-widest text-[8px] font-black">
-                                                Active Manifest
-                                            </Badge>
+                                            <h4 className="text-2xl font-black text-gray-900 tracking-tighter italic mb-4">{zone.name}</h4>
+                                            <div className="flex flex-wrap gap-2 mb-8">
+                                                {zone.cities.map((city: string, i: number) => (
+                                                    <span key={i} className="px-3 py-1 bg-gray-50 rounded-lg text-[9px] font-black text-gray-400 uppercase tracking-widest border border-gray-100 italic">
+                                                        {city}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                            <div className="pt-8 border-t border-gray-50 flex justify-between items-center mt-auto">
+                                                <span className="text-[9px] font-black text-gray-300 uppercase tracking-widest italic">{zone.rates.length} Rate Protocols</span>
+                                                <button className="p-3 bg-gray-50 rounded-xl hover:bg-rose-50 hover:text-rose-500 transition-all border border-gray-100">
+                                                    <Trash2 className="h-4 w-4" />
+                                                </button>
+                                            </div>
                                         </div>
-                                        <h4 className="text-2xl font-black text-gray-900 tracking-tighter italic mb-4">{zone.name}</h4>
-                                        <div className="flex flex-wrap gap-2 mb-8">
-                                            {zone.cities.map((city: string, i: number) => (
-                                                <span key={i} className="px-3 py-1 bg-gray-50 rounded-lg text-[9px] font-black text-gray-400 uppercase tracking-widest border border-gray-100 italic">
-                                                    {city}
-                                                </span>
-                                            ))}
+                                    ))
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                    {activeTab === 'PAYMENTS' && (
+                        <div className="space-y-10 animate-in slide-in-from-right-10 duration-500">
+                            <section className="bg-white rounded-[4rem] border border-gray-100 p-12 shadow-sm">
+                                <h3 className="text-2xl font-black text-gray-900 mb-10 tracking-tight italic flex items-center gap-4">
+                                    <CreditCard className="h-6 w-6 text-indigo-600" />
+                                    Payment Gateways
+                                </h3>
+                                <div className="space-y-6">
+                                    {['Stripe', 'SSLCommerz', 'Cash on Delivery'].map((method) => (
+                                        <div key={method} className="flex items-center justify-between p-8 bg-gray-50 rounded-[2.5rem] border border-gray-100">
+                                            <div className="flex items-center gap-6">
+                                                <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-sm">
+                                                    <CreditCard className="h-8 w-8 text-gray-900" />
+                                                </div>
+                                                <div>
+                                                    <h4 className="text-xl font-black text-gray-900 tracking-tight">{method}</h4>
+                                                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">
+                                                        {method === 'Cash on Delivery' ? 'Offline Transaction' : 'Digital Remittance'}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-4">
+                                                <span className="w-3 h-3 bg-emerald-500 rounded-full shadow-[0_0_10px_rgba(16,185,129,0.5)]"></span>
+                                                <span className="text-xs font-black uppercase tracking-widest text-emerald-600">Active</span>
+                                                <Button variant="outline" className="ml-4 h-12 px-6 rounded-xl text-[10px] font-black uppercase tracking-widest border-2">
+                                                    Configure
+                                                </Button>
+                                            </div>
                                         </div>
-                                        <div className="pt-8 border-t border-gray-50 flex justify-between items-center mt-auto">
-                                            <span className="text-[9px] font-black text-gray-300 uppercase tracking-widest italic">{zone.rates.length} Rate Protocols</span>
-                                            <button className="p-3 bg-gray-50 rounded-xl hover:bg-rose-50 hover:text-rose-500 transition-all border border-gray-100">
-                                                <Trash2 className="h-4 w-4" />
-                                            </button>
+                                    ))}
+                                </div>
+                            </section>
+                        </div>
+                    )}
+
+                    {activeTab === 'SECURITY' && (
+                        <div className="space-y-10 animate-in slide-in-from-right-10 duration-500">
+                            <section className="bg-white rounded-[4rem] border border-gray-100 p-12 shadow-sm">
+                                <h3 className="text-2xl font-black text-gray-900 mb-10 tracking-tight italic flex items-center gap-4">
+                                    <Shield className="h-6 w-6 text-rose-600" />
+                                    Access Control Protocols
+                                </h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div className="p-8 bg-rose-50/50 rounded-[2.5rem] border border-rose-100">
+                                        <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center mb-6 shadow-sm text-rose-600">
+                                            <Lock className="h-6 w-6" />
+                                        </div>
+                                        <h4 className="text-lg font-black text-gray-900 mb-2">Admin Authentication</h4>
+                                        <p className="text-sm text-gray-500 mb-6">Enforce 2FA for all administrative access nodes.</p>
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-12 h-6 bg-rose-200 rounded-full relative cursor-pointer">
+                                                <div className="absolute right-1 top-1 w-4 h-4 bg-white rounded-full shadow-sm"></div>
+                                            </div>
+                                            <span className="text-xs font-black uppercase tracking-widest text-rose-600">Enabled</span>
                                         </div>
                                     </div>
-                                ))}
-                            </div>
+                                    <div className="p-8 bg-gray-50 rounded-[2.5rem] border border-gray-100 pl-10">
+                                        <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center mb-6 shadow-sm text-gray-600">
+                                            <Database className="h-6 w-6" />
+                                        </div>
+                                        <h4 className="text-lg font-black text-gray-900 mb-2">Database Encryption</h4>
+                                        <p className="text-sm text-gray-500 mb-6">At-rest encryption protocol status.</p>
+                                        <span className="px-3 py-1 bg-emerald-100 text-emerald-600 rounded-lg text-[10px] font-black uppercase tracking-widest">
+                                            Secured (AES-256)
+                                        </span>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    )}
+
+                    {activeTab === 'APPEARANCE' && (
+                        <div className="space-y-10 animate-in slide-in-from-right-10 duration-500">
+                            <section className="bg-white rounded-[4rem] border border-gray-100 p-12 shadow-sm">
+                                <h3 className="text-2xl font-black text-gray-900 mb-10 tracking-tight italic flex items-center gap-4">
+                                    <Palette className="h-6 w-6 text-indigo-600" />
+                                    Visual Identity System
+                                </h3>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                    {['Light Mode', 'Dark Mode', 'System Sync'].map((theme) => (
+                                        <div key={theme} className={`p-8 rounded-[2.5rem] border-2 cursor-pointer transition-all ${theme === 'Light Mode' ? 'border-indigo-600 bg-indigo-50' : 'border-gray-100 bg-white hover:border-gray-200'}`}>
+                                            <div className="w-full aspect-video bg-gray-200 rounded-2xl mb-6 overflow-hidden relative">
+                                                {theme === 'Light Mode' && <div className="absolute inset-0 bg-white"></div>}
+                                                {theme === 'Dark Mode' && <div className="absolute inset-0 bg-gray-900"></div>}
+                                                {theme === 'System Sync' && <div className="absolute inset-0 bg-gradient-to-br from-white to-gray-900"></div>}
+                                            </div>
+                                            <h4 className="text-lg font-black text-gray-900 text-center">{theme}</h4>
+                                        </div>
+                                    ))}
+                                </div>
+                            </section>
                         </div>
                     )}
 

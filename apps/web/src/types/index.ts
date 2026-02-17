@@ -60,6 +60,8 @@ export interface ProductVariant {
     material?: string;
     priceAdjustment?: number;
     stockQuantity: number;
+    inventoryCount: number;
+    attributes?: Record<string, any>;
     images: string[];
     isActive: boolean;
 }
@@ -68,7 +70,7 @@ export interface Product {
     id: string;
     name: string;
     slug: string;
-    description?: string;
+    description: string;
     shortDescription?: string;
     categoryId: string;
     category?: Category;
@@ -87,9 +89,10 @@ export interface Product {
     metaTitle?: string;
     metaDescription?: string;
     metaKeywords?: string;
-    images?: ProductImage[];
+    images: ProductImage[];
     variants?: ProductVariant[];
     viewCount: number;
+    inventoryCount: number;
     averageRating?: number;
     reviewCount?: number;
     createdAt: Date;

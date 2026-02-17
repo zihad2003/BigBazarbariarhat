@@ -82,6 +82,7 @@ export function SearchModal() {
                                     value={query}
                                     onChange={(e) => setQuery(e.target.value)}
                                     placeholder="Search for masterpieces..."
+                                    aria-label="Search products"
                                     className="w-full bg-transparent pl-16 pr-4 py-4 text-5xl font-black tracking-tighter focus:outline-none placeholder:text-gray-200"
                                 />
                                 {loading && (
@@ -93,6 +94,7 @@ export function SearchModal() {
                             <button
                                 onClick={closeSearch}
                                 className="p-4 hover:bg-gray-50 rounded-full transition-all group"
+                                aria-label="Close search"
                             >
                                 <X className="h-10 w-10 text-gray-400 group-hover:text-black group-hover:rotate-90 transition-all duration-300" />
                             </button>

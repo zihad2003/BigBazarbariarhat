@@ -134,12 +134,28 @@ export default function NewProductPage() {
         );
     }
 
+
+
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreview(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
     const tabs = [
         { id: 'basic', label: 'Identity', icon: Tag },
         { id: 'pricing', label: 'Valuation', icon: DollarSign },
         { id: 'stock', label: 'Volume', icon: Box },
         { id: 'media', label: 'Visuals', icon: ImageIcon },
         { id: 'variants', label: 'Variants', icon: Layers },
+        { id: 'seo', label: 'SEO Metadata', icon: SearchIcon },
     ];
 
     return (
@@ -179,7 +195,7 @@ export default function NewProductPage() {
             <div className="flex flex-col lg:flex-row gap-16">
                 {/* Sidemenu Tabs */}
                 <aside className="lg:w-64 shrink-0">
-                    <nav className="flex lg:flex-col gap-2 p-2 bg-gray-50/50 rounded-[2.5rem] border border-gray-100">
+                    <nav className="flex lg:flex-col gap-2 p-2 bg-gray-50/50 rounded-[2.5rem] border border-gray-100 sticky top-10">
                         {tabs.map(tab => (
                             <button
                                 key={tab.id}
@@ -260,7 +276,13 @@ export default function NewProductPage() {
 
                                 <div className="space-y-8">
                                     <div className="space-y-4">
-                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Abridged Narrative (Short Description)</label>
+                                        <div className="flex justify-between items-center ml-4">
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Abridged Narrative</label>
+                                            <div className="flex gap-2">
+                                                <button type="button" className="p-1 hover:bg-gray-100 rounded text-[10px] font-bold uppercase">B</button>
+                                                <button type="button" className="p-1 hover:bg-gray-100 rounded text-[10px] font-bold uppercase italic">I</button>
+                                            </div>
+                                        </div>
                                         <textarea
                                             {...register('shortDescription')}
                                             rows={2}
@@ -268,7 +290,14 @@ export default function NewProductPage() {
                                         />
                                     </div>
                                     <div className="space-y-4">
-                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Comprehensive Narrative (Full Description)</label>
+                                        <div className="flex justify-between items-center ml-4">
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Comprehensive Narrative</label>
+                                            <div className="flex gap-2">
+                                                <button type="button" className="p-1 hover:bg-gray-100 rounded text-[10px] font-bold uppercase">B</button>
+                                                <button type="button" className="p-1 hover:bg-gray-100 rounded text-[10px] font-bold uppercase italic">I</button>
+                                                <button type="button" className="p-1 hover:bg-gray-100 rounded text-[10px] font-bold uppercase">List</button>
+                                            </div>
+                                        </div>
                                         <textarea
                                             {...register('description')}
                                             rows={8}
@@ -391,14 +420,35 @@ export default function NewProductPage() {
                                 </h3>
 
                                 <div className="text-center py-20 px-10 border-4 border-dashed border-gray-50 rounded-[3rem] bg-gray-50/30">
-                                    <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-black/5 group cursor-pointer hover:scale-110 transition-transform">
-                                        <ImageIcon className="h-10 w-10 text-gray-300 group-hover:text-indigo-600 transition-colors" />
-                                    </div>
+                                    {imagePreview ? (
+                                        <div className="relative w-64 h-64 mx-auto mb-6 rounded-3xl overflow-hidden shadow-2xl">
+                                            <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                                            <button
+                                                type="button"
+                                                onClick={() => setImagePreview(null)}
+                                                className="absolute top-4 right-4 p-2 bg-rose-500 text-white rounded-full hover:bg-rose-600 transition-colors"
+                                            >
+                                                <Trash2 className="h-4 w-4" />
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <div className="w-24 h-24 bg-white rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-black/5 group cursor-pointer hover:scale-110 transition-transform">
+                                            <ImageIcon className="h-10 w-10 text-gray-300 group-hover:text-indigo-600 transition-colors" />
+                                        </div>
+                                    )}
                                     <h4 className="text-2xl font-black text-gray-900 mb-2">Manifest Visuals</h4>
                                     <p className="text-gray-400 font-medium mb-10 max-w-xs mx-auto">Upload high-resolution artifacts. The primary image will be used for catalog manifestation.</p>
-                                    <Button type="button" className="h-14 px-10 border-2 border-black bg-transparent text-black hover:bg-black hover:text-white rounded-2xl text-xs font-black uppercase tracking-widest transition-all">
-                                        Upload Assets
-                                    </Button>
+                                    <div className="relative inline-block">
+                                        <Button type="button" className="h-14 px-10 border-2 border-black bg-transparent text-black hover:bg-black hover:text-white rounded-2xl text-xs font-black uppercase tracking-widest transition-all">
+                                            {imagePreview ? 'Replace Asset' : 'Upload Assets'}
+                                        </Button>
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={handleImageChange}
+                                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                        />
+                                    </div>
                                 </div>
                             </section>
                         </div>
@@ -437,6 +487,7 @@ export default function NewProductPage() {
                                                 <div className="flex-1 grid grid-cols-5 gap-4">
                                                     <input
                                                         placeholder="Size"
+                                                        aria-label="Variant Size"
                                                         className="h-12 px-4 bg-white border border-gray-100 rounded-xl text-xs font-bold"
                                                         value={v.size}
                                                         onChange={(e) => {
@@ -447,6 +498,7 @@ export default function NewProductPage() {
                                                     />
                                                     <input
                                                         placeholder="Color"
+                                                        aria-label="Variant Color"
                                                         className="h-12 px-4 bg-white border border-gray-100 rounded-xl text-xs font-bold"
                                                         value={v.color}
                                                         onChange={(e) => {
@@ -457,6 +509,7 @@ export default function NewProductPage() {
                                                     />
                                                     <input
                                                         placeholder="SKU"
+                                                        aria-label="Variant SKU"
                                                         className="h-12 px-4 bg-white border border-gray-100 rounded-xl text-xs font-bold"
                                                         value={v.sku}
                                                         onChange={(e) => {
@@ -468,6 +521,7 @@ export default function NewProductPage() {
                                                     <input
                                                         type="number"
                                                         placeholder="Stock"
+                                                        aria-label="Variant Stock Quantity"
                                                         className="h-12 px-4 bg-white border border-gray-100 rounded-xl text-xs font-bold"
                                                         value={v.stockQuantity}
                                                         onChange={(e) => {
@@ -479,6 +533,7 @@ export default function NewProductPage() {
                                                     <input
                                                         type="number"
                                                         placeholder="Price +/-"
+                                                        aria-label="Variant Price Adjustment"
                                                         className="h-12 px-4 bg-white border border-gray-100 rounded-xl text-xs font-bold"
                                                         value={v.priceAdjustment}
                                                         onChange={(e) => {
@@ -499,6 +554,40 @@ export default function NewProductPage() {
                                         ))}
                                     </div>
                                 )}
+                            </section>
+                        </div>
+                    )}
+
+                    {activeTab === 'seo' && (
+                        <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <section className="bg-white rounded-[3rem] border border-gray-100 p-10 shadow-sm relative overflow-hidden">
+                                <div className="absolute top-0 right-0 w-40 h-40 bg-purple-50 rounded-bl-[10rem] opacity-30" />
+                                <h3 className="text-xl font-black text-gray-900 mb-8 border-b border-gray-50 pb-6 uppercase tracking-widest flex items-center gap-3">
+                                    <SearchIcon className="h-5 w-5 text-indigo-600" />
+                                    Search Engine Optimization
+                                </h3>
+
+                                <div className="space-y-8">
+                                    <div className="space-y-4">
+                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Meta Title</label>
+                                        <input
+                                            {...register('metaTitle')}
+                                            className="w-full h-16 px-6 bg-gray-50 border border-transparent rounded-[1.5rem] font-bold text-gray-900 focus:bg-white focus:border-indigo-600 transition-all outline-none"
+                                            placeholder="SEO Title"
+                                        />
+                                        <p className="text-[10px] text-gray-400 ml-4">Recommended length: 50-60 characters</p>
+                                    </div>
+                                    <div className="space-y-4">
+                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Meta Description</label>
+                                        <textarea
+                                            {...register('metaDescription')}
+                                            rows={4}
+                                            className="w-full p-6 bg-gray-50 border border-transparent rounded-[1.5rem] font-bold text-gray-900 focus:bg-white focus:border-indigo-600 transition-all outline-none resize-none"
+                                            placeholder="SEO Description"
+                                        />
+                                        <p className="text-[10px] text-gray-400 ml-4">Recommended length: 150-160 characters</p>
+                                    </div>
+                                </div>
                             </section>
                         </div>
                     )}

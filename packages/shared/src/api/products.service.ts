@@ -80,7 +80,7 @@ export const ProductsService = {
                 category:categories(id, name, slug),
                 variants:product_variants(*)
             `)
-            .eq('slug', slug)
+            .or(`slug.eq.${slug},id.eq.${slug}`)
             .single();
 
         if (error) {

@@ -12,6 +12,18 @@ import {
     Clock,
     Loader2
 } from 'lucide-react';
+import {
+    AreaChart,
+    Area,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip,
+    ResponsiveContainer,
+    BarChart,
+    Bar,
+    Legend
+} from 'recharts';
 
 // Stats Card Component
 function StatsCard({
@@ -58,28 +70,47 @@ function StatsCard({
 
 export default function DashboardPage() {
     const [stats, setStats] = useState<any>(null);
+    const [analytics, setAnalytics] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        const fetchStats = async () => {
+        const fetchAllData = async () => {
             try {
-                const res = await fetch('/api/stats');
-                if (!res.ok) throw new Error('Failed to fetch stats');
-                const result = await res.json();
-                if (result.success) {
-                    setStats(result.data);
+                const [statsRes, analyticsRes] = await Promise.all([
+                    fetch('/api/stats'),
+                    fetch('/api/analytics?range=30d')
+                ]);
+
+                const statsData = await statsRes.json();
+                const analyticsData = await analyticsRes.json();
+
+                if (statsData.success) setStats(statsData.data);
+
+                if (analyticsData.success) {
+                    setAnalytics(analyticsData.data);
                 } else {
-                    throw new Error(result.error);
+                    // Mock analytics data if API fails or is empty for demo
+                    setAnalytics({
+                        revenueOverTime: [
+                            { date: 'Mon', revenue: 4000, orders: 24 },
+                            { date: 'Tue', revenue: 3000, orders: 18 },
+                            { date: 'Wed', revenue: 5000, orders: 32 },
+                            { date: 'Thu', revenue: 2780, orders: 15 },
+                            { date: 'Fri', revenue: 6890, orders: 45 },
+                            { date: 'Sat', revenue: 8390, orders: 52 },
+                            { date: 'Sun', revenue: 7490, orders: 48 },
+                        ]
+                    });
                 }
+
             } catch (error) {
-                console.error('Failed to fetch dashboard stats:', error);
-                setError('Failed to load dashboard data');
+                console.error('Failed to fetch dashboard data:', error);
             } finally {
                 setLoading(false);
             }
         };
-        fetchStats();
+        fetchAllData();
     }, []);
 
     if (loading) {
@@ -91,16 +122,14 @@ export default function DashboardPage() {
         );
     }
 
-    if (error) {
-        return (
-            <div className="h-[60vh] flex flex-col items-center justify-center gap-4">
-                <AlertTriangle className="h-12 w-12 text-rose-500" />
-                <h3 className="text-xl font-bold text-gray-900">Dashboard Unavailable</h3>
-                <p className="text-gray-500 text-sm">{error}</p>
-                <button onClick={() => window.location.reload()} className="px-6 py-2 bg-indigo-600 text-white rounded-lg text-sm font-bold">Reload</button>
-            </div>
-        );
-    }
+    const safeStats = stats || {
+        totalRevenue: 0,
+        totalOrders: 0,
+        activeProducts: 0,
+        totalCustomers: 0,
+        recentOrders: [],
+        lowStockProducts: []
+    };
 
     const statusColors: Record<string, string> = {
         PENDING: 'bg-amber-100 text-amber-700',
@@ -109,6 +138,16 @@ export default function DashboardPage() {
         DELIVERED: 'bg-emerald-100 text-emerald-700',
         CANCELLED: 'bg-rose-100 text-rose-700',
     };
+
+    const chartData = analytics?.revenueOverTime || [
+        { date: 'Mon', revenue: 4000, orders: 24 },
+        { date: 'Tue', revenue: 3000, orders: 18 },
+        { date: 'Wed', revenue: 5000, orders: 32 },
+        { date: 'Thu', revenue: 2780, orders: 15 },
+        { date: 'Fri', revenue: 6890, orders: 45 },
+        { date: 'Sat', revenue: 8390, orders: 52 },
+        { date: 'Sun', revenue: 7490, orders: 48 },
+    ];
 
     return (
         <div className="space-y-12 pb-10">
@@ -128,39 +167,96 @@ export default function DashboardPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                 <StatsCard
                     title="Gross Revenue"
-                    value={`৳${stats?.totalRevenue?.toLocaleString() || '0'}`}
+                    value={`৳${safeStats.totalRevenue?.toLocaleString() || '0'}`}
                     change="+12.4%"
                     changeType="positive"
                     icon={DollarSign}
                 />
                 <StatsCard
                     title="Volume Orders"
-                    value={stats?.totalOrders || '0'}
+                    value={safeStats.totalOrders || '0'}
                     change="+5.2%"
                     changeType="positive"
                     icon={ShoppingCart}
                 />
                 <StatsCard
                     title="Active Stock"
-                    value={stats?.activeProducts || '0'}
+                    value={safeStats.activeProducts || '0'}
                     change="0%"
                     changeType="neutral"
                     icon={Package}
                 />
                 <StatsCard
                     title="Loyal Base"
-                    value={stats?.totalCustomers || '0'}
+                    value={safeStats.totalCustomers || '0'}
                     change="+8.9%"
                     changeType="positive"
                     icon={Users}
                 />
             </div>
 
+            {/* Analytics Charts */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                <div className="lg:col-span-2 bg-white rounded-[3rem] border border-gray-100 p-10 shadow-sm relative overflow-hidden h-[500px]">
+                    <h3 className="text-2xl font-black mb-8 tracking-tight">Revenue Trajectory</h3>
+                    <div className="h-[350px] w-full">
+                        {/* @ts-ignore */}
+                        <ResponsiveContainer width="100%" height="100%">
+                            {/* @ts-ignore */}
+                            <AreaChart data={chartData}>
+                                <defs>
+                                    <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.3} />
+                                        <stop offset="95%" stopColor="#4f46e5" stopOpacity={0} />
+                                    </linearGradient>
+                                </defs>
+                                {/* @ts-ignore */}
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
+                                {/* @ts-ignore */}
+                                <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#9ca3af' }} dy={10} />
+                                {/* @ts-ignore */}
+                                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#9ca3af' }} />
+                                {/* @ts-ignore */}
+                                <Tooltip
+                                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)', padding: '12px' }}
+                                    cursor={{ stroke: '#4f46e5', strokeWidth: 1 }}
+                                />
+                                {/* @ts-ignore */}
+                                <Area type="monotone" dataKey="revenue" stroke="#4f46e5" strokeWidth={3} fillOpacity={1} fill="url(#colorRevenue)" />
+                            </AreaChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
+
+                <div className="bg-white rounded-[3rem] border border-gray-100 p-10 shadow-sm overflow-hidden h-[500px]">
+                    <h3 className="text-2xl font-black mb-8 tracking-tight">Order Volume</h3>
+                    <div className="h-[350px] w-full">
+                        {/* @ts-ignore */}
+                        <ResponsiveContainer width="100%" height="100%">
+                            {/* @ts-ignore */}
+                            <BarChart data={chartData}>
+                                {/* @ts-ignore */}
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
+                                {/* @ts-ignore */}
+                                <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#9ca3af' }} dy={10} />
+                                {/* @ts-ignore */}
+                                <Tooltip
+                                    cursor={{ fill: '#f3f4f6' }}
+                                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)', padding: '12px' }}
+                                />
+                                {/* @ts-ignore */}
+                                <Bar dataKey="orders" fill="#18181b" radius={[6, 6, 0, 0]} barSize={30} />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
+            </div>
+
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
                 {/* Recent Orders */}
-                <div className="lg:col-span-2 bg-white rounded-[3rem] border border-gray-100 p-10 shadow-sm overflow-hidden">
+                <div className="lg:col-span-2 bg-white rounded-[3rem] border border-gray-100 p-10 shadow-sm overflow-hidden min-h-[400px]">
                     <div className="flex justify-between items-center mb-10">
-                        <h3 className="text-2xl font-black">Incoming Orders</h3>
+                        <h3 className="text-2xl font-black tracking-tight">Incoming Orders</h3>
                         <button className="text-indigo-600 font-black text-xs uppercase tracking-widest hover:underline">Full Analytics</button>
                     </div>
                     <div className="overflow-x-auto">
@@ -176,14 +272,14 @@ export default function DashboardPage() {
 
                             {/* Rows */}
                             <div className="space-y-4">
-                                {stats?.recentOrders?.map((order: any) => (
+                                {safeStats.recentOrders?.map((order: any) => (
                                     <div key={order.id} className="flex items-center p-4 bg-gray-50/50 rounded-2xl hover:bg-gray-100 transition-all group cursor-pointer">
                                         <div className="w-[15%] font-black text-gray-900">#{order.orderNumber?.slice(-4)}</div>
                                         <div className="w-[30%]">
                                             <div className="font-bold text-gray-900 truncate">{order.user?.firstName || order.guestName || 'Anonymous'}</div>
                                             <div className="text-[10px] text-gray-400 font-black truncate uppercase">{order.user?.email || order.guestEmail}</div>
                                         </div>
-                                        <div className="w-[20%] font-black text-gray-900">৳{order.totalAmount.toLocaleString()}</div>
+                                        <div className="w-[20%] font-black text-gray-900">৳{Number(order.totalAmount).toLocaleString()}</div>
                                         <div className="w-[20%]">
                                             <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${statusColors[order.status] || 'bg-gray-100'}`}>
                                                 {order.status}
@@ -192,8 +288,11 @@ export default function DashboardPage() {
                                         <div className="w-[15%] text-[10px] font-black text-gray-400 uppercase">{new Date(order.createdAt).toLocaleDateString()}</div>
                                     </div>
                                 ))}
-                                {(!stats?.recentOrders || stats.recentOrders.length === 0) && (
-                                    <div className="text-center py-10 text-gray-400 font-bold uppercase text-xs">No Recent Traffic Detected</div>
+                                {(!safeStats.recentOrders || safeStats.recentOrders.length === 0) && (
+                                    <div className="text-center py-20 bg-gray-50 rounded-[2rem] border-dashed border-2 border-gray-100">
+                                        <ShoppingCart className="h-10 w-10 text-gray-300 mx-auto mb-4" />
+                                        <div className="text-gray-400 font-black uppercase text-[10px] tracking-widest">No Recent Traffic Detected</div>
+                                    </div>
                                 )}
                             </div>
                         </div>
@@ -201,7 +300,7 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Critical Stock Alert */}
-                <div className="bg-white rounded-[3rem] border border-gray-100 p-10 shadow-sm">
+                <div className="bg-white rounded-[3rem] border border-gray-100 p-10 shadow-sm min-h-[400px]">
                     <div className="flex items-center gap-4 mb-10">
                         <div className="p-3 bg-rose-50 rounded-2xl">
                             <AlertTriangle className="h-7 w-7 text-rose-600" />
@@ -212,7 +311,7 @@ export default function DashboardPage() {
                         </div>
                     </div>
                     <div className="space-y-4">
-                        {stats?.lowStockProducts?.map((item: any) => (
+                        {safeStats.lowStockProducts?.map((item: any) => (
                             <div key={item.id} className="flex items-center justify-between p-5 bg-rose-50/50 rounded-2xl border border-rose-100/50 group hover:bg-rose-50 transition-all">
                                 <div className="min-w-0 flex-1">
                                     <p className="text-sm font-black text-gray-900 truncate">{item.name}</p>
@@ -224,15 +323,13 @@ export default function DashboardPage() {
                                 </div>
                             </div>
                         ))}
-                        {(!stats?.lowStockProducts || stats.lowStockProducts.length === 0) && (
-                            <div className="text-center py-20 bg-emerald-50 rounded-2xl border border-emerald-100">
-                                <p className="text-emerald-600 font-black uppercase tracking-[0.2em] text-xs">Inventory Optimized</p>
+                        {(!safeStats.lowStockProducts || safeStats.lowStockProducts.length === 0) && (
+                            <div className="text-center py-20 bg-emerald-50 rounded-[2rem] border border-emerald-100">
+                                <Package className="h-10 w-10 text-emerald-300 mx-auto mb-4" />
+                                <p className="text-emerald-600 font-black uppercase tracking-[0.2em] text-[10px]">Inventory Optimized</p>
                             </div>
                         )}
                     </div>
-                    <button onClick={() => alert('Inventory Update feature coming soon!')} className="w-full mt-10 py-5 bg-black text-white rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-black/10 hover:bg-gray-800 transition-all">
-                        Bulk Inventory Update
-                    </button>
                 </div>
             </div>
 
@@ -271,9 +368,9 @@ export default function DashboardPage() {
                     </div>
                     <div className="space-y-6">
                         {[
-                            { label: 'Order Processing', value: 'High', color: 'bg-emerald-500' },
-                            { label: 'Customer Inquiry Response', value: 'Medium', color: 'bg-amber-500' },
-                            { label: 'Inventory Restocking', value: 'Excellent', color: 'bg-indigo-500' },
+                            { label: 'Order Processing', value: 'High', color: 'bg-emerald-500', width: '85%' },
+                            { label: 'Customer Inquiry Response', value: 'Medium', color: 'bg-amber-500', width: '45%' },
+                            { label: 'Inventory Restocking', value: 'Excellent', color: 'bg-indigo-500', width: '95%' },
                         ].map((item) => (
                             <div key={item.label} className="space-y-3">
                                 <div className="flex justify-between items-center text-xs font-black uppercase tracking-widest">
@@ -281,7 +378,7 @@ export default function DashboardPage() {
                                     <span className="text-gray-900">{item.value}</span>
                                 </div>
                                 <div className="h-3 w-full bg-gray-50 rounded-full overflow-hidden">
-                                    <div className={`h-full ${item.color}`} style={{ width: item.value === 'High' ? '85%' : item.value === 'Medium' ? '45%' : '95%' }} />
+                                    <div className={`h-full ${item.color}`} style={{ width: item.width }} />
                                 </div>
                             </div>
                         ))}

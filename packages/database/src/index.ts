@@ -5,3 +5,4 @@ export * from './services/order-service';
 export * from './services/customer-service';
 export * from './services/category-service';
 export * from './services/marketing-service';
+export * from './services/address-service';

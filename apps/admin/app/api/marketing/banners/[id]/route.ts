@@ -1,6 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+export async function GET(
+    request: NextRequest,
+    { params }: { params: { id: string } }
+) {
+    try {
+        // @ts-ignore
+        const banner = await prisma.banner.findUnique({
+            where: { id: params.id }
+        });
+
+        if (!banner) {
+            return NextResponse.json({ success: false, error: 'Asset not found' }, { status: 404 });
+        }
+
+        return NextResponse.json({ success: true, data: banner });
+    } catch (error) {
+        console.error('Admin Banner Detail API Error:', error);
+        return NextResponse.json({ success: false, error: 'Failed to fetch visual asset' }, { status: 500 });
+    }
+}
+
 export async function PATCH(
     request: NextRequest,
     { params }: { params: { id: string } }

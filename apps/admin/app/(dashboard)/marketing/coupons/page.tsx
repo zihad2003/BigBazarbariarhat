@@ -1,23 +1,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import {
     Ticket,
     Plus,
     Search,
-    Filter,
-    MoreVertical,
     Trash2,
     Calendar,
-    Users,
-    Zap,
-    Loader2,
-    CheckCircle2,
-    XCircle,
-    Info,
-    ArrowRight,
-    Sparkles,
-    CircleDollarSign
+    Edit3,
+    ArrowRight
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -26,20 +18,6 @@ export default function CouponsPage() {
     const [coupons, setCoupons] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
-    const [showCreateModal, setShowCreateModal] = useState(false);
-    const [creating, setCreating] = useState(false);
-
-    // Form State
-    const [formData, setFormData] = useState({
-        code: '',
-        description: '',
-        discountType: 'PERCENTAGE',
-        discountValue: '',
-        minOrderAmount: '0',
-        usageLimit: '',
-        startDate: new Date().toISOString().split('T')[0],
-        endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-    });
 
     const fetchCoupons = async () => {
         setLoading(true);
@@ -63,38 +41,9 @@ export default function CouponsPage() {
         return () => clearTimeout(timer);
     }, [searchQuery]);
 
-    const handleCreateCoupon = async (e: React.FormEvent) => {
+    const deleteCoupon = async (e: React.MouseEvent, id: string) => {
         e.preventDefault();
-        setCreating(true);
-        try {
-            const res = await fetch('/api/marketing/coupons', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData),
-            });
-            const result = await res.json();
-            if (result.success) {
-                setShowCreateModal(false);
-                fetchCoupons();
-                setFormData({
-                    code: '',
-                    description: '',
-                    discountType: 'PERCENTAGE',
-                    discountValue: '',
-                    minOrderAmount: '0',
-                    usageLimit: '',
-                    startDate: new Date().toISOString().split('T')[0],
-                    endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-                });
-            }
-        } catch (error) {
-            console.error('Manifestation failed:', error);
-        } finally {
-            setCreating(false);
-        }
-    };
-
-    const deleteCoupon = async (id: string) => {
+        e.stopPropagation();
         if (!confirm('Are you sure you want to terminate this promotional manifest?')) return;
         try {
             const res = await fetch(`/api/marketing/coupons/${id}`, { method: 'DELETE' });
@@ -112,13 +61,14 @@ export default function CouponsPage() {
                     <h1 className="text-5xl font-black text-gray-900 tracking-tighter italic">Promotions</h1>
                     <p className="text-gray-400 font-bold uppercase tracking-[0.2em] text-[10px] mt-3">Architect limited-time incentive manifests</p>
                 </div>
-                <Button
-                    onClick={() => setShowCreateModal(true)}
-                    className="h-16 px-10 bg-black text-white rounded-3xl text-[10px] font-black uppercase tracking-widest gap-3 shadow-2xl shadow-black/20 hover:scale-105 active:scale-95 transition-all"
-                >
-                    <Plus className="h-5 w-5" />
-                    Inject Promotion
-                </Button>
+                <Link href="/marketing/coupons/new">
+                    <Button
+                        className="h-16 px-10 bg-black text-white rounded-3xl text-[10px] font-black uppercase tracking-widest gap-3 shadow-2xl shadow-black/20 hover:scale-105 active:scale-95 transition-all"
+                    >
+                        <Plus className="h-5 w-5" />
+                        Inject Promotion
+                    </Button>
+                </Link>
             </div>
 
             {/* Matrix Console */}
@@ -143,18 +93,30 @@ export default function CouponsPage() {
                     [...Array(6)].map((_, i) => (
                         <div key={i} className="h-64 bg-gray-50 rounded-[3rem] animate-pulse" />
                     ))
+                ) : coupons.length === 0 ? (
+                    <div className="col-span-full py-20 text-center">
+                        <div className="w-20 h-20 bg-gray-50 rounded-[2rem] flex items-center justify-center mx-auto mb-6">
+                            <Ticket className="h-10 w-10 text-gray-300" />
+                        </div>
+                        <p className="text-gray-400 font-bold uppercase tracking-widest text-xs">No active promotions detected in segment</p>
+                    </div>
                 ) : coupons.map((coupon) => (
-                    <div key={coupon.id} className="bg-white rounded-[3rem] border border-gray-100 p-8 shadow-sm hover:shadow-2xl hover:shadow-indigo-900/5 transition-all group relative overflow-hidden">
+                    <Link
+                        href={`/marketing/coupons/${coupon.id}`}
+                        key={coupon.id}
+                        className="bg-white rounded-[3rem] border border-gray-100 p-8 shadow-sm hover:shadow-2xl hover:shadow-indigo-900/5 transition-all group relative overflow-hidden block"
+                    >
                         <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-bl-[8rem] opacity-30 group-hover:scale-110 transition-transform" />
 
                         <div className="flex justify-between items-start mb-8 relative z-10">
-                            <div className="w-14 h-14 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-indigo-500/20">
+                            <div className="w-14 h-14 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-indigo-500/20 group-hover:scale-110 transition-transform duration-500">
                                 <Ticket className="h-7 w-7" />
                             </div>
                             <div className="flex gap-2">
                                 <button
-                                    onClick={() => deleteCoupon(coupon.id)}
-                                    className="w-10 h-10 bg-rose-50 text-rose-500 rounded-xl flex items-center justify-center hover:bg-rose-500 hover:text-white transition-all"
+                                    onClick={(e) => deleteCoupon(e, coupon.id)}
+                                    className="w-10 h-10 bg-rose-50 text-rose-500 rounded-xl flex items-center justify-center hover:bg-rose-500 hover:text-white transition-all z-20 relative"
+                                    title="Decommission Promotion"
                                 >
                                     <Trash2 className="h-4 w-4" />
                                 </button>
@@ -162,7 +124,7 @@ export default function CouponsPage() {
                         </div>
 
                         <div className="space-y-2 mb-6">
-                            <h3 className="text-3xl font-black text-gray-900 tracking-tighter uppercase italic">{coupon.code}</h3>
+                            <h3 className="text-3xl font-black text-gray-900 tracking-tighter uppercase italic group-hover:text-indigo-600 transition-colors">{coupon.code}</h3>
                             <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest leading-relaxed line-clamp-1">{coupon.description || 'No operational narrative'}</p>
                         </div>
 
@@ -191,101 +153,15 @@ export default function CouponsPage() {
                                 {coupon.isActive ? 'Active' : 'Latent'}
                             </Badge>
                         </div>
-                    </div>
+
+                        <div className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0 duration-300">
+                            <div className="flex items-center gap-1 text-[10px] font-black uppercase text-indigo-600">
+                                Configure <ArrowRight className="h-3 w-3" />
+                            </div>
+                        </div>
+                    </Link>
                 ))}
             </div>
-
-            {/* Creation Modal Interface */}
-            {showCreateModal && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 sm:p-12">
-                    <div className="absolute inset-0 bg-black/80 backdrop-blur-xl" onClick={() => setShowCreateModal(false)} />
-                    <div className="bg-white w-full max-w-2xl rounded-[4rem] shadow-2xl relative z-10 overflow-hidden animate-in zoom-in-95 duration-300">
-                        <div className="p-12 bg-gray-50/50 border-b border-gray-50 flex justify-between items-center">
-                            <div>
-                                <h2 className="text-3xl font-black text-gray-900 tracking-tighter italic">Promotional Injector</h2>
-                                <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mt-1">Configure new incentive manifest</p>
-                            </div>
-                            <button onClick={() => setShowCreateModal(false)} className="w-12 h-12 rounded-2xl bg-white border border-gray-100 flex items-center justify-center hover:bg-black hover:text-white transition-all">
-                                <ArrowRight className="h-5 w-5" />
-                            </button>
-                        </div>
-
-                        <form onSubmit={handleCreateCoupon} className="p-12 space-y-8">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                <div className="space-y-3">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Codename</label>
-                                    <input
-                                        required
-                                        placeholder="e.g. FLASH50"
-                                        className="w-full h-16 px-6 bg-gray-50 border border-transparent rounded-[1.5rem] font-black text-gray-900 focus:bg-white focus:border-indigo-600 transition-all outline-none uppercase"
-                                        value={formData.code}
-                                        onChange={e => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
-                                    />
-                                </div>
-                                <div className="space-y-3">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Incentive Type</label>
-                                    <select
-                                        className="w-full h-16 px-6 bg-gray-50 border border-transparent rounded-[1.5rem] font-black text-gray-900 focus:bg-white focus:border-indigo-600 transition-all outline-none appearance-none cursor-pointer"
-                                        value={formData.discountType}
-                                        onChange={e => setFormData({ ...formData, discountType: e.target.value })}
-                                    >
-                                        <option value="PERCENTAGE">Percentage (%)</option>
-                                        <option value="FIXED_AMOUNT">Fixed Amount (৳)</option>
-                                        <option value="FREE_SHIPPING">Free Shipping</option>
-                                    </select>
-                                </div>
-                                <div className="space-y-3">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Numerical Valuation</label>
-                                    <input
-                                        type="number"
-                                        required
-                                        className="w-full h-16 px-6 bg-gray-50 border border-transparent rounded-[1.5rem] font-black text-gray-900 focus:bg-white focus:border-indigo-600 transition-all outline-none"
-                                        value={formData.discountValue}
-                                        onChange={e => setFormData({ ...formData, discountValue: e.target.value })}
-                                    />
-                                </div>
-                                <div className="space-y-3">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Threshold Authorization (Min Order)</label>
-                                    <input
-                                        type="number"
-                                        className="w-full h-16 px-6 bg-gray-50 border border-transparent rounded-[1.5rem] font-black text-gray-900 focus:bg-white focus:border-indigo-600 transition-all outline-none"
-                                        value={formData.minOrderAmount}
-                                        onChange={e => setFormData({ ...formData, minOrderAmount: e.target.value })}
-                                    />
-                                </div>
-                                <div className="space-y-3">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Temporal Initiation</label>
-                                    <input
-                                        type="date"
-                                        required
-                                        className="w-full h-16 px-6 bg-gray-50 border border-transparent rounded-[1.5rem] font-bold text-gray-900 focus:bg-white focus:border-indigo-600 transition-all outline-none"
-                                        value={formData.startDate}
-                                        onChange={e => setFormData({ ...formData, startDate: e.target.value })}
-                                    />
-                                </div>
-                                <div className="space-y-3">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Temporal Termination</label>
-                                    <input
-                                        type="date"
-                                        required
-                                        className="w-full h-16 px-6 bg-gray-50 border border-transparent rounded-[1.5rem] font-bold text-gray-900 focus:bg-white focus:border-indigo-600 transition-all outline-none"
-                                        value={formData.endDate}
-                                        onChange={e => setFormData({ ...formData, endDate: e.target.value })}
-                                    />
-                                </div>
-                            </div>
-
-                            <Button
-                                disabled={creating}
-                                className="w-full h-20 bg-black text-white rounded-[2rem] text-xs font-black uppercase tracking-[0.2em] shadow-2xl shadow-black/20 hover:scale-105 active:scale-95 transition-all gap-4"
-                            >
-                                {creating ? <Loader2 className="h-6 w-6 animate-spin" /> : <Sparkles className="h-6 w-6" />}
-                                {creating ? 'Manifesting Intelligence...' : 'Authorize Global Promotion'}
-                            </Button>
-                        </form>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }

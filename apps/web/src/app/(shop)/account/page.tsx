@@ -15,24 +15,60 @@ import {
     CreditCard
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useUser } from '@clerk/nextjs';
+import { useQuery } from '@tanstack/react-query';
+import { useWishlistStore } from '@/lib/stores/wishlist-store';
+import { useUser, useClerk } from '@clerk/nextjs';
+
+async function fetchOrders(params: string) {
+    const res = await fetch(`/api/orders?${params}`);
+    if (!res.ok) throw new Error('Failed to fetch orders');
+    return res.json();
+}
 
 export default function AccountPage() {
     const { user, isLoaded } = useUser();
+    const { signOut } = useClerk();
+    const wishlistCount = useWishlistStore(state => state.getItemCount());
 
-    if (!isLoaded) return <div className="h-screen flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div></div>;
+    // Fetch recent orders (limit 3)
+    const { data: recentOrdersData, isLoading: ordersLoading } = useQuery({
+        queryKey: ['orders', 'recent'],
+        queryFn: () => fetchOrders('limit=3'),
+        enabled: !!user,
+    });
+
+    // Fetch pending orders count
+    const { data: pendingOrdersData, isLoading: pendingLoading } = useQuery({
+        queryKey: ['orders', 'pending'],
+        queryFn: () => fetchOrders('status=pending&limit=1'),
+        enabled: !!user,
+    });
+
+    // Fetch addresses
+    const { data: addresses = [] } = useQuery({
+        queryKey: ['addresses', user?.id],
+        queryFn: async () => {
+            if (!user?.id) return [];
+            const res = await fetch('/api/account/addresses');
+            const result = await res.json();
+            if (!result.success) throw new Error(result.error);
+            return result.data;
+        },
+        enabled: !!user,
+    });
+
+    if (!isLoaded) return <div className="h-screen flex items-center justify-center">< div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black" ></div ></div >;
+
+    const totalOrders = recentOrdersData?.pagination?.total || 0;
+    const pendingOrders = pendingOrdersData?.pagination?.total || 0;
+    const recentOrders = recentOrdersData?.data || [];
+    const addressCount = addresses.length;
 
     const stats = [
-        { label: 'Total Orders', value: '12', icon: Package, color: 'bg-indigo-50 text-indigo-600' },
-        { label: 'Pending Orders', value: '2', icon: Clock, color: 'bg-amber-50 text-amber-600' },
-        { label: 'Wishlist Items', value: '8', icon: Heart, color: 'bg-red-50 text-red-600' },
-        { label: 'Saved Addresses', value: '3', icon: MapPin, color: 'bg-green-50 text-green-600' },
-    ];
-
-    const recentOrders = [
-        { id: '#ORD-9283', date: 'Oct 24, 2024', status: 'Delivered', total: '৳2,450', items: 3 },
-        { id: '#ORD-9122', date: 'Oct 18, 2024', status: 'Processing', total: '৳5,800', items: 1 },
-        { id: '#ORD-8944', date: 'Oct 12, 2024', status: 'Shipped', total: '৳1,200', items: 2 },
+        { label: 'Total Orders', value: ordersLoading ? '...' : totalOrders.toString(), icon: Package, color: 'bg-indigo-50 text-indigo-600' },
+        { label: 'Pending Orders', value: pendingLoading ? '...' : pendingOrders.toString(), icon: Clock, color: 'bg-amber-50 text-amber-600' },
+        { label: 'Wishlist Items', value: wishlistCount.toString(), icon: Heart, color: 'bg-red-50 text-red-600' },
+        { label: 'Saved Addresses', value: addressCount.toString(), icon: MapPin, color: 'bg-green-50 text-green-600' },
     ];
 
     return (
@@ -72,7 +108,10 @@ export default function AccountPage() {
                                     <ChevronRight className={`h-4 w-4 ${item.active ? 'text-white' : 'text-gray-300'}`} />
                                 </Link>
                             ))}
-                            <button className="w-full flex items-center gap-4 p-4 rounded-2xl text-red-500 hover:bg-red-50 transition-all font-bold mt-8">
+                            <button
+                                onClick={() => signOut(() => { window.location.href = '/'; })}
+                                className="w-full flex items-center gap-4 p-4 rounded-2xl text-red-500 hover:bg-red-50 transition-all font-bold mt-8"
+                            >
                                 <LogOut className="h-5 w-5" />
                                 Logout
                             </button>
@@ -111,27 +150,52 @@ export default function AccountPage() {
                             </div>
 
                             <div className="space-y-6">
-                                {recentOrders.map((order) => (
-                                    <div key={order.id} className="flex items-center justify-between p-6 bg-gray-50 rounded-[2rem] hover:bg-gray-100 transition-all group">
-                                        <div className="flex items-center gap-5">
-                                            <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-gray-400 font-black text-xs border border-gray-200 group-hover:bg-black group-hover:text-white transition-colors">
-                                                #
+                                {ordersLoading ? (
+                                    // Loading skeleton
+                                    [...Array(3)].map((_, i) => (
+                                        <div key={i} className="flex items-center justify-between p-6 bg-gray-50 rounded-[2rem] animate-pulse">
+                                            <div className="flex items-center gap-5">
+                                                <div className="w-12 h-12 bg-gray-200 rounded-2xl"></div>
+                                                <div className="space-y-2">
+                                                    <div className="h-4 w-24 bg-gray-200 rounded"></div>
+                                                    <div className="h-3 w-32 bg-gray-200 rounded"></div>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <div className="font-black text-gray-900">{order.id}</div>
-                                                <div className="text-xs text-gray-400 font-bold">{order.date} • {order.items} Items</div>
+                                            <div className="space-y-2 text-right">
+                                                <div className="h-4 w-16 bg-gray-200 rounded ml-auto"></div>
+                                                <div className="h-6 w-20 bg-gray-200 rounded ml-auto"></div>
                                             </div>
                                         </div>
-                                        <div className="text-right">
-                                            <div className="font-black text-gray-900 mb-1">{order.total}</div>
-                                            <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter ${order.status === 'Delivered' ? 'bg-green-100 text-green-600' :
-                                                    order.status === 'Processing' ? 'bg-amber-100 text-amber-600' : 'bg-indigo-100 text-indigo-600'
-                                                }`}>
-                                                {order.status}
-                                            </span>
+                                    ))
+                                ) : recentOrders.length > 0 ? (
+                                    recentOrders.map((order: any) => (
+                                        <div key={order.id} className="flex items-center justify-between p-6 bg-gray-50 rounded-[2rem] hover:bg-gray-100 transition-all group">
+                                            <div className="flex items-center gap-5">
+                                                <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-gray-400 font-black text-[10px] sm:text-xs border border-gray-200 group-hover:bg-black group-hover:text-white transition-colors truncate">
+                                                    ORD
+                                                </div>
+                                                <div>
+                                                    <div className="font-black text-gray-900 text-sm sm:text-base">{order.order_number}</div>
+                                                    <div className="text-xs text-gray-400 font-bold">
+                                                        {new Date(order.created_at).toLocaleDateString()} • {order.order_items?.length || 0} Items
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="text-right">
+                                                <div className="font-black text-gray-900 mb-1">৳{order.total_amount?.toLocaleString() || '0'}</div>
+                                                <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter ${order.status === 'delivered' ? 'bg-green-100 text-green-600' :
+                                                    order.status === 'pending' || order.status === 'processing' ? 'bg-amber-100 text-amber-600' : 'bg-indigo-100 text-indigo-600'
+                                                    }`}>
+                                                    {order.status}
+                                                </span>
+                                            </div>
                                         </div>
+                                    ))
+                                ) : (
+                                    <div className="text-center py-8 text-gray-500 font-medium">
+                                        No orders found.
                                     </div>
-                                ))}
+                                )}
                             </div>
                         </section>
 

@@ -1,6 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+export async function GET(
+    request: NextRequest,
+    { params }: { params: { id: string } }
+) {
+    try {
+        // @ts-ignore
+        const coupon = await prisma.coupon.findUnique({
+            where: { id: params.id }
+        });
+
+        if (!coupon) {
+            return NextResponse.json({ success: false, error: 'Promo not found' }, { status: 404 });
+        }
+
+        return NextResponse.json({ success: true, data: coupon });
+    } catch (error) {
+        console.error('Admin Coupon Detail API Error:', error);
+        return NextResponse.json({ success: false, error: 'Failed to fetch promotion' }, { status: 500 });
+    }
+}
+
 export async function PATCH(
     request: NextRequest,
     { params }: { params: { id: string } }

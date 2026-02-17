@@ -62,6 +62,18 @@ export default function EditProductPage() {
     const [variants, setVariants] = useState<any[]>([]);
     const [images, setImages] = useState<any[]>([]);
 
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                // Simulate adding a new image
+                setImages([...images, { id: `temp-${Date.now()}`, url: reader.result as string, isPrimary: false }]);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
     const {
         register,
         handleSubmit,
@@ -175,6 +187,7 @@ export default function EditProductPage() {
         { id: 'stock', label: 'Volume', icon: Box },
         { id: 'media', label: 'Visuals', icon: ImageIcon },
         { id: 'variants', label: 'Variants', icon: Layers },
+        { id: 'seo', label: 'SEO Metadata', icon: SearchIcon },
     ];
 
     return (
@@ -306,7 +319,13 @@ export default function EditProductPage() {
 
                                 <div className="space-y-8">
                                     <div className="space-y-4">
-                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Abridged Narrative (Short Description)</label>
+                                        <div className="flex justify-between items-center ml-4">
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Abridged Narrative (Short Description)</label>
+                                            <div className="flex gap-2">
+                                                <button type="button" className="p-1 hover:bg-gray-100 rounded text-[10px] font-bold uppercase">B</button>
+                                                <button type="button" className="p-1 hover:bg-gray-100 rounded text-[10px] font-bold uppercase italic">I</button>
+                                            </div>
+                                        </div>
                                         <textarea
                                             {...register('shortDescription')}
                                             rows={2}
@@ -314,7 +333,14 @@ export default function EditProductPage() {
                                         />
                                     </div>
                                     <div className="space-y-4">
-                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Comprehensive Narrative (Full Description)</label>
+                                        <div className="flex justify-between items-center ml-4">
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Comprehensive Narrative (Full Description)</label>
+                                            <div className="flex gap-2">
+                                                <button type="button" className="p-1 hover:bg-gray-100 rounded text-[10px] font-bold uppercase">B</button>
+                                                <button type="button" className="p-1 hover:bg-gray-100 rounded text-[10px] font-bold uppercase italic">I</button>
+                                                <button type="button" className="p-1 hover:bg-gray-100 rounded text-[10px] font-bold uppercase">List</button>
+                                            </div>
+                                        </div>
                                         <textarea
                                             {...register('description')}
                                             rows={8}
@@ -476,15 +502,19 @@ export default function EditProductPage() {
                                     ))}
 
                                     {/* Upload Trigger */}
-                                    <button
-                                        type="button"
-                                        className="aspect-[3/4] bg-gray-50/50 border-4 border-dashed border-gray-100 rounded-[2rem] flex flex-col items-center justify-center gap-4 hover:bg-white hover:border-black transition-all group"
-                                    >
+                                    <div className="relative aspect-[3/4] bg-gray-50/50 border-4 border-dashed border-gray-100 rounded-[2rem] flex flex-col items-center justify-center gap-4 hover:bg-white hover:border-black transition-all group overflow-hidden">
                                         <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
                                             <Plus className="h-8 w-8 text-gray-300 group-hover:text-black" />
                                         </div>
                                         <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest group-hover:text-black">Capture Media</span>
-                                    </button>
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={handleImageChange}
+                                            aria-label="Upload new image"
+                                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                        />
+                                    </div>
                                 </div>
                             </section>
                         </div>
@@ -523,6 +553,7 @@ export default function EditProductPage() {
                                                 <div className="flex-1 grid grid-cols-5 gap-4">
                                                     <input
                                                         placeholder="Size"
+                                                        aria-label="Variant Size"
                                                         className="h-12 px-4 bg-white border border-gray-100 rounded-xl text-xs font-bold"
                                                         value={v.size}
                                                         onChange={(e) => {
@@ -533,6 +564,7 @@ export default function EditProductPage() {
                                                     />
                                                     <input
                                                         placeholder="Color"
+                                                        aria-label="Variant Color"
                                                         className="h-12 px-4 bg-white border border-gray-100 rounded-xl text-xs font-bold"
                                                         value={v.color}
                                                         onChange={(e) => {
@@ -543,6 +575,7 @@ export default function EditProductPage() {
                                                     />
                                                     <input
                                                         placeholder="SKU"
+                                                        aria-label="Variant SKU"
                                                         className="h-12 px-4 bg-white border border-gray-100 rounded-xl text-xs font-bold"
                                                         value={v.sku}
                                                         onChange={(e) => {
@@ -554,6 +587,7 @@ export default function EditProductPage() {
                                                     <input
                                                         type="number"
                                                         placeholder="Stock"
+                                                        aria-label="Variant Stock Quantity"
                                                         className="h-12 px-4 bg-white border border-gray-100 rounded-xl text-xs font-bold"
                                                         value={v.stockQuantity}
                                                         onChange={(e) => {
@@ -565,6 +599,7 @@ export default function EditProductPage() {
                                                     <input
                                                         type="number"
                                                         placeholder="Price +/-"
+                                                        aria-label="Variant Price Adjustment"
                                                         className="h-12 px-4 bg-white border border-gray-100 rounded-xl text-xs font-bold"
                                                         value={v.priceAdjustment}
                                                         onChange={(e) => {
@@ -585,6 +620,41 @@ export default function EditProductPage() {
                                         ))}
                                     </div>
                                 )}
+                            </section>
+                        </div>
+                    )}
+
+
+                    {activeTab === 'seo' && (
+                        <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <section className="bg-white rounded-[3rem] border border-gray-100 p-10 shadow-sm relative overflow-hidden">
+                                <div className="absolute top-0 right-0 w-40 h-40 bg-purple-50 rounded-bl-[10rem] opacity-30" />
+                                <h3 className="text-xl font-black text-gray-900 mb-8 border-b border-gray-50 pb-6 uppercase tracking-widest flex items-center gap-3">
+                                    <SearchIcon className="h-5 w-5 text-indigo-600" />
+                                    Search Engine Optimization
+                                </h3>
+
+                                <div className="space-y-8">
+                                    <div className="space-y-4">
+                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Meta Title</label>
+                                        <input
+                                            {...register('metaTitle')}
+                                            className="w-full h-16 px-6 bg-gray-50 border border-transparent rounded-[1.5rem] font-bold text-gray-900 focus:bg-white focus:border-indigo-600 transition-all outline-none"
+                                            placeholder="SEO Title"
+                                        />
+                                        <p className="text-[10px] text-gray-400 ml-4">Recommended length: 50-60 characters</p>
+                                    </div>
+                                    <div className="space-y-4">
+                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Meta Description</label>
+                                        <textarea
+                                            {...register('metaDescription')}
+                                            rows={4}
+                                            className="w-full p-6 bg-gray-50 border border-transparent rounded-[1.5rem] font-bold text-gray-900 focus:bg-white focus:border-indigo-600 transition-all outline-none resize-none"
+                                            placeholder="SEO Description"
+                                        />
+                                        <p className="text-[10px] text-gray-400 ml-4">Recommended length: 150-160 characters</p>
+                                    </div>
+                                </div>
                             </section>
                         </div>
                     )}

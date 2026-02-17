@@ -115,24 +115,28 @@ export function Footer() {
                                 href="https://www.facebook.com/profile.php?id=100063541603515"
                                 target="_blank"
                                 rel="noopener noreferrer"
+                                aria-label="Facebook"
                                 className="w-10 h-10 bg-luxury-black-card border border-luxury-black-lighter rounded-full flex items-center justify-center text-gray-400 hover:text-white hover:bg-luxury-gold hover:border-luxury-gold transition-all duration-300"
                             >
                                 <Facebook className="h-4 w-4" />
                             </a>
                             <a
                                 href="#"
+                                aria-label="Instagram"
                                 className="w-10 h-10 bg-luxury-black-card border border-luxury-black-lighter rounded-full flex items-center justify-center text-gray-400 hover:text-white hover:bg-luxury-gold hover:border-luxury-gold transition-all duration-300"
                             >
                                 <Instagram className="h-4 w-4" />
                             </a>
                             <a
                                 href="#"
+                                aria-label="Twitter"
                                 className="w-10 h-10 bg-luxury-black-card border border-luxury-black-lighter rounded-full flex items-center justify-center text-gray-400 hover:text-white hover:bg-luxury-gold hover:border-luxury-gold transition-all duration-300"
                             >
                                 <Twitter className="h-4 w-4" />
                             </a>
                             <a
                                 href="#"
+                                aria-label="Youtube"
                                 className="w-10 h-10 bg-luxury-black-card border border-luxury-black-lighter rounded-full flex items-center justify-center text-gray-400 hover:text-white hover:bg-luxury-gold hover:border-luxury-gold transition-all duration-300"
                             >
                                 <Youtube className="h-4 w-4" />

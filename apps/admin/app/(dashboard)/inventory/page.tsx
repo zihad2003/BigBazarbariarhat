@@ -7,21 +7,16 @@ import {
     CheckCircle2,
     XCircle,
     Search,
-    Filter,
-    ArrowUpDown,
     RefreshCw,
     Edit3,
-    ArrowRight,
-    Loader2,
     Database,
-    Binary,
-    TrendingDown,
-    Activity,
-    Save
+    Loader2,
+    Save,
+    X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useToast } from '@/components/ui/use-toast';
 
 export default function InventoryPage() {
     const [variants, setVariants] = useState<any[]>([]);
@@ -31,6 +26,7 @@ export default function InventoryPage() {
     const [editingId, setEditingId] = useState<string | null>(null);
     const [newStock, setNewStock] = useState<string>('');
     const [updating, setUpdating] = useState(false);
+    const { toast } = useToast();
 
     const fetchInventory = async () => {
         setLoading(true);
@@ -42,6 +38,11 @@ export default function InventoryPage() {
             }
         } catch (error) {
             console.error('Failed to fetch inventory:', error);
+            toast({
+                title: 'Synchronization Error',
+                description: 'Failed to fetch inventory manifest.',
+                variant: 'destructive',
+            });
         } finally {
             setLoading(false);
         }
@@ -54,20 +55,44 @@ export default function InventoryPage() {
         return () => clearTimeout(timer);
     }, [searchQuery, statusFilter]);
 
-    const handleUpdateStock = async (id: string) => {
+    const handleUpdateStock = async (id: string, quantity: string) => {
+        if (!quantity || isNaN(Number(quantity))) {
+            toast({
+                title: 'Invalid Input',
+                description: 'Please enter a valid numeric quantity.',
+                variant: 'destructive',
+            });
+            return;
+        }
+
         setUpdating(true);
         try {
             const res = await fetch('/api/inventory', {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id, stockQuantity: newStock }),
+                body: JSON.stringify({ id, stockQuantity: quantity }),
             });
             if (res.ok) {
                 setEditingId(null);
                 fetchInventory();
+                toast({
+                    title: 'Manifest Updated',
+                    description: 'Stock quantum successfully calibrated.',
+                });
+            } else {
+                toast({
+                    title: 'Update Failed',
+                    description: 'Could not calibrate stock quantum.',
+                    variant: 'destructive',
+                });
             }
         } catch (error) {
             console.error('Stock update failed:', error);
+            toast({
+                title: 'Update Failed',
+                description: 'Network anomaly detected.',
+                variant: 'destructive',
+            });
         } finally {
             setUpdating(false);
         }
@@ -86,7 +111,7 @@ export default function InventoryPage() {
     };
 
     return (
-        <div className="space-y-12">
+        <div className="space-y-12" aria-label="Inventory Management Dashboard">
             {/* Master Header */}
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-8 border-b border-gray-100 pb-12">
                 <div>
@@ -96,62 +121,65 @@ export default function InventoryPage() {
                 <div className="flex gap-4">
                     <Button
                         onClick={() => fetchInventory()}
+                        aria-label="Synchronize inventory data"
                         variant="outline"
-                        className="h-16 px-8 border-2 rounded-3xl text-[10px] font-black uppercase tracking-widest gap-3 shadow-sm"
+                        className="h-16 px-8 border-2 rounded-3xl text-[10px] font-black uppercase tracking-widest gap-3 shadow-sm hover:bg-gray-50 transition-colors"
                     >
-                        <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+                        <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} aria-hidden="true" />
                         Synchronize
                     </Button>
                 </div>
             </div>
 
             {/* Performance Banners */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <section aria-label="Inventory Statistics" className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {[
                     { label: 'Total SKU Nodes', value: counts.total, icon: Database, color: 'text-indigo-600' },
                     { label: 'Critical Variance', value: counts.low, icon: AlertTriangle, color: 'text-amber-500' },
                     { label: 'Inert Artifacts', value: counts.out, icon: XCircle, color: 'text-rose-500' },
                 ].map((stat, i) => (
-                    <div key={i} className="bg-white p-10 rounded-[3rem] border border-gray-100 shadow-sm relative group">
+                    <div key={i} className="bg-white p-10 rounded-[3rem] border border-gray-100 shadow-sm relative group hover:shadow-lg transition-all duration-300">
                         <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 transition-all text-black">
-                            <stat.icon className="h-20 w-20" />
+                            <stat.icon className="h-20 w-20" aria-hidden="true" />
                         </div>
-                        <stat.icon className={`h-8 w-8 ${stat.color} mb-6`} />
+                        <stat.icon className={`h-8 w-8 ${stat.color} mb-6`} aria-hidden="true" />
                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 italic">{stat.label}</p>
                         <h4 className="text-4xl font-black text-gray-900 tracking-tighter italic">{stat.value}</h4>
                     </div>
                 ))}
-            </div>
+            </section>
 
             {/* Matrix Filters */}
-            <div className="bg-white rounded-[3rem] border border-gray-100 p-8 shadow-sm">
+            <section aria-label="Search and Filters" className="bg-white rounded-[3rem] border border-gray-100 p-8 shadow-sm">
                 <div className="flex flex-col lg:flex-row gap-8">
                     <div className="flex-1 relative group">
-                        <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300 group-focus-within:text-black transition-colors" />
+                        <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300 group-focus-within:text-black transition-colors" aria-hidden="true" />
                         <input
                             type="text"
+                            aria-label="Search inventory by SKU, ID or Name"
                             placeholder="Identify artifact by SKU, Variant ID or Name..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="w-full pl-16 pr-8 py-5 bg-gray-50 border border-transparent rounded-[1.5rem] text-base focus:bg-white focus:border-indigo-100 outline-none transition-all font-bold placeholder:text-gray-300"
                         />
                     </div>
-                    <div className="flex gap-4">
+                    <div className="flex gap-4" role="group" aria-label="Stock status filters">
                         {['ALL', 'LOW_STOCK', 'OUT_OF_STOCK'].map((f) => (
                             <button
                                 key={f}
                                 onClick={() => setStatusFilter(f)}
-                                className={`px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${statusFilter === f ? 'bg-black text-white shadow-xl' : 'bg-gray-50 text-gray-400 hover:text-black'}`}
+                                aria-pressed={statusFilter === f}
+                                className={`px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${statusFilter === f ? 'bg-black text-white shadow-xl scale-105' : 'bg-gray-50 text-gray-400 hover:text-black hover:bg-gray-100'}`}
                             >
                                 {f.replace(/_/g, ' ')}
                             </button>
                         ))}
                     </div>
                 </div>
-            </div>
+            </section>
 
             {/* Inventory Manifest Table */}
-            <div className="bg-white rounded-[4rem] border border-gray-100 overflow-hidden shadow-2xl shadow-gray-200/50">
+            <section aria-label="Inventory List" className="bg-white rounded-[4rem] border border-gray-100 overflow-hidden shadow-2xl shadow-gray-200/50">
                 <div className="overflow-x-auto">
                     <table className="w-full border-collapse">
                         <thead>
@@ -181,14 +209,14 @@ export default function InventoryPage() {
                                         <td className="px-10 py-8"><Skeleton className="h-4 w-32" /></td>
                                         <td className="px-10 py-8"><Skeleton className="h-8 w-24 rounded-xl" /></td>
                                         <td className="px-10 py-8"><Skeleton className="h-8 w-16" /></td>
-                                        <td className="px-10 py-8 flex justify-end gap-2"><Skeleton className="h-12 w-12 rounded-2xl" /><Skeleton className="h-12 w-12 rounded-2xl" /></td>
+                                        <td className="px-10 py-8 flex justify-end gap-2"><Skeleton className="h-12 w-12 rounded-2xl" /></td>
                                     </tr>
                                 ))
                             ) : variants.length === 0 ? (
                                 <tr>
                                     <td colSpan={6} className="py-40 text-center">
                                         <div className="w-20 h-20 bg-gray-50 rounded-3xl flex items-center justify-center mx-auto mb-6">
-                                            <Package className="h-10 w-10 text-gray-200" />
+                                            <Package className="h-10 w-10 text-gray-200" aria-hidden="true" />
                                         </div>
                                         <p className="text-[10px] text-gray-400 font-black uppercase tracking-[0.3em]">No artifact variants detected in current sector.</p>
                                     </td>
@@ -201,7 +229,7 @@ export default function InventoryPage() {
                                         <td className="px-10 py-8">
                                             <div className="flex items-center gap-6">
                                                 <div className="w-16 h-16 bg-white border border-gray-100 rounded-2xl flex items-center justify-center p-2 shadow-sm overflow-hidden group-hover:scale-110 transition-transform">
-                                                    {v.images?.[0] ? <img src={v.images[0]} alt="" className="w-full h-full object-cover rounded-lg" /> : <Package className="h-8 w-8 text-gray-100" />}
+                                                    {v.images?.[0] ? <img src={v.images[0]} alt="" className="w-full h-full object-cover rounded-lg" /> : <Package className="h-8 w-8 text-gray-100" aria-hidden="true" />}
                                                 </div>
                                                 <div>
                                                     <h4 className="font-black text-gray-900 tracking-tight italic text-lg">{v.product.name}</h4>
@@ -217,19 +245,26 @@ export default function InventoryPage() {
                                         </td>
                                         <td className="px-10 py-8">
                                             <span className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest border flex items-center gap-2 w-fit ${status.class}`}>
-                                                <Icon className="h-3 w-3" />
+                                                <Icon className="h-3 w-3" aria-hidden="true" />
                                                 {status.label}
                                             </span>
                                         </td>
                                         <td className="px-10 py-8">
                                             {editingId === v.id ? (
-                                                <input
-                                                    type="number"
-                                                    className="w-24 h-12 px-4 bg-white border-2 border-indigo-600 rounded-xl font-black text-lg focus:outline-none"
-                                                    value={newStock}
-                                                    autoFocus
-                                                    onChange={e => setNewStock(e.target.value)}
-                                                />
+                                                <div className="flex items-center gap-2 animate-in fade-in duration-300">
+                                                    <input
+                                                        type="number"
+                                                        aria-label={`Update stock for ${v.name}`}
+                                                        className="w-24 h-12 px-4 bg-white border-2 border-indigo-600 rounded-xl font-black text-lg focus:outline-none shadow-xl transform scale-105"
+                                                        value={newStock}
+                                                        autoFocus
+                                                        onChange={e => setNewStock(e.target.value)}
+                                                        onKeyDown={(e) => {
+                                                            if (e.key === 'Enter') handleUpdateStock(v.id, newStock);
+                                                            if (e.key === 'Escape') setEditingId(null);
+                                                        }}
+                                                    />
+                                                </div>
                                             ) : (
                                                 <div className="flex flex-col">
                                                     <span className={`text-2xl font-black italic tracking-tighter ${v.stockQuantity <= 10 ? 'text-amber-500' : 'text-gray-900'}`}>
@@ -239,29 +274,44 @@ export default function InventoryPage() {
                                             )}
                                         </td>
                                         <td className="px-10 py-8">
-                                            <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-all">
+                                            <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-all focus-within:opacity-100">
                                                 {editingId === v.id ? (
-                                                    <button
-                                                        onClick={() => handleUpdateStock(v.id)}
-                                                        disabled={updating}
-                                                        className="p-4 bg-indigo-600 text-white rounded-2xl shadow-xl shadow-indigo-500/20 hover:scale-110 active:scale-90 transition-all"
-                                                    >
-                                                        {updating ? <Loader2 className="h-5 w-5 animate-spin" /> : <Save className="h-5 w-5" />}
-                                                    </button>
+                                                    <div className="flex gap-2">
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.preventDefault();
+                                                                setEditingId(null);
+                                                            }}
+                                                            className="p-4 bg-white text-gray-400 border border-gray-100 rounded-2xl hover:bg-rose-50 hover:text-rose-500 transition-all"
+                                                            aria-label="Cancel editing"
+                                                        >
+                                                            <X className="h-5 w-5" aria-hidden="true" />
+                                                        </button>
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.preventDefault();
+                                                                handleUpdateStock(v.id, newStock);
+                                                            }}
+                                                            disabled={updating}
+                                                            className="p-4 bg-indigo-600 text-white rounded-2xl shadow-xl shadow-indigo-500/20 hover:scale-110 active:scale-90 transition-all"
+                                                            aria-label="Save stock change"
+                                                        >
+                                                            {updating ? <Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" /> : <Save className="h-5 w-5" aria-hidden="true" />}
+                                                        </button>
+                                                    </div>
                                                 ) : (
                                                     <button
-                                                        onClick={() => {
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
                                                             setEditingId(v.id);
                                                             setNewStock(v.stockQuantity.toString());
                                                         }}
                                                         className="p-4 bg-white shadow-xl border border-gray-100 rounded-2xl hover:bg-black hover:text-white transition-all group/btn"
+                                                        aria-label={`Edit stock for ${v.name}`}
                                                     >
-                                                        <Edit3 className="h-5 w-5" />
+                                                        <Edit3 className="h-5 w-5" aria-hidden="true" />
                                                     </button>
                                                 )}
-                                                <button className="p-4 bg-white shadow-xl border border-gray-100 rounded-2xl hover:bg-black hover:text-white transition-all">
-                                                    <Activity className="h-5 w-5" />
-                                                </button>
                                             </div>
                                         </td>
                                     </tr>
@@ -270,7 +320,7 @@ export default function InventoryPage() {
                         </tbody>
                     </table>
                 </div>
-            </div>
+            </section>
         </div>
     );
 }

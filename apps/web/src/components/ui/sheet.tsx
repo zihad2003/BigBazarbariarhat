@@ -9,13 +9,28 @@ interface SheetContextValue {
     setOpen: (open: boolean) => void
 }
 
-const SheetContext = React.createContext<SheetContextValue>({
-    open: false,
-    setOpen: () => { },
-})
+const SheetContext = React.createContext<SheetContextValue | null>(null)
 
-function Sheet({ children }: { children: React.ReactNode }) {
-    const [open, setOpen] = React.useState(false)
+export function useSheet() {
+    const context = React.useContext(SheetContext)
+    if (!context) {
+        throw new Error('useSheet must be used within a Sheet')
+    }
+    return context
+}
+
+interface SheetProps {
+    children: React.ReactNode
+    open?: boolean
+    onOpenChange?: (open: boolean) => void
+}
+
+function Sheet({ children, open: controlledOpen, onOpenChange: controlledOnOpenChange }: SheetProps) {
+    const [uncontrolledOpen, setUncontrolledOpen] = React.useState(false)
+
+    const open = controlledOpen !== undefined ? controlledOpen : uncontrolledOpen
+    const setOpen = controlledOnOpenChange || setUncontrolledOpen
+
     return (
         <SheetContext.Provider value={{ open, setOpen }}>
             {children}
@@ -32,7 +47,7 @@ function SheetTrigger({
     asChild?: boolean
     className?: string
 }) {
-    const { setOpen } = React.useContext(SheetContext)
+    const { setOpen } = useSheet()
 
     if (asChild && React.isValidElement(children)) {
         return React.cloneElement(children as React.ReactElement<any>, {
@@ -61,7 +76,7 @@ function SheetContent({
     side?: 'left' | 'right' | 'top' | 'bottom'
     className?: string
 }) {
-    const { open, setOpen } = React.useContext(SheetContext)
+    const { open, setOpen } = useSheet()
 
     if (!open) return null
 

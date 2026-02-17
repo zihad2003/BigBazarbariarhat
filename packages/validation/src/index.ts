@@ -46,12 +46,14 @@ export const addressSchema = z.object({
 // ==================== PRODUCT SCHEMAS ====================
 
 export const productFilterSchema = z.object({
+    q: z.string().optional(),
     category: z.string().optional(),
     brand: z.string().optional(),
     minPrice: z.number().min(0).optional(),
     maxPrice: z.number().min(0).optional(),
     sizes: z.array(z.string()).optional(),
     colors: z.array(z.string()).optional(),
+    rating: z.number().min(0).max(5).optional(),
     inStock: z.boolean().optional(),
     sortBy: z.enum(['price_asc', 'price_desc', 'newest', 'popular', 'rating']).optional(),
     page: z.number().min(1).default(1),

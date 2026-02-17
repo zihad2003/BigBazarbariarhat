@@ -1,25 +1,35 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { OrderService } from '@bigbazar/database';
+import { auth, currentUser } from '@clerk/nextjs/server';
 
 export async function GET(request: NextRequest) {
     try {
+        const { userId: authUserId } = await auth();
+        const user = await currentUser();
+
+        if (!authUserId || !user) {
+            return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+        }
+
         const { searchParams } = new URL(request.url);
         const search = searchParams.get('q') || searchParams.get('search');
         const status = searchParams.get('status');
         const page = parseInt(searchParams.get('page') || '1');
         const limit = parseInt(searchParams.get('limit') || '10');
-        const userId = searchParams.get('userId') || searchParams.get('customerId'); // Admin might filter by user
 
-        // TODO: Add strict auth check here.
-        // If current user is admin, allow userId filter.
-        // If current user is customer, force userId = currentUserId (and ignore param unless it matches).
+        // Define admin role check - checking publicMetadata for 'role'
+        const isAdmin = user.publicMetadata?.role === 'admin';
+
+        // If not admin, force userId to be the authenticated user's ID
+        // If admin, allowing filtering by specific userId if provided, otherwise fetch all
+        const queryUserId = isAdmin ? (searchParams.get('userId') || searchParams.get('customerId')) : authUserId;
 
         const result = await OrderService.list({
             search,
             status,
             page,
             limit,
-            userId,
+            userId: queryUserId,
         });
 
         return NextResponse.json({

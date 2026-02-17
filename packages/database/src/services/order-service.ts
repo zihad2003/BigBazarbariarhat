@@ -15,7 +15,7 @@ export const OrderService = {
 
         let query = supabase
             .from('orders')
-            .select('*, user:users(id, first_name, last_name, email), order_items(count)', { count: 'exact' })
+            .select('*, user:users(id, first_name, last_name, email), order_items(quantity, product:products(name, slug, images))', { count: 'exact' })
             .order('created_at', { ascending: false })
             .range(offset, offset + limit - 1);
 
