@@ -4,10 +4,11 @@ import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { Star, Heart, ShoppingBag, ArrowRight, TrendingUp, Sparkles, Zap, Tag, Crown, Gem, Award, ShieldCheck, Languages } from 'lucide-react';
+import { Star, Heart, ShoppingBag, ArrowRight, TrendingUp, Sparkles, Zap, Tag, Crown, Gem, Award, ShieldCheck, Languages, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, LuxuryCard } from '@/components/ui/card';
 import { useLanguageStore, useTranslation } from '@bigbazar/shared';
+import { DeliveryInfoModal } from '@/components/shop/delivery-info-modal';
 
 const featuredProduct = {
     id: '1',
@@ -79,7 +80,7 @@ export default function HomePage() {
     if (!mounted) return null;
 
     return (
-        <main className="min-h-screen bg-luxury-black text-gray-200">
+        <main className="min-h-screen bg-background text-foreground">
             {/* Hero Section with Parallax */}
             <section className="relative overflow-hidden py-12 md:py-20 lg:py-28">
                 {/* Background gradient */}
@@ -127,10 +128,10 @@ export default function HomePage() {
                             </span>
                             <div className="h-px w-20 bg-gradient-to-l from-transparent to-luxury-gold" />
                         </div>
-                        <h1 className="text-5xl md:text-7xl lg:text-8xl font-playfair font-black text-white mb-6 leading-tight">
+                        <h1 className="text-5xl md:text-7xl lg:text-8xl font-playfair font-black text-foreground mb-6 leading-tight">
                             <span className="text-gradient-gold">{t.hero.title}</span>
                         </h1>
-                        <p className="text-lg md:text-xl text-white max-w-2xl mx-auto font-lato leading-relaxed">
+                        <p className="text-lg md:text-xl text-foreground max-w-2xl mx-auto font-lato leading-relaxed">
                             {t.hero.subtitle}
                         </p>
                     </motion.div>
@@ -151,10 +152,10 @@ export default function HomePage() {
                                 className="glass-luxury border-luxury-gold/20 p-6 text-center card-luxury-hover"
                             >
                                 <feature.icon className="h-8 w-8 text-luxury-gold mx-auto mb-4" />
-                                <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-2 font-playfair">
+                                <h3 className="text-sm font-bold text-foreground uppercase tracking-wider mb-2 font-playfair">
                                     {t.features[feature.key as keyof typeof t.features]}
                                 </h3>
-                                <p className="text-xs text-gray-300 leading-relaxed">
+                                <p className="text-xs text-muted-foreground leading-relaxed">
                                     {t.features[feature.key + 'Desc' as keyof typeof t.features] || feature.description}
                                 </p>
                             </motion.div>
@@ -185,7 +186,7 @@ export default function HomePage() {
                                             className="object-cover transition-transform duration-1000 group-hover:scale-105"
                                             quality={95}
                                         />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-luxury-black via-luxury-black/60 to-transparent opacity-90" />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent opacity-90" />
                                     </div>
                                     <div className="relative h-full flex flex-col justify-end p-8 md:p-10 text-white">
                                         <span className="inline-flex items-center gap-2 w-fit px-4 py-1.5 mb-4 text-xs font-bold bg-luxury-gold/20 text-luxury-gold backdrop-blur-sm border border-luxury-gold/30 uppercase tracking-widest rounded-sm">
@@ -262,7 +263,7 @@ export default function HomePage() {
                                     <div className="flex items-center justify-between mb-6 border-b border-luxury-black-lighter pb-4">
                                         <div className="flex items-center gap-3">
                                             <TrendingUp className="h-5 w-5 text-luxury-gold" />
-                                            <h3 className="text-xl font-playfair font-bold text-white uppercase tracking-wider">{t.trending.title}</h3>
+                                            <h3 className="text-xl font-playfair font-bold text-foreground uppercase tracking-wider">{t.trending.title}</h3>
                                         </div>
                                         <Link href="/trending" className="text-xs text-luxury-gold hover:text-white uppercase tracking-widest link-luxury transition-colors">{t.trending.viewAll}</Link>
                                     </div>
@@ -453,6 +454,7 @@ export default function HomePage() {
 
 function ProductCard({ product, index }: { product: any; index: number }) {
     const [isHovered, setIsHovered] = useState(false);
+    const [isDeliveryModalOpen, setIsDeliveryModalOpen] = useState(false);
 
     return (
         <motion.div
@@ -488,9 +490,21 @@ function ProductCard({ product, index }: { product: any; index: number }) {
                             </button>
                         </div>
 
-                        <div className={`absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-luxury-black/95 via-luxury-black/80 to-transparent transition-transform duration-300 ${isHovered ? 'translate-y-0' : 'translate-y-full'}`}>
-                            <Button className="w-full gap-2 bg-luxury-gold text-luxury-black hover:bg-white font-bold uppercase tracking-widest text-xs rounded-sm btn-luxury-glow" size="sm">
+                        <div className={`absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-luxury-black/95 via-luxury-black/80 to-transparent transition-transform duration-300 ${isHovered ? 'translate-y-0' : 'translate-y-full'} flex flex-col gap-2`}>
+                            <Button
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setIsDeliveryModalOpen(true);
+                                }}
+                                className="w-full gap-2 bg-luxury-gold text-luxury-black hover:bg-white font-bold uppercase tracking-widest text-[10px] rounded-sm btn-luxury-glow"
+                                size="sm"
+                            >
                                 <ShoppingBag className="h-3 w-3" />
+                                Order Now
+                            </Button>
+                            <Button className="w-full gap-2 bg-white/10 text-white hover:bg-white/20 font-bold uppercase tracking-widest text-[9px] rounded-sm border border-white/10" size="sm">
+                                <Plus className="h-3 w-3" />
                                 Add to Cart
                             </Button>
                         </div>
@@ -501,7 +515,7 @@ function ProductCard({ product, index }: { product: any; index: number }) {
 
                 <div className="space-y-1">
                     <Link href={`/products/${product.id}`}>
-                        <h3 className="font-playfair font-bold text-white text-lg leading-tight group-hover:text-gradient-gold transition-all duration-300">
+                        <h3 className="font-playfair font-bold text-foreground text-lg leading-tight group-hover:text-gradient-gold transition-all duration-300">
                             {product.name}
                         </h3>
                     </Link>
@@ -527,6 +541,11 @@ function ProductCard({ product, index }: { product: any; index: number }) {
                     </div>
                 </div>
             </div>
+            <DeliveryInfoModal
+                isOpen={isDeliveryModalOpen}
+                onClose={() => setIsDeliveryModalOpen(false)}
+                productName={product.name}
+            />
         </motion.div>
     );
 }

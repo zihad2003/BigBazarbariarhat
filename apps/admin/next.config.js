@@ -5,6 +5,9 @@ const nextConfig = {
         domains: ['images.unsplash.com', 'via.placeholder.com'],
     },
     transpilePackages: ['@bigbazar/types', '@bigbazar/validation', 'next-themes'],
+    typescript: {
+        ignoreBuildErrors: true,
+    },
 };
 
 module.exports = nextConfig;

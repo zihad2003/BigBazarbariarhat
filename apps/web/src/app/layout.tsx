@@ -67,7 +67,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#000000',
+  themeColor: '#ffffff',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
@@ -80,7 +80,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${inter.variable} ${playfair.variable} ${lato.variable}`}>
-      <body className={`${lato.className} bg-luxury-black text-foreground`}>
+      <body className={`${lato.className} bg-background text-foreground`}>
         <Providers>
           {children}
           <Preloader />

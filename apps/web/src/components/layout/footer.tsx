@@ -53,18 +53,18 @@ const features = [
 
 export function Footer() {
     return (
-        <footer className="bg-luxury-black text-gray-300 border-t border-luxury-black-lighter font-lato">
+        <footer className="bg-background text-muted-foreground border-t border-border font-lato">
             {/* Features Bar */}
-            <div className="border-b border-luxury-black-lighter">
+            <div className="border-b border-border">
                 <div className="max-w-7xl mx-auto px-6 lg:px-8 py-10">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                         {features.map((feature) => (
                             <div key={feature.title} className="flex items-center gap-4 group">
-                                <div className="flex-shrink-0 w-12 h-12 bg-luxury-black-card rounded-full flex items-center justify-center border border-luxury-black-lighter group-hover:border-luxury-gold transition-colors duration-300">
+                                <div className="flex-shrink-0 w-12 h-12 bg-card rounded-full flex items-center justify-center border border-border group-hover:border-luxury-gold transition-colors duration-300">
                                     <feature.icon className="h-5 w-5 text-luxury-gold" />
                                 </div>
                                 <div>
-                                    <h4 className="font-playfair font-bold text-white text-sm uppercase tracking-wider mb-1">{feature.title}</h4>
+                                    <h4 className="font-playfair font-bold text-foreground text-sm uppercase tracking-wider mb-1">{feature.title}</h4>
                                     <p className="text-xs text-gray-400 group-hover:text-gray-300 transition-colors">{feature.description}</p>
                                 </div>
                             </div>
@@ -79,7 +79,7 @@ export function Footer() {
                     {/* Brand Column */}
                     <div className="col-span-2 space-y-8">
                         <Link href="/" className="inline-block group">
-                            <span className="text-3xl font-black uppercase tracking-[0.15em] text-white font-playfair group-hover:text-luxury-gold transition-colors duration-300">
+                            <span className="text-3xl font-black uppercase tracking-[0.15em] text-foreground font-playfair group-hover:text-luxury-gold transition-colors duration-300">
                                 Big Bazar
                             </span>
                             <div className="h-0.5 w-12 bg-luxury-gold mt-2 group-hover:w-full transition-all duration-500"></div>
@@ -116,7 +116,7 @@ export function Footer() {
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 aria-label="Facebook"
-                                className="w-10 h-10 bg-luxury-black-card border border-luxury-black-lighter rounded-full flex items-center justify-center text-gray-400 hover:text-white hover:bg-luxury-gold hover:border-luxury-gold transition-all duration-300"
+                                className="w-10 h-10 bg-card border border-border rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-luxury-gold hover:border-luxury-gold transition-all duration-300"
                             >
                                 <Facebook className="h-4 w-4" />
                             </a>
@@ -203,7 +203,7 @@ export function Footer() {
             </div>
 
             {/* Bottom Bar */}
-            <div className="border-t border-luxury-black-lighter bg-luxury-black-card">
+            <div className="border-t border-border bg-card">
                 <div className="max-w-7xl mx-auto px-6 lg:px-8 py-6">
                     <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                         <p className="text-xs text-gray-500 tracking-wide">

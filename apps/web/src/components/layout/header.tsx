@@ -89,16 +89,16 @@ export function Header() {
 
             {/* Header */}
             <header
-                className={`sticky top-0 z-40 transition-all duration-300 border-b border-luxury-black-lighter ${isScrolled
-                    ? 'bg-luxury-black/90 backdrop-blur-md shadow-2xl'
-                    : 'bg-luxury-black'
+                className={`sticky top-0 z-40 transition-all duration-300 border-b border-border ${isScrolled
+                    ? 'bg-background/90 backdrop-blur-md shadow-2xl'
+                    : 'bg-background'
                     }`}
             >
                 <nav className="relative mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
                     {/* Logo */}
                     <Link href="/" className="flex items-center gap-2 group">
                         <div className="relative">
-                            <span className="text-2xl font-black uppercase tracking-[0.15em] text-white group-hover:text-luxury-gold transition-colors duration-300 font-playfair">
+                            <span className="text-2xl font-black uppercase tracking-[0.15em] text-foreground group-hover:text-luxury-gold transition-colors duration-300 font-playfair">
                                 Big Bazar
                             </span>
                             <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-luxury-gold scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-center"></span>
@@ -117,8 +117,8 @@ export function Header() {
                                 <Link
                                     href={item.href}
                                     className={`flex items-center gap-1 py-4 text-xs font-bold uppercase tracking-[0.15em] transition-all duration-300 ${item.highlight
-                                        ? 'text-luxury-red-bright hover:text-white'
-                                        : 'text-gray-300 hover:text-luxury-gold'
+                                        ? 'text-luxury-red-bright hover:text-foreground'
+                                        : 'text-muted-foreground hover:text-luxury-gold'
                                         }`}
                                 >
                                     {item.name}
@@ -180,7 +180,7 @@ export function Header() {
                         </SignedIn>
                         <SignedOut>
                             <Link href="/sign-in" aria-label="Sign In">
-                                <Button variant="ghost" size="icon" className="text-white hover:text-luxury-gold hover:bg-transparent transition-colors">
+                                <Button variant="ghost" size="icon" className="text-foreground hover:text-luxury-gold hover:bg-transparent transition-colors">
                                     <User className="h-5 w-5" />
                                 </Button>
                             </Link>
@@ -190,7 +190,7 @@ export function Header() {
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="relative text-white hover:text-luxury-gold hover:bg-transparent transition-colors group"
+                            className="relative text-foreground hover:text-luxury-gold hover:bg-transparent transition-colors group"
                             onClick={() => openCart()}
                             aria-label="Open Cart"
                         >

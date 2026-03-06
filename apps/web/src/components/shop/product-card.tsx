@@ -11,6 +11,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useUIStore } from '@/lib/stores/ui-store'
 import { useWishlistStore } from '@/lib/stores/wishlist-store'
+import { DeliveryInfoModal } from './delivery-info-modal'
 
 interface ProductCardProps {
     product: Product
@@ -23,6 +24,7 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
     const { addNotification, openCart } = useUIStore()
     const [isHovered, setIsHovered] = useState(false)
     const [isAdding, setIsAdding] = useState(false)
+    const [isDeliveryModalOpen, setIsDeliveryModalOpen] = useState(false)
 
     const isOutOfStock = product.stockQuantity <= 0
     const secondaryImage = product.images?.[1]?.url
@@ -251,11 +253,23 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
                 </div>
 
                 {/* Dynamic Action: Add to Cart */}
-                <div className={`absolute inset-x-6 bottom-6 z-10 transition-all duration-500 ${isHovered && !isOutOfStock ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>
+                <div className={`absolute inset-x-6 bottom-6 z-10 flex flex-col gap-2 transition-all duration-500 ${isHovered && !isOutOfStock ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>
+                    <Button
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setIsDeliveryModalOpen(true);
+                        }}
+                        className="w-full h-12 bg-luxury-gold text-luxury-black hover:bg-white font-black uppercase tracking-widest text-[9px] rounded-xl shadow-2xl shadow-luxury-gold/20 flex items-center justify-center gap-2 border border-white/10"
+                    >
+                        <ShoppingBag className="h-3.5 w-3.5" />
+                        Order Now
+                    </Button>
+
                     <Button
                         onClick={handleAddToCart}
                         disabled={isOutOfStock || isAdding}
-                        className="w-full h-16 bg-black text-white hover:bg-gray-800 font-black uppercase tracking-widest text-[10px] rounded-2xl shadow-2xl shadow-black/20 group/btn overflow-hidden relative"
+                        className="w-full h-10 bg-black text-white hover:bg-gray-800 font-black uppercase tracking-widest text-[8px] rounded-xl shadow-xl shadow-black/10 group/btn overflow-hidden relative border border-white/10"
                     >
                         <AnimatePresence mode="wait">
                             {isAdding ? (
@@ -276,8 +290,8 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
                                     exit={{ y: -20, opacity: 0 }}
                                     className="flex items-center gap-2"
                                 >
-                                    <ShoppingBag className="h-4 w-4" />
-                                    Append to Curation
+                                    <Plus className="h-3 w-3" />
+                                    Add to Cart
                                 </motion.span>
                             )}
                         </AnimatePresence>
@@ -314,6 +328,11 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
                     )}
                 </div>
             </div>
+            <DeliveryInfoModal
+                isOpen={isDeliveryModalOpen}
+                onClose={() => setIsDeliveryModalOpen(false)}
+                productName={product.name}
+            />
         </motion.div>
     )
 }

@@ -6,10 +6,14 @@
   --luxury-red-accent: #A52A2A;
   --luxury-red-bright: #DC143C;
 
-  --luxury-gold: #D4AF37;
-  --luxury-gold-bright: #FFD700;
-  --luxury-gold-dark: #B8860B;
-  --luxury-gold-light: #F4D03F;
+  --luxury-gold: #8B0000;
+  /* Replaced with Dark Red */
+  --luxury-gold-bright: #DC143C;
+  /* Replaced with Crimson */
+  --luxury-gold-dark: #660000;
+  /* Replaced with Darker Red */
+  --luxury-gold-light: #A52A2A;
+  /* Replaced with Brown/Red */
 
   --luxury-black: #1A1A1A;
   --luxury-black-lighter: #2C2C2C;
@@ -21,7 +25,48 @@
   --luxury-silver: #C0C0C0;
   --luxury-platinum: #E5E4E2;
 
-  /* Theme Mapping */
+  /* Light Theme Mapping (Default) */
+  --background: #FBFAF5;
+  /* Rice White */
+  --foreground: #28282B;
+  /* Matte Black */
+
+  --card: #F2F1EA;
+  --card-foreground: #28282B;
+
+  --popover: #FBFAF5;
+  --popover-foreground: #28282B;
+
+  --primary: #8B0000;
+  /* Dark Red */
+  --primary-foreground: #FFFFFF;
+
+  --secondary: #1A1A1A;
+  /* Matte Black / Charcoal */
+  --secondary-foreground: #FFFFFF;
+
+  --muted: #F3F4F6;
+  --muted-foreground: #6B7280;
+
+  --accent: #F9F9F9;
+  --accent-foreground: #8B0000;
+
+  --destructive: #DC143C;
+  --destructive-foreground: #FFFFFF;
+
+  --border: #E5E7EB;
+  --input: #E5E7EB;
+  --ring: #8B0000;
+
+  --radius: 0.5rem;
+
+  /* Glass morphism values */
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(0, 0, 0, 0.1);
+  --glass-blur: 20px;
+}
+
+.dark {
   --background: #1A1A1A;
   --foreground: #E0E0E0;
 
@@ -32,12 +77,9 @@
   --popover-foreground: #E0E0E0;
 
   --primary: #D4AF37;
-  /* Gold */
   --primary-foreground: #1A1A1A;
-  /* Dark text on gold */
 
   --secondary: #8B0000;
-  /* Dark Red */
   --secondary-foreground: #FFFFFF;
 
   --muted: #3D3D3D;
@@ -46,19 +88,10 @@
   --accent: #2C2C2C;
   --accent-foreground: #D4AF37;
 
-  --destructive: #DC143C;
-  --destructive-foreground: #FFFFFF;
-
   --border: #3D3D3D;
   --input: #3D3D3D;
-  --ring: #D4AF37;
-
-  --radius: 0.5rem;
-
-  /* Glass morphism values */
   --glass-bg: rgba(26, 26, 26, 0.7);
   --glass-border: rgba(212, 175, 55, 0.15);
-  --glass-blur: 20px;
 }
 
 * {
@@ -239,6 +272,7 @@ body {
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -250,6 +284,7 @@ body {
     opacity: 0;
     transform: translateY(-30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -260,15 +295,19 @@ body {
   0% {
     background-position: -1000px 0;
   }
+
   100% {
     background-position: 1000px 0;
   }
 }
 
 @keyframes pulse-gold {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4);
   }
+
   50% {
     box-shadow: 0 0 0 10px rgba(212, 175, 55, 0);
   }
@@ -279,6 +318,7 @@ body {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -290,6 +330,7 @@ body {
     opacity: 0;
     transform: translateX(30px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -314,12 +355,10 @@ body {
 
 .animate-shimmer {
   animation: shimmer 2s infinite;
-  background: linear-gradient(
-    90deg,
-    var(--luxury-black-card) 0%,
-    var(--luxury-black-lighter) 50%,
-    var(--luxury-black-card) 100%
-  );
+  background: linear-gradient(90deg,
+      var(--luxury-black-card) 0%,
+      var(--luxury-black-lighter) 50%,
+      var(--luxury-black-card) 100%);
   background-size: 1000px 100%;
 }
 
@@ -412,6 +451,7 @@ html {
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {

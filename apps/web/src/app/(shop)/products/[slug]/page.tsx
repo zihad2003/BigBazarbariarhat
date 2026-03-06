@@ -29,6 +29,7 @@ import { RelatedProducts } from '@/components/shop/related-products';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { formatPrice, cn } from '@/lib/utils';
+import { DeliveryInfoModal } from '@/components/shop/delivery-info-modal';
 
 export default function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = use(params);
@@ -39,6 +40,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
     const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
     const [isAdding, setIsAdding] = useState(false);
     const [activeTab, setActiveTab] = useState('description');
+    const [isDeliveryModalOpen, setIsDeliveryModalOpen] = useState(false);
 
     const addItem = useCartStore((state) => state.addItem);
     const toggleWishlist = useWishlistStore((state) => state.toggleItem);
@@ -288,9 +290,17 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                                         </div>
 
                                         <Button
+                                            onClick={() => setIsDeliveryModalOpen(true)}
+                                            className="flex-1 h-20 bg-luxury-gold text-luxury-black hover:bg-white rounded-[2rem] text-[11px] font-black uppercase tracking-[0.3em] gap-4 shadow-2xl shadow-luxury-gold/20 relative overflow-hidden group"
+                                        >
+                                            <ShoppingBag className="h-5 w-5 group-hover:scale-110 transition-transform" />
+                                            Order Now
+                                        </Button>
+
+                                        <Button
                                             onClick={handleAddToCart}
                                             disabled={isOutOfStock || isAdding}
-                                            className="flex-1 h-20 bg-black text-white hover:bg-gray-800 rounded-[2rem] text-[11px] font-black uppercase tracking-[0.3em] gap-4 shadow-2xl shadow-black/20 relative overflow-hidden group"
+                                            className="flex-1 h-20 bg-black text-white hover:bg-gray-800 rounded-[2rem] text-[11px] font-black uppercase tracking-[0.3em] gap-4 shadow-2xl shadow-black/20 relative overflow-hidden group border border-white/10"
                                         >
                                             <AnimatePresence mode="wait">
                                                 {isAdding ? (
@@ -300,8 +310,8 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                                                     </motion.div>
                                                 ) : (
                                                     <motion.div key="idle" initial={{ y: 20 }} animate={{ y: 0 }} exit={{ y: -20 }} className="flex items-center gap-3">
-                                                        <ShoppingBag className="h-5 w-5 group-hover:scale-110 transition-transform" />
-                                                        {isOutOfStock ? 'Sold Out / Notify' : 'Append to Curation'}
+                                                        <Plus className="h-5 w-5 group-hover:scale-110 transition-transform" />
+                                                        {isOutOfStock ? 'Sold Out / Notify' : 'Add to Cart'}
                                                     </motion.div>
                                                 )}
                                             </AnimatePresence>
@@ -484,6 +494,11 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                     <RelatedProducts products={relatedProducts} />
                 </div>
             </div>
+            <DeliveryInfoModal
+                isOpen={isDeliveryModalOpen}
+                onClose={() => setIsDeliveryModalOpen(false)}
+                productName={product.name}
+            />
         </div>
     );
 }
