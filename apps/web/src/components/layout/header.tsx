@@ -50,13 +50,8 @@ const navigation = [
     },
     {
         name: 'Accessories',
-        href: '/accessories',
-        submenu: [
-            { name: 'Bags', href: '/accessories/bags' },
-            { name: 'Watches', href: '/accessories/watches' },
-            { name: 'Jewelry', href: '/accessories/jewelry' },
-            { name: 'Sunglasses', href: '/accessories/sunglasses' },
-        ]
+        href: '#',
+        comingSoon: true,
     },
     { name: 'Sale', href: '/sale', highlight: true },
 ];
@@ -83,13 +78,13 @@ export function Header() {
     return (
         <>
             {/* Announcement Bar */}
-            <div className="bg-luxury-red text-white text-center py-2.5 text-xs font-bold tracking-[0.2em] uppercase">
-                <span className="text-luxury-gold">✦</span> Exclusive Collection: Up to 50% Off <span className="text-luxury-gold">✦</span>
+            <div className="bg-foreground text-white text-center py-2.5 text-xs font-bold tracking-[0.2em] uppercase">
+                Free Nationwide Shipping on Orders Over ৳2000
             </div>
 
             {/* Header */}
             <header
-                className={`sticky top-0 z-40 transition-all duration-300 border-b border-border ${isScrolled
+                className={`sticky top-0 z-50 transition-all duration-300 border-b border-border ${isScrolled
                     ? 'bg-background/90 backdrop-blur-md shadow-2xl'
                     : 'bg-background'
                     }`}
@@ -98,10 +93,10 @@ export function Header() {
                     {/* Logo */}
                     <Link href="/" className="flex items-center gap-2 group">
                         <div className="relative">
-                            <span className="text-2xl font-black uppercase tracking-[0.15em] text-foreground group-hover:text-luxury-gold transition-colors duration-300 font-playfair">
-                                Big Bazar
+                            <span className="text-2xl font-black uppercase tracking-[0.15em] transition-colors duration-300 font-playfair">
+                                <span className="text-destructive">BIG</span> <span className="text-foreground">BAZAR</span>
                             </span>
-                            <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-luxury-gold scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-center"></span>
+                            <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-destructive scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-center"></span>
                         </div>
                     </Link>
 
@@ -117,11 +112,16 @@ export function Header() {
                                 <Link
                                     href={item.href}
                                     className={`flex items-center gap-1 py-4 text-xs font-bold uppercase tracking-[0.15em] transition-all duration-300 ${item.highlight
-                                        ? 'text-luxury-red-bright hover:text-foreground'
-                                        : 'text-muted-foreground hover:text-luxury-gold'
+                                        ? 'text-destructive hover:text-foreground'
+                                        : 'text-muted-foreground hover:text-destructive'
                                         }`}
                                 >
                                     {item.name}
+                                    {item.comingSoon && (
+                                        <span className="ml-1 text-[9px] bg-yellow-400 text-yellow-900 px-1 py-0.5 font-bold uppercase tracking-widest leading-none">
+                                            Soon
+                                        </span>
+                                    )}
                                     {item.submenu && <ChevronDown className="h-3 w-3 opacity-50 group-hover:opacity-100 transition-opacity" />}
                                 </Link>
 
@@ -148,7 +148,7 @@ export function Header() {
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="text-white hover:text-luxury-gold hover:bg-transparent transition-colors"
+                            className="text-foreground hover:text-destructive hover:bg-transparent transition-colors"
                             onClick={() => openSearch()}
                             aria-label="Search"
                         >
@@ -157,10 +157,10 @@ export function Header() {
 
                         {/* Wishlist */}
                         <Link href="/wishlist" className="relative hidden sm:block" aria-label="View Wishlist">
-                            <Button variant="ghost" size="icon" className="text-white hover:text-luxury-gold hover:bg-transparent transition-colors">
+                            <Button variant="ghost" size="icon" className="text-foreground hover:text-destructive hover:bg-transparent transition-colors">
                                 <Heart className="h-5 w-5" />
                                 {wishlistCount > 0 && (
-                                    <span className="absolute -top-1 -right-1 bg-luxury-red text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
+                                    <span className="absolute -top-1 -right-1 bg-destructive text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
                                         {wishlistCount}
                                     </span>
                                 )}
@@ -173,14 +173,14 @@ export function Header() {
                                 afterSignOutUrl="/"
                                 appearance={{
                                     elements: {
-                                        avatarBox: 'w-8 h-8 ring-2 ring-luxury-gold/50',
+                                        avatarBox: 'w-8 h-8 ring-2 ring-destructive/50',
                                     },
                                 }}
                             />
                         </SignedIn>
                         <SignedOut>
                             <Link href="/sign-in" aria-label="Sign In">
-                                <Button variant="ghost" size="icon" className="text-foreground hover:text-luxury-gold hover:bg-transparent transition-colors">
+                                <Button variant="ghost" size="icon" className="text-foreground hover:text-destructive hover:bg-transparent transition-colors">
                                     <User className="h-5 w-5" />
                                 </Button>
                             </Link>
@@ -190,13 +190,13 @@ export function Header() {
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="relative text-foreground hover:text-luxury-gold hover:bg-transparent transition-colors group"
+                            className="relative text-foreground hover:text-destructive hover:bg-transparent transition-colors group"
                             onClick={() => openCart()}
                             aria-label="Open Cart"
                         >
                             <ShoppingBag className="h-5 w-5" />
                             {mounted && cartItemCount > 0 && (
-                                <span className="absolute -top-1 -right-1 bg-luxury-gold text-luxury-black text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
+                                <span className="absolute -top-1 -right-1 bg-destructive text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
                                     {cartItemCount}
                                 </span>
                             )}

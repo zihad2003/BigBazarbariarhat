@@ -9,7 +9,7 @@ const Card = React.forwardRef<
     <div
         ref={ref}
         className={cn(
-            "rounded-sm border border-luxury-black-lighter bg-luxury-black-card text-card-foreground shadow-luxury transition-all duration-300",
+            "rounded-sm border border-border bg-card text-card-foreground shadow-sm transition-all duration-300",
             className
         )}
         {...props}
@@ -23,7 +23,7 @@ const CardHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
     <div
         ref={ref}
-        className={cn("flex flex-col space-y-1.5 p-6 border-b border-luxury-black-lighter", className)}
+        className={cn("flex flex-col space-y-1.5 p-6 border-b border-border", className)}
         {...props}
     />
 ))
@@ -36,7 +36,7 @@ const CardTitle = React.forwardRef<
     <h3
         ref={ref}
         className={cn(
-            "text-2xl font-semibold leading-none tracking-tight text-white font-playfair",
+            "text-2xl font-semibold leading-none tracking-tight text-foreground font-playfair",
             className
         )}
         {...props}
@@ -50,7 +50,7 @@ const CardDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
     <p
         ref={ref}
-        className={cn("text-sm text-gray-400 font-lato", className)}
+        className={cn("text-sm text-muted-foreground font-lato", className)}
         {...props}
     />
 ))
@@ -70,7 +70,7 @@ const CardFooter = React.forwardRef<
 >(({ className, ...props }, ref) => (
     <div
         ref={ref}
-        className={cn("flex items-center p-6 pt-0 border-t border-luxury-black-lighter", className)}
+        className={cn("flex items-center p-6 pt-0 border-t border-border", className)}
         {...props}
     />
 ))
@@ -85,9 +85,9 @@ const LuxuryCard = React.forwardRef<
         ref={ref}
         className={cn(
             "rounded-sm shadow-luxury transition-all duration-300 card-luxury-hover",
-            variant === 'gold' && "border-luxury border-luxury-gold/20 bg-luxury-black-card",
-            variant === 'red' && "border-luxury-red border-luxury-red/20 bg-luxury-black-card",
-            variant === 'glass' && "glass-luxury border-luxury-gold/30",
+            variant === 'gold' && "border border-luxury-gold/20 bg-card",
+            variant === 'red' && "border border-luxury-red/20 bg-card",
+            variant === 'glass' && "bg-white/40 backdrop-blur-md border border-luxury-gold/30 shadow-lg",
             className
         )}
         {...props}

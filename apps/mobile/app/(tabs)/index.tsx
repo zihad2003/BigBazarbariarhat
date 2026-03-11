@@ -66,8 +66,8 @@ const styles = StyleSheet.create({
     hero: {
         backgroundColor: '#1a1a1a',
         padding: 32,
-        paddingTop: 60,
-        paddingBottom: 60,
+        paddingTop: 48,
+        paddingBottom: 48,
         alignItems: 'center',
     },
     heroTitle: {

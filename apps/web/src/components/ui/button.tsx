@@ -10,20 +10,17 @@ const buttonVariants = cva(
     {
         variants: {
             variant: {
-                default: "bg-luxury-gold text-luxury-black hover:bg-white hover:text-luxury-black shadow-luxury hover:shadow-luxury-lg btn-luxury-glow",
-                destructive:
-                    "bg-luxury-red text-white hover:bg-luxury-red-bright shadow-luxury hover:shadow-luxury-lg btn-luxury-glow",
-                outline:
-                    "border-2 border-luxury-gold text-luxury-gold bg-transparent hover:bg-luxury-gold hover:text-luxury-black hover:shadow-luxury-gold transition-all duration-300",
+                default: "bg-luxury-gold text-black hover:bg-black hover:text-white shadow-sm hover:shadow-md transition-all duration-300",
+                destructive: "bg-luxury-red text-white hover:bg-luxury-red-bright shadow-sm hover:shadow-md transition-all duration-300",
+                outline: "border-2 border-luxury-gold text-luxury-gold bg-transparent hover:bg-luxury-gold hover:text-black transition-all duration-300",
                 outlineRed:
                     "border-2 border-luxury-red text-luxury-red bg-transparent hover:bg-luxury-red hover:text-white hover:shadow-luxury transition-all duration-300",
-                secondary:
-                    "bg-luxury-black-lighter text-white hover:bg-luxury-black-card border border-luxury-black-lighter hover:border-luxury-gold/50 transition-all duration-300",
+                secondary: "bg-gray-100 text-gray-900 hover:bg-gray-200 border border-gray-200 transition-all duration-300",
                 ghost: "hover:bg-luxury-gold/10 hover:text-luxury-gold transition-all duration-300",
                 ghostRed: "hover:bg-luxury-red/10 hover:text-luxury-red transition-all duration-300",
                 link: "text-luxury-gold underline-offset-4 hover:underline link-luxury",
-                luxury: "bg-gradient-to-r from-luxury-gold-dark via-luxury-gold to-luxury-gold-bright text-luxury-black hover:from-luxury-gold hover:via-luxury-gold-bright hover:to-white shadow-luxury-gold btn-luxury-glow",
-                luxuryRed: "bg-gradient-to-r from-luxury-red via-luxury-red-accent to-luxury-red-bright text-white hover:from-luxury-red-bright hover:via-luxury-red-accent hover:to-luxury-red shadow-luxury btn-luxury-glow",
+                luxury: "bg-gradient-to-r from-luxury-gold-dark via-luxury-gold to-luxury-gold-bright text-black hover:from-luxury-gold hover:via-luxury-gold-bright hover:to-white shadow-md",
+                luxuryRed: "bg-gradient-to-r from-luxury-red via-luxury-red-accent to-luxury-red-bright text-white hover:from-luxury-red-bright hover:via-luxury-red-accent hover:to-luxury-red shadow-md",
             },
             size: {
                 default: "h-10 px-6 py-2 rounded-sm",

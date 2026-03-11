@@ -19,7 +19,22 @@ export default function RootLayout({
     children: React.ReactNode;
 }) {
     return (
-        <ClerkProvider>
+        <ClerkProvider
+            appearance={{
+                variables: { colorPrimary: '#1a6b3c' },
+                elements: {
+                    formButtonPrimary: 'bg-primary text-primary-foreground hover:bg-primary/90',
+                    card: 'bg-card text-card-foreground shadow-md',
+                    headerTitle: 'text-foreground',
+                    headerSubtitle: 'text-muted-foreground',
+                    socialButtonsBlockButton: 'border-border text-foreground hover:bg-accent/50',
+                    socialButtonsBlockButtonText: 'font-semibold',
+                    formFieldLabel: 'text-foreground',
+                    formFieldInput: 'bg-background border-input text-foreground focus:ring-primary',
+                    footerActionLink: 'text-primary hover:text-primary/90',
+                }
+            }}
+        >
             <html lang="en" suppressHydrationWarning>
                 <body className={inter.className}>
                     <ThemeProvider

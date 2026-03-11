@@ -116,6 +116,8 @@ export default function NewProductPage() {
         }
     };
 
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
+
     const generateSlug = () => {
         if (!watchName) return;
         const slug = watchName
@@ -133,10 +135,6 @@ export default function NewProductPage() {
             </div>
         );
     }
-
-
-
-    const [imagePreview, setImagePreview] = useState<string | null>(null);
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];

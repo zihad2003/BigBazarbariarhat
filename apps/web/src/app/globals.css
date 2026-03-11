@@ -2,61 +2,59 @@
 
 :root {
   /* Premium Luxury Palette */
-  --luxury-red: #8B0000;
-  --luxury-red-accent: #A52A2A;
-  --luxury-red-bright: #DC143C;
+  --luxury-red: #1A6B3C;
+  --luxury-red-accent: #14532D;
+  --luxury-red-bright: #16A34A;
 
-  --luxury-gold: #8B0000;
-  /* Replaced with Dark Red */
-  --luxury-gold-bright: #DC143C;
-  /* Replaced with Crimson */
-  --luxury-gold-dark: #660000;
-  /* Replaced with Darker Red */
-  --luxury-gold-light: #A52A2A;
-  /* Replaced with Brown/Red */
+  --luxury-gold: #D4A017;
+  /* Gold Accent */
+  --luxury-gold-bright: #FADB5F;
+  --luxury-gold-dark: #B38611;
+  --luxury-gold-light: #FCEFB4;
 
-  --luxury-black: #1A1A1A;
-  --luxury-black-lighter: #2C2C2C;
-  --luxury-black-card: #252525;
-  --luxury-charcoal: #0D0D0D;
+  --luxury-black: #111827;
+  /* Dark text */
+  --luxury-black-lighter: #E5E7EB;
+  /* Light border */
+  --luxury-black-card: #FFFFFF;
+  /* White card */
+  --luxury-charcoal: #F3F4F6;
+  /* Light background */
 
   /* Extended Luxury Colors */
   --luxury-cream: #F5F5DC;
-  --luxury-silver: #C0C0C0;
+  --luxury-silver: #E5E7EB;
   --luxury-platinum: #E5E4E2;
 
   /* Light Theme Mapping (Default) */
-  --background: #FBFAF5;
-  /* Rice White */
-  --foreground: #28282B;
-  /* Matte Black */
+  --background: #FFFFFF;
+  --foreground: #111827;
 
-  --card: #F2F1EA;
-  --card-foreground: #28282B;
+  --card: #FFFFFF;
+  --card-foreground: #111827;
 
-  --popover: #FBFAF5;
-  --popover-foreground: #28282B;
+  --popover: #FFFFFF;
+  --popover-foreground: #111827;
 
-  --primary: #8B0000;
-  /* Dark Red */
+  --primary: #1A6B3C;
+  /* Deep Green Primary */
   --primary-foreground: #FFFFFF;
 
-  --secondary: #1A1A1A;
-  /* Matte Black / Charcoal */
-  --secondary-foreground: #FFFFFF;
+  --secondary: #F3F4F6;
+  --secondary-foreground: #1A6B3C;
 
   --muted: #F3F4F6;
   --muted-foreground: #6B7280;
 
   --accent: #F9F9F9;
-  --accent-foreground: #8B0000;
+  --accent-foreground: #D4A017;
 
   --destructive: #DC143C;
   --destructive-foreground: #FFFFFF;
 
   --border: #E5E7EB;
   --input: #E5E7EB;
-  --ring: #8B0000;
+  --ring: #1A6B3C;
 
   --radius: 0.5rem;
 
@@ -143,7 +141,7 @@ body {
 
 /* Luxury gradient backgrounds */
 .bg-luxury-gradient {
-  background: linear-gradient(135deg, var(--luxury-charcoal) 0%, var(--luxury-black) 50%, var(--luxury-black-lighter) 100%);
+  background: linear-gradient(135deg, var(--background) 0%, rgba(26, 107, 60, 0.05) 50%, var(--card) 100%);
 }
 
 .bg-luxury-gradient-gold {
@@ -156,17 +154,17 @@ body {
 
 /* Glass morphism effects */
 .glass-luxury {
-  background: rgba(26, 26, 26, 0.6);
+  background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--glass-border);
 }
 
 .glass-luxury-gold {
-  background: rgba(212, 175, 55, 0.1);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(212, 175, 55, 0.3);
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(212, 160, 23, 0.2);
 }
 
 /* Premium text gradients */
@@ -186,20 +184,20 @@ body {
 
 /* Luxury box shadows */
 .shadow-luxury {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4),
-    0 2px 4px -1px rgba(0, 0, 0, 0.3),
-    0 0 0 1px rgba(212, 175, 55, 0.1);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05),
+    0 2px 4px -1px rgba(0, 0, 0, 0.03),
+    0 0 0 1px rgba(0, 0, 0, 0.02);
 }
 
 .shadow-luxury-lg {
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5),
-    0 8px 10px -6px rgba(0, 0, 0, 0.4),
-    0 0 0 1px rgba(212, 175, 55, 0.15);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08),
+    0 8px 10px -6px rgba(0, 0, 0, 0.04),
+    0 0 0 1px rgba(0, 0, 0, 0.03);
 }
 
 .shadow-luxury-gold {
-  box-shadow: 0 4px 20px -2px rgba(212, 175, 55, 0.3),
-    0 2px 8px -1px rgba(212, 175, 55, 0.2);
+  box-shadow: 0 4px 20px -2px rgba(212, 160, 23, 0.15),
+    0 2px 8px -1px rgba(212, 160, 23, 0.1);
 }
 
 /* Premium border effects */
