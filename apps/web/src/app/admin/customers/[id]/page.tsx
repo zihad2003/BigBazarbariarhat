@@ -23,7 +23,8 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { CustomersService, Customer } from '@bigbazar/shared';
+import type { Customer } from '@bigbazar/shared';
+import { CustomersService } from '@bigbazar/shared';
 
 export default function CustomerDetailPage() {
     const params = useParams() as { id: string };
@@ -54,7 +55,7 @@ export default function CustomerDetailPage() {
     if (loading) {
         return (
             <div className="flex justify-center items-center h-96">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600" />
             </div>
         );
     }

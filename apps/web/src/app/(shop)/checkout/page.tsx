@@ -22,7 +22,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { useCartStore } from '@bigbazar/shared';
 import { useUIStore } from '@/lib/stores/ui-store';
-import { useUser } from '@clerk/nextjs';
+import { useSession } from 'next-auth/react';
 import { formatPrice } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -34,7 +34,9 @@ const steps = [
 
 export default function CheckoutPage() {
     const router = useRouter();
-    const { user, isLoaded } = useUser();
+    const { data: session, status } = useSession();
+    const isLoaded = status !== 'loading';
+    const user = session?.user;
     const [currentStep, setCurrentStep] = useState('shipping');
     const [loading, setLoading] = useState(false);
 
@@ -59,11 +61,12 @@ export default function CheckoutPage() {
 
     useEffect(() => {
         if (isLoaded && user) {
+            const nameParts = user.name?.split(' ') || [];
             setShippingData(prev => ({
                 ...prev,
-                firstName: user.firstName || '',
-                lastName: user.lastName || '',
-                email: user.primaryEmailAddress?.emailAddress || '',
+                firstName: nameParts[0] || '',
+                lastName: nameParts.slice(1).join(' ') || '',
+                email: user.email || '',
             }));
         }
     }, [isLoaded, user]);

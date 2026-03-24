@@ -1,32 +1,35 @@
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextRequest} from 'next/server';
+import { NextResponse } from 'next/server';
 import { OrderService } from '@bigbazar/database';
-import { auth, currentUser } from '@clerk/nextjs/server';
+import { auth } from "@/auth";
 
-export async function GET(request: NextRequest) {
+export const GET = auth(async (req) => {
     try {
-        const { userId: authUserId } = await auth();
-        const user = await currentUser();
-
-        if (!authUserId || !user) {
+        if (!req.auth) {
             return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
         }
 
-        const { searchParams } = new URL(request.url);
+        const { searchParams } = new URL(req.url);
         const search = searchParams.get('q') || searchParams.get('search');
         const status = searchParams.get('status');
         const page = parseInt(searchParams.get('page') || '1');
         const limit = parseInt(searchParams.get('limit') || '10');
 
-        // Define admin role check - checking publicMetadata for 'role'
-        const isAdmin = user.publicMetadata?.role === 'admin';
+        if (!req.auth?.user) {
+            return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+        }
+
+        // Check for admin role
+        const role = (req.auth.user as any)?.role;
+        const isAdmin = role === 'SUPER_ADMIN' || role === 'MANAGER' || role === 'MODERATOR';
 
         // If not admin, force userId to be the authenticated user's ID
         // If admin, allowing filtering by specific userId if provided, otherwise fetch all
-        const queryUserId = isAdmin ? (searchParams.get('userId') || searchParams.get('customerId')) : authUserId;
+        const queryUserId = isAdmin ? (searchParams.get('userId') || searchParams.get('customerId') || undefined) : req.auth.user.id;
 
         const result = await OrderService.list({
-            search,
-            status,
+            search: search || undefined,
+            status: status || undefined,
             page,
             limit,
             userId: queryUserId,
@@ -40,7 +43,7 @@ export async function GET(request: NextRequest) {
         console.error('Orders API Error:', error);
         return NextResponse.json({ success: false, error: 'Failed to fetch orders' }, { status: 500 });
     }
-}
+});
 
 export async function POST(request: NextRequest) {
     try {

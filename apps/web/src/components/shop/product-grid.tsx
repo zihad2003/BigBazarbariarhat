@@ -1,4 +1,4 @@
-import { Product } from '@bigbazar/shared'
+import type { Product } from '@bigbazar/shared'
 import { ProductCard } from './product-card'
 import { ProductCardSkeleton } from './product-card-skeleton'
 import { cn } from '@/lib/utils'

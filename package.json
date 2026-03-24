@@ -13,6 +13,8 @@
     "build:web": "npm run build -w apps/web",
     "build:all": "turbo build",
     "db:generate": "npm run db:generate -w packages/database",
+    "db:push": "npm run db:push -w packages/database",
+    "db:studio": "npx prisma studio --schema ./packages/database/prisma/schema.prisma",
     "lint": "npm run lint -w apps/web",
     "lint:fix": "npm run lint:fix -w apps/web",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
@@ -24,10 +26,14 @@
     "prepare": "husky"
   },
   "devDependencies": {
+    "@prisma/client": "^6.0.0",
     "husky": "^9.0.0",
     "lint-staged": "^15.0.0",
     "prettier": "^3.0.0",
-    "prisma": "^6.0.0",
-    "@prisma/client": "^6.0.0"
+    "prisma": "^6.0.0"
+  },
+  "dependencies": {
+    "ajv": "^8.18.0",
+    "ajv-keywords": "^5.1.0"
   }
 }

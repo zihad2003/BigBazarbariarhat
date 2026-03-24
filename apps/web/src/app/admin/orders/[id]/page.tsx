@@ -17,7 +17,8 @@ import {
 
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { OrdersService, Order, OrderStatus, PaymentStatus } from '@bigbazar/shared';
+import type { Order, OrderStatus, PaymentStatus } from '@bigbazar/shared';
+import { OrdersService } from '@bigbazar/shared';
 
 interface GuestAddress {
     addressLine1?: string;
@@ -85,7 +86,7 @@ export default function OrderDetailPage() {
     if (loading) {
         return (
             <div className="flex justify-center items-center h-screen bg-gray-50">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black" />
             </div>
         );
     }

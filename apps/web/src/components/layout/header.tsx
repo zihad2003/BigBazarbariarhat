@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ShoppingBag, User, Search, Heart, ChevronDown } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { useUser, SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
+import { useSession, signOut } from 'next-auth/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { useCartStore } from '@bigbazar/shared';
@@ -13,6 +13,14 @@ import { useWishlistStore } from '@/lib/stores/wishlist-store';
 import { useUIStore } from '@/lib/stores/ui-store';
 import { MegaMenu } from './mega-menu';
 import { SearchOverlay } from './search-overlay';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const navigation = [
     {
@@ -60,7 +68,7 @@ export function Header() {
     const [isScrolled, setIsScrolled] = useState(false);
     const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null);
     const [mounted, setMounted] = useState(false);
-    const { user } = useUser();
+    const { data: session, status } = useSession();
 
     const cartItemCount = useCartStore((state) => state.getItemCount());
     const wishlistCount = useWishlistStore((state) => state.getItemCount());
@@ -96,7 +104,7 @@ export function Header() {
                             <span className="text-2xl font-black uppercase tracking-[0.15em] transition-colors duration-300 font-playfair">
                                 <span className="text-destructive">BIG</span> <span className="text-foreground">BAZAR</span>
                             </span>
-                            <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-destructive scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-center"></span>
+                            <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-destructive scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-center" />
                         </div>
                     </Link>
 
@@ -168,23 +176,43 @@ export function Header() {
                         </Link>
 
                         {/* User */}
-                        <SignedIn>
-                            <UserButton
-                                afterSignOutUrl="/"
-                                appearance={{
-                                    elements: {
-                                        avatarBox: 'w-8 h-8 ring-2 ring-destructive/50',
-                                    },
-                                }}
-                            />
-                        </SignedIn>
-                        <SignedOut>
-                            <Link href="/sign-in" aria-label="Sign In">
+                        {status === 'authenticated' ? (
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" size="icon" className="w-8 h-8 rounded-full ring-2 ring-destructive/50 overflow-hidden">
+                                        <User className="h-5 w-5" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-56">
+                                    <DropdownMenuLabel>
+                                        <div className="flex flex-col space-y-1">
+                                            <p className="text-sm font-medium leading-none">{session.user?.name}</p>
+                                            <p className="text-xs leading-none text-muted-foreground">{session.user?.email}</p>
+                                        </div>
+                                    </DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem asChild>
+                                        <Link href="/account">My Account</Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem asChild>
+                                        <Link href="/account/orders">Orders</Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem 
+                                        className="text-destructive focus:text-destructive cursor-pointer"
+                                        onClick={() => signOut({ callbackUrl: '/' })}
+                                    >
+                                        Sign Out
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        ) : (
+                            <Link href="/login" aria-label="Sign In">
                                 <Button variant="ghost" size="icon" className="text-foreground hover:text-destructive hover:bg-transparent transition-colors">
                                     <User className="h-5 w-5" />
                                 </Button>
                             </Link>
-                        </SignedOut>
+                        )}
 
                         {/* Cart */}
                         <Button

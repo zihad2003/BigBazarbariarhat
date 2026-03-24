@@ -16,7 +16,8 @@ import {
     ChevronRight,
     Loader2
 } from 'lucide-react';
-import { ProductsService, Product } from '@bigbazar/shared';
+import type { Product } from '@bigbazar/shared';
+import { ProductsService } from '@bigbazar/shared';
 
 export default function ProductsPage() {
     const [products, setProducts] = useState<Product[]>([]);

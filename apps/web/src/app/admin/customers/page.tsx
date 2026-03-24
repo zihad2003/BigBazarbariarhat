@@ -18,7 +18,8 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { CustomersService, Customer } from '@bigbazar/shared';
+import type { Customer } from '@bigbazar/shared';
+import { CustomersService } from '@bigbazar/shared';
 
 export default function CustomersPage() {
     const [customers, setCustomers] = useState<Customer[]>([]);

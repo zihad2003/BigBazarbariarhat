@@ -26,9 +26,9 @@ interface InventoryItem {
 
 function StockBadge({ stock }: { stock: number }) {
     if (stock <= 0)
-        return <Badge className="bg-red-100 text-red-700 border-red-200 font-bold">Out of Stock</Badge>;
+        {return <Badge className="bg-red-100 text-red-700 border-red-200 font-bold">Out of Stock</Badge>;}
     if (stock <= 10)
-        return <Badge className="bg-amber-100 text-amber-700 border-amber-200 font-bold">Low Stock ({stock})</Badge>;
+        {return <Badge className="bg-amber-100 text-amber-700 border-amber-200 font-bold">Low Stock ({stock})</Badge>;}
     return <Badge className="bg-green-100 text-green-700 border-green-200 font-bold">In Stock ({stock})</Badge>;
 }
 

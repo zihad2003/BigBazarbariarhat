@@ -1,597 +1,219 @@
-// schema.prisma
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
 
 generator client {
   provider = "prisma-client-js"
 }
 
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+model Admin {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String   // hashed with bcrypt
+  role      AdminRole @default(MANAGER)
+  createdAt DateTime @default(now())
 }
 
-// ==================== USER MANAGEMENT ====================
-
-model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  phone         String?   @unique
-  passwordHash  String
-  role          UserRole  @default(CUSTOMER)
-  
-  firstName     String
-  lastName      String
-  avatar        String?
-  
-  emailVerified Boolean   @default(false)
-  phoneVerified Boolean   @default(false)
-  isActive      Boolean   @default(true)
-  
-  addresses     Address[]
-  orders        Order[]
-  reviews       Review[]
-  wishlist      WishlistItem[]
-  cart          CartItem[]
-  
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  
-  @@index([email])
-  @@index([phone])
-}
-
-enum UserRole {
-  CUSTOMER
-  ADMIN
+enum AdminRole {
   SUPER_ADMIN
-  STAFF
+  MANAGER
 }
 
-model Address {
-  id            String   @id @default(cuid())
-  userId        String
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  label         String   // "Home", "Office", etc.
-  fullName      String
-  phone         String
-  addressLine1  String
-  addressLine2  String?
-  city          String
-  state         String?
-  postalCode    String
-  country       String   @default("Bangladesh")
-  
-  isDefault     Boolean  @default(false)
-  
-  orders        Order[]
-  
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  
-  @@index([userId])
-}
-
-// ==================== PRODUCT MANAGEMENT ====================
-
-model Category {
-  id          String      @id @default(cuid())
-  name        String
-  slug        String      @unique
-  description String?
-  image       String?
-  icon        String?
-  
-  parentId    String?
-  parent      Category?   @relation("CategoryHierarchy", fields: [parentId], references: [id])
-  children    Category[]  @relation("CategoryHierarchy")
-  
-  products    Product[]
-  
-  displayOrder Int       @default(0)
-  isActive    Boolean    @default(true)
-  
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  
-  @@index([slug])
-  @@index([parentId])
+model Customer {
+  id        String   @id @default(uuid())
+  name      String
+  phone     String   @unique  // primary identifier (no email needed)
+  email     String?
+  address   String?
+  area      String?  // e.g. Bariarhat, Hathazari, Sitakunda
+  district  String?  @default("Chattogram")
+  orders    Order[]
+  createdAt DateTime @default(now())
 }
 
 model Brand {
-  id          String    @id @default(cuid())
-  name        String    @unique
-  slug        String    @unique
-  logo        String?
-  description String?
-  
-  products    Product[]
-  
-  isActive    Boolean   @default(true)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  
-  @@index([slug])
+  id        String    @id @default(uuid())
+  name      String    @unique
+  slug      String    @unique
+  logo      String?   // Cloudinary URL
+  isActive  Boolean   @default(true)
+  products  Product[]
+  createdAt DateTime  @default(now())
+}
+
+model Category {
+  id        String     @id @default(uuid())
+  name      String     // e.g. "পুরুষ", "মহিলা", "বিবাহ বিশেষ"
+  nameEn    String     // English name
+  slug      String     @unique
+  parentId  String?
+  parent    Category?  @relation("SubCat", fields: [parentId], references: [id])
+  children  Category[] @relation("SubCat")
+  gender    Gender?
+  ageGroup  AgeGroup?
+  isSpecial Boolean    @default(false)
+  sortOrder Int        @default(0)
+  products  Product[]
+  createdAt DateTime   @default(now())
+}
+
+enum Gender {
+  MEN       // পুরুষ
+  WOMEN     // মহিলা
+  BOYS      // ছেলে শিশু
+  GIRLS     // মেয়ে শিশু
+  UNISEX    // সবার জন্য
+}
+
+enum AgeGroup {
+  INFANT    // নবজাতক (0-12 মাস)
+  TODDLER   // ছোট শিশু (1-3 বছর)
+  KIDS      // শিশু (4-10 বছর)
+  TEEN      // কিশোর/কিশোরী (11-17 বছর)
+  ADULT     // প্রাপ্তবয়স্ক
 }
 
 model Product {
-  id              String    @id @default(cuid())
-  name            String
-  slug            String    @unique
-  description     String?   @db.Text
-  shortDescription String?
-  
-  categoryId      String
-  category        Category  @relation(fields: [categoryId], references: [id])
-  
-  brandId         String?
-  brand           Brand?    @relation(fields: [brandId], references: [id])
-  
-  sku             String    @unique
-  barcode         String?
-  
-  // Pricing
-  basePrice       Decimal   @db.Decimal(10, 2)
-  salePrice       Decimal?  @db.Decimal(10, 2)
-  costPrice       Decimal?  @db.Decimal(10, 2)
-  
-  // Stock
-  stockQuantity   Int       @default(0)
-  lowStockThreshold Int     @default(10)
-  
-  // Status
-  isActive        Boolean   @default(true)
-  isFeatured      Boolean   @default(false)
-  isNewArrival    Boolean   @default(false)
-  
-  // SEO
-  metaTitle       String?
-  metaDescription String?
-  metaKeywords    String?
-  
-  // Relations
-  images          ProductImage[]
-  variants        ProductVariant[]
-  reviews         Review[]
-  wishlistItems   WishlistItem[]
-  cartItems       CartItem[]
-  orderItems      OrderItem[]
-  
-  // Attributes (for filtering)
-  attributes      ProductAttribute[]
-  
-  viewCount       Int       @default(0)
-  averageRating   Float     @default(0)
-  reviewCount     Int       @default(0)
-  
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  
-  @@index([slug])
-  @@index([categoryId])
-  @@index([brandId])
-  @@index([sku])
-  @@index([isActive, isFeatured])
+  id           String          @id @default(uuid())
+  name         String          // Bangla product name preferred
+  nameEn       String?
+  slug         String          @unique
+  sku          String          @unique
+  description  String?         @db.Text
+  brandId      String
+  brand        Brand           @relation(fields: [brandId], references: [id])
+  categoryId   String
+  category     Category        @relation(fields: [categoryId], references: [id])
+  price        Decimal         @db.Decimal(10,2)    // মূল্য (BDT ৳)
+  salePrice    Decimal?        @db.Decimal(10,2)    // ছাড়ের মূল্য
+  isOnSale     Boolean         @default(false)
+  status       ProductStatus   @default(DRAFT)
+  isFeatured   Boolean         @default(false)
+  isSpecial    Boolean         @default(false)      // bridal/groom
+  images       ProductImage[]
+  variants     ProductVariant[]
+  orderItems   OrderItem[]
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+}
+
+enum ProductStatus {
+  ACTIVE
+  DRAFT
+  ARCHIVED
+  OUT_OF_STOCK
 }
 
 model ProductImage {
-  id          String   @id @default(cuid())
-  productId   String
-  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  
-  url         String
-  altText     String?
-  displayOrder Int     @default(0)
-  isPrimary   Boolean  @default(false)
-  
-  createdAt   DateTime @default(now())
-  
-  @@index([productId])
+  id        String   @id @default(uuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  url       String   // Cloudinary URL
+  isPrimary Boolean  @default(false)
+  order     Int      @default(0)
 }
 
 model ProductVariant {
-  id          String    @id @default(cuid())
-  productId   String
-  product     Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
-  
-  name        String    // e.g., "Red - XL"
-  sku         String    @unique
-  
-  // Variant options
-  size        String?
-  color       String?
-  colorHex    String?
-  material    String?
-  
-  // Pricing (can override product price)
-  priceAdjustment Decimal? @db.Decimal(10, 2)
-  
-  // Stock
-  stockQuantity Int     @default(0)
-  
-  // Images specific to variant
-  images      String[]
-  
-  isActive    Boolean   @default(true)
-  
-  orderItems  OrderItem[]
-  
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  
-  @@index([productId])
-  @@index([sku])
+  id         String      @id @default(uuid())
+  productId  String
+  product    Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  size       String      // XS/S/M/L/XL/XXL or 0-3M/1Y/4Y etc.
+  color      String
+  stock      Int         @default(0)
+  sku        String      @unique
+  orderItems OrderItem[]
 }
-
-model AttributeKey {
-  id          String              @id @default(cuid())
-  name        String              @unique // "Size", "Color", "Material"
-  slug        String              @unique
-  displayType AttributeDisplayType @default(SELECT)
-  
-  values      ProductAttribute[]
-  
-  createdAt   DateTime            @default(now())
-  updatedAt   DateTime            @updatedAt
-}
-
-enum AttributeDisplayType {
-  SELECT      // Dropdown
-  RADIO       // Radio buttons
-  CHECKBOX    // Multiple selection
-  COLOR       // Color picker
-}
-
-model ProductAttribute {
-  id          String       @id @default(cuid())
-  productId   String
-  product     Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
-  
-  keyId       String
-  key         AttributeKey @relation(fields: [keyId], references: [id])
-  
-  value       String       // "XL", "Red", "Cotton"
-  
-  @@unique([productId, keyId, value])
-  @@index([productId])
-  @@index([keyId])
-}
-
-// ==================== CART & WISHLIST ====================
-
-model CartItem {
-  id          String          @id @default(cuid())
-  userId      String?
-  user        User?           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  sessionId   String?         // For guest users
-  
-  productId   String
-  product     Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
-  
-  variantId   String?
-  
-  quantity    Int             @default(1)
-  
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
-  
-  @@index([userId])
-  @@index([sessionId])
-  @@index([productId])
-}
-
-model WishlistItem {
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  productId   String
-  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  
-  createdAt   DateTime @default(now())
-  
-  @@unique([userId, productId])
-  @@index([userId])
-}
-
-// ==================== ORDER MANAGEMENT ====================
 
 model Order {
-  id              String      @id @default(cuid())
-  orderNumber     String      @unique
-  
-  userId          String?
-  user            User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
-  
-  // Guest checkout info
-  guestEmail      String?
-  guestPhone      String?
-  guestName       String?
-  
-  // Address
-  shippingAddressId String?
-  shippingAddress   Address?  @relation(fields: [shippingAddressId], references: [id], onDelete: SetNull)
-  
-  // If guest, store address as JSON
-  guestAddress    Json?
-  
-  // Pricing
-  subtotal        Decimal     @db.Decimal(10, 2)
-  discountAmount  Decimal     @default(0) @db.Decimal(10, 2)
-  shippingCost    Decimal     @default(0) @db.Decimal(10, 2)
-  taxAmount       Decimal     @default(0) @db.Decimal(10, 2)
-  totalAmount     Decimal     @db.Decimal(10, 2)
-  
-  // Discount
-  couponCode      String?
-  
-  // Status
-  status          OrderStatus @default(PENDING)
-  paymentStatus   PaymentStatus @default(PENDING)
-  paymentMethod   PaymentMethod?
-  
-  // Shipping
-  shippingMethod  String?
-  trackingNumber  String?
-  estimatedDelivery DateTime?
-  deliveredAt     DateTime?
-  
-  // Items
-  items           OrderItem[]
-  
-  // Notes
-  customerNotes   String?
-  adminNotes      String?
-  
-  // Timestamps
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
-  
-  @@index([orderNumber])
-  @@index([userId])
-  @@index([status])
-  @@index([createdAt])
-}
-
-enum OrderStatus {
-  PENDING
-  CONFIRMED
-  PROCESSING
-  SHIPPED
-  DELIVERED
-  CANCELLED
-  REFUNDED
-}
-
-enum PaymentStatus {
-  PENDING
-  PAID
-  FAILED
-  REFUNDED
-  PARTIALLY_REFUNDED
+  id             String        @id @default(uuid())
+  orderNumber    String        @unique // e.g. BB-2024-0001 (easy to say on phone)
+  customerId     String?
+  customer       Customer?     @relation(fields: [customerId], references: [id])
+  // Guest order fields (no account needed):
+  guestName      String?
+  guestPhone     String?       // most important field
+  guestAddress   String?
+  guestArea      String?
+  status         OrderStatus   @default(PENDING)
+  paymentMethod  PaymentMethod
+  paymentStatus  PayStatus     @default(UNPAID)
+  bkashTrxId     String?       // bKash transaction ID
+  nagadTrxId     String?       // Nagad transaction number
+  totalAmount    Decimal       @db.Decimal(10,2)
+  deliveryFee    Decimal       @db.Decimal(10,2) @default(60)
+  discount       Decimal?      @db.Decimal(10,2)
+  note           String?       // customer's special note
+  items          OrderItem[]
+  isUrgent       Boolean       @default(false)  // bridal/groom = urgent
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 }
 
 enum PaymentMethod {
-  CASH_ON_DELIVERY
-  BKASH
-  NAGAD
-  ROCKET
-  CREDIT_CARD
-  DEBIT_CARD
-  BANK_TRANSFER
-  STRIPE
-  PAYPAL
-  SSL_COMMERZ
+  BKASH         // বিকাশ
+  NAGAD         // নগদ
+  COD           // ক্যাশ অন ডেলিভারি
+}
+
+enum OrderStatus {
+  PENDING       // অপেক্ষামাণ
+  CONFIRMED     // নিশ্চিত
+  PROCESSING    // প্রস্তুত হচ্ছে
+  SHIPPED       // পাঠানো হয়েছে
+  DELIVERED     // পৌঁছে গেছে
+  CANCELLED     // বাতিল
+  RETURNED      // ফেরত
+}
+
+enum PayStatus {
+  UNPAID
+  PAID
+  REFUNDED
 }
 
 model OrderItem {
-  id          String          @id @default(cuid())
-  orderId     String
-  order       Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  
-  productId   String
-  product     Product         @relation(fields: [productId], references: [id], onDelete: Restrict)
-  
-  variantId   String?
-  variant     ProductVariant? @relation(fields: [variantId], references: [id], onDelete: Restrict)
-  
-  // Snapshot at time of order
-  productName String
-  variantName String?
-  sku         String
-  
-  quantity    Int
-  unitPrice   Decimal         @db.Decimal(10, 2)
-  totalPrice  Decimal         @db.Decimal(10, 2)
-  
-  createdAt   DateTime        @default(now())
-  
-  @@index([orderId])
-  @@index([productId])
+  id        String         @id @default(uuid())
+  orderId   String
+  order     Order          @relation(fields: [orderId], references: [id])
+  productId String
+  product   Product        @relation(fields: [productId], references: [id])
+  variantId String
+  variant   ProductVariant @relation(fields: [variantId], references: [id])
+  quantity  Int
+  unitPrice Decimal        @db.Decimal(10,2)
+  subtotal  Decimal        @db.Decimal(10,2)
 }
-
-// ==================== REVIEWS & RATINGS ====================
-
-model Review {
-  id          String   @id @default(cuid())
-  productId   String
-  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  rating      Int      // 1-5
-  title       String?
-  comment     String?  @db.Text
-  
-  images      String[] // Review images
-  
-  isVerifiedPurchase Boolean @default(false)
-  isApproved  Boolean  @default(false)
-  
-  helpfulCount Int     @default(0)
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
-  @@unique([productId, userId])
-  @@index([productId])
-  @@index([userId])
-}
-
-// ==================== COUPONS & DISCOUNTS ====================
 
 model Coupon {
-  id              String        @id @default(cuid())
-  code            String        @unique
-  description     String?
-  
-  discountType    DiscountType
-  discountValue   Decimal       @db.Decimal(10, 2)
-  
-  // Conditions
-  minOrderAmount  Decimal?      @db.Decimal(10, 2)
-  maxDiscountAmount Decimal?    @db.Decimal(10, 2)
-  
-  // Applicability
-  applicableToCategories String[] // Category IDs
-  applicableToProducts   String[] // Product IDs
-  
-  // Usage limits
-  usageLimit      Int?          // Total usage limit
-  usagePerUser    Int?          // Per user limit
-  currentUsage    Int           @default(0)
-  
-  // Validity
-  startDate       DateTime
-  endDate         DateTime
-  
-  isActive        Boolean       @default(true)
-  
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  
-  @@index([code])
-  @@index([isActive, startDate, endDate])
+  id          String       @id @default(uuid())
+  code        String       @unique
+  type        DiscountType
+  value       Decimal      @db.Decimal(10,2)
+  minOrder    Decimal?     @db.Decimal(10,2)
+  maxUses     Int?
+  usedCount   Int          @default(0)
+  validFrom   DateTime
+  validUntil  DateTime
+  isActive    Boolean      @default(true)
 }
 
 enum DiscountType {
   PERCENTAGE
-  FIXED_AMOUNT
-  FREE_SHIPPING
+  FLAT
 }
 
-// ==================== SITE SETTINGS ====================
-
-model SiteSetting {
-  id          String   @id @default(cuid())
-  key         String   @unique
-  value       Json
-  description String?
-  
-  updatedAt   DateTime @updatedAt
-  
-  @@index([key])
-}
-
-model Banner {
-  id          String      @id @default(cuid())
-  title       String
-  subtitle    String?
-  description String?
-  
-  imageDesktop String
-  imageMobile  String?
-  
-  linkUrl     String?
-  linkText    String?
-  
-  position    BannerPosition @default(HOME_HERO)
-  displayOrder Int          @default(0)
-  
-  isActive    Boolean      @default(true)
-  
-  startDate   DateTime?
-  endDate     DateTime?
-  
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  
-  @@index([position, isActive, displayOrder])
-}
-
-enum BannerPosition {
-  HOME_HERO
-  HOME_SECONDARY
-  CATEGORY_TOP
-  PRODUCT_SIDEBAR
-  CHECKOUT_TOP
-}
-
-model ShippingZone {
-  id          String   @id @default(cuid())
-  name        String
-  description String?
-  
-  // Geographic coverage
-  cities      String[] // List of cities
-  postalCodes String[] // List of postal codes
-  
-  // Shipping rates
-  rates       ShippingRate[]
-  
-  isActive    Boolean  @default(true)
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
-model ShippingRate {
-  id          String       @id @default(cuid())
-  zoneId      String
-  zone        ShippingZone @relation(fields: [zoneId], references: [id], onDelete: Cascade)
-  
-  name        String       // "Standard", "Express"
-  description String?
-  
-  baseRate    Decimal      @db.Decimal(10, 2)
-  
-  // Conditions
-  minOrderAmount Decimal?  @db.Decimal(10, 2)
-  maxOrderAmount Decimal?  @db.Decimal(10, 2)
-  
-  // Free shipping threshold
-  freeShippingThreshold Decimal? @db.Decimal(10, 2)
-  
-  // Delivery time
-  estimatedDays String?    // "2-3 days"
-  
-  isActive    Boolean      @default(true)
-  
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  
-  @@index([zoneId])
-}
-
-// ==================== ANALYTICS & LOGS ====================
-
-model ActivityLog {
-  id          String   @id @default(cuid())
-  userId      String?
-  userEmail   String?
-  
-  action      String   // "CREATE_PRODUCT", "UPDATE_ORDER", etc.
-  entity      String   // "Product", "Order"
-  entityId    String?
-  
-  details     Json?
-  ipAddress   String?
-  userAgent   String?
-  
-  createdAt   DateTime @default(now())
-  
-  @@index([userId])
-  @@index([action])
-  @@index([createdAt])
+model StoreSettings {
+  id              String  @id @default("1")
+  storeName       String  @default("Big Bazar Bariarhat")
+  phone           String
+  whatsapp        String
+  address         String
+  deliveryFee     Decimal @db.Decimal(10,2) @default(60)
+  freeDeliveryMin Decimal? @db.Decimal(10,2)
+  nagadNumber     String
+  bkashNumber     String
+  isOpen          Boolean @default(true)
+  holidayMessage  String?
 }

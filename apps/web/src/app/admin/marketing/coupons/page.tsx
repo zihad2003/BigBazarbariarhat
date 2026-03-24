@@ -13,7 +13,8 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { MarketingService, Coupon, CreateCouponInput, DiscountType } from '@bigbazar/shared';
+import type { Coupon, CreateCouponInput, DiscountType } from '@bigbazar/shared';
+import { MarketingService } from '@bigbazar/shared';
 
 export default function CouponsPage() {
     const [coupons, setCoupons] = useState<Coupon[]>([]);

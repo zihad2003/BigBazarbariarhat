@@ -1,73 +1,80 @@
-// Supabase-based Order Service
-// Since the project uses Supabase directly, we'll implement the service using Supabase client
-
-import { createClient } from '@supabase/supabase-js';
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
+import { prisma } from '../client';
+import { Prisma } from '@prisma/client';
 
 export const OrderService = {
     async list(filters: any) {
         const { search, status, page = 1, limit = 10, userId } = filters;
-        const offset = (page - 1) * limit;
+        const skip = (page - 1) * limit;
 
-        let query = supabase
-            .from('orders')
-            .select('*, user:users(id, first_name, last_name, email), order_items(quantity, product:products(name, slug, images))', { count: 'exact' })
-            .order('created_at', { ascending: false })
-            .range(offset, offset + limit - 1);
+        const where: any = {};
 
         if (search) {
-            query = query.or(`order_number.ilike.%${search}%,guest_name.ilike.%${search}%`);
+            where.OR = [
+                { orderNumber: { contains: search } },
+                { guestName: { contains: search } },
+                { guestPhone: { contains: search } },
+            ];
         }
 
         if (status) {
-            query = query.eq('status', status);
+            where.status = status;
         }
 
         if (userId) {
-            query = query.eq('user_id', userId);
+            where.customerId = userId;
         }
 
-        const { data: orders, error, count } = await query;
-
-        if (error) {
-            throw error;
-        }
+        const [orders, total] = await Promise.all([
+            prisma.order.findMany({
+                where,
+                include: {
+                    customer: true,
+                    items: {
+                        include: {
+                            product: {
+                                include: {
+                                    images: true
+                                }
+                            },
+                        }
+                    }
+                },
+                orderBy: { createdAt: 'desc' },
+                skip,
+                take: limit,
+            } as any),
+            prisma.order.count({ where }),
+        ]);
 
         return {
             data: orders,
             pagination: {
-                total: count || 0,
+                total,
                 page,
                 limit,
-                totalPages: count ? Math.ceil(count / limit) : 0
-            }
+                totalPages: Math.ceil(total / limit),
+            },
         };
     },
 
     async getById(id: string) {
-        const { data: order, error } = await supabase
-            .from('orders')
-            .select(`*,
-                order_items(*,
-                    product:products(*),
-                    variant:product_variants(*)
-                ),
-                user:users(*),
-                shipping_address:addresses(*),
-                guest_address:guest_addresses(*)
-            `)
-            .eq('id', id)
-            .single();
-
-        if (error) {
-            throw error;
-        }
-
-        return order;
+        return prisma.order.findUnique({
+            where: { id },
+            include: {
+                customer: true,
+                items: {
+                    include: {
+                        product: {
+                            include: {
+                                brand: true,
+                                category: true,
+                                images: true
+                            }
+                        },
+                    }
+                }
+            }
+        } as any);
     },
 
     async create(data: any) {
@@ -77,128 +84,86 @@ export const OrderService = {
             guestPhone,
             guestName,
             guestAddress,
+            guestArea,
             paymentMethod,
-            subtotal,
-            shippingCost,
-            taxAmount,
             totalAmount,
+            deliveryFee = 60,
+            discount = 0,
+            note,
             userId,
+            isUrgent = false
         } = data;
 
         // Generate order number
-        const { count: orderCount, error: countError } = await supabase
-            .from('orders')
-            .select('id', { count: 'exact', head: true });
-
-        if (countError) {
-            throw countError;
-        }
-
-        const orderNumber = `ORD-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${String((orderCount || 0) + 1).padStart(4, '0')}`;
-
-        // Create the order
-        const { data: order, error: orderError } = await supabase
-            .from('orders')
-            .insert({
-                order_number: orderNumber,
-                user_id: userId || null,
-                guest_name: guestName,
-                guest_email: guestEmail,
-                guest_phone: guestPhone,
-                payment_method: paymentMethod,
-                status: 'pending',
-                payment_status: paymentMethod === 'CASH_ON_DELIVERY' ? 'unpaid' : 'pending',
-                subtotal,
-                shipping_cost: shippingCost,
-                tax_amount: taxAmount,
-                total_amount: totalAmount,
-            })
-            .select('*')
-            .single();
-
-        if (orderError) {
-            throw orderError;
-        }
-
-        // Create guest address if provided
-        if (guestAddress) {
-            const { error: addressError } = await supabase
-                .from('guest_addresses')
-                .insert({
-                    order_id: order.id,
-                    address_line1: guestAddress.addressLine1,
-                    city: guestAddress.city,
-                    country: guestAddress.country || 'Bangladesh',
-                    postal_code: guestAddress.postalCode || '1200',
-                });
-
-            if (addressError) {
-                throw addressError;
+        const today = new Date();
+        const dateStr = today.toISOString().slice(0, 10).replace(/-/g, '');
+        const count = await prisma.order.count({
+            where: {
+                createdAt: {
+                    gte: new Date(new Date().setHours(0,0,0,0)),
+                }
             }
-        }
+        });
+        const orderNumber = `BB-${dateStr}-${String(count + 1).padStart(4, '0')}`;
 
-        // Create order items
-        for (const item of items) {
-            const { error: itemError } = await supabase
-                .from('order_items')
-                .insert({
-                    order_id: order.id,
-                    product_id: item.productId,
-                    variant_id: item.variantId || null,
-                    quantity: item.quantity,
-                    unit_price: item.price,
-                });
-
-            if (itemError) {
-                throw itemError;
-            }
+        return prisma.$transaction(async (tx) => {
+            const order = await tx.order.create({
+                data: {
+                    orderNumber,
+                    customerId: userId || null,
+                    guestName,
+                    guestEmail,
+                    guestPhone,
+                    guestAddress,
+                    guestArea,
+                    paymentMethod: paymentMethod as any,
+                    status: 'PENDING' as any,
+                    paymentStatus: 'UNPAID' as any,
+                    totalAmount: new Prisma.Decimal(totalAmount),
+                    deliveryFee: new Prisma.Decimal(deliveryFee),
+                    discount: new Prisma.Decimal(discount),
+                    note,
+                    isUrgent,
+                    items: {
+                        create: items.map((item: any) => ({
+                            productId: item.productId,
+                            variantId: item.variantId,
+                            quantity: item.quantity,
+                            unitPrice: new Prisma.Decimal(item.price),
+                            subtotal: new Prisma.Decimal(item.price * item.quantity),
+                        }))
+                    }
+                }
+            } as any);
 
             // Update inventory
-            if (item.variantId) {
-                const { error: variantError } = await supabase
-                    .rpc('decrement_variant_inventory', {
-                        variant_id: item.variantId,
-                        quantity: item.quantity
-                    });
-
-                if (variantError) {
-                    throw variantError;
-                }
-            } else {
-                const { error: productError } = await supabase
-                    .rpc('decrement_product_inventory', {
-                        product_id: item.productId,
-                        quantity: item.quantity
-                    });
-
-                if (productError) {
-                    throw productError;
+            for (const item of items) {
+                if (item.variantId) {
+                    await tx.productVariant.update({
+                        where: { id: item.variantId },
+                        data: {
+                            stock: {
+                                decrement: item.quantity
+                            }
+                        }
+                    } as any);
                 }
             }
-        }
 
-        // Return the complete order with items
-        return this.getById(order.id);
+            return order;
+        });
     },
 
     async updateStatus(id: string, data: any) {
-        const { data: order, error } = await supabase
-            .from('orders')
-            .update({
+        return prisma.order.update({
+            where: { id },
+            data: {
                 status: data.status,
-                payment_status: data.paymentStatus,
-                tracking_number: data.trackingNumber,
-                admin_notes: data.adminNotes,
-                estimated_delivery: data.estimatedDelivery
-            })
-            .eq('id', id)
-            .select('*')
-            .single();
-
-        if (error) {
-            throw error;
-        }
-
-        return order;
+                paymentStatus: data.paymentStatus,
+                bkashTrxId: data.bkashTrxId,
+                nagadTrxId: data.nagadTrxId,
+                note: data.note
+            }
+        } as any);
     }
 };

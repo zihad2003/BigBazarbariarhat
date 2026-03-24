@@ -11,7 +11,7 @@ import {
     Loader2
 } from 'lucide-react';
 import { StatsCard } from '@/components/admin/stats-card';
-import { Order } from '@bigbazar/shared';
+import type { Order } from '@bigbazar/shared';
 
 interface LowStockProduct {
     id: string;

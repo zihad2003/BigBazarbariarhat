@@ -17,7 +17,8 @@ import {
     XCircle,
     Package
 } from 'lucide-react';
-import { OrdersService, Order } from '@bigbazar/shared';
+import type { Order } from '@bigbazar/shared';
+import { OrdersService } from '@bigbazar/shared';
 
 export default function OrdersPage() {
     const [orders, setOrders] = useState<Order[]>([]);

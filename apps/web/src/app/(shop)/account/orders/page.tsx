@@ -16,7 +16,7 @@ import {
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { useUser } from '@clerk/nextjs';
+import { useSession } from 'next-auth/react';
 import { formatPrice } from '@/lib/utils'; // Assuming this utility exists
 
 interface OrderItem {
@@ -49,7 +49,9 @@ const formatDate = (value: string) =>
     new Date(value).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
 export default function OrdersPage() {
-    const { user, isLoaded } = useUser();
+    const { data: session, status: authStatus } = useSession();
+    const isLoaded = authStatus !== 'loading';
+    const user = session?.user;
     const [orders, setOrders] = useState<OrderSummary[]>([]);
     const [loading, setLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);

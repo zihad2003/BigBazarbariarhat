@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { ProductsService, Product, ProductFilter, Category } from '@bigbazar/shared';
+import type { Product, ProductFilter, Category } from '@bigbazar/shared';
+import { ProductsService } from '@bigbazar/shared';
 import { ProductGrid } from '@/components/shop/product-grid';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

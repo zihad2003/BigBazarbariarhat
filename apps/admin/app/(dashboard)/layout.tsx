@@ -22,10 +22,20 @@ import {
     Bell,
     Search,
     Sun,
-    Moon
+    Moon,
+    User
 } from 'lucide-react';
-import { UserButton } from '@clerk/nextjs';
+import { useSession, signOut } from 'next-auth/react';
 import { ThemeSwitcher } from '@/components/theme-switcher';
+import { Button } from '@/components/ui/button';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface NavigationItem {
     name: string;
@@ -69,6 +79,7 @@ export default function DashboardLayout({
     const [expandedItems, setExpandedItems] = useState<string[]>(['Products']);
     const pathname = usePathname();
     const { theme, setTheme } = useTheme();
+    const { data: session } = useSession();
 
     const toggleExpanded = (name: string) => {
         setExpandedItems((prev) =>
@@ -201,8 +212,36 @@ export default function DashboardLayout({
                                 <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
                             </button>
 
-                            {/* User */}
-                            <UserButton afterSignOutUrl="/" />
+                            {/* User Dropdown */}
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" size="icon" className="rounded-full">
+                                        <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white">
+                                            <User className="h-4 w-4" />
+                                        </div>
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-56">
+                                    <DropdownMenuLabel>
+                                        <div className="flex flex-col space-y-1">
+                                            <p className="text-sm font-medium leading-none">{session?.user?.name || 'Admin'}</p>
+                                            <p className="text-xs leading-none text-muted-foreground">{session?.user?.email}</p>
+                                        </div>
+                                    </DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem asChild>
+                                        <Link href="/settings">Settings</Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem 
+                                        className="text-red-600 focus:text-red-600 cursor-pointer text-destructive"
+                                        onClick={() => signOut({ callbackUrl: '/login' })}
+                                    >
+                                        <LogOut className="h-4 w-4 mr-2" />
+                                        Sign Out
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                         </div>
                     </div>
                 </header>

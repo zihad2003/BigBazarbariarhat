@@ -21,7 +21,8 @@ import {
     Bell,
     Search
 } from 'lucide-react';
-import { UserButton } from '@clerk/nextjs';
+import { useSession, signOut } from 'next-auth/react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 interface NavigationItem {
     name: string;
@@ -61,6 +62,7 @@ export default function AdminDashboardLayout({
 }: {
     children: React.ReactNode;
 }) {
+    const { data: session } = useSession();
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [expandedItems, setExpandedItems] = useState<string[]>(['Catalog']);
     const pathname = usePathname();
@@ -199,7 +201,23 @@ export default function AdminDashboardLayout({
                             </button>
 
                             {/* User */}
-                            <UserButton afterSignOutUrl="/" />
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <button className="flex items-center gap-2 outline-none">
+                                        <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xs font-bold uppercase">
+                                            {session?.user?.name?.charAt(0) || 'A'}
+                                        </div>
+                                    </button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-56">
+                                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem onClick={() => signOut()}>
+                                        <LogOut className="mr-2 h-4 w-4" />
+                                        <span>Log out</span>
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                         </div>
                     </div>
                 </header>

@@ -17,7 +17,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { useQuery } from '@tanstack/react-query';
 import { useWishlistStore } from '@/lib/stores/wishlist-store';
-import { useUser, useClerk } from '@clerk/nextjs';
+import { useSession, signOut } from 'next-auth/react';
 
 async function fetchOrders(params: string) {
     const res = await fetch(`/api/orders?${params}`);
@@ -26,8 +26,9 @@ async function fetchOrders(params: string) {
 }
 
 export default function AccountPage() {
-    const { user, isLoaded } = useUser();
-    const { signOut } = useClerk();
+    const { data: session, status } = useSession();
+    const isLoaded = status !== 'loading';
+    const user = session?.user;
     const wishlistCount = useWishlistStore(state => state.getItemCount());
 
     // Fetch recent orders (limit 3)
@@ -57,7 +58,11 @@ export default function AccountPage() {
         enabled: !!user,
     });
 
-    if (!isLoaded) return <div className="h-screen flex items-center justify-center">< div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black" ></div ></div >;
+    if (!isLoaded) return <div className="h-screen flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black" /></div>;
+    if (!user) {
+        window.location.href = '/login';
+        return null;
+    }
 
     const totalOrders = recentOrdersData?.pagination?.total || 0;
     const pendingOrders = pendingOrdersData?.pagination?.total || 0;
@@ -79,11 +84,11 @@ export default function AccountPage() {
                     <div className="bg-white rounded-[2.5rem] border border-gray-100 p-8 shadow-sm">
                         <div className="flex items-center gap-4 mb-10 pb-10 border-b border-gray-50">
                             <div className="w-16 h-16 rounded-2xl bg-black flex items-center justify-center text-white text-2xl font-black">
-                                {user?.firstName?.charAt(0) || user?.emailAddresses[0].emailAddress.charAt(0).toUpperCase()}
+                                {user?.name?.charAt(0) || user?.email?.charAt(0).toUpperCase()}
                             </div>
                             <div>
-                                <h2 className="font-black text-xl text-gray-900">{user?.fullName || 'Valued Customer'}</h2>
-                                <p className="text-sm text-gray-500 font-medium truncate max-w-[140px]">{user?.emailAddresses[0].emailAddress}</p>
+                                <h2 className="font-black text-xl text-gray-900">{user?.name || 'Valued Customer'}</h2>
+                                <p className="text-sm text-gray-500 font-medium truncate max-w-[140px]">{user?.email}</p>
                             </div>
                         </div>
 
@@ -109,7 +114,7 @@ export default function AccountPage() {
                                 </Link>
                             ))}
                             <button
-                                onClick={() => signOut(() => { window.location.href = '/'; })}
+                                onClick={() => signOut({ callbackUrl: '/' })}
                                 className="w-full flex items-center gap-4 p-4 rounded-2xl text-red-500 hover:bg-red-50 transition-all font-bold mt-8"
                             >
                                 <LogOut className="h-5 w-5" />
@@ -122,7 +127,7 @@ export default function AccountPage() {
                 {/* Main Content Area */}
                 <main className="flex-1 space-y-12">
                     <div>
-                        <h1 className="text-4xl font-black text-gray-900 mb-4">Welcome back, {user?.firstName || 'Friend'}!</h1>
+                        <h1 className="text-4xl font-black text-gray-900 mb-4">Welcome back, {user?.name?.split(' ')[0] || 'Friend'}!</h1>
                         <p className="text-gray-500 text-lg font-medium">From your dashboard you can view your recent orders and manage your account settings.</p>
                     </div>
 
@@ -155,15 +160,15 @@ export default function AccountPage() {
                                     [...Array(3)].map((_, i) => (
                                         <div key={i} className="flex items-center justify-between p-6 bg-gray-50 rounded-[2rem] animate-pulse">
                                             <div className="flex items-center gap-5">
-                                                <div className="w-12 h-12 bg-gray-200 rounded-2xl"></div>
+                                                <div className="w-12 h-12 bg-gray-200 rounded-2xl" />
                                                 <div className="space-y-2">
-                                                    <div className="h-4 w-24 bg-gray-200 rounded"></div>
-                                                    <div className="h-3 w-32 bg-gray-200 rounded"></div>
+                                                    <div className="h-4 w-24 bg-gray-200 rounded" />
+                                                    <div className="h-3 w-32 bg-gray-200 rounded" />
                                                 </div>
                                             </div>
                                             <div className="space-y-2 text-right">
-                                                <div className="h-4 w-16 bg-gray-200 rounded ml-auto"></div>
-                                                <div className="h-6 w-20 bg-gray-200 rounded ml-auto"></div>
+                                                <div className="h-4 w-16 bg-gray-200 rounded ml-auto" />
+                                                <div className="h-6 w-20 bg-gray-200 rounded ml-auto" />
                                             </div>
                                         </div>
                                     ))

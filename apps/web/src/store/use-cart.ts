@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { Product, ProductVariant } from '@bigbazar/shared';
+import type { Product, ProductVariant } from '@bigbazar/shared';
 
 export interface CartItemState {
     id: string; // Unique ID for cart entry (e.g. productId + variantId)

@@ -1,34 +1,29 @@
-import { authMiddleware, redirectToSignIn } from "@clerk/nextjs";
+import { auth } from "./auth";
 import { NextResponse } from "next/server";
 
-export default authMiddleware({
-    publicRoutes: ["/sign-in", "/sign-up", "/unauthorized"],
-    afterAuth(auth, req) {
-        // Handle users who aren't authenticated
-        if (!auth.userId && !auth.isPublicRoute) {
-            return redirectToSignIn({ returnBackUrl: req.url });
-        }
+export default auth((req) => {
+  const isLoggedIn = !!req.auth;
+  const isAuthPage = req.nextUrl.pathname.startsWith("/login");
+  const isUnauthorizedPage = req.nextUrl.pathname.startsWith("/unauthorized");
 
-        // Role-Based Access Control (RBAC)
-        // We assume the user role is stored in publicMetadata or sessionClaims
-        const sessionClaims = auth.sessionClaims as any;
-        const role = sessionClaims?.metadata?.role || "CUSTOMER";
+  if (isAuthPage && isLoggedIn) {
+    return NextResponse.redirect(new URL("/", req.nextUrl));
+  }
 
-        // Allow Zihad (Development Bypass)
-        if (auth.userId === "user_39dQDx77kTzGuAUpGyq59o1RTvP") {
-            return NextResponse.next();
-        }
+  if (!isLoggedIn && !isAuthPage && !isUnauthorizedPage) {
+    return NextResponse.redirect(new URL("/login", req.nextUrl));
+  }
 
-        // If user is authenticated but not an ADMIN, and trying to access any non-public admin route
-        if (auth.userId && !auth.isPublicRoute && role !== "ADMIN" && role !== "SUPER_ADMIN") {
-            const unauthorizedUrl = new URL("/unauthorized", req.url);
-            return NextResponse.redirect(unauthorizedUrl);
-        }
+  if (isLoggedIn && !isAuthPage && !isUnauthorizedPage) {
+    const role = (req.auth.user as any)?.role;
+    if (role !== "SUPER_ADMIN" && role !== "MANAGER") {
+        return NextResponse.redirect(new URL("/unauthorized", req.nextUrl));
+    }
+  }
 
-        return NextResponse.next();
-    },
+  return NextResponse.next();
 });
 
 export const config = {
-    matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };

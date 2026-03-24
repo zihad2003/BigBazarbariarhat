@@ -1,31 +1,36 @@
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
+import { auth } from "./auth";
+import { NextResponse } from "next/server";
 
-const isPublicRoute = createRouteMatcher([
-    '/',
-    '/men(.*)',
-    '/women(.*)',
-    '/kids(.*)',
-    '/home-decor(.*)',
-    '/product/(.*)',
-    '/sign-in(.*)',
-    '/sign-up(.*)',
-    '/api/webhooks/(.*)',
-])
+export default auth((req) => {
+  const isLoggedIn = !!req.auth;
+  const isAuthPage = req.nextUrl.pathname.startsWith("/login");
+  const isAdminPage = req.nextUrl.pathname.startsWith("/admin");
+  const isAccountPage = req.nextUrl.pathname.startsWith("/account");
+  const isCheckoutPage = req.nextUrl.pathname.startsWith("/checkout");
 
-const isAdminRoute = createRouteMatcher(['/admin(.*)'])
+  // Redirect logged in users away from auth pages
+  if (isAuthPage && isLoggedIn) {
+    return NextResponse.redirect(new URL("/", req.nextUrl));
+  }
 
-export default clerkMiddleware(async (auth, request) => {
-    // Protect admin routes
-    if (isAdminRoute(request)) {
-        await auth.protect()
-    }
+  // Protect sensitive routes
+  if ((isAccountPage || isCheckoutPage) && !isLoggedIn) {
+     let callbackUrl = req.nextUrl.pathname;
+     if (req.nextUrl.search) {
+       callbackUrl += req.nextUrl.search;
+     }
+     return NextResponse.redirect(new URL(`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`, req.nextUrl));
+  }
+  
+  // Admin pages are handled by their own middleware or layout usually, 
+  // but if we handle them here:
+  if (isAdminPage && !isLoggedIn) {
+    return NextResponse.redirect(new URL(`/login?callbackUrl=${encodeURIComponent(req.nextUrl.pathname)}`, req.nextUrl));
+  }
 
-    // Protect non-public routes
-    if (!isPublicRoute(request)) {
-        await auth.protect()
-    }
-})
+  return NextResponse.next();
+});
 
 export const config = {
-    matcher: ['/((?!.*\\..*|_next).*)', '/', '/(api|trpc)(.*)'],
-}
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+};

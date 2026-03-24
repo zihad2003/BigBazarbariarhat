@@ -11,7 +11,8 @@ import {
     ArrowRight
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { CategoriesService, Category } from '@bigbazar/shared';
+import type { Category } from '@bigbazar/shared';
+import { CategoriesService } from '@bigbazar/shared';
 
 interface CategoryWithCount extends Category {
     _count?: {

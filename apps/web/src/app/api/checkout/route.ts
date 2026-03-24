@@ -1,53 +1,52 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { stripe } from '@/lib/stripe'
-import { auth } from '@clerk/nextjs/server'
+import { NextRequest, NextResponse } from 'next/server';
+import { OrderService } from '@bigbazar/database';
+import { auth } from "@/auth";
 
-export async function POST(request: NextRequest) {
+export const POST = auth(async (req) => {
     try {
-        const { userId } = await auth()
+        const body = await req.json();
+        const { 
+            items, 
+            guestName, 
+            guestPhone, 
+            guestAddress, 
+            guestArea, 
+            paymentMethod,
+            totalAmount,
+            deliveryFee,
+            note
+        } = body;
 
-        if (!userId) {
-            return NextResponse.json(
-                { error: 'Unauthorized' },
-                { status: 401 }
-            )
+        // Validation
+        if (!items || items.length === 0) {
+            return NextResponse.json({ success: false, error: 'Cart is empty' }, { status: 400 });
+        }
+        if (!guestPhone || !guestName || !guestAddress) {
+             return NextResponse.json({ success: false, error: 'Missing shipping information' }, { status: 400 });
         }
 
-        const body = await request.json()
-        const { items, shippingAddress } = body
+        const userId = req.auth?.user?.id;
 
-        // Calculate total
-        const lineItems = items.map((item: any) => ({
-            price_data: {
-                currency: 'bdt',
-                product_data: {
-                    name: item.name,
-                    images: [item.image],
-                },
-                unit_amount: item.price * 100, // Stripe uses cents
-            },
-            quantity: item.quantity,
-        }))
+        const order = await OrderService.create({
+            items,
+            guestName,
+            guestPhone,
+            guestAddress,
+            guestArea,
+            paymentMethod,
+            totalAmount,
+            deliveryFee,
+            note,
+            userId,
+        });
 
-        // Create Stripe checkout session
-        const session = await stripe.checkout.sessions.create({
-            payment_method_types: ['card'],
-            line_items: lineItems,
-            mode: 'payment',
-            success_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/cart`,
-            metadata: {
-                userId,
-                shippingAddress: JSON.stringify(shippingAddress),
-            },
-        })
-
-        return NextResponse.json({ sessionId: session.id, url: session.url })
+        return NextResponse.json({ 
+            success: true, 
+            orderId: order.id, 
+            orderNumber: order.orderNumber 
+        });
     } catch (error) {
-        console.error('Checkout error:', error)
-        return NextResponse.json(
-            { error: 'Failed to create checkout session' },
-            { status: 500 }
-        )
+        console.error('Checkout error:', error);
+        return NextResponse.json({ success: false, error: 'Failed to place order' }, { status: 500 });
     }
-}
+});

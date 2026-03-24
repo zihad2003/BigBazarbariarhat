@@ -79,7 +79,7 @@ export function Footer() {
                             <span className="text-3xl font-black uppercase tracking-[0.15em] font-playfair transition-colors duration-300">
                                 <span className="text-destructive">BIG</span> <span className="text-foreground">BAZAR</span>
                             </span>
-                            <div className="h-0.5 w-12 bg-destructive mt-2 group-hover:w-full transition-all duration-500"></div>
+                            <div className="h-0.5 w-12 bg-destructive mt-2 group-hover:w-full transition-all duration-500" />
                         </Link>
                         <p className="text-sm text-muted-foreground max-w-xs leading-relaxed">
                             Your one-stop destination for premium fashion from top brands. Quality clothing for the whole family.
