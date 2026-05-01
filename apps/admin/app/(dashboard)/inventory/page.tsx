@@ -17,6 +17,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/components/ui/use-toast';
+import { SafeImage } from '@/components/ui/safe-image';
 
 export default function InventoryPage() {
     const [variants, setVariants] = useState<any[]>([]);
@@ -229,7 +230,7 @@ export default function InventoryPage() {
                                         <td className="px-10 py-8">
                                             <div className="flex items-center gap-6">
                                                 <div className="w-16 h-16 bg-white border border-gray-100 rounded-2xl flex items-center justify-center p-2 shadow-sm overflow-hidden group-hover:scale-110 transition-transform">
-                                                    {v.images?.[0] ? <img src={v.images[0]} alt="" className="w-full h-full object-cover rounded-lg" /> : <Package className="h-8 w-8 text-gray-100" aria-hidden="true" />}
+                                                    {v.images?.[0] ? <SafeImage src={v.images[0]} alt="" className="w-full h-full rounded-lg" /> : <Package className="h-8 w-8 text-gray-100" aria-hidden="true" />}
                                                 </div>
                                                 <div>
                                                     <h4 className="font-black text-gray-900 tracking-tight italic text-lg">{v.product.name}</h4>

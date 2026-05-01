@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import {
     Plus,
     Package,
@@ -21,6 +20,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { SafeImage } from '@/components/ui/safe-image';
 
 export default function ProductsPage() {
     const [products, setProducts] = useState<any[]>([]);
@@ -272,7 +272,7 @@ export default function ProductsPage() {
                                         <div className="flex items-center gap-5">
                                             <div className="w-16 h-16 bg-gray-100 rounded-2xl flex-shrink-0 overflow-hidden border border-gray-200 relative group-hover:scale-110 transition-transform">
                                                 {product.images?.[0] ? (
-                                                    <Image src={product.images[0].url} alt={product.name} fill className="object-cover" />
+                                                    <SafeImage src={product.images[0].url} alt={product.name} className="w-full h-full" />
                                                 ) : <div className="w-full h-full flex items-center justify-center text-gray-300 font-black">PH</div>}
                                             </div>
                                             <div className="min-w-0">

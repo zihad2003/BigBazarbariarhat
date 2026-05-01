@@ -25,6 +25,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
+import { SafeImage } from '@/components/ui/safe-image';
 
 export default function CustomersPage() {
     const [customers, setCustomers] = useState<any[]>([]);
@@ -181,7 +182,7 @@ export default function CustomersPage() {
                                     <td className="px-8 py-6">
                                         <div className="flex items-center gap-5">
                                             <div className="w-14 h-14 bg-indigo-50 border-2 border-white shadow-lg rounded-2xl flex items-center justify-center text-indigo-600 font-black text-xl overflow-hidden group-hover:scale-110 transition-transform">
-                                                {customer.avatar ? <img src={customer.avatar} alt="" className="w-full h-full object-cover" /> : (customer.firstName?.[0] || 'U')}
+                                                {customer.avatar ? <SafeImage src={customer.avatar} alt={customer.firstName || ''} className="w-full h-full" /> : (customer.firstName?.[0] || 'U')}
                                             </div>
                                             <div>
                                                 <div className="font-black text-gray-900 tracking-tight text-lg">{customer.firstName || 'Unknown'} {customer.lastName || ''}</div>

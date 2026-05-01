@@ -301,7 +301,7 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
             </div>
 
             {/* Information Module */}
-            <div className="mt-8 px-2 space-y-1.5 overflow-hidden">
+            <div className="mt-8 px-2 space-y-3">
                 <div className="flex items-center justify-between mb-2">
                     <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
                         {product.category?.name || 'Big Bazar'}
@@ -312,7 +312,7 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
                     </div>
                 </div>
 
-                <h3 className="text-xl font-black text-gray-900 group-hover:text-indigo-600 transition-colors duration-500 line-clamp-2 leading-tight tracking-tight">
+                <h3 className="text-xl font-black text-gray-900 group-hover:text-indigo-600 transition-colors duration-500 line-clamp-2 leading-snug tracking-tight min-h-[3rem]">
                     <Link href={`/products/${product.slug || product.id}`}>
                         {product.name}
                     </Link>

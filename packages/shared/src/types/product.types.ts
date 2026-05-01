@@ -9,6 +9,8 @@ export interface Category {
     _count?: {
         products: number;
     };
+    displayOrder?: number;
+    isActive?: boolean;
 }
 
 // ─── Product Images ───────────────────────────────────────────
@@ -25,9 +27,9 @@ export interface ProductVariant {
     productId: string;
     name: string;
     sku: string;
-    priceAdjustment: number;
+    priceAdjustment?: number;
     inventoryCount: number;
-    attributes: Record<string, string>;
+    attributes?: Record<string, any>;
 }
 
 // ─── Brand ────────────────────────────────────────────────────
@@ -65,8 +67,8 @@ export interface Product {
     reviewCount?: number;
     viewCount?: number;
     tags?: string[];
-    createdAt: string;
-    updatedAt: string;
+    createdAt: string | Date;
+    updatedAt: string | Date;
 }
 
 // ─── Product Filter ───────────────────────────────────────────

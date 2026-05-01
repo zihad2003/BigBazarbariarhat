@@ -63,7 +63,7 @@ function SuccessParticles() {
                         width: p.size,
                         height: p.size,
                         backgroundColor: p.color,
-                        borderRadius: i % 2 === 0 ? '50%' : '2px'
+                        borderRadius: p.id % 2 === 0 ? '50%' : '2px'
                     }}
                 />
             ))}
@@ -82,13 +82,33 @@ function OrderSuccessContent() {
         if (orderNumber) {
             const fetchOrder = async () => {
                 try {
-                    const res = await fetch(`/api/orders/${orderNumber}`);
-                    const result = await res.json();
-                    if (result.success) {
-                        setOrder(result.data);
-                    } else {
-                        setErrorMessage(result.error || 'We could not verify this order.');
-                    }
+                    // Mock API call since database is removed
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    
+                    setOrder({
+                        id: 'mock-id-123',
+                        orderNumber: orderNumber,
+                        createdAt: new Date().toISOString(),
+                        guestName: 'Guest User',
+                        guestAddress: {
+                            addressLine1: '123 Mock Street',
+                            city: 'Dhaka'
+                        },
+                        paymentMethod: 'CASH_ON_DELIVERY',
+                        paymentStatus: 'PENDING',
+                        subtotal: 5000,
+                        shippingCost: 80,
+                        totalAmount: 5080,
+                        items: [
+                            {
+                                id: 'item-1',
+                                quantity: 2,
+                                price: 2500,
+                                product: { name: 'Premium Mock Artifact', images: [] },
+                                variant: { attributes: { size: 'L', color: 'Midnight Black' } }
+                            }
+                        ]
+                    });
                 } catch (error) {
                     console.error('Error fetching order details:', error);
                     setErrorMessage('We could not load the order details. Please try again later.');

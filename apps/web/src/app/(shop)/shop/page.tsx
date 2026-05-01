@@ -262,9 +262,6 @@ export default function ShopPage({ params: paramsPromise }: { params: Promise<{ 
                     {/* Sorting & Toolbar */}
                     <div className="flex items-center justify-between mb-12 pb-8 border-b border-gray-100">
                         <div className="flex items-center gap-4">
-                            <p className="text-lg text-gray-500 font-medium font-playfair italic">
-                                We found <span className="text-black font-black not-italic">{pagination.total}</span> items for you
-                            </p>
                             {loading && <Loader2 className="h-5 w-5 animate-spin text-indigo-400" />}
                         </div>
 

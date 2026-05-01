@@ -202,7 +202,7 @@ export const useCartStore = create<CartState>()(
             getSubtotal: () => {
                 return get().items.reduce((total, item) => {
                     const price = item.variant
-                        ? (item.product.salePrice ?? item.product.basePrice) + item.variant.priceAdjustment
+                        ? (item.product.salePrice ?? item.product.basePrice) + (item.variant.priceAdjustment || 0)
                         : (item.product.salePrice ?? item.product.basePrice);
                     return total + price * item.quantity;
                 }, 0);

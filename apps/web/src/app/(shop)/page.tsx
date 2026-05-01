@@ -229,9 +229,9 @@ function ProductCard({ product, index }: { product: any; index: number }) {
                 </div>
             </Link>
 
-            <div className="space-y-1">
+            <div className="space-y-3">
                 <Link href={`/products/${product.id}`}>
-                    <h3 className="text-sm font-semibold text-foreground leading-tight group-hover:text-destructive transition-colors">
+                    <h3 className="text-sm font-semibold text-foreground leading-snug group-hover:text-destructive transition-colors min-h-[2.5rem] line-clamp-2">
                         {product.name}
                     </h3>
                 </Link>

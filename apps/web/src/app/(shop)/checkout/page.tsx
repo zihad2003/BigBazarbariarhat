@@ -156,21 +156,14 @@ export default function CheckoutPage() {
                 userId: user?.id || null,
             };
 
-            const res = await fetch('/api/orders', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(orderPayload),
-            });
-
-            const result = await res.json();
-
-            if (result.success) {
-                clearCart();
-                addNotification({ type: 'success', message: 'Transaction authorized successfully.' });
-                router.push(`/order-success?orderId=${result.data.orderNumber}`);
-            } else {
-                addNotification({ type: 'error', message: result.error || 'Authorization failed' });
-            }
+            // Mock API call since database is removed
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            const mockOrderId = `ORD-${Date.now().toString().slice(-6)}`;
+            
+            clearCart();
+            addNotification({ type: 'success', message: 'Transaction authorized successfully.' });
+            router.push(`/order-success?orderId=${mockOrderId}`);
         } catch (error) {
             console.error('Checkout error:', error);
             addNotification({ type: 'error', message: 'Network synchronization error. Please retry.' });

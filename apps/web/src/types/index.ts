@@ -27,8 +27,8 @@ export interface Category {
     image?: string;
     icon?: string;
     parentId?: string;
-    displayOrder: number;
-    isActive: boolean;
+    displayOrder?: number;
+    isActive?: boolean;
 }
 
 export interface Brand {
@@ -37,15 +37,15 @@ export interface Brand {
     slug: string;
     logo?: string;
     description?: string;
-    isActive: boolean;
+    isActive?: boolean;
 }
 
 export interface ProductImage {
     id: string;
-    productId: string;
+    productId?: string;
     url: string;
     altText?: string;
-    displayOrder: number;
+    displayOrder?: number;
     isPrimary: boolean;
 }
 
@@ -59,11 +59,11 @@ export interface ProductVariant {
     colorHex?: string;
     material?: string;
     priceAdjustment?: number;
-    stockQuantity: number;
+    stockQuantity?: number;
     inventoryCount: number;
     attributes?: Record<string, any>;
-    images: string[];
-    isActive: boolean;
+    images?: string[];
+    isActive?: boolean;
 }
 
 export interface Product {
@@ -82,21 +82,21 @@ export interface Product {
     salePrice?: number;
     costPrice?: number;
     stockQuantity: number;
-    lowStockThreshold: number;
+    lowStockThreshold?: number;
     isActive: boolean;
     isFeatured: boolean;
-    isNewArrival: boolean;
+    isNewArrival?: boolean;
     metaTitle?: string;
     metaDescription?: string;
     metaKeywords?: string;
     images: ProductImage[];
     variants?: ProductVariant[];
-    viewCount: number;
+    viewCount?: number;
     inventoryCount: number;
     averageRating?: number;
     reviewCount?: number;
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt: Date | string;
+    updatedAt: Date | string;
 }
 
 // ==================== CART TYPES ====================

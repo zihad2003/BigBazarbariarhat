@@ -11,6 +11,7 @@ import {
     Shield
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { SafeImage } from '@/components/ui/safe-image';
 
 export default function BrandsPage() {
     const [brands, setBrands] = useState<any[]>([]);
@@ -94,7 +95,7 @@ export default function BrandsPage() {
                             <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-bl-[8rem] opacity-30 group-hover:scale-120 transition-transform" />
 
                             <div className="w-24 h-24 bg-gray-50 rounded-[2rem] flex items-center justify-center text-gray-400 group-hover:bg-black group-hover:text-white transition-all shadow-lg mb-8 relative z-10 overflow-hidden">
-                                {brand.logo ? <img src={brand.logo} alt="" className="w-full h-full object-cover" /> : <Shield className="h-10 w-10 text-indigo-400 group-hover:text-white" />}
+                                {brand.logo ? <SafeImage src={brand.logo} alt={brand.name || ''} className="w-full h-full" /> : <Shield className="h-10 w-10 text-indigo-400 group-hover:text-white" />}
                             </div>
 
                             <div className="space-y-2 mb-8 relative z-10 w-full">

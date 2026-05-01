@@ -1,0 +1,22 @@
+﻿
+> @bigbazar/web@0.1.0 type-check
+> tsc --noEmit
+
+src/__tests__/components/button.test.tsx(2,18): error TS2305: Module '"@testing-library/react"' has no exported member 'screen'.
+src/__tests__/components/button.test.tsx(2,26): error TS2305: Module '"@testing-library/react"' has no exported member 'fireEvent'.
+src/app/(auth)/sign-in/[[...sign-in]]/page.tsx(1,24): error TS2307: Cannot find module '@clerk/nextjs' or its corresponding type declarations.
+src/app/(auth)/sign-up/[[...sign-up]]/page.tsx(1,24): error TS2307: Cannot find module '@clerk/nextjs' or its corresponding type declarations.
+src/app/(shop)/order-success/page.tsx(66,39): error TS2304: Cannot find name 'i'.
+src/app/(shop)/shop/page.tsx(307,34): error TS2322: Type 'import("D:/Bigbazarbariarhat/BigBazarbariarhat/apps/web/src/types/index").Product[]' is not assignable to type 'import("D:/Bigbazarbariarhat/BigBazarbariarhat/packages/shared/src/types/product.types").Product[]'.
+  Type 'import("D:/Bigbazarbariarhat/BigBazarbariarhat/apps/web/src/types/index").Product' is not assignable to type 'import("D:/Bigbazarbariarhat/BigBazarbariarhat/packages/shared/src/types/product.types").Product'.
+    Types of property 'variants' are incompatible.
+      Type 'import("D:/Bigbazarbariarhat/BigBazarbariarhat/apps/web/src/types/index").ProductVariant[] | undefined' is not assignable to type 'import("D:/Bigbazarbariarhat/BigBazarbariarhat/packages/shared/src/types/product.types").ProductVariant[] | undefined'.
+        Type 'import("D:/Bigbazarbariarhat/BigBazarbariarhat/apps/web/src/types/index").ProductVariant[]' is not assignable to type 'import("D:/Bigbazarbariarhat/BigBazarbariarhat/packages/shared/src/types/product.types").ProductVariant[]'.
+          Type 'import("D:/Bigbazarbariarhat/BigBazarbariarhat/apps/web/src/types/index").ProductVariant' is not assignable to type 'import("D:/Bigbazarbariarhat/BigBazarbariarhat/packages/shared/src/types/product.types").ProductVariant'.
+            Types of property 'priceAdjustment' are incompatible.
+              Type 'number | undefined' is not assignable to type 'number'.
+                Type 'undefined' is not assignable to type 'number'.
+src/components/shop/product-card.tsx(58,24): error TS2345: Argument of type 'import("D:/Bigbazarbariarhat/BigBazarbariarhat/packages/shared/src/types/product.types").Product' is not assignable to parameter of type 'import("D:/Bigbazarbariarhat/BigBazarbariarhat/apps/web/src/types/index").Product'.
+  Types of property 'category' are incompatible.
+    Type 'import("D:/Bigbazarbariarhat/BigBazarbariarhat/packages/shared/src/types/product.types").Category | undefined' is not assignable to type 'import("D:/Bigbazarbariarhat/BigBazarbariarhat/apps/web/src/types/index").Category | undefined'.
+      Type 'Category' is missing the following properties from type 'Category': displayOrder, isActive

@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from 'next';
 import { Inter, Playfair_Display, Lato } from 'next/font/google';
 import Providers from './providers';
 import { ToastContainer } from '@/components/toast-container';
-import { Preloader } from '@/components/preloader';
 import './globals.css';
 
 const inter = Inter({
@@ -83,7 +82,6 @@ export default function RootLayout({
       <body className={`${lato.className} bg-background text-foreground`}>
         <Providers>
           {children}
-          <Preloader />
           <ToastContainer />
         </Providers>
       </body>

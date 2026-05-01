@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Settings, User, Lock, Bell, Shield, ArrowLeft, Check, Loader2, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useUser } from '@clerk/nextjs';
+import { useSession } from 'next-auth/react';
 import { useUIStore } from '@/lib/stores/ui-store';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -11,7 +11,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 type TabType = 'profile' | 'security' | 'notifications' | 'privacy';
 
 export default function SettingsPage() {
-    const { user, isLoaded } = useUser();
+    const { data: session, status } = useSession();
+    const user = session?.user as any;
+    const isLoaded = status !== 'loading';
     const { addNotification } = useUIStore();
     const [activeTab, setActiveTab] = useState<TabType>('profile');
     const [isUpdating, setIsUpdating] = useState(false);

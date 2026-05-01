@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { SafeImage } from '@/components/ui/safe-image';
 
 export default function CustomerDetailPage() {
     const router = useRouter();
@@ -102,7 +103,7 @@ export default function CustomerDetailPage() {
                     </button>
                     <div className="flex items-center gap-8">
                         <div className="w-24 h-24 bg-indigo-50 border-4 border-white shadow-2xl rounded-[2.5rem] flex items-center justify-center text-indigo-600 font-black text-3xl overflow-hidden">
-                            {customer.avatar ? <img src={customer.avatar} alt="" className="w-full h-full object-cover" /> : (customer.firstName?.[0] || 'U')}
+                            {customer.avatar ? <SafeImage src={customer.avatar} alt={customer.firstName || ''} className="w-full h-full" /> : (customer.firstName?.[0] || 'U')}
                         </div>
                         <div className="flex-1 min-w-[300px]">
                             {isEditing ? (

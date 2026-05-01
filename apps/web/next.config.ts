@@ -95,8 +95,7 @@ const nextConfig: NextConfig = {
     ];
   },
 
-  // ─── Transpile Packages ──────────────────────────────────────
-  transpilePackages: ['@bigbazar/shared', '@bigbazar/ui', '@bigbazar/database'],
+  transpilePackages: ['@bigbazar/shared', '@bigbazar/ui'],
 
   // ─── Webpack Optimizations ───────────────────────────────────
   webpack: (config, { isServer }) => {

@@ -22,7 +22,7 @@ import {
     SheetTrigger,
 } from '@/components/ui/sheet';
 import { useUIStore } from '@/lib/stores/ui-store';
-import { useUser } from '@clerk/nextjs';
+import { useSession } from 'next-auth/react';
 
 interface Address {
     id: string;
@@ -39,7 +39,9 @@ interface Address {
 }
 
 export default function AddressesPage() {
-    const { user, isLoaded } = useUser();
+    const { data: session, status } = useSession();
+    const user = session?.user;
+    const isLoaded = status !== 'loading';
     const queryClient = useQueryClient();
     const { addNotification } = useUIStore();
     const [isSheetOpen, setIsSheetOpen] = useState(false);

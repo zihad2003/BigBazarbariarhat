@@ -5,9 +5,7 @@ import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, ArrowRight, ShieldCheck, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
 
@@ -64,12 +62,12 @@ export default function LoginPage() {
                 <CardContent className="px-8 pb-8 pt-4">
                     <form onSubmit={handleSubmit} className="space-y-6">
                         {error && (
-                            <Alert variant="destructive" className="bg-rose-50 border-rose-100 text-rose-600 rounded-2xl">
-                                <AlertDescription className="text-[11px] font-black uppercase tracking-widest">{error}</AlertDescription>
-                            </Alert>
+                            <div className="bg-rose-50 border-rose-100 text-rose-600 rounded-2xl p-4 border text-sm flex items-center">
+                                <span className="text-[11px] font-black uppercase tracking-widest">{error}</span>
+                            </div>
                         )}
                         <div className="space-y-2">
-                            <Label htmlFor="email" className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-2">Email Address</Label>
+                            <label htmlFor="email" className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-2">Email Address</label>
                             <Input
                                 id="email"
                                 type="email"
@@ -82,7 +80,7 @@ export default function LoginPage() {
                         </div>
                         <div className="space-y-2">
                             <div className="flex items-center justify-between ml-2">
-                                <Label htmlFor="password" className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Password</Label>
+                                <label htmlFor="password" className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Password</label>
                                 <button type="button" className="text-[9px] font-black text-indigo-500 uppercase tracking-widest hover:underline">Forgot?</button>
                             </div>
                             <Input

@@ -15,8 +15,6 @@
     "analyze": "ANALYZE=true next build"
   },
   "dependencies": {
-    "@auth/prisma-adapter": "^2.11.1",
-    "@bigbazar/database": "*",
     "@bigbazar/shared": "*",
     "@bigbazar/types": "*",
     "@bigbazar/ui": "*",
@@ -34,7 +32,6 @@
     "date-fns": "^4.1.0",
     "framer-motion": "^11.0.0",
     "lucide-react": "^0.563.0",
-    "mysql2": "^3.19.1",
     "next": "16.1.6",
     "next-auth": "^5.0.0-beta.30",
     "next-cloudinary": "^6.17.5",
@@ -63,7 +60,6 @@
     "eslint-config-prettier": "^10.1.8",
     "jsdom": "^28.0.0",
     "prettier": "^3.8.1",
-    "prisma": "^6.0.0",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4.0.18"

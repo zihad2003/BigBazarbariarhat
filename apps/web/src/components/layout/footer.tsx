@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Facebook, Instagram, MapPin, Phone, Mail, CreditCard, Truck, Shield, RotateCcw } from 'lucide-react';
+import { Facebook, Instagram, MapPin, Phone, Mail, CreditCard, Truck, Shield, RotateCcw, Send } from 'lucide-react';
 
 const footerLinks = {
     shop: [
@@ -52,20 +52,50 @@ export function Footer() {
     return (
         <footer className="bg-background text-muted-foreground border-t border-border font-lato">
             {/* Features Bar */}
-            <div className="border-b border-border">
-                <div className="max-w-7xl mx-auto px-6 lg:px-8 py-10">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
+            <div className="border-b border-border bg-gradient-to-r from-background via-card to-background relative overflow-hidden">
+                <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+                <div className="max-w-7xl mx-auto px-6 lg:px-8 py-10 relative z-10">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                         {features.map((feature) => (
-                            <div key={feature.title} className="flex items-center gap-4 group">
-                                <div className="flex-shrink-0 w-12 h-12 bg-card rounded-full flex items-center justify-center border border-border group-hover:border-destructive group-hover:text-destructive transition-colors duration-300">
-                                    <feature.icon className="h-5 w-5 transition-colors group-hover:text-destructive" />
+                            <div key={feature.title} className="flex items-center gap-5 group p-4 rounded-2xl hover:bg-card/50 transition-colors duration-300 border border-transparent hover:border-border/50">
+                                <div className="flex-shrink-0 w-14 h-14 bg-background rounded-full flex items-center justify-center border border-border shadow-sm group-hover:border-destructive group-hover:shadow-md group-hover:shadow-destructive/10 group-hover:scale-110 transition-all duration-300">
+                                    <feature.icon className="h-6 w-6 text-muted-foreground transition-colors group-hover:text-destructive" />
                                 </div>
                                 <div>
-                                    <h4 className="font-playfair font-bold text-foreground text-sm uppercase tracking-wider mb-1">{feature.title}</h4>
-                                    <p className="text-xs text-muted-foreground group-hover:text-foreground transition-colors">{feature.description}</p>
+                                    <h4 className="font-playfair font-bold text-foreground text-sm uppercase tracking-wider mb-1 group-hover:text-destructive transition-colors">{feature.title}</h4>
+                                    <p className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">{feature.description}</p>
                                 </div>
                             </div>
                         ))}
+                    </div>
+                </div>
+            </div>
+
+            {/* Newsletter Section */}
+            <div className="bg-black text-white relative overflow-hidden">
+                <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-white/20 via-transparent to-transparent pointer-events-none" />
+                <div className="max-w-7xl mx-auto px-6 lg:px-8 py-20 relative z-10">
+                    <div className="flex flex-col lg:flex-row items-center justify-between gap-12 bg-white/5 border border-white/10 p-10 rounded-[3rem] backdrop-blur-md">
+                        <div className="max-w-xl text-center lg:text-left">
+                            <h3 className="text-3xl sm:text-4xl font-black font-playfair mb-4 tracking-tight">Join the Big Bazar Club</h3>
+                            <p className="text-gray-400 text-sm font-medium leading-relaxed">
+                                Subscribe to our newsletter to receive updates on new arrivals, exclusive deals, and insider-only promotions.
+                            </p>
+                        </div>
+                        <form className="w-full lg:w-auto flex flex-col sm:flex-row gap-3" onSubmit={(e) => e.preventDefault()}>
+                            <div className="relative flex-grow">
+                                <Mail className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                                <input
+                                    type="email"
+                                    placeholder="Enter your email address"
+                                    className="bg-white/10 border border-white/20 text-white placeholder:text-gray-500 rounded-full pl-14 pr-6 h-14 outline-none focus:bg-white/20 focus:border-white/40 transition-all w-full sm:w-80 font-bold"
+                                    required
+                                />
+                            </div>
+                            <button type="submit" className="bg-white text-black h-14 px-8 rounded-full font-black uppercase tracking-widest text-xs hover:bg-gray-200 hover:scale-105 active:scale-95 transition-all shrink-0 flex items-center justify-center gap-2 group">
+                                Subscribe <Send className="h-4 w-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -147,7 +177,7 @@ export function Footer() {
                         <ul className="space-y-3">
                             {footerLinks.shop.map((link) => (
                                 <li key={link.name}>
-                                    <Link href={link.href} className="text-sm text-muted-foreground hover:text-destructive hover:pl-2 transition-all duration-300 block">
+                                    <Link href={link.href} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-all duration-300 block w-fit relative after:absolute after:-bottom-1 after:left-0 after:h-[2px] after:w-0 after:bg-destructive hover:after:w-full after:transition-all after:duration-300">
                                         {link.name}
                                     </Link>
                                 </li>
@@ -161,7 +191,7 @@ export function Footer() {
                         <ul className="space-y-3">
                             {footerLinks.help.map((link) => (
                                 <li key={link.name}>
-                                    <Link href={link.href} className="text-sm text-muted-foreground hover:text-destructive hover:pl-2 transition-all duration-300 block">
+                                    <Link href={link.href} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-all duration-300 block w-fit relative after:absolute after:-bottom-1 after:left-0 after:h-[2px] after:w-0 after:bg-destructive hover:after:w-full after:transition-all after:duration-300">
                                         {link.name}
                                     </Link>
                                 </li>
@@ -175,7 +205,7 @@ export function Footer() {
                         <ul className="space-y-3">
                             {footerLinks.company.map((link) => (
                                 <li key={link.name}>
-                                    <Link href={link.href} className="text-sm text-muted-foreground hover:text-destructive hover:pl-2 transition-all duration-300 block">
+                                    <Link href={link.href} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-all duration-300 block w-fit relative after:absolute after:-bottom-1 after:left-0 after:h-[2px] after:w-0 after:bg-destructive hover:after:w-full after:transition-all after:duration-300">
                                         {link.name}
                                     </Link>
                                 </li>
@@ -189,7 +219,7 @@ export function Footer() {
                         <ul className="space-y-3">
                             {footerLinks.legal.map((link) => (
                                 <li key={link.name}>
-                                    <Link href={link.href} className="text-sm text-muted-foreground hover:text-destructive hover:pl-2 transition-all duration-300 block">
+                                    <Link href={link.href} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-all duration-300 block w-fit relative after:absolute after:-bottom-1 after:left-0 after:h-[2px] after:w-0 after:bg-destructive hover:after:w-full after:transition-all after:duration-300">
                                         {link.name}
                                     </Link>
                                 </li>

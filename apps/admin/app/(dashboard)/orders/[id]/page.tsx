@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { SafeImage } from '@/components/ui/safe-image';
 
 const formatDate = (date: string | Date, includeTime = true) => {
     const d = new Date(date);
@@ -189,7 +190,7 @@ export default function OrderDetailPage() {
                                 <div key={item.id} className="p-10 flex items-center gap-8 hover:bg-gray-50/50 transition-colors group">
                                     <div className="w-24 h-24 bg-gray-100 rounded-[2rem] overflow-hidden border border-gray-100 flex-shrink-0 group-hover:scale-110 transition-transform duration-500">
                                         {item.product.images?.[0] ? (
-                                            <img src={item.product.images[0].url} alt="" className="w-full h-full object-cover" />
+                                            <SafeImage src={item.product.images[0].url} alt={item.productName || ''} className="w-full h-full" />
                                         ) : <div className="w-full h-full flex items-center justify-center text-gray-300 font-black">NA</div>}
                                     </div>
                                     <div className="flex-1 min-w-0">
@@ -286,7 +287,7 @@ export default function OrderDetailPage() {
                             <div className="space-y-8">
                                 <div className="flex items-center gap-6">
                                     <div className="w-20 h-20 bg-indigo-100 rounded-[2rem] overflow-hidden border-4 border-white shadow-xl">
-                                        {order.user.avatar ? <img src={order.user.avatar} alt="" /> : <div className="w-full h-full flex items-center justify-center text-indigo-600 font-black text-xl">{order.user.firstName?.[0] || 'U'}</div>}
+                                        {order.user.avatar ? <SafeImage src={order.user.avatar} alt={order.user.firstName || ''} className="w-full h-full" /> : <div className="w-full h-full flex items-center justify-center text-indigo-600 font-black text-xl">{order.user.firstName?.[0] || 'U'}</div>}
                                     </div>
                                     <div>
                                         <h4 className="text-2xl font-black text-gray-900 tracking-tighter italic">{order.user.firstName} {order.user.lastName}</h4>

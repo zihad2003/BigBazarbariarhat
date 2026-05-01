@@ -1,0 +1,74 @@
+'use client'
+
+import { Facebook, Twitter, Linkedin, Link2, Mail } from 'lucide-react'
+
+interface SocialShareProps {
+    url: string
+    title: string
+}
+
+export function SocialShare({ url, title }: SocialShareProps) {
+    const handleShare = (platform: string) => {
+        const encodedUrl = encodeURIComponent(url)
+        const encodedTitle = encodeURIComponent(title)
+
+        const urls: Record<string, string> = {
+            facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
+            twitter: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`,
+            linkedin: `https://www.linkedin.com/shareArticle?mini=true&url=${encodedUrl}&title=${encodedTitle}`,
+            email: `mailto:?subject=${encodedTitle}&body=${encodedUrl}`,
+        }
+
+        if (platform === 'copy') {
+            navigator.clipboard.writeText(url)
+            // Add toast notification here if needed
+            alert('Link copied to clipboard')
+            return
+        }
+
+        window.open(urls[platform] || '', '_blank', 'width=600,height=400')
+    }
+
+    return (
+        <div className="flex items-center gap-4 mt-6">
+            <span className="text-xs font-bold uppercase tracking-widest text-gray-500">Share:</span>
+            <div className="flex gap-2">
+                <button
+                    onClick={() => handleShare('facebook')}
+                    aria-label="Share on Facebook"
+                    className="p-2 rounded-full hover:bg-blue-50 text-gray-400 hover:text-blue-600 transition-colors"
+                >
+                    <Facebook className="h-4 w-4" />
+                </button>
+                <button
+                    onClick={() => handleShare('twitter')}
+                    aria-label="Share on Twitter"
+                    className="p-2 rounded-full hover:bg-sky-50 text-gray-400 hover:text-sky-500 transition-colors"
+                >
+                    <Twitter className="h-4 w-4" />
+                </button>
+                <button
+                    onClick={() => handleShare('linkedin')}
+                    aria-label="Share on LinkedIn"
+                    className="p-2 rounded-full hover:bg-blue-50 text-gray-400 hover:text-blue-700 transition-colors"
+                >
+                    <Linkedin className="h-4 w-4" />
+                </button>
+                <button
+                    onClick={() => handleShare('email')}
+                    aria-label="Share via Email"
+                    className="p-2 rounded-full hover:bg-gray-50 text-gray-400 hover:text-gray-900 transition-colors"
+                >
+                    <Mail className="h-4 w-4" />
+                </button>
+                <button
+                    onClick={() => handleShare('copy')}
+                    aria-label="Copy Link"
+                    className="p-2 rounded-full hover:bg-gray-50 text-gray-400 hover:text-gray-900 transition-colors"
+                >
+                    <Link2 className="h-4 w-4" />
+                </button>
+            </div>
+        </div>
+    )
+}
