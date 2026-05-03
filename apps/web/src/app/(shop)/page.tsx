@@ -60,8 +60,8 @@ const getHeroSlides = (t: any) => [
 ];
 
 const getCategoriesData = (t: any) => [
-    { key: 'women', name: t?.categories?.women || 'Women', href: '/women', image: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=500&auto=format&fit=crop' },
-    { key: 'men', name: t?.categories?.men || 'Men', href: '/men', image: 'https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?q=80&w=500&auto=format&fit=crop' },
+    { key: 'women', name: t?.categories?.women || 'Women', href: '/products?category=Women', image: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=500&auto=format&fit=crop' },
+    { key: 'men', name: t?.categories?.men || 'Men', href: '/products?category=Men', image: 'https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?q=80&w=500&auto=format&fit=crop' },
     { key: 'kids-boys', name: t?.categories?.kidsBoys || 'Kids(Boys)', href: '/products?category=Kids(Boys)', image: 'https://images.unsplash.com/photo-1519234129322-2636a0d0d885?q=80&w=500&auto=format&fit=crop' },
     { key: 'kids-girls', name: t?.categories?.kidsGirls || 'Kids(Girls)', href: '/products?category=Kids(Girls)', image: 'https://images.unsplash.com/photo-1514316454349-f50db90e2270?q=80&w=500&auto=format&fit=crop' },
     { key: 'wedding-touch', name: t?.categories?.weddingTouch || 'Wedding Touch', href: '/products?category=Wedding-Touch', image: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=500&auto=format&fit=crop' },
