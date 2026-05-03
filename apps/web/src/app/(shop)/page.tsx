@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
     Star, 
@@ -203,7 +204,8 @@ function HeroSlider() {
 function ProductCard({ product, index }: { product: any; index: number }) {
     const [isHovered, setIsHovered] = useState(false);
     const addItem = useCartStore((state) => state.addItem);
-    const { openCart, addNotification } = useUIStore();
+    const { addNotification } = useUIStore();
+    const router = useRouter();
 
     return (
         <motion.div
@@ -251,7 +253,7 @@ function ProductCard({ product, index }: { product: any; index: number }) {
                                     stock: 100,
                                 });
                                 addNotification({ type: 'success', message: `${product.name} added to cart` });
-                                openCart();
+                                router.push('/cart');
                             }}
                             className="w-full bg-foreground text-white text-[10px] uppercase tracking-widest font-bold py-3 flex items-center justify-center gap-2 hover:bg-destructive transition-colors"
                         >

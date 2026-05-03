@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, use } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { 
     Search as SearchIcon, 
     Filter, 
@@ -34,7 +34,8 @@ export default function SearchResultsPage() {
 
     const { addItem: addToCart } = useCartStore();
     const { toggleItem: toggleWishlist, isInWishlist } = useWishlistStore();
-    const { openCart, addNotification } = useUIStore();
+    const { addNotification } = useUIStore();
+    const router = useRouter();
 
     useEffect(() => {
         setIsLoading(true);
@@ -67,8 +68,8 @@ export default function SearchResultsPage() {
             quantity: 1,
             stock: product.stock ?? product.stockQuantity ?? 0,
         });
-        addNotification({ type: 'success', message: 'Artifact synchronized with curation.' });
-        openCart();
+        addNotification({ type: 'success', message: 'Item added to cart.' });
+        router.push('/cart');
     };
 
     return (
@@ -85,7 +86,7 @@ export default function SearchResultsPage() {
                         Results for <span className="text-indigo-600">"{query}"</span>
                     </h1>
                     <p className="text-slate-400 font-medium mt-4 uppercase text-[11px] tracking-widest">
-                        Identified {results.length} matching artifacts in the repository.
+                        Found {results.length} matching items.
                     </p>
                 </div>
 
@@ -165,7 +166,7 @@ export default function SearchResultsPage() {
                                             onClick={() => handleAddToCart(product)}
                                             className="w-full h-14 bg-black/90 backdrop-blur-md text-white border border-white/20 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-2xl"
                                         >
-                                            <Plus className="h-4 w-4 mr-2" /> Add to Curation
+                                            <Plus className="h-4 w-4 mr-2" /> Add to Cart
                                         </Button>
                                     </div>
                                 </div>
@@ -195,13 +196,13 @@ export default function SearchResultsPage() {
                     <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-8 shadow-xl">
                         <SearchIcon className="h-10 w-10 text-slate-200" />
                     </div>
-                    <h3 className="text-3xl font-black text-slate-900 uppercase tracking-tight mb-4">Signal Not Found</h3>
+                    <h3 className="text-3xl font-black text-slate-900 uppercase tracking-tight mb-4">No Results</h3>
                     <p className="text-slate-400 font-medium max-w-sm mx-auto mb-10">
-                        We couldn't identify any artifacts matching your search criteria. Try a different sector or identification.
+                        We couldn't find any items matching your search criteria.
                     </p>
                     <Link href="/products">
                         <Button className="h-16 px-12 bg-black text-white rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-2xl">
-                            Explore All Artifacts
+                            Explore All Products
                         </Button>
                     </Link>
                 </div>

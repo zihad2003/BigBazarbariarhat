@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Plus, Heart, ShoppingBag, Star, ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ProductQuickView } from './product-quick-view'
@@ -22,10 +23,10 @@ interface ProductCardProps {
 export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
     const { addItem } = useCartStore()
     const { toggleItem: toggleWishlist, isInWishlist } = useWishlistStore()
-    const { addNotification, openCart } = useUIStore()
+    const { addNotification } = useUIStore()
+    const router = useRouter()
     const [isHovered, setIsHovered] = useState(false)
     const [isAdding, setIsAdding] = useState(false)
-    const [isDeliveryModalOpen, setIsDeliveryModalOpen] = useState(false)
 
     const isOutOfStock = product.stock <= 0
     const secondaryImage = product.images?.[1]?.url
@@ -53,10 +54,10 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
         })
         addNotification({
             type: 'success',
-            message: `${product.name} appended to curation`
+            message: `${product.name} added to cart`
         })
         setIsAdding(false)
-        openCart()
+        router.push('/cart')
     }
 
     const handleToggleWishlist = (e: React.MouseEvent) => {
@@ -66,7 +67,7 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
         const isNowInWishlist = isInWishlist(product.id)
         addNotification({
             type: isNowInWishlist ? 'info' : 'success',
-            message: isNowInWishlist ? `${product.name} removed from collection` : `${product.name} saved to collection`
+            message: isNowInWishlist ? `${product.name} removed from wishlist` : `${product.name} saved to wishlist`
         })
     }
 
@@ -169,12 +170,12 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
                                 <AnimatePresence mode="wait">
                                     {isAdding ? (
                                         <motion.span key="adding" initial={{ y: 20 }} animate={{ y: 0 }} exit={{ y: -20 }}>
-                                            Synchronizing...
+                                            Adding...
                                         </motion.span>
                                     ) : (
                                         <motion.span key="idle" initial={{ y: 20 }} animate={{ y: 0 }} exit={{ y: -20 }} className="flex items-center gap-2">
                                             <ShoppingBag className="h-4 w-4" />
-                                            Append to Curation
+                                            Add to Cart
                                         </motion.span>
                                     )}
                                 </AnimatePresence>
@@ -263,15 +264,11 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
                 {/* Dynamic Action: Add to Cart */}
                 <div className={`absolute inset-x-6 bottom-6 z-10 flex flex-col gap-2 transition-all duration-500 ${isHovered && !isOutOfStock ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>
                     <Button
-                        onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            setIsDeliveryModalOpen(true);
-                        }}
+                        onClick={handleAddToCart}
                         className="w-full h-12 bg-luxury-gold text-luxury-black hover:bg-white font-black uppercase tracking-widest text-[9px] rounded-xl shadow-2xl shadow-luxury-gold/20 flex items-center justify-center gap-2 border border-white/10"
                     >
                         <ShoppingBag className="h-3.5 w-3.5" />
-                        Order Now
+                        Add to Cart
                     </Button>
 
                     <Button
@@ -288,7 +285,7 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
                                     exit={{ y: -20, opacity: 0 }}
                                     className="flex items-center gap-2"
                                 >
-                                    Synchronizing...
+                                    Adding...
                                 </motion.span>
                             ) : (
                                 <motion.span
@@ -336,11 +333,6 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
                     )}
                 </div>
             </div>
-            <DeliveryInfoModal
-                isOpen={isDeliveryModalOpen}
-                onClose={() => setIsDeliveryModalOpen(false)}
-                productName={product.name}
-            />
         </motion.div>
     )
 }

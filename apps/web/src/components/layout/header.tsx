@@ -333,13 +333,13 @@ export function Header() {
                                     <Heart className="h-5 w-5" />
                                     {mounted && wishlistCount > 0 && <span className="absolute -top-1 -right-1 w-5 h-5 bg-destructive text-white text-[9px] font-black rounded-full flex items-center justify-center border-2 border-white">{wishlistCount}</span>}
                                 </Link>
-                                <button 
-                                    onClick={() => openCart()}
+                                <Link 
+                                    href="/cart"
                                     className="p-3 bg-slate-900 text-white hover:bg-indigo-600 rounded-2xl transition-all relative shadow-xl shadow-black/10"
                                 >
                                     <ShoppingBag className="h-5 w-5" />
                                     {mounted && cartCount > 0 && <span className="absolute -top-1 -right-1 w-5 h-5 bg-white text-black text-[9px] font-black rounded-full flex items-center justify-center border-2 border-black">{cartCount}</span>}
-                                </button>
+                                </Link>
                                 <Link href="/account/profile" className="hidden sm:block p-1 bg-slate-100 rounded-2xl hover:ring-4 hover:ring-indigo-600/10 transition-all">
                                     <div className="w-10 h-10 bg-white rounded-[0.9rem] flex items-center justify-center text-slate-900 font-black text-xs uppercase tracking-tighter">
                                         {session?.user?.name?.charAt(0) || <User className="h-5 w-5" />}

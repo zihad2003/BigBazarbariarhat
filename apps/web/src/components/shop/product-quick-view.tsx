@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Plus, Minus, ShoppingBag, Star, Share2, Heart, Check, ArrowRight, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -27,10 +28,10 @@ interface ProductQuickViewProps {
 export function ProductQuickView({ product }: ProductQuickViewProps) {
     const [quantity, setQuantity] = useState(1);
     const { addItem } = useCartStore();
-    const { addNotification, openCart } = useUIStore();
+    const { addNotification } = useUIStore();
+    const router = useRouter();
     const [isOpen, setIsOpen] = useState(false);
     const [isAdding, setIsAdding] = useState(false);
-    const [isDeliveryModalOpen, setIsDeliveryModalOpen] = useState(false);
 
     const price = product.salePrice || product.basePrice;
     const isOutOfStock = product.stock <= 0;
@@ -53,11 +54,11 @@ export function ProductQuickView({ product }: ProductQuickViewProps) {
         });
         addNotification({
             type: 'success',
-            message: `${product.name} appended to curation`,
+            message: `${product.name} added to cart`,
         });
         setIsAdding(false);
         setIsOpen(false);
-        openCart();
+        router.push('/cart');
     };
 
     return (
@@ -197,11 +198,11 @@ export function ProductQuickView({ product }: ProductQuickViewProps) {
 
                             <div className="flex flex-col gap-4">
                                 <Button
-                                    onClick={() => setIsDeliveryModalOpen(true)}
+                                    onClick={handleAddToCart}
                                     className="w-full h-16 bg-luxury-gold text-luxury-black hover:bg-white transition-all font-black uppercase tracking-widest text-[10px] rounded-2xl shadow-2xl shadow-luxury-gold/20 flex items-center gap-2 group border border-white/10"
                                 >
                                     <ShoppingBag className="h-4 w-4 group-hover:scale-110 transition-transform" />
-                                    Order Now
+                                    Add to Cart
                                 </Button>
 
                                 <Button
@@ -219,7 +220,7 @@ export function ProductQuickView({ product }: ProductQuickViewProps) {
                                                 className="flex items-center gap-2"
                                             >
                                                 <Loader2 className="h-4 w-4 animate-spin" />
-                                                Synchronizing...
+                                                Adding...
                                             </motion.div>
                                         ) : (
                                             <motion.div
@@ -238,7 +239,7 @@ export function ProductQuickView({ product }: ProductQuickViewProps) {
 
                                 <Link href={`/products/${product.slug || product.id}`} className="block">
                                     <Button variant="ghost" className="w-full h-14 text-gray-400 hover:text-black uppercase tracking-widest text-[10px] font-black group transition-all">
-                                        Examine Full Artifact <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                                        View Full Details <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
                                     </Button>
                                 </Link>
                             </div>
@@ -256,11 +257,6 @@ export function ProductQuickView({ product }: ProductQuickViewProps) {
                         </div>
                     </div>
                 </div>
-                <DeliveryInfoModal
-                    isOpen={isDeliveryModalOpen}
-                    onClose={() => setIsDeliveryModalOpen(false)}
-                    productName={product.name}
-                />
             </SheetContent>
         </Sheet>
     );

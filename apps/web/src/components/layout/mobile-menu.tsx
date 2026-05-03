@@ -195,17 +195,15 @@ export function MobileMenu() {
                                 <span className="text-[10px] uppercase tracking-widest font-bold">Wishlist</span>
                             </Button>
                         </Link>
-                        <Button
-                            variant="ghost"
-                            className="w-full justify-start text-muted-foreground hover:text-foreground hover:bg-muted gap-2 px-2"
-                            onClick={() => {
-                                handleLinkClick();
-                                openCart();
-                            }}
-                        >
-                            <ShoppingBag className="h-4 w-4" />
-                            <span className="text-[10px] uppercase tracking-widest font-bold">Cart</span>
-                        </Button>
+                        <Link href="/cart" onClick={handleLinkClick} className="flex-1">
+                            <Button
+                                variant="ghost"
+                                className="w-full justify-start text-muted-foreground hover:text-foreground hover:bg-muted gap-2 px-2"
+                            >
+                                <ShoppingBag className="h-4 w-4" />
+                                <span className="text-[10px] uppercase tracking-widest font-bold">Cart</span>
+                            </Button>
+                        </Link>
                     </div>
                 </div>
             </SheetContent>

@@ -101,7 +101,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
             message: `${product.name} added to cart`,
         });
         setIsAdding(false);
-        openCart();
+        router.push('/cart');
     };
 
     if (isLoading) {

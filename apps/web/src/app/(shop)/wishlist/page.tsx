@@ -11,6 +11,7 @@ import {
     LayoutGrid
 } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { useCartStore } from '@bigbazar/shared';
@@ -22,7 +23,8 @@ import { formatPrice, cn } from '@/lib/utils';
 export default function WishlistPage() {
     const { items, removeItem, clearWishlist } = useWishlistStore();
     const { addItem } = useCartStore();
-    const { addNotification, openCart } = useUIStore();
+    const { addNotification } = useUIStore();
+    const router = useRouter();
 
     const handleAddToCart = (product: any) => {
         addItem(product, 1);
@@ -30,7 +32,7 @@ export default function WishlistPage() {
             type: 'success',
             message: `${product.name} added to cart`
         });
-        openCart();
+        router.push('/cart');
     };
 
     const handleRemove = (productId: string, name: string) => {
@@ -52,7 +54,7 @@ export default function WishlistPage() {
             type: 'success',
             message: 'All items moved to cart'
         });
-        openCart();
+        router.push('/cart');
     };
 
     return (
@@ -73,7 +75,7 @@ export default function WishlistPage() {
                             Back to Account
                         </Link>
                         <h1 className="text-6xl font-black text-gray-900 tracking-tighter uppercase leading-none">
-                            Saved <br /> Collections.
+                            Saved <br /> Items.
                         </h1>
                     </motion.div>
 
@@ -138,14 +140,14 @@ export default function WishlistPage() {
                                             {/* Top Left Badge */}
                                             <div className="absolute top-8 left-8">
                                                 <span className="bg-indigo-600 text-white text-[9px] font-black px-4 py-2 rounded-xl uppercase tracking-widest shadow-xl shadow-indigo-500/20">
-                                                    Saved Item
+                                                    Wishlist
                                                 </span>
                                             </div>
                                         </div>
 
                                         <div className="px-4 space-y-4">
                                             <div className="flex items-center justify-between">
-                                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">{item.product?.category?.name || 'Big Bazar Artifact'}</span>
+                                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">{item.product?.category?.name || 'Big Bazar'}</span>
                                                 <div className="h-px w-8 bg-gray-100" />
                                             </div>
 
@@ -193,7 +195,7 @@ export default function WishlistPage() {
                                         className="bg-white text-gray-900 hover:bg-indigo-600 hover:text-white rounded-[2.5rem] h-24 px-16 text-xs font-black uppercase tracking-[0.3em] shadow-2xl group transition-all duration-500 hover:scale-105 active:scale-95 border-none"
                                     >
                                         <ShoppingBag className="h-6 w-6 mr-4 group-hover:rotate-12 transition-transform" />
-                                        Execute Batch Move
+                                        Add all to Cart
                                     </Button>
                                 </div>
                             </motion.div>
@@ -224,9 +226,9 @@ export default function WishlistPage() {
                 {/* Logistics Info Module */}
                 <div className="mt-32 grid grid-cols-1 md:grid-cols-3 gap-10">
                     {[
-                        { icon: Info, label: 'Curator Support', desc: 'Direct access to archive specialists' },
-                        { icon: LayoutGrid, label: 'Custom Curation', desc: 'Artifact grouping & organization' },
-                        { icon: Sparkles, label: 'Priority Access', desc: 'Notifications on archive updates' }
+                        { icon: Info, label: 'Support', desc: 'Direct access to our specialists' },
+                        { icon: LayoutGrid, label: 'Custom List', desc: 'Item grouping & organization' },
+                        { icon: Sparkles, label: 'Priority Access', desc: 'Notifications on new arrivals' }
                     ].map((feature, i) => (
                         <div key={i} className="flex flex-col gap-6 p-10 bg-white rounded-[3rem] border border-gray-50 hover:border-gray-100 transition-all hover:bg-gray-50/30">
                             <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-gray-400">
