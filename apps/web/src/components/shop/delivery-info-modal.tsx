@@ -18,7 +18,7 @@ interface DeliveryInfoModalProps {
 }
 
 export function DeliveryInfoModal({ isOpen, onClose, productName }: DeliveryInfoModalProps) {
-    const whatsappNumber = '01877765535';
+    const whatsappNumber = '01857045449';
     const whatsappMessage = productName
         ? encodeURIComponent(`Hi, I want to order: ${productName}`)
         : encodeURIComponent('Hi, I want to order from Big Bazar');

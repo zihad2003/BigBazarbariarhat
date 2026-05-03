@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ShoppingBag, Trash2, Plus, Minus, ArrowRight } from 'lucide-react';
+import { X, ShoppingBag, Trash2, Plus, Minus, ArrowRight, Truck } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useCartStore } from '@/store/cartStore';
@@ -110,7 +110,31 @@ export function CartDrawer() {
                                     <p className="text-[10px] font-black uppercase tracking-[0.2em] mt-2">Begin your acquisition protocol.</p>
                                 </div>
                             )}
-                        </div>
+                        {/* Delivery Protocol Summary */}
+                        {items.length > 0 && (
+                            <div className="mx-8 mb-8 p-6 bg-slate-50 rounded-3xl border border-slate-100 space-y-4">
+                                <div className="flex items-center gap-3">
+                                    <Truck className="h-4 w-4 text-slate-900" />
+                                    <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900">Delivery Protocol</h3>
+                                </div>
+                                <div className="grid grid-cols-1 gap-2">
+                                    <div className="flex justify-between items-center text-[10px] font-bold">
+                                        <span className="text-slate-500">Local Mirsarai</span>
+                                        <span className="text-emerald-600">FREE</span>
+                                    </div>
+                                    <div className="flex justify-between items-center text-[10px] font-bold">
+                                        <span className="text-slate-500">Chittagong</span>
+                                        <span className="text-slate-900">৳100</span>
+                                    </div>
+                                    <div className="flex justify-between items-center text-[10px] font-bold">
+                                        <span className="text-slate-500">Outside</span>
+                                        <span className="text-slate-900">৳150+</span>
+                                    </div>
+                                </div>
+                                <p className="text-[9px] font-medium text-slate-400 italic">Charges applied at next protocol stage.</p>
+                            </div>
+                        )}
+                    </div>
 
                         {/* Footer */}
                         {items.length > 0 && (

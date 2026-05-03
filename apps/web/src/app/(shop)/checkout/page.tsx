@@ -308,12 +308,13 @@ export default function CheckoutPage() {
                                         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="pt-2">
                                             <div className="p-6 bg-pink-50/50 border border-pink-100 rounded-sm">
                                                 <label className="text-[10px] font-bold text-pink-600 uppercase tracking-widest mb-2 block">bKash Number</label>
+                                                <p className="text-[10px] text-pink-400 mb-4 uppercase tracking-widest">Send Money to: <span className="font-bold text-pink-700">01857045449</span></p>
                                                 <input 
                                                     type="tel"
                                                     value={bkashNumber}
                                                     onChange={(e) => setBkashNumber(e.target.value)}
                                                     className="w-full px-5 py-4 bg-white border border-pink-100 rounded-sm focus:outline-none focus:border-pink-500 transition-all text-sm font-medium"
-                                                    placeholder="01XXXXXXXXX"
+                                                    placeholder="Enter your bKash number"
                                                 />
                                             </div>
                                         </motion.div>
