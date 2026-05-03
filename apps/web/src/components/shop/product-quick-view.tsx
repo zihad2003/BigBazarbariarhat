@@ -20,7 +20,7 @@ import { useUIStore } from '@/lib/stores/ui-store';
 import { SocialShare } from './social-share';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DeliveryInfoModal } from './delivery-info-modal';
-import { useLanguageStore } from '@bigbazar/shared';
+import { useLanguageStore, useTranslation } from '@bigbazar/shared';
 
 interface ProductQuickViewProps {
     product: Product;
@@ -28,6 +28,7 @@ interface ProductQuickViewProps {
 
 export function ProductQuickView({ product }: ProductQuickViewProps) {
     const { language } = useLanguageStore();
+    const t = useTranslation();
     const [quantity, setQuantity] = useState(1);
     const { addItem } = useCartStore();
     const { addNotification } = useUIStore();
