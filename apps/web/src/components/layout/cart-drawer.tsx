@@ -8,8 +8,10 @@ import { useCartStore } from '@/store/cartStore';
 import { useUIStore } from '@/store/uiStore';
 import { Button } from '@/components/ui/button';
 import { formatPrice } from '@/lib/utils';
+import { useLanguageStore } from '@bigbazar/shared';
 
 export function CartDrawer() {
+    const { language } = useLanguageStore();
     const { isCartOpen, setCartOpen } = useUIStore();
     const { items, removeItem, updateQuantity, getSubtotal, getTotal, getItemCount } = useCartStore();
     const subtotal = getSubtotal();
@@ -95,7 +97,7 @@ export function CartDrawer() {
                                                     </button>
                                                 </div>
                                                 <p className="text-lg font-black text-slate-900 font-mono tracking-tighter">
-                                                    {formatPrice(item.price * item.quantity)}
+                                                    {formatPrice(item.price * item.quantity, language)}
                                                 </p>
                                             </div>
                                         </div>
@@ -124,11 +126,11 @@ export function CartDrawer() {
                                     </div>
                                     <div className="flex justify-between items-center text-[10px] font-bold">
                                         <span className="text-slate-500">Chittagong</span>
-                                        <span className="text-slate-900">৳100</span>
+                                        <span className="text-slate-900">{language === 'bn' ? '৳১০০' : '৳100'}</span>
                                     </div>
                                     <div className="flex justify-between items-center text-[10px] font-bold">
                                         <span className="text-slate-500">Outside</span>
-                                        <span className="text-slate-900">৳150+</span>
+                                        <span className="text-slate-900">{language === 'bn' ? '৳১৫০+' : '৳150+'}</span>
                                     </div>
                                 </div>
                                 <p className="text-[9px] font-medium text-slate-400 italic">Charges applied at checkout stage.</p>
@@ -142,7 +144,7 @@ export function CartDrawer() {
                                 <div className="space-y-3">
                                     <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
                                         <span>Subtotal</span>
-                                        <span className="text-slate-900 font-mono">{formatPrice(subtotal)}</span>
+                                        <span className="text-slate-900 font-mono">{formatPrice(subtotal, language)}</span>
                                     </div>
                                     <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
                                         <span>Shipping</span>
@@ -151,7 +153,7 @@ export function CartDrawer() {
                                     <div className="pt-4 border-t border-dashed border-slate-200">
                                         <div className="flex justify-between items-end">
                                             <p className="text-[11px] font-black text-slate-900 uppercase tracking-widest">Total</p>
-                                            <h4 className="text-3xl font-black text-slate-900 tracking-tighter font-mono">{formatPrice(total)}</h4>
+                                            <h4 className="text-3xl font-black text-slate-900 tracking-tighter font-mono">{formatPrice(total, language)}</h4>
                                         </div>
                                     </div>
                                 </div>

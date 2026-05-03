@@ -14,6 +14,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useUIStore } from '@/lib/stores/ui-store'
 import { useWishlistStore } from '@/lib/stores/wishlist-store'
 import { DeliveryInfoModal } from './delivery-info-modal'
+import { useLanguageStore } from '@bigbazar/shared'
 
 interface ProductCardProps {
     product: Product
@@ -21,6 +22,7 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
+    const { language } = useLanguageStore()
     const { addItem } = useCartStore()
     const { toggleItem: toggleWishlist, isInWishlist } = useWishlistStore()
     const { addNotification } = useUIStore()
@@ -152,11 +154,11 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
                     <div className="mt-auto flex flex-col sm:flex-row items-start sm:items-center gap-8 lg:gap-12 pt-6 border-t border-gray-50">
                         <div className="flex items-center gap-4">
                             <p className="text-3xl font-black text-gray-900 font-mono tracking-tighter">
-                                {formatPrice(price)}
+                                {formatPrice(price, language)}
                             </p>
                             {product.salePrice && (
                                 <p className="text-base font-bold text-gray-300 line-through font-mono">
-                                    {formatPrice(product.basePrice)}
+                                    {formatPrice(product.basePrice, language)}
                                 </p>
                             )}
                         </div>
@@ -324,11 +326,11 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
 
                 <div className="flex items-center gap-4 pt-3">
                     <p className="text-2xl font-black text-gray-900 font-mono tracking-tighter">
-                        {formatPrice(price)}
+                        {formatPrice(price, language)}
                     </p>
                     {product.salePrice && (
                         <p className="text-sm font-bold text-gray-300 line-through font-mono">
-                            {formatPrice(product.basePrice)}
+                            {formatPrice(product.basePrice, language)}
                         </p>
                     )}
                 </div>

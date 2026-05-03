@@ -20,8 +20,9 @@ import {
 import { Button } from '@/components/ui/button';
 import { useCartStore } from '@/store/cartStore';
 import { useUIStore } from '@/lib/stores/ui-store';
-import { cn } from '@/lib/utils';
+import { cn, formatPrice } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLanguageStore } from '@bigbazar/shared';
 
 // --- BD Geography Data ---
 const DIVISIONS = [
@@ -55,6 +56,7 @@ const checkoutSchema = z.object({
 type CheckoutFormValues = z.infer<typeof checkoutSchema>;
 
 export default function CheckoutPage() {
+    const { language } = useLanguageStore();
     const router = useRouter();
     const { items, getSubtotal, clearCart, getDiscountAmount } = useCartStore();
     const { addNotification } = useUIStore();
@@ -232,9 +234,9 @@ export default function CheckoutPage() {
                             </h2>
                             <div className="grid grid-cols-1 gap-4">
                                 {[
-                                    { id: 'mirsarai', name: 'মীরসরাইয়ের মধ্যে', sub: 'Local Mirsarai', price: 'Free', icon: '🎁', color: 'emerald' },
-                                    { id: 'chittagong', name: 'চট্টগ্রাম জেলার মধ্যে', sub: 'Chittagong District', price: 'Tk 100', icon: '📦', color: 'black' },
-                                    { id: 'outside', name: 'চট্টগ্রামের বাইরে (বাংলাদেশ)', sub: 'Outside Chittagong', price: 'Tk 150', icon: '📮', color: 'black' },
+                                    { id: 'mirsarai', name: 'মীরসরাইয়ের মধ্যে', sub: 'Local Mirsarai', price: language === 'bn' ? 'ফ্রি' : 'Free', icon: '🎁', color: 'emerald' },
+                                    { id: 'chittagong', name: 'চট্টগ্রাম জেলার মধ্যে', sub: 'Chittagong District', price: formatPrice(100, language), icon: '📦', color: 'black' },
+                                    { id: 'outside', name: 'চট্টগ্রামের বাইরে (বাংলাদেশ)', sub: 'Outside Chittagong', price: formatPrice(150, language), icon: '📮', color: 'black' },
                                 ].map((area) => (
                                     <label 
                                         key={area.id}
@@ -357,7 +359,7 @@ export default function CheckoutPage() {
                                         <div className="flex-1">
                                             <h4 className="font-bold text-sm text-gray-900 uppercase tracking-tight mb-1">{item.name}</h4>
                                             <p className="text-[10px] text-gray-400 uppercase tracking-widest">{item.variant || 'Standard'}</p>
-                                            <div className="mt-2 text-sm font-bold text-gray-900">Tk{(item.price * item.quantity).toLocaleString()}.00</div>
+                                            <div className="mt-2 text-sm font-bold text-gray-900">{formatPrice(item.price * item.quantity, language)}</div>
                                         </div>
                                     </div>
                                 ))}
@@ -366,25 +368,25 @@ export default function CheckoutPage() {
                             <div className="space-y-4 pt-8 border-t border-gray-200">
                                 <div className="flex justify-between items-center text-sm">
                                     <span className="text-gray-500">Subtotal</span>
-                                    <span className="font-bold text-gray-900">Tk{subtotal.toLocaleString()}.00</span>
+                                    <span className="font-bold text-gray-900">{formatPrice(subtotal, language)}</span>
                                 </div>
                                 {discount > 0 && (
                                     <div className="flex justify-between items-center text-sm text-rose-500">
                                         <span>Discount</span>
-                                        <span className="font-bold">− Tk{discount.toLocaleString()}.00</span>
+                                        <span className="font-bold">− {formatPrice(discount, language)}</span>
                                     </div>
                                 )}
                                 <div className="flex justify-between items-center text-sm">
                                     <span className="text-gray-500">Shipping</span>
                                     <span className={cn("font-bold", shippingCost === 0 ? "text-emerald-500" : "text-gray-900")}>
-                                        {shippingCost === 0 ? 'FREE' : `Tk${shippingCost.toLocaleString()}.00`}
+                                        {shippingCost === 0 ? (language === 'bn' ? 'ফ্রি' : 'FREE') : formatPrice(shippingCost, language)}
                                     </span>
                                 </div>
                                 
                                 <div className="flex justify-between items-end pt-8 border-t border-gray-200 mt-4">
                                     <span className="text-base font-bold text-gray-900 uppercase tracking-tight">Total</span>
                                     <div className="text-right">
-                                        <span className="text-2xl font-bold text-gray-900 tracking-tight">Tk{finalTotal.toLocaleString()}.00</span>
+                                        <span className="text-2xl font-bold text-gray-900 tracking-tight">{formatPrice(finalTotal, language)}</span>
                                         <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest">BDT (VAT Incl.)</span>
                                     </div>
                                 </div>

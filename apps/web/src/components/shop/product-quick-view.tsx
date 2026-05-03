@@ -20,12 +20,14 @@ import { useUIStore } from '@/lib/stores/ui-store';
 import { SocialShare } from './social-share';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DeliveryInfoModal } from './delivery-info-modal';
+import { useLanguageStore } from '@bigbazar/shared';
 
 interface ProductQuickViewProps {
     product: Product;
 }
 
 export function ProductQuickView({ product }: ProductQuickViewProps) {
+    const { language } = useLanguageStore();
     const [quantity, setQuantity] = useState(1);
     const { addItem } = useCartStore();
     const { addNotification } = useUIStore();
@@ -135,11 +137,11 @@ export function ProductQuickView({ product }: ProductQuickViewProps) {
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-6">
                                     <span className="text-4xl font-black text-gray-900 tracking-tighter font-mono">
-                                        {formatPrice(price)}
+                                        {formatPrice(price, language)}
                                     </span>
                                     {product.salePrice && (
                                         <span className="text-xl text-gray-300 line-through font-bold font-mono">
-                                            {formatPrice(product.basePrice)}
+                                            {formatPrice(product.basePrice, language)}
                                         </span>
                                     )}
                                 </div>

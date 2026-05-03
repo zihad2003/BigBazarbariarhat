@@ -35,9 +35,11 @@ import { DeliveryInfoModal } from '@/components/shop/delivery-info-modal';
 import { useCartStore } from '@/store/cartStore';
 import { useWishlistStore } from '@/lib/stores/wishlist-store';
 import { useUIStore } from '@/lib/stores/ui-store';
+import { useLanguageStore } from '@bigbazar/shared';
 import type { Product, ProductVariant } from '@/types/product';
 
 export default function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+    const { language } = useLanguageStore();
     const resolvedParams = use(params);
     const { slug } = resolvedParams;
     const router = useRouter();
@@ -244,12 +246,12 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
 
                                 <div className="flex items-center gap-6 mb-10">
                                     <span className="text-4xl font-bold text-gray-900 tracking-tight">
-                                        {formatPrice(currentPrice)}
+                                        {formatPrice(currentPrice, language)}
                                     </span>
                                     {product.salePrice && (
                                         <div className="flex flex-col">
                                             <span className="text-lg text-gray-300 line-through font-bold font-mono">
-                                                {formatPrice(product.basePrice)}
+                                                {formatPrice(product.basePrice, language)}
                                             </span>
                                             <Badge variant="destructive" className="bg-rose-500 text-white text-[9px] font-black rounded-lg px-2 py-0.5 w-fit">
                                                 -{discountPercentage}%

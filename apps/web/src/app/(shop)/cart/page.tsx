@@ -22,8 +22,10 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { formatPrice, cn } from '@/lib/utils'
 import { useCartStore } from '@/store/cartStore'
+import { useLanguageStore } from '@bigbazar/shared'
 
 export default function CartPage() {
+    const { language } = useLanguageStore()
     const router = useRouter()
     const {
         items,
@@ -135,7 +137,7 @@ export default function CartPage() {
                                                 <Link href={`/products/${item.productId}`} className="text-base font-bold text-gray-900 hover:opacity-70 transition-opacity">
                                                     {item.name}
                                                 </Link>
-                                                <p className="text-sm text-gray-400 font-bold tracking-tight">Tk{item.price.toLocaleString()}.00</p>
+                                                <p className="text-sm text-gray-400 font-bold tracking-tight">{formatPrice(item.price, language)}</p>
                                                 {item.variant && (
                                                     <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest pt-2">
                                                         {item.variant}
@@ -174,7 +176,7 @@ export default function CartPage() {
                                             {/* Total */}
                                             <div className="text-right min-w-[100px]">
                                                 <p className="text-base font-bold text-gray-900">
-                                                    Tk{(item.price * item.quantity).toLocaleString()}.00
+                                                    {formatPrice(item.price * item.quantity, language)}
                                                 </p>
                                             </div>
                                         </div>
@@ -199,16 +201,16 @@ export default function CartPage() {
                             <div className="space-y-4 mb-8">
                                 <div className="flex justify-between text-sm text-gray-500 font-bold uppercase tracking-widest">
                                     <span>Subtotal</span>
-                                    <span className="text-gray-900">Tk{subtotal.toLocaleString()}.00</span>
+                                    <span className="text-gray-900">{formatPrice(subtotal, language)}</span>
                                 </div>
                                 <div className="flex justify-between text-sm text-gray-500 font-bold uppercase tracking-widest">
                                     <span>Shipping</span>
-                                    <span className="text-emerald-600 font-bold">Tk{shipping}.00</span>
+                                    <span className="text-emerald-600 font-bold">{formatPrice(shipping, language)}</span>
                                 </div>
                                 {discount > 0 && (
                                     <div className="flex justify-between text-sm text-rose-600 font-bold uppercase tracking-widest">
                                         <span>Discount</span>
-                                        <span>-Tk{discount.toLocaleString()}.00</span>
+                                        <span>-{formatPrice(discount, language)}</span>
                                     </div>
                                 )}
                             </div>
@@ -217,8 +219,7 @@ export default function CartPage() {
                                 <div className="flex justify-between items-baseline">
                                     <span className="text-lg font-bold text-gray-900 uppercase tracking-tight">Total</span>
                                     <div className="text-right">
-                                        <span className="text-xs text-gray-400 font-bold mr-2">BDT</span>
-                                        <span className="text-3xl font-black text-gray-900 tracking-tighter">Tk{total.toLocaleString()}.00</span>
+                                        <span className="text-3xl font-black text-gray-900 tracking-tighter">{formatPrice(total, language)}</span>
                                     </div>
                                 </div>
                             </div>

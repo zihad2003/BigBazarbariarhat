@@ -206,6 +206,7 @@ function HeroSlider() {
 
 // --- PRODUCT CARD (Minimal, Aarong-style) ---
 function ProductCard({ product, index }: { product: any; index: number }) {
+    const { language } = useLanguageStore();
     const t = useTranslation();
     const [isHovered, setIsHovered] = useState(false);
     const addItem = useCartStore((state) => state.addItem);
@@ -284,11 +285,11 @@ function ProductCard({ product, index }: { product: any; index: number }) {
                 <div className="flex items-center gap-2">
                     {product.salePrice ? (
                         <>
-                            <span className="font-bold text-destructive text-sm">৳{product.salePrice.toLocaleString()}</span>
-                            <span className="text-xs text-muted-foreground line-through">৳{product.price.toLocaleString()}</span>
+                            <span className="font-bold text-destructive text-sm">{formatPrice(product.salePrice, language)}</span>
+                            <span className="text-xs text-muted-foreground line-through">{formatPrice(product.price, language)}</span>
                         </>
                     ) : (
-                        <span className="font-bold text-foreground text-sm">৳{product.price.toLocaleString()}</span>
+                        <span className="font-bold text-foreground text-sm">{formatPrice(product.price, language)}</span>
                     )}
                 </div>
             </div>
