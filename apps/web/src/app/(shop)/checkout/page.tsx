@@ -136,8 +136,8 @@ export default function CheckoutPage() {
             <main className="max-w-[1600px] mx-auto px-6 md:px-12 py-12 lg:py-20">
                 <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
                     
-                    {/* Left: Checkout Form */}
-                    <div className="lg:col-span-7 space-y-20">
+                    {/* Right: Checkout Form (Visual Order 2) */}
+                    <div className="lg:col-span-7 space-y-20 lg:order-2">
                         
                         {/* Shipping Section */}
                         <section>
@@ -324,9 +324,9 @@ export default function CheckoutPage() {
                         </section>
                     </div>
 
-                    {/* Right: Order Summary */}
-                    <div className="lg:col-span-5">
-                        <div className="sticky top-32 bg-gray-50 rounded-sm p-8 md:p-12">
+                    {/* Left: Order Summary (Visual Order 1) */}
+                    <div className="lg:col-span-5 lg:order-1">
+                        <div className="sticky top-32 bg-slate-50 rounded-2xl p-8 md:p-12 border border-slate-100">
                             <h2 className="text-lg font-bold text-gray-900 mb-10 uppercase tracking-tight">Order Summary</h2>
                             
                             <div className="space-y-8 mb-10 max-h-[400px] overflow-y-auto no-scrollbar pr-2">
