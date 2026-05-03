@@ -33,8 +33,11 @@ import {
 } from "@/components/ui/select";
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { useLanguageStore, useTranslation } from '@bigbazar/shared';
 
 export default function ProductsPage() {
+    const { language } = useLanguageStore();
+    const t = useTranslation();
     const router = useRouter();
     const searchParams = useSearchParams();
 
@@ -53,7 +56,15 @@ export default function ProductsPage() {
     const itemsPerPage = 12;
 
     // Derived Data
-    const categories = ['New Arrivals', 'Men', 'Women', 'Kids(Boys)', 'Kids(Girls)', 'Wedding Touch', 'Sale'];
+    const categoryOptions = [
+        { key: 'New Arrivals', label: t?.newArrivals?.title || 'New Arrivals' },
+        { key: 'Men', label: t?.categories?.men || 'Men' },
+        { key: 'Women', label: t?.categories?.women || 'Women' },
+        { key: 'Kids(Boys)', label: t?.categories?.kidsBoys || 'Kids(Boys)' },
+        { key: 'Kids(Girls)', label: t?.categories?.kidsGirls || 'Kids(Girls)' },
+        { key: 'Wedding-Touch', label: t?.categories?.weddingTouch || 'Wedding Touch' },
+        { key: 'Sale', label: 'Sale' },
+    ];
 
     const brands = useMemo(() => {
         const b = Array.from(new Set(MOCK_PRODUCTS.map(p => p.brand).filter(Boolean)));
@@ -147,27 +158,27 @@ export default function ProductsPage() {
         <div className="space-y-10">
             {/* Categories */}
             <div>
-                <h3 className="text-xs font-black text-gray-900 uppercase tracking-[0.2em] mb-6">Categories</h3>
+                <h3 className="text-xs font-black text-gray-900 uppercase tracking-[0.2em] mb-6">{t?.categories?.title || 'Categories'}</h3>
                 <div className="space-y-2">
                     <button
                         onClick={() => { setSelectedCategory(null); setCurrentPage(1); }}
                         className={cn(
-                            "w-full text-left px-4 py-2 rounded-xl text-sm transition-all",
-                            selectedCategory === null ? "bg-foreground text-white font-bold" : "text-gray-500 hover:bg-gray-100"
+                            "w-full text-left px-4 py-2 rounded-xl text-sm transition-all uppercase tracking-widest text-[10px] font-bold",
+                            selectedCategory === null ? "bg-foreground text-white shadow-lg" : "text-gray-500 hover:bg-gray-100"
                         )}
                     >
-                        All Categories
+                        {t?.common?.viewAll || 'All Categories'}
                     </button>
-                    {categories.map(cat => (
+                    {categoryOptions.map(cat => (
                         <button
-                            key={cat}
-                            onClick={() => { setSelectedCategory(cat as string); setCurrentPage(1); }}
+                            key={cat.key}
+                            onClick={() => { setSelectedCategory(cat.key); setCurrentPage(1); }}
                             className={cn(
-                                "w-full text-left px-4 py-2 rounded-xl text-sm transition-all",
-                                selectedCategory === cat ? "bg-foreground text-white font-bold" : "text-gray-500 hover:bg-gray-100"
+                                "w-full text-left px-4 py-2 rounded-xl text-sm transition-all uppercase tracking-widest text-[10px] font-bold",
+                                selectedCategory === cat.key ? "bg-destructive text-white shadow-lg" : "text-gray-500 hover:bg-gray-100"
                             )}
                         >
-                            {cat}
+                            {cat.label}
                         </button>
                     ))}
                 </div>
@@ -219,11 +230,11 @@ export default function ProductsPage() {
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
                     <div className="space-y-4">
                         <div className="flex items-center gap-3">
-                            <div className="h-px w-8 bg-primary" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400">All Collections</span>
+                            <div className="h-px w-8 bg-destructive" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400">{t?.newArrivals?.subtitle || 'All Collections'}</span>
                         </div>
                         <h1 className="text-4xl lg:text-5xl font-playfair font-bold tracking-tight text-gray-900 leading-tight">
-                            Shop <span className="text-primary">Our Products</span>
+                            Shop <span className="text-destructive">Our Products</span>
                         </h1>
                         <p className="text-gray-500 font-medium max-w-md">
                             Browse our full range of premium clothing and accessories for the whole family.
@@ -270,7 +281,7 @@ export default function ProductsPage() {
                                 <div className="relative flex-1 sm:w-80">
                                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                                     <Input
-                                        placeholder="Search products..."
+                                        placeholder={t?.common?.search || "Search products..."}
                                         value={searchQuery}
                                         onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
                                         className="h-12 pl-12 pr-4 bg-white border-gray-200 rounded-2xl focus:ring-2 focus:ring-black/5 transition-all font-medium"
@@ -325,20 +336,20 @@ export default function ProductsPage() {
                                         : "bg-white text-gray-400 border-gray-100 hover:border-gray-300"
                                 )}
                             >
-                                All Categories
+                                {t?.common?.viewAll || 'All Categories'}
                             </button>
-                            {categories.map(cat => (
+                            {categoryOptions.map(cat => (
                                 <button
-                                    key={cat}
-                                    onClick={() => { setSelectedCategory(cat as string); setCurrentPage(1); }}
+                                    key={cat.key}
+                                    onClick={() => { setSelectedCategory(cat.key); setCurrentPage(1); }}
                                     className={cn(
                                         "px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all whitespace-nowrap shrink-0 border",
-                                        selectedCategory === cat
-                                            ? "bg-primary text-white border-primary shadow-xl shadow-primary/20"
+                                        selectedCategory === cat.key
+                                            ? "bg-destructive text-white border-destructive shadow-xl shadow-destructive/20"
                                             : "bg-white text-gray-400 border-gray-100 hover:border-gray-300"
                                     )}
                                 >
-                                    {cat}
+                                    {cat.label}
                                 </button>
                             ))}
                         </div>
@@ -356,15 +367,19 @@ export default function ProductsPage() {
                                 <div className="h-16 w-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
                                     <Search className="h-7 w-7 text-gray-300" />
                                 </div>
-                                <h3 className="text-2xl font-bold text-gray-900 mb-3 font-playfair">No Products Found</h3>
+                                <h3 className="text-2xl font-bold text-gray-900 mb-3 font-playfair">
+                                    {language === 'bn' ? 'কোন পণ্য পাওয়া যায়নি' : 'No Products Found'}
+                                </h3>
                                 <p className="text-gray-400 font-medium mb-10 max-w-sm mx-auto">
-                                    We couldn't find any products matching your current filters. Try adjusting your search or resetting filters.
+                                    {language === 'bn' 
+                                        ? 'আপনার ফিল্টারের সাথে মিলে এমন কোনো পণ্য খুঁজে পাওয়া যায়নি। অনুগ্রহ করে অন্য কিছু চেষ্টা করুন।' 
+                                        : "We couldn't find any products matching your current filters. Try adjusting your search or resetting filters."}
                                 </p>
                                 <Button
                                     onClick={clearAllFilters}
-                                    className="bg-foreground text-white hover:bg-primary h-12 px-10 rounded-xl font-bold uppercase tracking-wider text-xs"
+                                    className="bg-foreground text-white hover:bg-destructive h-12 px-10 rounded-xl font-bold uppercase tracking-wider text-xs"
                                 >
-                                    Reset All Filters
+                                    {language === 'bn' ? 'ফিল্টার রিসেট করুন' : 'Reset All Filters'}
                                 </Button>
                             </div>
                         )}
