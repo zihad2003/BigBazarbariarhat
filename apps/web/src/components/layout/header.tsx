@@ -164,10 +164,7 @@ export function Header() {
                             <MobileMenu />
                             {/* Logo */}
                             <Link href="/" className="group">
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-black rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-lg shadow-black/20">
-                                    <ShoppingBag className="h-5 w-5 text-white" />
-                                </div>
+                            <div className="flex items-center">
                                 <h1 className="text-2xl font-bold tracking-tighter uppercase hidden sm:block font-playfair">
                                     <span className="text-[#E11D48]">BIG</span> <span className="text-[#0F172A]">BAZAR</span>
                                 </h1>

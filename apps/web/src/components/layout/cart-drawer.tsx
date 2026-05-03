@@ -44,8 +44,8 @@ export function CartDrawer() {
                                     <ShoppingBag className="h-5 w-5" />
                                 </div>
                                 <div>
-                                    <h2 className="text-xl font-black uppercase tracking-tighter">Curation Matrix</h2>
-                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{itemCount} Artifacts Synchronized</p>
+                                    <h2 className="text-xl font-black uppercase tracking-tighter">Your Cart</h2>
+                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{itemCount} Items in cart</p>
                                 </div>
                             </div>
                             <button 
@@ -106,8 +106,8 @@ export function CartDrawer() {
                                     <div className="w-24 h-24 bg-slate-100 rounded-[2.5rem] flex items-center justify-center mb-8">
                                         <ShoppingBag className="h-10 w-10 text-slate-300" />
                                     </div>
-                                    <h3 className="text-xl font-black uppercase tracking-tight text-slate-900">Matrix Empty</h3>
-                                    <p className="text-[10px] font-black uppercase tracking-[0.2em] mt-2">Begin your acquisition protocol.</p>
+                                    <h3 className="text-xl font-black uppercase tracking-tight text-slate-900">Your cart is empty</h3>
+                                    <p className="text-[10px] font-black uppercase tracking-[0.2em] mt-2">Start shopping to add items here.</p>
                                 </div>
                             )}
                         {/* Delivery Protocol Summary */}
@@ -141,16 +141,16 @@ export function CartDrawer() {
                             <div className="p-8 bg-slate-50 border-t border-slate-100 space-y-6">
                                 <div className="space-y-3">
                                     <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
-                                        <span>Initial Subtotal</span>
+                                        <span>Subtotal</span>
                                         <span className="text-slate-900 font-mono">{formatPrice(subtotal)}</span>
                                     </div>
                                     <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
-                                        <span>Logistics Transit</span>
+                                        <span>Shipping</span>
                                         <span className="text-emerald-500 font-mono">AUTHORIZED FREE</span>
                                     </div>
                                     <div className="pt-4 border-t border-dashed border-slate-200">
                                         <div className="flex justify-between items-end">
-                                            <p className="text-[11px] font-black text-slate-900 uppercase tracking-widest">Final Authorization</p>
+                                            <p className="text-[11px] font-black text-slate-900 uppercase tracking-widest">Total</p>
                                             <h4 className="text-3xl font-black text-slate-900 tracking-tighter font-mono">{formatPrice(total)}</h4>
                                         </div>
                                     </div>
@@ -159,12 +159,12 @@ export function CartDrawer() {
                                 <div className="grid grid-cols-2 gap-4">
                                     <Link href="/cart" onClick={() => setCartOpen(false)}>
                                         <Button variant="outline" className="w-full h-16 rounded-2xl border-slate-200 text-[11px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all">
-                                            Review Curation
+                                            View Cart
                                         </Button>
                                     </Link>
                                     <Link href="/checkout" onClick={() => setCartOpen(false)}>
                                         <Button className="w-full h-16 rounded-2xl bg-black text-white text-[11px] font-black uppercase tracking-widest hover:bg-indigo-600 transition-all shadow-xl shadow-black/10 flex items-center gap-3">
-                                            Execute <ArrowRight className="h-4 w-4" />
+                                            Checkout <ArrowRight className="h-4 w-4" />
                                         </Button>
                                     </Link>
                                 </div>

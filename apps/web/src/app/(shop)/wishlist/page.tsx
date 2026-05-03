@@ -28,7 +28,7 @@ export default function WishlistPage() {
         addItem(product, 1);
         addNotification({
             type: 'success',
-            message: `${product.name} appended to curation`
+            message: `${product.name} added to cart`
         });
         openCart();
     };
@@ -37,7 +37,7 @@ export default function WishlistPage() {
         removeItem(productId);
         addNotification({
             type: 'info',
-            message: `${name} removed from collection`
+            message: `${name} removed from wishlist`
         });
     };
 
@@ -50,7 +50,7 @@ export default function WishlistPage() {
         clearWishlist();
         addNotification({
             type: 'success',
-            message: 'Entire collection moved to curation'
+            message: 'All items moved to cart'
         });
         openCart();
     };
@@ -70,7 +70,7 @@ export default function WishlistPage() {
                             <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center group-hover:bg-black group-hover:text-white transition-all">
                                 <ArrowLeft className="h-5 w-5" />
                             </div>
-                            Return to Portfolio
+                            Back to Account
                         </Link>
                         <h1 className="text-6xl font-black text-gray-900 tracking-tighter uppercase leading-none">
                             Saved <br /> Collections.
@@ -83,10 +83,10 @@ export default function WishlistPage() {
                         className="flex items-center gap-8"
                     >
                         <div className="flex flex-col items-end">
-                            <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest mb-1">Current Artifacts</span>
+                            <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest mb-1">Saved Items</span>
                             <div className="flex items-center gap-4 bg-gray-50 px-6 py-4 rounded-[1.5rem] border border-gray-50">
                                 <Heart className="h-5 w-5 text-rose-500 fill-rose-500" />
-                                <span className="text-[11px] font-black uppercase tracking-widest text-gray-900">{items.length} Artifact{items.length !== 1 ? 's' : ''}</span>
+                                <span className="text-[11px] font-black uppercase tracking-widest text-gray-900">{items.length} Item{items.length !== 1 ? 's' : ''}</span>
                             </div>
                         </div>
                     </motion.div>
@@ -138,7 +138,7 @@ export default function WishlistPage() {
                                             {/* Top Left Badge */}
                                             <div className="absolute top-8 left-8">
                                                 <span className="bg-indigo-600 text-white text-[9px] font-black px-4 py-2 rounded-xl uppercase tracking-widest shadow-xl shadow-indigo-500/20">
-                                                    Saved Entry
+                                                    Saved Item
                                                 </span>
                                             </div>
                                         </div>
@@ -164,7 +164,7 @@ export default function WishlistPage() {
                                                     className="bg-black text-white hover:bg-gray-800 rounded-2xl h-14 px-8 font-black uppercase tracking-widest text-[10px] gap-3 shadow-2xl shadow-black/10 transition-all hover:scale-105 active:scale-95"
                                                 >
                                                     <ShoppingBag className="h-4 w-4" />
-                                                    Reinstate
+                                                    Add to Cart
                                                 </Button>
                                             </div>
                                         </div>
@@ -185,8 +185,8 @@ export default function WishlistPage() {
                                         <div className="w-16 h-16 bg-white/10 rounded-[2.5rem] flex items-center justify-center text-indigo-400 mb-4">
                                             <Sparkles className="h-8 w-8" />
                                         </div>
-                                        <h3 className="text-5xl font-black tracking-tighter uppercase leading-none">Acquisition <br /> Protocols.</h3>
-                                        <p className="text-gray-400 font-medium text-lg max-w-sm">Synchronize your entire saved collection with your active curation matrix in one command.</p>
+                                        <h3 className="text-5xl font-black tracking-tighter uppercase leading-none">Move all <br /> to Cart.</h3>
+                                        <p className="text-gray-400 font-medium text-lg max-w-sm">Quickly add all your saved items to your cart and get ready to checkout.</p>
                                     </div>
                                     <Button
                                         onClick={handleMoveAllToCart}
@@ -208,13 +208,13 @@ export default function WishlistPage() {
                                 <div className="absolute inset-0 bg-indigo-600 scale-0 group-hover:scale-100 transition-transform duration-500 rounded-full opacity-5" />
                                 <Heart className="h-16 w-16 text-gray-200 group-hover:text-rose-400 group-hover:scale-110 transition-all duration-500" />
                             </div>
-                            <h2 className="text-5xl font-black text-gray-900 mb-6 tracking-tighter uppercase">Collection Vacant.</h2>
+                            <h2 className="text-5xl font-black text-gray-900 mb-6 tracking-tighter uppercase">Wishlist is Empty.</h2>
                             <p className="text-gray-500 mb-12 max-w-lg mx-auto text-xl font-medium font-serif italic">
-                                Your curated archive awaits its first artifacts. Explore our latest masterworks and begin your curation protocol.
+                                Start adding products you love to your wishlist. Explore our collections and find your favorites.
                             </p>
                             <Link href="/shop">
                                 <Button className="bg-black text-white hover:bg-gray-800 rounded-[2.5rem] px-16 h-20 text-xs font-black uppercase tracking-[0.3em] shadow-2xl shadow-black/20 hover:scale-105 transition-all">
-                                    Launch Gallery <ArrowRight className="h-5 w-5 ml-4" />
+                                    Start Shopping <ArrowRight className="h-5 w-5 ml-4" />
                                 </Button>
                             </Link>
                         </motion.div>
