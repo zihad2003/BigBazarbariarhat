@@ -65,7 +65,23 @@ export default function CheckoutPage() {
     const [paymentMethod, setPaymentMethod] = useState<'cod' | 'bkash' | 'nagad'>('cod');
     const [bkashNumber, setBkashNumber] = useState('');
 
-    // ... (rest of form logic)
+    const { register, handleSubmit, watch, formState: { errors } } = useForm<CheckoutFormValues>({
+        resolver: zodResolver(checkoutSchema),
+        defaultValues: {
+            fullName: '',
+            phone: '',
+            email: '',
+            division: 'Chittagong',
+            district: 'Chittagong',
+            upazila: '',
+            address: '',
+            deliveryNote: '',
+            saveAddress: false,
+        }
+    });
+
+    const selectedDivision = watch('division');
+    const districts = DISTRICTS[selectedDivision] || [];
 
     const subtotal = getSubtotal();
     const discount = getDiscountAmount();
