@@ -3,56 +3,49 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { Facebook, Instagram, MapPin, Phone, Mail, CreditCard, Truck, Shield, RotateCcw, Send } from 'lucide-react';
+import { useLanguageStore, useTranslation } from '@bigbazar/shared';
 
-const footerLinks = {
-    shop: [
-        { name: 'Men', href: '/men' },
-        { name: 'Women', href: '/women' },
-        { name: 'Kids', href: '/kids' },
-        { name: 'Accessories', href: '/accessories' },
-        { name: 'New Arrivals', href: '/new-arrivals' },
-        { name: 'Sale', href: '/sale' },
-    ],
-    help: [
-        { name: 'Contact Us', href: '/contact' },
-        { name: 'FAQs', href: '/faq' },
-        { name: 'Size Guide', href: '/size-guide' },
-        { name: 'Shipping Info', href: '/shipping' },
-        { name: 'Returns & Exchanges', href: '/returns' },
-        { name: 'Track Order', href: '/track-order' },
-    ],
-    company: [
-        { name: 'About Us', href: '/about' },
-        { name: 'Careers', href: '/careers' },
-        { name: 'Store Locations', href: '/stores' },
-        { name: 'Blog', href: '/blog' },
-        { name: 'Press', href: '/press' },
-        { name: 'Sustainability', href: '/sustainability' },
-    ],
-    legal: [
-        { name: 'Privacy Policy', href: '/privacy' },
-        { name: 'Terms of Service', href: '/terms' },
-        { name: 'Refund Policy', href: '/refund-policy' },
-        { name: 'Cookie Policy', href: '/cookies' },
-        { name: 'Accessibility', href: '/accessibility' },
-        { name: 'Security', href: '/security' },
-    ],
-};
-
-const paymentMethods = [
-    { name: 'bKash', color: 'text-[#E2136E]', border: 'border-[#E2136E]/20 hover:border-[#E2136E]/60', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/BKash_logo.svg/512px-BKash_logo.svg.png' },
-    { name: 'Nagad', color: 'text-[#ED1C24]', border: 'border-[#ED1C24]/20 hover:border-[#ED1C24]/60', logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/8/80/Nagad_Logo.svg/512px-Nagad_Logo.svg.png' },
-    { name: 'COD', color: 'text-foreground', border: 'border-border hover:border-foreground/50' },
-];
-
-const features = [
-    { icon: Truck, title: 'Free Shipping', description: 'On orders over ৳2000' },
-    { icon: RotateCcw, title: 'Easy Returns', description: '30-day return policy' },
-    { icon: Shield, title: 'Secure Payment', description: '100% secure checkout' },
-    { icon: CreditCard, title: 'Mobile Banking', description: 'bKash & Nagad' },
-];
 export function Footer() {
-    const [currentLanguage, setCurrentLanguage] = useState<'EN' | 'BN'>('EN');
+    const { language, setLanguage } = useLanguageStore();
+    const t = useTranslation();
+
+    const footerLinks = {
+        shop: [
+            { name: t?.categories?.men || 'Men', href: '/products?category=Men' },
+            { name: t?.categories?.women || 'Women', href: '/products?category=Women' },
+            { name: t?.categories?.kidsBoys || 'Kids(Boys)', href: '/products?category=Kids(Boys)' },
+            { name: t?.categories?.kidsGirls || 'Kids(Girls)', href: '/products?category=Kids(Girls)' },
+            { name: t?.newArrivals?.title || 'New Arrivals', href: '/products?sort=newest' },
+            { name: 'Sale', href: '/sale' },
+        ],
+        help: [
+            { name: 'Contact Us', href: '/contact' },
+            { name: 'FAQs', href: '/faq' },
+            { name: 'Size Guide', href: '/size-guide' },
+            { name: 'Shipping Info', href: '/shipping' },
+            { name: 'Returns & Exchanges', href: '/returns' },
+            { name: 'Track Order', href: '/track-order' },
+        ],
+        company: [
+            { name: 'About Us', href: '/about' },
+            { name: 'Careers', href: '/careers' },
+            { name: 'Store Locations', href: '/stores' },
+            { name: 'Blog', href: '/blog' },
+            { name: 'Sustainability', href: '/sustainability' },
+        ],
+        legal: [
+            { name: 'Privacy Policy', href: '/privacy' },
+            { name: 'Terms of Service', href: '/terms' },
+            { name: 'Refund Policy', href: '/refund-policy' },
+        ],
+    };
+
+    const features = [
+        { icon: Truck, title: t?.features?.freeShipping || 'Free Shipping', description: t?.features?.freeShippingDesc || 'On orders over ৳2000' },
+        { icon: RotateCcw, title: t?.features?.easyReturns || 'Easy Returns', description: t?.features?.easyReturnsDesc || '30-day return policy' },
+        { icon: Shield, title: t?.features?.securePayment || 'Secure Payment', description: t?.features?.securePaymentDesc || '100% secure checkout' },
+        { icon: CreditCard, title: 'Mobile Banking', description: 'bKash & Nagad' },
+    ];
 
     return (
         <footer className="bg-background text-muted-foreground border-t border-border font-lato pb-24 md:pb-0">
@@ -217,17 +210,17 @@ export function Footer() {
                             {/* Language Switcher */}
                             <div className="flex items-center bg-background border border-border rounded-full p-1 shadow-sm">
                                 <button 
-                                    onClick={() => setCurrentLanguage('EN')}
+                                    onClick={() => setLanguage('en')}
                                     className={`px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full transition-all ${
-                                        currentLanguage === 'EN' ? 'bg-destructive text-white shadow-sm' : 'text-muted-foreground hover:text-foreground'
+                                        language === 'en' ? 'bg-destructive text-white shadow-sm' : 'text-muted-foreground hover:text-foreground'
                                     }`}
                                 >
                                     English
                                 </button>
                                 <button 
-                                    onClick={() => setCurrentLanguage('BN')}
+                                    onClick={() => setLanguage('bn')}
                                     className={`px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full transition-all ${
-                                        currentLanguage === 'BN' ? 'bg-destructive text-white shadow-sm' : 'text-muted-foreground hover:text-foreground'
+                                        language === 'bn' ? 'bg-destructive text-white shadow-sm' : 'text-muted-foreground hover:text-foreground'
                                     }`}
                                 >
                                     বাংলা
