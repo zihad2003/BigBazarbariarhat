@@ -42,7 +42,7 @@ export function DeliveryInfoModal({ isOpen, onClose, productName }: DeliveryInfo
                                 ডেলিভারি সংক্রান্ত তথ্য
                             </h2>
                             <p className="text-xs font-bold uppercase tracking-[0.3em] text-slate-500 mt-2">
-                                Delivery Protocol & Logistics
+                                Delivery Information
                             </p>
                         </div>
                     </div>
@@ -167,7 +167,7 @@ export function DeliveryInfoModal({ isOpen, onClose, productName }: DeliveryInfo
                                 className="w-full h-14 rounded-2xl border-slate-200 text-slate-500 hover:text-slate-900 hover:bg-slate-50"
                                 onClick={onClose}
                             >
-                                <span className="font-black uppercase tracking-widest text-[10px]">বন্ধ করুন (Close Protocol)</span>
+                                <span className="font-black uppercase tracking-widest text-[10px]">বন্ধ করুন (Close)</span>
                             </Button>
                         </div>
                     </div>
@@ -176,7 +176,7 @@ export function DeliveryInfoModal({ isOpen, onClose, productName }: DeliveryInfo
                 {/* Footer Protection */}
                 <div className="p-6 bg-slate-50 border-t border-slate-100 text-center">
                     <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">
-                        Official Curation / Big Bazar © 2026
+                        Big Bazar © 2026
                     </p>
                 </div>
             </SheetContent>

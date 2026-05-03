@@ -110,12 +110,12 @@ export function CartDrawer() {
                                     <p className="text-[10px] font-black uppercase tracking-[0.2em] mt-2">Start shopping to add items here.</p>
                                 </div>
                             )}
-                        {/* Delivery Protocol Summary */}
+                        {/* Delivery Info Summary */}
                         {items.length > 0 && (
                             <div className="mx-8 mb-8 p-6 bg-slate-50 rounded-3xl border border-slate-100 space-y-4">
                                 <div className="flex items-center gap-3">
                                     <Truck className="h-4 w-4 text-slate-900" />
-                                    <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900">Delivery Protocol</h3>
+                                    <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900">Delivery Information</h3>
                                 </div>
                                 <div className="grid grid-cols-1 gap-2">
                                     <div className="flex justify-between items-center text-[10px] font-bold">
@@ -131,7 +131,7 @@ export function CartDrawer() {
                                         <span className="text-slate-900">৳150+</span>
                                     </div>
                                 </div>
-                                <p className="text-[9px] font-medium text-slate-400 italic">Charges applied at next protocol stage.</p>
+                                <p className="text-[9px] font-medium text-slate-400 italic">Charges applied at checkout stage.</p>
                             </div>
                         )}
                     </div>
