@@ -62,9 +62,9 @@ const heroSlides = [
 const categories = [
     { key: 'women', name: 'Women', href: '/women', image: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=500&auto=format&fit=crop' },
     { key: 'men', name: 'Men', href: '/men', image: 'https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?q=80&w=500&auto=format&fit=crop' },
-    { key: 'kids', name: 'Kids', href: '/kids', image: 'https://images.unsplash.com/photo-1514316454349-f50db90e2270?q=80&w=500&auto=format&fit=crop' },
-    { key: 'accessories', name: 'Accessories', href: '/accessories', image: 'https://images.unsplash.com/photo-1584916201218-f4242ceb4809?q=80&w=500&auto=format&fit=crop' },
-    { key: 'shoes', name: 'Shoes', href: '#', image: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=500&auto=format&fit=crop', comingSoon: true },
+    { key: 'kids-boys', name: 'Kids(Boys)', href: '/kids-boys', image: 'https://images.unsplash.com/photo-1519234129322-2636a0d0d885?q=80&w=500&auto=format&fit=crop' },
+    { key: 'kids-girls', name: 'Kids(Girls)', href: '/kids-girls', image: 'https://images.unsplash.com/photo-1514316454349-f50db90e2270?q=80&w=500&auto=format&fit=crop' },
+    { key: 'wedding-touch', name: 'Wedding Touch', href: '/wedding-touch', image: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=500&auto=format&fit=crop' },
 ];
 
 const newArrivals = [

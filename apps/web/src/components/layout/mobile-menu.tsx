@@ -37,25 +37,30 @@ const navigation = [
         ]
     },
     {
-        name: 'Accessories',
-        isHidden: true,
-        href: '/products?category=Accessories',
+        name: 'Kids(Boys)',
+        href: '/products?category=Kids(Boys)',
         submenu: [
-            { name: 'Bags', href: '/products?category=Accessories&subcategory=Bags' },
-            { name: 'Wallets', href: '/products?category=Accessories&subcategory=Wallets' },
-            { name: 'Belts', href: '/products?category=Accessories&subcategory=Belts' },
-            { name: 'Jewelry', href: '/products?category=Accessories&subcategory=Jewelry' },
+            { name: 'T-Shirts', href: '/products?category=Kids(Boys)&subcategory=T-Shirts' },
+            { name: 'Pants', href: '/products?category=Kids(Boys)&subcategory=Pants' },
+            { name: 'Outerwear', href: '/products?category=Kids(Boys)&subcategory=Outerwear' },
         ]
     },
     {
-        name: 'Shoes',
-        isHidden: true,
-        href: '/products?category=Shoes',
+        name: 'Kids(Girls)',
+        href: '/products?category=Kids(Girls)',
         submenu: [
-            { name: 'Sneakers', href: '/products?category=Shoes&subcategory=Sneakers' },
-            { name: 'Boots', href: '/products?category=Shoes&subcategory=Boots' },
-            { name: 'Loafers', href: '/products?category=Shoes&subcategory=Loafers' },
-            { name: 'Formal', href: '/products?category=Shoes&subcategory=Formal' },
+            { name: 'Dresses', href: '/products?category=Kids(Girls)&subcategory=Dresses' },
+            { name: 'Tops', href: '/products?category=Kids(Girls)&subcategory=Tops' },
+            { name: 'Skirts', href: '/products?category=Kids(Girls)&subcategory=Skirts' },
+        ]
+    },
+    {
+        name: 'Wedding Touch',
+        href: '/products?category=Wedding-Touch',
+        submenu: [
+            { name: 'Panjabi', href: '/products?category=Wedding-Touch&subcategory=Panjabi' },
+            { name: 'Sherwani', href: '/products?category=Wedding-Touch&subcategory=Sherwani' },
+            { name: 'Saree', href: '/products?category=Wedding-Touch&subcategory=Saree' },
         ]
     },
     { name: 'Sale', href: '/sale', highlight: true, submenu: undefined, comingSoon: false },

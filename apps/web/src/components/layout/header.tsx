@@ -54,38 +54,33 @@ const categories = [
         ]
     },
     {
-        name: 'Kids',
-        href: '/products?category=Kids',
-        featured: 'https://images.unsplash.com/photo-1514090259024-b0113c242f0e?q=80&w=800&auto=format&fit=crop',
+        name: 'Kids(Boys)',
+        href: '/products?category=Kids(Boys)',
+        featured: 'https://images.unsplash.com/photo-1519234129322-2636a0d0d885?q=80&w=800&auto=format&fit=crop',
         subcategories: [
-            { name: 'Boys', href: '/products?category=Kids&subcategory=Boys' },
-            { name: 'Girls', href: '/products?category=Kids&subcategory=Girls' },
-            { name: 'Infants', href: '/products?category=Kids&subcategory=Infants' },
-            { name: 'Accessories', href: '/products?category=Kids&subcategory=Accessories' },
+            { name: 'T-Shirts', href: '/products?category=Kids(Boys)&subcategory=T-Shirts' },
+            { name: 'Pants', href: '/products?category=Kids(Boys)&subcategory=Pants' },
+            { name: 'Outerwear', href: '/products?category=Kids(Boys)&subcategory=Outerwear' },
         ]
     },
     {
-        name: 'Accessories',
-        isHidden: true,
-        href: '/products?category=Accessories',
-        featured: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=800&auto=format&fit=crop',
+        name: 'Kids(Girls)',
+        href: '/products?category=Kids(Girls)',
+        featured: 'https://images.unsplash.com/photo-1514316454349-f50db90e2270?q=80&w=800&auto=format&fit=crop',
         subcategories: [
-            { name: 'Bags', href: '/products?category=Accessories&subcategory=Bags' },
-            { name: 'Wallets', href: '/products?category=Accessories&subcategory=Wallets' },
-            { name: 'Belts', href: '/products?category=Accessories&subcategory=Belts' },
-            { name: 'Jewelry', href: '/products?category=Accessories&subcategory=Jewelry' },
+            { name: 'Dresses', href: '/products?category=Kids(Girls)&subcategory=Dresses' },
+            { name: 'Tops', href: '/products?category=Kids(Girls)&subcategory=Tops' },
+            { name: 'Skirts', href: '/products?category=Kids(Girls)&subcategory=Skirts' },
         ]
     },
     {
-        name: 'Shoes',
-        isHidden: true,
-        href: '/products?category=Shoes',
-        featured: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=800&auto=format&fit=crop',
+        name: 'Wedding Touch',
+        href: '/products?category=Wedding-Touch',
+        featured: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=800&auto=format&fit=crop',
         subcategories: [
-            { name: 'Sneakers', href: '/products?category=Shoes&subcategory=Sneakers' },
-            { name: 'Boots', href: '/products?category=Shoes&subcategory=Boots' },
-            { name: 'Loafers', href: '/products?category=Shoes&subcategory=Loafers' },
-            { name: 'Formal', href: '/products?category=Shoes&subcategory=Formal' },
+            { name: 'Panjabi', href: '/products?category=Wedding-Touch&subcategory=Panjabi' },
+            { name: 'Sherwani', href: '/products?category=Wedding-Touch&subcategory=Sherwani' },
+            { name: 'Saree', href: '/products?category=Wedding-Touch&subcategory=Saree' },
         ]
     }
 ];

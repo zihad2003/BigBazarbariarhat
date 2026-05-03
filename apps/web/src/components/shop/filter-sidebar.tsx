@@ -94,20 +94,20 @@ export function FilterSidebar({ onFilterChange, activeFilters, onClearAll }: Fil
             <div>
                 <h3 className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-6 px-1">Categories</h3>
                 <div className="space-y-3">
-                    {['New Arrivals', 'Men', 'Women', 'kid(boys)', 'kids(girls)', 'Sale'].map((catName) => {
-                        const slug = catName.toLowerCase().replace(/\s+/g, '-');
+                    {['All Categories', 'New Arrivals', 'Men', 'Women', 'Kids(Boys)', 'Kids(Girls)', 'Wedding Touch', 'Sale'].map((catName) => {
+                        const slug = catName === 'All Categories' ? undefined : catName.toLowerCase().replace(/\s+/g, '-');
                         return (
                             <button
                                 key={catName}
-                                onClick={() => handleCategoryToggle(slug)}
-                                aria-pressed={activeFilters.category === slug}
+                                onClick={() => handleCategoryToggle(slug as string)}
+                                aria-pressed={activeFilters.category === slug || (catName === 'All Categories' && !activeFilters.category)}
                                 className={cn(
                                     "flex items-center justify-between w-full group p-3 rounded-2xl transition-all",
-                                    activeFilters.category === slug ? "bg-black text-white shadow-xl shadow-black/10" : "hover:bg-gray-100 text-gray-600"
+                                    (activeFilters.category === slug || (catName === 'All Categories' && !activeFilters.category)) ? "bg-black text-white shadow-xl shadow-black/10" : "hover:bg-gray-100 text-gray-600"
                                 )}
                             >
                                 <span className="font-bold">{catName}</span>
-                                <ChevronDown className={cn("h-4 w-4 opacity-0 group-hover:opacity-100 -rotate-90 transition-all", activeFilters.category === slug && "opacity-100")} />
+                                <ChevronDown className={cn("h-4 w-4 opacity-0 group-hover:opacity-100 -rotate-90 transition-all", (activeFilters.category === slug || (catName === 'All Categories' && !activeFilters.category)) && "opacity-100")} />
                             </button>
                         );
                     })}
