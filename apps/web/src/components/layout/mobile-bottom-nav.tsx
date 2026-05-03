@@ -10,12 +10,16 @@ import { cn } from '@/lib/utils';
 
 export function MobileBottomNav() {
     const t = useTranslation();
+    const pathname = usePathname();
+    const cartCount = useCartStore(state => state.getItemCount());
+    const wishlistCount = useWishlistStore(state => state.getItemCount());
+
     const navItems = [
-        { label: t.common.back, icon: Home, href: '/' }, // Note: Using common.back for Home or adding common.home
-        { label: t.categories.title, icon: LayoutGrid, href: '/products' },
-        { label: t.common.cart, icon: ShoppingBag, href: '/cart', badge: cartCount },
-        { label: t.common.wishlist, icon: Heart, href: '/wishlist', badge: wishlistCount },
-        { label: t.common.account, icon: User, href: '/account' },
+        { label: t?.common?.back || 'Home', icon: Home, href: '/' },
+        { label: t?.categories?.title || 'Sectors', icon: LayoutGrid, href: '/products' },
+        { label: t?.common?.cart || 'Cart', icon: ShoppingBag, href: '/cart', badge: cartCount },
+        { label: t?.common?.wishlist || 'Wishlist', icon: Heart, href: '/wishlist', badge: wishlistCount },
+        { label: t?.common?.account || 'Account', icon: User, href: '/account' },
     ];
 
     return (
