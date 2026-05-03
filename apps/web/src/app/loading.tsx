@@ -1,24 +1,17 @@
+'use client';
+
 import { Loader2 } from 'lucide-react';
 
-/**
- * Global loading state shown during route transitions.
- * Premium animated spinner with brand identity.
- */
 export default function Loading() {
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-50 to-white">
-            <div className="text-center">
-                {/* Animated loader */}
-                <div className="relative mx-auto w-20 h-20 mb-8">
-                    <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 rounded-[1.5rem] blur-xl animate-pulse" />
-                    <div className="relative w-20 h-20 bg-white rounded-[1.5rem] flex items-center justify-center border border-gray-100 shadow-lg">
-                        <Loader2 className="h-8 w-8 text-indigo-600 animate-spin" />
-                    </div>
-                </div>
-                <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] animate-pulse">
-                    Loading Masterpieces
-                </p>
+        <div className="h-screen w-full flex flex-col items-center justify-center bg-white">
+            <div className="relative">
+                <Loader2 className="h-12 w-12 animate-spin text-indigo-600" />
+                <div className="absolute inset-0 h-12 w-12 bg-indigo-600/10 rounded-full blur-xl animate-pulse" />
             </div>
+            <p className="mt-8 text-[10px] font-black uppercase tracking-[0.4em] text-gray-400 animate-pulse">
+                Synchronizing Universe...
+            </p>
         </div>
     );
 }

@@ -6,8 +6,10 @@ services:
     container_name: bigbazar_db
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: bigbazar_db
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-changeme}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-bigbazar_db}
+      MYSQL_USER: ${MYSQL_USER:-bigbazar}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-changeme}
     ports:
       - "3306:3306"
     volumes:

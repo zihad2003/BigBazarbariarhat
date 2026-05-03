@@ -1,232 +1,241 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import {
-    LayoutDashboard,
-    Package,
-    ShoppingCart,
-    Users,
-    Tag,
-    Image,
-    Settings,
-    LogOut,
-    Menu,
-    X,
-    ChevronDown,
-    TrendingUp,
-    Truck,
-    Percent,
-    Bell,
-    Search
-} from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { 
+    LayoutDashboard, 
+    Package, 
+    ShoppingBag, 
+    Users, 
+    Tags, 
+    Ticket, 
+    Megaphone, 
+    BarChart3, 
+    Settings, 
+    Search, 
+    Bell, 
+    ChevronLeft, 
+    Menu,
+    LogOut,
+    ExternalLink,
+    ChevronDown,
+    User
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 
-interface NavigationItem {
-    name: string;
-    href?: string;
-    icon: any;
-    children?: { name: string; href: string }[];
-}
-
-const navigation: NavigationItem[] = [
-    { name: 'Overview', href: '/admin', icon: LayoutDashboard },
-    {
-        name: 'Catalog',
-        icon: Package,
-        children: [
-            { name: 'Products', href: '/admin/products' },
-            { name: 'Categories', href: '/admin/categories' },
-            { name: 'Brands', href: '/admin/brands' },
-            { name: 'Inventory', href: '/admin/inventory' },
-        ]
-    },
-    { name: 'Orders', href: '/admin/orders', icon: ShoppingCart },
-    { name: 'Customers', href: '/admin/customers', icon: Users },
-    {
-        name: 'Marketing',
-        icon: Percent,
-        children: [
-            { name: 'Coupons', href: '/admin/marketing/coupons' },
-            { name: 'Banners', href: '/admin/marketing/banners' },
-        ]
-    },
-    { name: 'Analytics', href: '/admin/analytics', icon: TrendingUp },
-    { name: 'Settings', href: '/admin/settings', icon: Settings },
+const navItems = [
+    { label: 'Dashboard', icon: LayoutDashboard, href: '/admin' },
+    { label: 'Products', icon: Package, href: '/admin/products' },
+    { label: 'Orders', icon: ShoppingBag, href: '/admin/orders' },
+    { label: 'Customers', icon: Users, href: '/admin/customers' },
+    { label: 'Categories', icon: Tags, href: '/admin/categories' },
+    { label: 'Coupons', icon: Ticket, href: '/admin/coupons' },
+    { label: 'Promotions', icon: Megaphone, href: '/admin/promotions' },
+    { label: 'Analytics', icon: BarChart3, href: '/admin/analytics' },
+    { label: 'Settings', icon: Settings, href: '/admin/settings' },
 ];
 
-export default function AdminDashboardLayout({
-    children,
-}: {
-    children: React.ReactNode;
-}) {
-    const { data: session } = useSession();
-    const [sidebarOpen, setSidebarOpen] = useState(false);
-    const [expandedItems, setExpandedItems] = useState<string[]>(['Catalog']);
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
+    const { data: session, status } = useSession();
     const pathname = usePathname();
+    const router = useRouter();
+    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-    const toggleExpanded = (name: string) => {
-        setExpandedItems((prev) =>
-            prev.includes(name) ? prev.filter((item) => item !== name) : [...prev, name]
-        );
-    };
+    useEffect(() => {
+        if (status === 'unauthenticated') {
+            router.push('/login?callbackUrl=' + pathname);
+        } else if (status === 'authenticated' && (session?.user as any)?.role !== 'ADMIN') {
+            router.push('/');
+        }
+    }, [status, session, pathname, router]);
 
-    const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/');
+    if (status === 'loading') return <div className="h-screen bg-gray-950 flex items-center justify-center"><div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin" /></div>;
+    if (!session || (session?.user as any)?.role !== 'ADMIN') return null;
 
     return (
-        <div className="min-h-screen bg-gray-50 flex">
-            {/* Mobile sidebar backdrop */}
-            {sidebarOpen && (
-                <div
-                    className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-                    onClick={() => setSidebarOpen(false)}
-                />
-            )}
-
-            {/* Sidebar */}
-            <aside
-                className={`fixed top-0 left-0 z-50 h-full w-64 bg-gray-900 text-white transform transition-transform duration-300 lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-                    }`}
+        <div className="min-h-screen bg-[#f8f9fa] flex font-sans antialiased text-slate-900">
+            
+            {/* Sidebar - Desktop */}
+            <aside 
+                className={cn(
+                    "fixed inset-y-0 left-0 z-50 bg-[#111827] text-slate-300 transition-all duration-300 ease-in-out hidden lg:flex flex-col",
+                    isSidebarOpen ? "w-72" : "w-20"
+                )}
             >
                 {/* Logo */}
-                <div className="flex items-center justify-between h-16 px-6 border-b border-gray-800">
-                    <Link href="/admin" className="flex items-center gap-2">
-                        <span className="text-xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
-                            Big Bazar
-                        </span>
-                        <span className="text-xs bg-indigo-500 text-white px-2 py-0.5 rounded-full">
-                            Admin
-                        </span>
-                    </Link>
-                    <button
-                        className="lg:hidden p-1 hover:bg-gray-800 rounded"
-                        onClick={() => setSidebarOpen(false)}
-                    >
-                        <X className="h-5 w-5" />
-                    </button>
+                <div className="h-20 flex items-center px-6 border-b border-slate-800 shrink-0">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shrink-0 shadow-lg shadow-indigo-600/20">
+                            <ShoppingBag className="h-6 w-6" />
+                        </div>
+                        {isSidebarOpen && (
+                            <span className="text-xl font-black text-white tracking-tight">ADMIN<span className="text-indigo-500">.</span></span>
+                        )}
+                    </div>
                 </div>
 
                 {/* Navigation */}
-                <nav className="p-4 space-y-1 overflow-y-auto h-[calc(100vh-4rem)]">
-                    {navigation.map((item) => (
-                        <div key={item.name}>
-                            {item.children ? (
-                                <>
-                                    <button
-                                        onClick={() => toggleExpanded(item.name)}
-                                        className={`w-full flex items-center justify-between px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${item.href && isActive(item.href)
-                                            ? 'bg-indigo-600 text-white'
-                                            : 'text-gray-300 hover:bg-gray-800 hover:text-white'
-                                            }`}
-                                    >
-                                        <span className="flex items-center gap-3">
-                                            <item.icon className="h-5 w-5" />
-                                            {item.name}
-                                        </span>
-                                        <ChevronDown
-                                            className={`h-4 w-4 transition-transform ${expandedItems.includes(item.name) ? 'rotate-180' : ''
-                                                }`}
-                                        />
-                                    </button>
-                                    {expandedItems.includes(item.name) && (
-                                        <div className="ml-4 mt-1 space-y-1">
-                                            {item.children.map((child) => (
-                                                <Link
-                                                    key={child.name}
-                                                    href={child.href}
-                                                    className={`block px-4 py-2 rounded-lg text-sm transition-colors ${pathname === child.href
-                                                        ? 'bg-gray-800 text-white'
-                                                        : 'text-gray-400 hover:bg-gray-800 hover:text-white'
-                                                        }`}
-                                                >
-                                                    {child.name}
-                                                </Link>
-                                            ))}
-                                        </div>
-                                    )}
-                                </>
-                            ) : (
-                                <Link
-                                    href={item.href || '#'}
-                                    className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${item.href && isActive(item.href)
-                                        ? 'bg-indigo-600 text-white'
-                                        : 'text-gray-300 hover:bg-gray-800 hover:text-white'
-                                        }`}
-                                >
-                                    <item.icon className="h-5 w-5" />
-                                    {item.name}
-                                </Link>
-                            )}
-                        </div>
-                    ))}
+                <nav className="flex-1 overflow-y-auto py-8 px-4 space-y-1 custom-scrollbar">
+                    {navItems.map((item) => {
+                        const isActive = pathname === item.href;
+                        return (
+                            <Link
+                                key={item.href}
+                                href={item.href}
+                                className={cn(
+                                    "flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 group relative",
+                                    isActive 
+                                        ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20" 
+                                        : "hover:bg-slate-800/50 hover:text-white"
+                                )}
+                            >
+                                <item.icon className={cn("h-5 w-5 shrink-0 transition-colors", isActive ? "text-white" : "text-slate-500 group-hover:text-slate-300")} />
+                                {isSidebarOpen && <span className="font-bold text-sm tracking-wide">{item.label}</span>}
+                                {!isSidebarOpen && (
+                                    <div className="absolute left-full ml-4 px-3 py-2 bg-slate-900 text-white text-xs font-bold rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap z-[60]">
+                                        {item.label}
+                                    </div>
+                                )}
+                            </Link>
+                        );
+                    })}
                 </nav>
+
+                {/* Footer */}
+                <div className="p-4 border-t border-slate-800">
+                    <button 
+                        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                        className="w-full flex items-center justify-center h-12 rounded-xl bg-slate-800/50 hover:bg-slate-800 transition-colors text-slate-400 hover:text-white"
+                    >
+                        {isSidebarOpen ? <ChevronLeft className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                    </button>
+                    <Link 
+                        href="/" 
+                        className={cn(
+                            "flex items-center gap-4 px-4 py-3 rounded-xl text-slate-500 hover:text-white transition-colors mt-4",
+                            !isSidebarOpen && "justify-center"
+                        )}
+                    >
+                        <ExternalLink className="h-5 w-5 shrink-0" />
+                        {isSidebarOpen && <span className="text-sm font-bold">Storefront</span>}
+                    </Link>
+                </div>
             </aside>
 
-            {/* Main content */}
-            <div className="flex-1 lg:pl-64">
+            {/* Main Content */}
+            <div 
+                className={cn(
+                    "flex-1 flex flex-col transition-all duration-300",
+                    isSidebarOpen ? "lg:ml-72" : "lg:ml-20"
+                )}
+            >
                 {/* Header */}
-                <header className="sticky top-0 z-30 bg-white border-b border-gray-200 h-16">
-                    <div className="flex items-center justify-between h-full px-4 lg:px-8">
-                        <div className="flex items-center gap-4">
-                            <button
-                                className="lg:hidden p-2 hover:bg-gray-100 rounded-lg"
-                                onClick={() => setSidebarOpen(true)}
-                            >
-                                <Menu className="h-5 w-5" />
-                            </button>
+                <header className="h-20 bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 px-8 flex items-center justify-between">
+                    <div className="flex items-center gap-6">
+                        <button 
+                            onClick={() => setIsMobileMenuOpen(true)}
+                            className="lg:hidden p-2 hover:bg-slate-100 rounded-lg text-slate-600"
+                        >
+                            <Menu className="h-6 w-6" />
+                        </button>
+                        <h1 className="text-xl font-black text-slate-900 tracking-tight uppercase">
+                            {navItems.find(i => i.href === pathname)?.label || 'Administration'}
+                        </h1>
+                    </div>
 
-                            {/* Search */}
-                            <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-lg w-80">
-                                <Search className="h-4 w-4 text-gray-400" />
-                                <input
-                                    type="text"
-                                    placeholder="Search products, orders, customers..."
-                                    className="flex-1 bg-transparent border-none outline-none text-sm"
-                                />
-                            </div>
+                    <div className="flex items-center gap-6">
+                        <div className="hidden md:flex items-center gap-3 bg-slate-100 px-4 py-2 rounded-xl border border-slate-200 group focus-within:ring-2 focus-within:ring-indigo-500 transition-all">
+                            <Search className="h-4 w-4 text-slate-400 group-focus-within:text-slate-900" />
+                            <input 
+                                type="text" 
+                                placeholder="Global Search..." 
+                                className="bg-transparent border-none text-xs font-bold focus:outline-none w-48 text-slate-900" 
+                            />
                         </div>
-
-                        <div className="flex items-center gap-4">
-                            {/* Back to Store */}
-                            <Link href="/" className="hidden sm:block text-sm text-gray-500 hover:text-indigo-600 font-medium">
-                                Back to Store
-                            </Link>
-
-                            {/* Notifications */}
-                            <button className="relative p-2 hover:bg-gray-100 rounded-lg">
-                                <Bell className="h-5 w-5 text-gray-600" />
-                                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
-                            </button>
-
-                            {/* User */}
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <button className="flex items-center gap-2 outline-none">
-                                        <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xs font-bold uppercase">
-                                            {session?.user?.name?.charAt(0) || 'A'}
-                                        </div>
-                                    </button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="w-56">
-                                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem onClick={() => signOut()}>
-                                        <LogOut className="mr-2 h-4 w-4" />
-                                        <span>Log out</span>
-                                    </DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
+                        <button className="relative p-2.5 hover:bg-slate-100 rounded-xl text-slate-500 transition-colors">
+                            <Bell className="h-5 w-5" />
+                            <span className="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full border-2 border-white" />
+                        </button>
+                        <div className="h-8 w-px bg-slate-200" />
+                        <div className="flex items-center gap-4 group cursor-pointer">
+                            <div className="text-right hidden sm:block">
+                                <p className="text-xs font-black text-slate-900 leading-none">Admin Curator</p>
+                                <p className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest mt-1">Super User</p>
+                            </div>
+                            <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center text-white text-xs font-black shadow-lg">
+                                AD
+                            </div>
+                            <ChevronDown className="h-4 w-4 text-slate-400 group-hover:text-slate-900 transition-colors" />
                         </div>
                     </div>
                 </header>
 
-                {/* Page content */}
-                <main className="p-6 lg:p-8">
+                {/* Page Content */}
+                <main className="p-8 lg:p-12">
                     {children}
                 </main>
             </div>
+
+            {/* Mobile Sidebar Overlay */}
+            <AnimatePresence>
+                {isMobileMenuOpen && (
+                    <>
+                        <motion.div 
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[60] lg:hidden"
+                        />
+                        <motion.aside
+                            initial={{ x: -280 }}
+                            animate={{ x: 0 }}
+                            exit={{ x: -280 }}
+                            className="fixed inset-y-0 left-0 w-[280px] bg-[#111827] z-[70] lg:hidden flex flex-col"
+                        >
+                            <div className="h-20 flex items-center justify-between px-6 border-b border-slate-800">
+                                <span className="text-xl font-black text-white tracking-tight">ADMIN<span className="text-indigo-500">.</span></span>
+                                <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 text-slate-400 hover:text-white">
+                                    <ChevronLeft className="h-6 w-6" />
+                                </button>
+                            </div>
+                            <nav className="flex-1 py-8 px-4 space-y-1 overflow-y-auto">
+                                {navItems.map((item) => {
+                                    const isActive = pathname === item.href;
+                                    return (
+                                        <Link
+                                            key={item.href}
+                                            href={item.href}
+                                            onClick={() => setIsMobileMenuOpen(false)}
+                                            className={cn(
+                                                "flex items-center gap-4 px-4 py-4 rounded-xl transition-all",
+                                                isActive ? "bg-indigo-600 text-white" : "text-slate-400 hover:bg-slate-800 hover:text-white"
+                                            )}
+                                        >
+                                            <item.icon className="h-5 w-5" />
+                                            <span className="font-bold text-sm uppercase tracking-wide">{item.label}</span>
+                                        </Link>
+                                    );
+                                })}
+                            </nav>
+                            <div className="p-4 border-t border-slate-800">
+                                <button 
+                                    onClick={() => signOut()}
+                                    className="w-full flex items-center gap-4 px-4 py-4 rounded-xl text-rose-500 hover:bg-rose-500/10 transition-all font-black text-xs uppercase tracking-widest"
+                                >
+                                    <LogOut className="h-5 w-5" />
+                                    Disconnect
+                                </button>
+                            </div>
+                        </motion.aside>
+                    </>
+                )}
+            </AnimatePresence>
         </div>
     );
 }

@@ -9,6 +9,7 @@ import {
 import { Truck, MapPin, Clock, CreditCard, AlertCircle, ShoppingBag, MessageSquare, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 interface DeliveryInfoModalProps {
     isOpen: boolean;
@@ -26,21 +27,21 @@ export function DeliveryInfoModal({ isOpen, onClose, productName }: DeliveryInfo
 
     return (
         <Sheet open={isOpen} onOpenChange={onClose}>
-            <SheetContent side="right" className="w-full sm:max-w-xl p-0 overflow-y-auto bg-background border-l border-border flex flex-col text-foreground">
+            <SheetContent side="right" className="w-full sm:max-w-xl p-0 overflow-y-auto bg-white border-l border-slate-100 flex flex-col text-slate-900">
                 <div className="flex-1">
                     {/* Header with Luxury feel */}
-                    <div className="relative h-48 bg-luxury-gradient flex items-center justify-center overflow-hidden">
-                        <div className="absolute inset-0 bg-luxury-gold/5" />
+                    <div className="relative h-48 bg-slate-50 flex items-center justify-center overflow-hidden border-b border-slate-100">
+                        <div className="absolute inset-0 bg-indigo-600/5" />
                         {/* Decorative elements */}
-                        <div className="absolute -top-24 -left-24 w-48 h-48 bg-luxury-gold/10 rounded-full blur-3xl" />
-                        <div className="absolute -bottom-24 -right-24 w-48 h-48 bg-luxury-red/10 rounded-full blur-3xl" />
+                        <div className="absolute -top-24 -left-24 w-48 h-48 bg-indigo-600/10 rounded-full blur-3xl" />
+                        <div className="absolute -bottom-24 -right-24 w-48 h-48 bg-rose-500/10 rounded-full blur-3xl" />
 
                         <div className="relative z-10 text-center">
-                            <Truck className="h-12 w-12 text-luxury-gold mx-auto mb-4 animate-bounce" />
-                            <h2 className="text-3xl font-playfair font-black uppercase tracking-tighter text-gradient-gold">
+                            <Truck className="h-12 w-12 text-slate-900 mx-auto mb-4 animate-bounce" />
+                            <h2 className="text-3xl font-playfair font-black uppercase tracking-tighter text-slate-900">
                                 ডেলিভারি সংক্রান্ত তথ্য
                             </h2>
-                            <p className="text-xs font-bold uppercase tracking-[0.3em] text-gray-400 mt-2">
+                            <p className="text-xs font-bold uppercase tracking-[0.3em] text-slate-500 mt-2">
                                 Delivery Protocol & Logistics
                             </p>
                         </div>
@@ -49,104 +50,104 @@ export function DeliveryInfoModal({ isOpen, onClose, productName }: DeliveryInfo
                     <div className="p-8 space-y-8">
                         {/* Delivery Areas */}
                         <div className="space-y-4">
-                            <h3 className="flex items-center gap-3 text-sm font-black uppercase tracking-widest text-luxury-gold">
+                            <h3 className="flex items-center gap-3 text-sm font-black uppercase tracking-widest text-slate-900">
                                 <MapPin className="h-4 w-4" />
                                 ডেলিভারি চার্জ (Delivery Charges)
                             </h3>
                             <div className="grid gap-4">
                                 <motion.div
                                     whileHover={{ x: 5 }}
-                                    className="p-5 bg-card rounded-2xl border border-border flex items-center justify-between group"
+                                    className="p-5 bg-white rounded-2xl border border-slate-100 flex items-center justify-between group hover:border-indigo-100 hover:shadow-lg transition-all"
                                 >
                                     <div className="flex items-center gap-4">
-                                        <div className="w-10 h-10 rounded-xl bg-luxury-gold/10 flex items-center justify-center text-luxury-gold">
+                                        <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-xl">
                                             🎁
                                         </div>
                                         <div>
-                                            <p className="font-bold text-foreground">মীরসরাইয়ের মধ্যে</p>
-                                            <p className="text-xs text-muted-foreground uppercase tracking-widest">Local Mirsarai</p>
+                                            <p className="font-bold text-slate-900">মীরসরাইয়ের মধ্যে</p>
+                                            <p className="text-xs text-slate-500 uppercase tracking-widest">Local Mirsarai</p>
                                         </div>
                                     </div>
-                                    <span className="text-sm font-black text-emerald-400 uppercase tracking-widest bg-emerald-400/10 px-3 py-1 rounded-lg">ফ্রি ডেলিভারি</span>
+                                    <span className="text-sm font-black text-emerald-600 uppercase tracking-widest bg-emerald-50 px-3 py-1 rounded-lg">ফ্রি ডেলিভারি</span>
                                 </motion.div>
 
                                 <motion.div
                                     whileHover={{ x: 5 }}
-                                    className="p-5 bg-card rounded-2xl border border-border flex items-center justify-between"
+                                    className="p-5 bg-white rounded-2xl border border-slate-100 flex items-center justify-between group hover:border-indigo-100 hover:shadow-lg transition-all"
                                 >
                                     <div className="flex items-center gap-4">
-                                        <div className="w-10 h-10 rounded-xl bg-luxury-gold/10 flex items-center justify-center text-luxury-gold">
+                                        <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-xl">
                                             📦
                                         </div>
                                         <div>
-                                            <p className="font-bold text-foreground">চট্টগ্রাম জেলার মধ্যে</p>
-                                            <p className="text-xs text-gray-400 uppercase tracking-widest">Chittagong District</p>
+                                            <p className="font-bold text-slate-900">চট্টগ্রাম জেলার মধ্যে</p>
+                                            <p className="text-xs text-slate-500 uppercase tracking-widest">Chittagong District</p>
                                         </div>
                                     </div>
-                                    <span className="text-sm font-black text-luxury-gold uppercase tracking-widest">৳১০০</span>
+                                    <span className="text-sm font-black text-indigo-600 uppercase tracking-widest">৳১০০</span>
                                 </motion.div>
 
                                 <motion.div
                                     whileHover={{ x: 5 }}
-                                    className="p-5 bg-card rounded-2xl border border-border flex items-center justify-between"
+                                    className="p-5 bg-white rounded-2xl border border-slate-100 flex items-center justify-between group hover:border-indigo-100 hover:shadow-lg transition-all"
                                 >
                                     <div className="flex items-center gap-4">
-                                        <div className="w-10 h-10 rounded-xl bg-luxury-gold/10 flex items-center justify-center text-luxury-gold">
+                                        <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-xl">
                                             📮
                                         </div>
                                         <div>
-                                            <p className="font-bold text-foreground">চট্টগ্রামের বাইরে (বাংলাদেশ)</p>
-                                            <p className="text-xs text-gray-400 uppercase tracking-widest">Outside Chittagong</p>
+                                            <p className="font-bold text-slate-900">চট্টগ্রামের বাইরে (বাংলাদেশ)</p>
+                                            <p className="text-xs text-slate-500 uppercase tracking-widest">Outside Chittagong</p>
                                         </div>
                                     </div>
-                                    <span className="text-sm font-black text-luxury-gold uppercase tracking-widest">৳১৫০+</span>
+                                    <span className="text-sm font-black text-indigo-600 uppercase tracking-widest">৳১৫০+</span>
                                 </motion.div>
                             </div>
                         </div>
 
                         {/* Delivery Time & Address */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="p-5 bg-card rounded-2xl border border-border space-y-3">
-                                <div className="flex items-center gap-2 text-luxury-gold">
+                            <div className="p-5 bg-white rounded-2xl border border-slate-100 space-y-3 shadow-sm">
+                                <div className="flex items-center gap-2 text-slate-900">
                                     <Clock className="h-4 w-4" />
                                     <span className="text-[10px] font-black uppercase tracking-widest">ডেলিভারি সময়</span>
                                 </div>
-                                <p className="text-sm font-bold leading-relaxed">অর্ডার কনফার্ম করার সাধারণত ৩–৪ দিনের মধ্যে।</p>
+                                <p className="text-sm font-bold text-slate-700 leading-relaxed">অর্ডার কনফার্ম করার সাধারণত ৩–৪ দিনের মধ্যে।</p>
                             </div>
-                            <div className="p-5 bg-card rounded-2xl border border-border space-y-3">
-                                <div className="flex items-center gap-2 text-luxury-gold">
+                            <div className="p-5 bg-white rounded-2xl border border-slate-100 space-y-3 shadow-sm">
+                                <div className="flex items-center gap-2 text-slate-900">
                                     <MapPin className="h-4 w-4" />
                                     <span className="text-[10px] font-black uppercase tracking-widest">শপ ঠিকানা</span>
                                 </div>
-                                <p className="text-sm font-bold leading-relaxed">বারইয়াহাট, মীরসরাই, চট্টগ্রাম</p>
+                                <p className="text-sm font-bold text-slate-700 leading-relaxed">বারইয়াহাট, মীরসরাই, চট্টগ্রাম</p>
                             </div>
                         </div>
 
                         {/* Payment & Important Notes */}
                         <div className="space-y-4">
-                            <h3 className="flex items-center gap-3 text-sm font-black uppercase tracking-widest text-luxury-red">
+                            <h3 className="flex items-center gap-3 text-sm font-black uppercase tracking-widest text-rose-600">
                                 <AlertCircle className="h-4 w-4" />
                                 গুরুত্বপূর্ণ নোট (Important Notes)
                             </h3>
-                            <div className="p-6 bg-red-500/5 rounded-[2rem] border border-luxury-red/10 space-y-6">
+                            <div className="p-6 bg-rose-50 rounded-[2rem] border border-rose-100 space-y-6">
                                 <ul className="space-y-4">
                                     <li className="flex items-start gap-4">
-                                        <div className="h-2 w-2 rounded-full bg-luxury-red mt-2 shrink-0 shadow-lg shadow-luxury-red/50" />
-                                        <p className="text-sm text-muted-foreground leading-relaxed">ডেলিভারি চার্জ অর্ডার কনফার্ম করার সময় অ্যাডভান্সে পরিশোধ করতে হবে।</p>
+                                        <div className="h-2 w-2 rounded-full bg-rose-500 mt-2 shrink-0 shadow-lg shadow-rose-500/50" />
+                                        <p className="text-sm text-rose-900 leading-relaxed">ডেলিভারি চার্জ অর্ডার কনফার্ম করার সময় অ্যাডভান্সে পরিশোধ করতে হবে।</p>
                                     </li>
                                     <li className="flex items-start gap-4">
-                                        <div className="h-2 w-2 rounded-full bg-luxury-red mt-2 shrink-0" />
-                                        <p className="text-sm text-muted-foreground leading-relaxed font-bold">পেমেন্ট করতে হবে bKash (Personal) নাম্বারে: <span className="text-foreground font-mono bg-muted px-2 py-0.5 rounded border border-border">{whatsappNumber}</span></p>
+                                        <div className="h-2 w-2 rounded-full bg-rose-500 mt-2 shrink-0" />
+                                        <p className="text-sm text-rose-900 leading-relaxed font-bold">পেমেন্ট করতে হবে bKash (Personal) নাম্বারে: <span className="text-slate-900 font-mono bg-white px-2 py-0.5 rounded border border-rose-200">{whatsappNumber}</span></p>
                                     </li>
                                     <li className="flex items-start gap-4">
-                                        <div className="h-2 w-2 rounded-full bg-luxury-red mt-2 shrink-0" />
-                                        <p className="text-sm text-gray-300 leading-relaxed font-bold text-luxury-gold">অনুগ্রহ করে Send Money অপশন ব্যবহার করে পেমেন্ট করবেন।</p>
+                                        <div className="h-2 w-2 rounded-full bg-rose-500 mt-2 shrink-0" />
+                                        <p className="text-sm text-rose-700 leading-relaxed font-bold">অনুগ্রহ করে Send Money অপশন ব্যবহার করে পেমেন্ট করবেন।</p>
                                     </li>
                                 </ul>
 
-                                <div className="pt-4 border-t border-white/5">
-                                    <p className="text-[10px] font-black text-rose-400 uppercase tracking-[0.2em]">⚠️ সতর্কবার্তা:</p>
-                                    <p className="text-xs text-gray-400 mt-1 italic font-medium">ভুল করে Recharge করলে সেই টাকা ফেরত দেওয়া সম্ভব নয়। পণ্যের ওজন অনুযায়ী চার্জ বাড়তে পারে।</p>
+                                <div className="pt-4 border-t border-rose-200">
+                                    <p className="text-[10px] font-black text-rose-600 uppercase tracking-[0.2em]">⚠️ সতর্কবার্তা:</p>
+                                    <p className="text-xs text-rose-800 mt-1 italic font-medium">ভুল করে Recharge করলে সেই টাকা ফেরত দেওয়া সম্ভব নয়। পণ্যের ওজন অনুযায়ী চার্জ বাড়তে পারে।</p>
                                 </div>
                             </div>
                         </div>
@@ -154,7 +155,7 @@ export function DeliveryInfoModal({ isOpen, onClose, productName }: DeliveryInfo
                         {/* Action Buttons */}
                         <div className="pt-6 space-y-4">
                             <Button
-                                className="w-full h-16 bg-[#25D366] text-white hover:bg-[#128C7E] rounded-2xl shadow-xl shadow-emerald-500/10 flex items-center justify-center gap-3 border-0 transition-all active:scale-95"
+                                className="w-full h-16 bg-[#25D366] text-white hover:bg-[#128C7E] rounded-2xl shadow-xl shadow-emerald-500/20 flex items-center justify-center gap-3 border-0 transition-all active:scale-95"
                                 onClick={() => window.open(whatsappLink, '_blank')}
                             >
                                 <MessageSquare className="h-5 w-5" />
@@ -163,7 +164,7 @@ export function DeliveryInfoModal({ isOpen, onClose, productName }: DeliveryInfo
 
                             <Button
                                 variant="outline"
-                                className="w-full h-14 rounded-2xl border-white/10 text-gray-400 hover:text-white hover:border-luxury-gold"
+                                className="w-full h-14 rounded-2xl border-slate-200 text-slate-500 hover:text-slate-900 hover:bg-slate-50"
                                 onClick={onClose}
                             >
                                 <span className="font-black uppercase tracking-widest text-[10px]">বন্ধ করুন (Close Protocol)</span>
@@ -173,8 +174,8 @@ export function DeliveryInfoModal({ isOpen, onClose, productName }: DeliveryInfo
                 </div>
 
                 {/* Footer Protection */}
-                <div className="p-6 bg-card border-t border-border text-center">
-                    <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest">
+                <div className="p-6 bg-slate-50 border-t border-slate-100 text-center">
+                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">
                         Official Curation / Big Bazar © 2026
                     </p>
                 </div>
@@ -182,3 +183,4 @@ export function DeliveryInfoModal({ isOpen, onClose, productName }: DeliveryInfo
         </Sheet>
     );
 }
+

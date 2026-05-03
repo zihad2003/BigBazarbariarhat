@@ -18,43 +18,47 @@ import { useSession, signOut } from 'next-auth/react';
 const navigation = [
     {
         name: 'Men',
-        href: '/men',
+        href: '/products?category=Men',
         submenu: [
-            { name: 'Shirts', href: '/men/shirts' },
-            { name: 'T-Shirts', href: '/men/t-shirts' },
-            { name: 'Pants', href: '/men/pants' },
-            { name: 'Jeans', href: '/men/jeans' },
-            { name: 'Jackets', href: '/men/jackets' },
-            { name: 'Accessories', href: '/men/accessories' },
+            { name: 'T-Shirts', href: '/products?category=Men&subcategory=T-Shirts' },
+            { name: 'Denim', href: '/products?category=Men&subcategory=Denim' },
+            { name: 'Knitwear', href: '/products?category=Men&subcategory=Knitwear' },
+            { name: 'Outerwear', href: '/products?category=Men&subcategory=Outerwear' },
         ]
     },
     {
         name: 'Women',
-        href: '/women',
+        href: '/products?category=Women',
         submenu: [
-            { name: 'Dresses', href: '/women/dresses' },
-            { name: 'Tops', href: '/women/tops' },
-            { name: 'Pants', href: '/women/pants' },
-            { name: 'Skirts', href: '/women/skirts' },
-            { name: 'Sarees', href: '/women/sarees' },
-            { name: 'Accessories', href: '/women/accessories' },
-        ]
-    },
-    {
-        name: 'Kids',
-        href: '/kids',
-        submenu: [
-            { name: 'Boys', href: '/kids/boys' },
-            { name: 'Girls', href: '/kids/girls' },
-            { name: 'Infants', href: '/kids/infants' },
+            { name: 'Dresses', href: '/products?category=Women&subcategory=Dresses' },
+            { name: 'Blouses', href: '/products?category=Women&subcategory=Blouses' },
+            { name: 'Trousers', href: '/products?category=Women&subcategory=Trousers' },
+            { name: 'Skirts', href: '/products?category=Women&subcategory=Skirts' },
         ]
     },
     {
         name: 'Accessories',
-        href: '#',
-        comingSoon: true,
+        isHidden: true,
+        href: '/products?category=Accessories',
+        submenu: [
+            { name: 'Bags', href: '/products?category=Accessories&subcategory=Bags' },
+            { name: 'Wallets', href: '/products?category=Accessories&subcategory=Wallets' },
+            { name: 'Belts', href: '/products?category=Accessories&subcategory=Belts' },
+            { name: 'Jewelry', href: '/products?category=Accessories&subcategory=Jewelry' },
+        ]
     },
-    { name: 'Sale', href: '/sale', highlight: true },
+    {
+        name: 'Shoes',
+        isHidden: true,
+        href: '/products?category=Shoes',
+        submenu: [
+            { name: 'Sneakers', href: '/products?category=Shoes&subcategory=Sneakers' },
+            { name: 'Boots', href: '/products?category=Shoes&subcategory=Boots' },
+            { name: 'Loafers', href: '/products?category=Shoes&subcategory=Loafers' },
+            { name: 'Formal', href: '/products?category=Shoes&subcategory=Formal' },
+        ]
+    },
+    { name: 'Sale', href: '/sale', highlight: true, submenu: undefined, comingSoon: false },
 ];
 
 export function MobileMenu() {
@@ -102,7 +106,7 @@ export function MobileMenu() {
                     </Button>
 
                     <nav className="space-y-1">
-                        {navigation.map((item) => (
+                        {navigation.filter(item => !item.isHidden).map((item) => (
                             <div key={item.name} className="overflow-hidden">
                                 <button
                                     onClick={() => setActiveSubmenu(activeSubmenu === item.name ? null : item.name)}

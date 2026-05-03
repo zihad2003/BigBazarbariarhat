@@ -1,7 +1,8 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter, Playfair_Display, Lato } from 'next/font/google';
 import Providers from './providers';
-import { ToastContainer } from '@/components/toast-container';
+import { Toaster } from '@/components/ui/toaster';
+import { CartDrawer } from '@/components/shop/cart-drawer';
 import './globals.css';
 
 const inter = Inter({
@@ -82,7 +83,19 @@ export default function RootLayout({
       <body className={`${lato.className} bg-background text-foreground`}>
         <Providers>
           {children}
-          <ToastContainer />
+          <CartDrawer />
+          <Toaster 
+            position="top-right"
+            toastOptions={{
+              className: 'rounded-2xl border-slate-100 shadow-2xl font-black uppercase tracking-widest text-[10px]',
+              success: {
+                className: 'bg-emerald-50 text-emerald-900 border-emerald-100',
+              },
+              error: {
+                className: 'bg-rose-50 text-rose-900 border-rose-100',
+              },
+            }}
+          />
         </Providers>
       </body>
     </html>

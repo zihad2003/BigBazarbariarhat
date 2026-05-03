@@ -1,288 +1,278 @@
 'use client';
 
-import { useState } from 'react';
-import {
-    MapPin,
-    Plus,
-    Edit2,
-    Trash2,
+import { useState, useEffect } from 'react';
+import { 
+    MapPin, 
+    Plus, 
+    Home, 
+    Briefcase, 
+    MoreVertical, 
+    Trash2, 
+    Edit2, 
     Check,
-    ArrowLeft,
+    AlertCircle,
+    X,
     Loader2
 } from 'lucide-react';
-import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { AddressForm } from '@/components/account/address-form';
-import {
-    Sheet,
-    SheetContent,
-    SheetHeader,
-    SheetTitle,
-    SheetTrigger,
-} from '@/components/ui/sheet';
-import { useUIStore } from '@/lib/stores/ui-store';
-import { useSession } from 'next-auth/react';
+import { cn } from '@/lib/utils';
 
 interface Address {
     id: string;
-    label: string;
+    type: 'Home' | 'Office' | 'Other';
     fullName: string;
     phone: string;
-    addressLine1: string;
-    addressLine2: string | null;
-    city: string;
-    state: string | null;
-    postalCode: string;
-    country: string;
+    address: string;
+    upazila: string;
+    district: string;
+    division: string;
     isDefault: boolean;
 }
 
 export default function AddressesPage() {
-    const { data: session, status } = useSession();
-    const user = session?.user;
-    const isLoaded = status !== 'loading';
-    const queryClient = useQueryClient();
-    const { addNotification } = useUIStore();
-    const [isSheetOpen, setIsSheetOpen] = useState(false);
+    const [addresses, setAddresses] = useState<Address[]>([]);
+    const [isLoaded, setIsLoaded] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingAddress, setEditingAddress] = useState<Address | null>(null);
 
-    const { data: addresses = [], isLoading } = useQuery({
-        queryKey: ['addresses', user?.id],
-        queryFn: async () => {
-            if (!user?.id) return [];
-            const res = await fetch('/api/account/addresses');
-            const result = await res.json();
-            if (!result.success) throw new Error(result.error);
-            return result.data as Address[];
-        },
-        enabled: !!user,
-    });
-
-    const createMutation = useMutation({
-        mutationFn: async (data: any) => {
-            const res = await fetch('/api/account/addresses', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data),
-            });
-            const result = await res.json();
-            if (!result.success) throw new Error(result.error);
-            return result.data;
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['addresses', user?.id] });
-            setIsSheetOpen(false);
-            addNotification({ type: 'success', message: 'Address added successfully' });
-        },
-        onError: (error: Error) => {
-            addNotification({ type: 'error', message: error.message });
-        },
-    });
-
-    const updateMutation = useMutation({
-        mutationFn: async ({ id, data }: { id: string; data: any }) => {
-            const res = await fetch(`/api/account/addresses/${id}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data),
-            });
-            const result = await res.json();
-            if (!result.success) throw new Error(result.error);
-            return result.data;
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['addresses', user?.id] });
-            setIsSheetOpen(false);
-            setEditingAddress(null);
-            addNotification({ type: 'success', message: 'Address updated successfully' });
-        },
-        onError: (error: Error) => {
-            addNotification({ type: 'error', message: error.message });
-        },
-    });
-
-    const deleteMutation = useMutation({
-        mutationFn: async (id: string) => {
-            const res = await fetch(`/api/account/addresses/${id}`, {
-                method: 'DELETE',
-            });
-            const result = await res.json();
-            if (!result.success) throw new Error(result.error);
-            return result;
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['addresses', user?.id] });
-            addNotification({ type: 'success', message: 'Address deleted successfully' });
-        },
-        onError: (error: Error) => {
-            addNotification({ type: 'error', message: error.message });
-        },
-    });
-
-    const handleSubmit = async (data: any) => {
-        if (editingAddress) {
-            await updateMutation.mutateAsync({ id: editingAddress.id, data });
+    useEffect(() => {
+        const saved = JSON.parse(localStorage.getItem('bigbazar-addresses') || '[]');
+        if (saved.length === 0) {
+            // Initial mock data if empty
+            const mock = [
+                {
+                    id: '1',
+                    type: 'Home' as const,
+                    fullName: 'Zihad Islam',
+                    phone: '01712345678',
+                    address: 'House 12, Road 5, Block B, Mirpur-10',
+                    upazila: 'Mirpur',
+                    district: 'Dhaka',
+                    division: 'Dhaka',
+                    isDefault: true
+                }
+            ];
+            setAddresses(mock);
+            localStorage.setItem('bigbazar-addresses', JSON.stringify(mock));
         } else {
-            await createMutation.mutateAsync(data);
+            setAddresses(saved);
         }
+        setIsLoaded(true);
+    }, []);
+
+    const saveAddresses = (newAddresses: Address[]) => {
+        setAddresses(newAddresses);
+        localStorage.setItem('bigbazar-addresses', JSON.stringify(newAddresses));
     };
 
-    const handleEdit = (address: Address) => {
-        setEditingAddress(address);
-        setIsSheetOpen(true);
+    const handleDelete = (id: string) => {
+        const filtered = addresses.filter(a => a.id !== id);
+        if (filtered.length > 0 && addresses.find(a => a.id === id)?.isDefault) {
+            filtered[0].isDefault = true;
+        }
+        saveAddresses(filtered);
     };
 
-    const handleAddNew = () => {
+    const setAsDefault = (id: string) => {
+        const updated = addresses.map(a => ({
+            ...a,
+            isDefault: a.id === id
+        }));
+        saveAddresses(updated);
+    };
+
+    const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        const data = {
+            type: formData.get('type') as any,
+            fullName: formData.get('fullName') as string,
+            phone: formData.get('phone') as string,
+            address: formData.get('address') as string,
+            upazila: formData.get('upazila') as string,
+            district: formData.get('district') as string,
+            division: formData.get('division') as string,
+        };
+
+        if (editingAddress) {
+            const updated = addresses.map(a => a.id === editingAddress.id ? { ...a, ...data } : a);
+            saveAddresses(updated);
+        } else {
+            const newAddress: Address = {
+                id: Math.random().toString(36).substr(2, 9),
+                ...data,
+                isDefault: addresses.length === 0
+            };
+            saveAddresses([...addresses, newAddress]);
+        }
+        setIsModalOpen(false);
         setEditingAddress(null);
-        setIsSheetOpen(true);
     };
 
-    if (!isLoaded || isLoading) {
-        return (
-            <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4 text-luxury-gold">
-                <Loader2 className="h-10 w-10 animate-spin" />
-                <p className="text-sm font-bold uppercase tracking-widest">Loading addresses...</p>
-            </div>
-        );
-    }
+    if (!isLoaded) return null;
 
     return (
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
+        <div className="space-y-12">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
                 <div>
-                    <Link href="/account" className="flex items-center gap-2 text-sm font-bold text-gray-400 hover:text-black transition-colors mb-4 uppercase tracking-widest">
-                        <ArrowLeft className="h-4 w-4" />
-                        Back to Dashboard
-                    </Link>
-                    <h1 className="text-5xl font-black text-gray-900 tracking-tight">Address Book</h1>
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="h-px w-8 bg-black" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400">Logistics Hub</span>
+                    </div>
+                    <h1 className="text-4xl font-black text-gray-900 tracking-tighter uppercase">Saved Coordinates</h1>
                 </div>
-
-                <Sheet open={isSheetOpen} onOpenChange={(open) => {
-                    setIsSheetOpen(open);
-                    if (!open) setEditingAddress(null);
-                }}>
-                    <SheetTrigger asChild>
-                        <Button onClick={handleAddNew} className="bg-black text-white hover:bg-gray-800 rounded-2xl px-8 h-14 font-bold gap-3 shadow-xl shadow-black/10">
-                            <Plus className="h-5 w-5" />
-                            Add New Address
-                        </Button>
-                    </SheetTrigger>
-                    <SheetContent className="w-full sm:max-w-md overflow-y-auto">
-                        <SheetHeader className="mb-8">
-                            <SheetTitle className="text-2xl font-black font-playfair">
-                                {editingAddress ? 'Edit Address' : 'Add New Address'}
-                            </SheetTitle>
-                        </SheetHeader>
-                        <AddressForm
-                            initialData={editingAddress ? {
-                                ...editingAddress,
-                                addressLine2: editingAddress.addressLine2 ?? undefined,
-                                state: editingAddress.state ?? undefined,
-                                country: editingAddress.country || 'Bangladesh'
-                            } : undefined}
-                            onSubmit={handleSubmit}
-                            isLoading={createMutation.isPending || updateMutation.isPending}
-                            buttonLabel={editingAddress ? 'Update Address' : 'Save Address'}
-                            onCancel={() => setIsSheetOpen(false)}
-                        />
-                    </SheetContent>
-                </Sheet>
+                <Button 
+                    onClick={() => { setEditingAddress(null); setIsModalOpen(true); }}
+                    className="rounded-2xl h-14 px-8 bg-black text-white hover:bg-gray-800 transition-all font-black text-[11px] uppercase tracking-widest shadow-xl shadow-black/20 gap-3"
+                >
+                    <Plus className="h-4 w-4" /> Add New Coordinate
+                </Button>
             </div>
 
-            {addresses.length === 0 ? (
-                <div className="text-center py-20 bg-gray-50 rounded-[3rem] border border-dashed border-gray-200">
-                    <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl text-gray-300">
-                        <MapPin className="h-10 w-10" />
-                    </div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-2">No addresses found</h2>
-                    <p className="text-gray-500 mb-8 max-w-sm mx-auto">Add a shipping address to speed up your checkout process.</p>
-                    <Button onClick={handleAddNew} className="bg-black text-white hover:bg-gray-800 rounded-xl px-8 h-12 font-bold uppercase tracking-widest text-xs">
-                        Add Address
-                    </Button>
-                </div>
-            ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    {addresses.map((addr) => (
-                        <div key={addr.id} className={`bg-white rounded-[3rem] p-10 border transition-all hover:shadow-2xl relative group ${addr.isDefault ? 'border-indigo-600 ring-2 ring-indigo-50 shadow-xl' : 'border-gray-100 shadow-sm'}`}>
-                            {addr.isDefault && (
-                                <div className="absolute top-8 right-10 flex items-center gap-2 bg-indigo-600 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">
-                                    <Check className="h-3 w-3" />
-                                    Default
-                                </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <AnimatePresence mode="popLayout">
+                    {addresses.map((address) => (
+                        <motion.div
+                            key={address.id}
+                            layout
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.9 }}
+                            className={cn(
+                                "group bg-white rounded-[3rem] p-8 border transition-all relative overflow-hidden",
+                                address.isDefault ? "border-black shadow-2xl shadow-black/5 ring-1 ring-black/5" : "border-gray-100 shadow-sm"
                             )}
-
-                            <div className="flex items-center gap-4 mb-8">
-                                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${addr.isDefault ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-400'}`}>
-                                    <MapPin className="h-7 w-7" />
+                        >
+                            <div className="flex items-start justify-between mb-8">
+                                <div className="flex items-center gap-4">
+                                    <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center transition-colors", address.isDefault ? "bg-black text-white" : "bg-gray-50 text-gray-400")}>
+                                        {address.type === 'Home' ? <Home className="h-5 w-5" /> : address.type === 'Office' ? <Briefcase className="h-5 w-5" /> : <MapPin className="h-5 w-5" />}
+                                    </div>
+                                    <div>
+                                        <h3 className="font-black text-gray-900 uppercase tracking-tight">{address.type}</h3>
+                                        {address.isDefault && <span className="text-[8px] font-black uppercase tracking-widest text-emerald-500 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">Primary Hub</span>}
+                                    </div>
                                 </div>
-                                <div>
-                                    <h3 className="text-2xl font-black text-gray-900 capitalize">{addr.label}</h3>
-                                    <p className="text-sm text-gray-400 font-bold uppercase tracking-widest">{addr.city}</p>
-                                </div>
-                            </div>
-
-                            <div className="space-y-4 mb-10">
-                                <div className="flex flex-col">
-                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Full Name</span>
-                                    <span className="font-bold text-gray-900 text-lg">{addr.fullName}</span>
-                                </div>
-                                <div className="flex flex-col">
-                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Phone Number</span>
-                                    <span className="font-bold text-gray-900">{addr.phone}</span>
-                                </div>
-                                <div className="flex flex-col">
-                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Details</span>
-                                    <span className="font-bold text-gray-600 leading-relaxed">
-                                        {addr.addressLine1}
-                                        {addr.addressLine2 && `, ${addr.addressLine2}`}
-                                        <br />
-                                        {addr.city}, {addr.postalCode}
-                                        <br />
-                                        {addr.country}
-                                    </span>
+                                <div className="flex items-center gap-2">
+                                    <button onClick={() => { setEditingAddress(address); setIsModalOpen(true); }} className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center text-gray-300 hover:text-black transition-colors">
+                                        <Edit2 className="h-4 w-4" />
+                                    </button>
+                                    <button onClick={() => handleDelete(address.id)} className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center text-gray-300 hover:text-rose-500 transition-colors">
+                                        <Trash2 className="h-4 w-4" />
+                                    </button>
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-4 pt-8 border-t border-gray-50 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <Button
-                                    variant="outline"
-                                    onClick={() => handleEdit(addr)}
-                                    className="flex-1 rounded-xl h-12 font-bold gap-2 hover:bg-black hover:text-white transition-all"
+                            <div className="space-y-4 mb-8">
+                                <p className="text-sm font-black text-gray-900 uppercase tracking-tight">{address.fullName}</p>
+                                <p className="text-xs text-gray-400 font-bold uppercase tracking-widest leading-relaxed">
+                                    {address.address}<br />
+                                    {address.upazila}, {address.district}<br />
+                                    {address.division}
+                                </p>
+                                <p className="text-[11px] font-black text-gray-900 tracking-widest">{address.phone}</p>
+                            </div>
+
+                            {!address.isDefault && (
+                                <button 
+                                    onClick={() => setAsDefault(address.id)}
+                                    className="w-full py-4 rounded-2xl border border-gray-100 text-[9px] font-black uppercase tracking-widest text-gray-400 hover:text-black hover:border-black transition-all"
                                 >
-                                    <Edit2 className="h-4 w-4" />
-                                    Edit
-                                </Button>
-                                <Button
-                                    variant="ghost"
-                                    onClick={() => {
-                                        if (confirm('Are you sure you want to delete this address?')) {
-                                            deleteMutation.mutate(addr.id);
-                                        }
-                                    }}
-                                    disabled={deleteMutation.isPending}
-                                    className="flex-1 rounded-xl h-12 font-bold gap-2 text-red-500 hover:bg-red-50 transition-all"
-                                >
-                                    {deleteMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
-                                    Delete
-                                </Button>
-                            </div>
-                        </div>
+                                    Set as Primary Hub
+                                </button>
+                            )}
+                        </motion.div>
                     ))}
+                </AnimatePresence>
 
-                    {/* Add New Address Card */}
-                    <button
-                        onClick={handleAddNew}
-                        className="bg-gray-50 rounded-[3rem] border-4 border-dashed border-gray-200 p-10 flex flex-col items-center justify-center hover:bg-white hover:border-indigo-200 transition-all group min-h-[400px]"
-                    >
-                        <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center mb-6 shadow-xl group-hover:scale-110 transition-transform">
-                            <Plus className="h-10 w-10 text-gray-300 group-hover:text-indigo-600" />
+                {addresses.length === 0 && (
+                    <div className="md:col-span-2 py-24 text-center bg-white rounded-[3rem] border border-dashed border-gray-200">
+                        <div className="w-20 h-20 bg-gray-50 rounded-[2rem] flex items-center justify-center mx-auto mb-6 text-gray-200">
+                            <MapPin className="h-10 w-10" />
                         </div>
-                        <span className="text-xl font-black text-gray-400 group-hover:text-indigo-600">Add New Address</span>
-                        <p className="text-sm text-gray-300 font-bold uppercase tracking-widest mt-2">Maximum 5 addresses</p>
-                    </button>
-                </div>
-            )}
+                        <h3 className="text-xl font-black text-gray-900 uppercase tracking-tight mb-2">No Coordinates Found</h3>
+                        <p className="text-gray-400 text-sm font-medium">Add a delivery destination to expedite your next acquisition.</p>
+                    </div>
+                )}
+            </div>
+
+            {/* Modal */}
+            <AnimatePresence>
+                {isModalOpen && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center px-6">
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsModalOpen(false)} className="absolute inset-0 bg-black/60 backdrop-blur-md" />
+                        <motion.div 
+                            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                            className="relative bg-white w-full max-w-2xl rounded-[3rem] overflow-hidden shadow-2xl"
+                        >
+                            <div className="p-10 border-b border-gray-50 flex items-center justify-between">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 bg-black rounded-2xl flex items-center justify-center text-white">
+                                        <MapPin className="h-6 w-6" />
+                                    </div>
+                                    <h2 className="text-2xl font-black text-gray-900 tracking-tight uppercase">{editingAddress ? 'Update Coordinate' : 'New Coordinate'}</h2>
+                                </div>
+                                <button onClick={() => setIsModalOpen(false)} className="w-12 h-12 flex items-center justify-center rounded-2xl hover:bg-gray-50 transition-colors">
+                                    <X className="h-6 w-6 text-gray-300" />
+                                </button>
+                            </div>
+                            <form onSubmit={handleFormSubmit} className="p-10 space-y-8">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="md:col-span-2 flex gap-4">
+                                        {['Home', 'Office', 'Other'].map(type => (
+                                            <label key={type} className="flex-1 cursor-pointer">
+                                                <input type="radio" name="type" value={type} defaultChecked={editingAddress?.type === type || type === 'Home'} className="peer hidden" />
+                                                <div className="py-4 text-center border border-gray-100 rounded-2xl text-[10px] font-black uppercase tracking-widest text-gray-400 peer-checked:bg-black peer-checked:text-white peer-checked:border-black transition-all">
+                                                    {type}
+                                                </div>
+                                            </label>
+                                        ))}
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest pl-2">Recipient Name</label>
+                                        <input name="fullName" required defaultValue={editingAddress?.fullName} className="w-full px-6 py-4 bg-gray-50 border border-gray-50 rounded-xl focus:outline-none focus:ring-4 focus:ring-black/5 focus:bg-white transition-all text-sm font-black" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest pl-2">Terminal ID (Phone)</label>
+                                        <input name="phone" required defaultValue={editingAddress?.phone} className="w-full px-6 py-4 bg-gray-50 border border-gray-50 rounded-xl focus:outline-none focus:ring-4 focus:ring-black/5 focus:bg-white transition-all text-sm font-black" />
+                                    </div>
+                                    <div className="md:col-span-2 space-y-2">
+                                        <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest pl-2">Physical Location (Address)</label>
+                                        <input name="address" required defaultValue={editingAddress?.address} className="w-full px-6 py-4 bg-gray-50 border border-gray-50 rounded-xl focus:outline-none focus:ring-4 focus:ring-black/5 focus:bg-white transition-all text-sm font-black" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest pl-2">Division</label>
+                                        <select name="division" required defaultValue={editingAddress?.division || 'Dhaka'} className="w-full px-6 py-4 bg-gray-50 border border-gray-50 rounded-xl focus:outline-none focus:ring-4 focus:ring-black/5 focus:bg-white transition-all text-sm font-black appearance-none">
+                                            <option>Dhaka</option>
+                                            <option>Chittagong</option>
+                                            <option>Sylhet</option>
+                                            <option>Rajshahi</option>
+                                            <option>Khulna</option>
+                                            <option>Barisal</option>
+                                            <option>Rangpur</option>
+                                            <option>Mymensingh</option>
+                                        </select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest pl-2">District</label>
+                                        <input name="district" required defaultValue={editingAddress?.district} className="w-full px-6 py-4 bg-gray-50 border border-gray-50 rounded-xl focus:outline-none focus:ring-4 focus:ring-black/5 focus:bg-white transition-all text-sm font-black" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest pl-2">Upazila / Thana</label>
+                                        <input name="upazila" required defaultValue={editingAddress?.upazila} className="w-full px-6 py-4 bg-gray-50 border border-gray-50 rounded-xl focus:outline-none focus:ring-4 focus:ring-black/5 focus:bg-white transition-all text-sm font-black" />
+                                    </div>
+                                </div>
+                                <Button type="submit" className="w-full h-16 bg-black text-white hover:bg-gray-800 rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-2xl shadow-black/20">
+                                    Authenticate & Save
+                                </Button>
+                            </form>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }

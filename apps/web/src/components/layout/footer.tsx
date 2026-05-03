@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { Facebook, Instagram, MapPin, Phone, Mail, CreditCard, Truck, Shield, RotateCcw, Send } from 'lucide-react';
 
@@ -26,12 +27,15 @@ const footerLinks = {
         { name: 'Store Locations', href: '/stores' },
         { name: 'Blog', href: '/blog' },
         { name: 'Press', href: '/press' },
+        { name: 'Sustainability', href: '/sustainability' },
     ],
     legal: [
         { name: 'Privacy Policy', href: '/privacy' },
         { name: 'Terms of Service', href: '/terms' },
         { name: 'Refund Policy', href: '/refund-policy' },
         { name: 'Cookie Policy', href: '/cookies' },
+        { name: 'Accessibility', href: '/accessibility' },
+        { name: 'Security', href: '/security' },
     ],
 };
 
@@ -47,8 +51,9 @@ const features = [
     { icon: Shield, title: 'Secure Payment', description: '100% secure checkout' },
     { icon: CreditCard, title: 'Mobile Banking', description: 'bKash & Nagad' },
 ];
-
 export function Footer() {
+    const [currentLanguage, setCurrentLanguage] = useState<'EN' | 'BN'>('EN');
+
     return (
         <footer className="bg-background text-muted-foreground border-t border-border font-lato">
             {/* Features Bar */}
@@ -67,35 +72,6 @@ export function Footer() {
                                 </div>
                             </div>
                         ))}
-                    </div>
-                </div>
-            </div>
-
-            {/* Newsletter Section */}
-            <div className="bg-black text-white relative overflow-hidden">
-                <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-white/20 via-transparent to-transparent pointer-events-none" />
-                <div className="max-w-7xl mx-auto px-6 lg:px-8 py-20 relative z-10">
-                    <div className="flex flex-col lg:flex-row items-center justify-between gap-12 bg-white/5 border border-white/10 p-10 rounded-[3rem] backdrop-blur-md">
-                        <div className="max-w-xl text-center lg:text-left">
-                            <h3 className="text-3xl sm:text-4xl font-black font-playfair mb-4 tracking-tight">Join the Big Bazar Club</h3>
-                            <p className="text-gray-400 text-sm font-medium leading-relaxed">
-                                Subscribe to our newsletter to receive updates on new arrivals, exclusive deals, and insider-only promotions.
-                            </p>
-                        </div>
-                        <form className="w-full lg:w-auto flex flex-col sm:flex-row gap-3" onSubmit={(e) => e.preventDefault()}>
-                            <div className="relative flex-grow">
-                                <Mail className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                                <input
-                                    type="email"
-                                    placeholder="Enter your email address"
-                                    className="bg-white/10 border border-white/20 text-white placeholder:text-gray-500 rounded-full pl-14 pr-6 h-14 outline-none focus:bg-white/20 focus:border-white/40 transition-all w-full sm:w-80 font-bold"
-                                    required
-                                />
-                            </div>
-                            <button type="submit" className="bg-white text-black h-14 px-8 rounded-full font-black uppercase tracking-widest text-xs hover:bg-gray-200 hover:scale-105 active:scale-95 transition-all shrink-0 flex items-center justify-center gap-2 group">
-                                Subscribe <Send className="h-4 w-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                            </button>
-                        </form>
                     </div>
                 </div>
             </div>
@@ -232,18 +208,40 @@ export function Footer() {
             {/* Bottom Bar */}
             <div className="border-t border-border bg-card">
                 <div className="max-w-7xl mx-auto px-6 lg:px-8 py-6">
-                    <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
-                        <p className="text-xs text-muted-foreground">
-                            © {new Date().getFullYear()} BIG BAZAR. All rights reserved.
-                        </p>
+                    <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
+                        <div className="flex flex-col md:flex-row items-center gap-4">
+                            <p className="text-xs text-muted-foreground font-medium">
+                                © {new Date().getFullYear()} BIG BAZAR. All rights reserved.
+                            </p>
+                            
+                            {/* Language Switcher */}
+                            <div className="flex items-center bg-background border border-border rounded-full p-1 shadow-sm">
+                                <button 
+                                    onClick={() => setCurrentLanguage('EN')}
+                                    className={`px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full transition-all ${
+                                        currentLanguage === 'EN' ? 'bg-destructive text-white shadow-sm' : 'text-muted-foreground hover:text-foreground'
+                                    }`}
+                                >
+                                    English
+                                </button>
+                                <button 
+                                    onClick={() => setCurrentLanguage('BN')}
+                                    className={`px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full transition-all ${
+                                        currentLanguage === 'BN' ? 'bg-destructive text-white shadow-sm' : 'text-muted-foreground hover:text-foreground'
+                                    }`}
+                                >
+                                    বাংলা
+                                </button>
+                            </div>
+                        </div>
 
                         {/* Payment Methods */}
                         <div className="flex items-center justify-center flex-wrap gap-2">
-                            <span className="text-xs text-gray-500 mr-2 uppercase tracking-wider w-full sm:w-auto mb-1 sm:mb-0">We Accept:</span>
+                            <span className="text-[10px] text-gray-500 mr-2 uppercase tracking-widest w-full sm:w-auto mb-1 sm:mb-0 font-bold">We Accept:</span>
                             {paymentMethods.map((method) => (
-                                <span key={method.name} className={`px-3 py-1 bg-card border rounded text-xs font-black uppercase tracking-wider transition-all cursor-default flex items-center gap-1.5 ${method.color} ${method.border}`}>
+                                <span key={method.name} className={`px-3 py-1 bg-background border rounded-md text-[10px] font-black uppercase tracking-wider transition-all cursor-default flex items-center gap-1.5 shadow-sm ${method.color} ${method.border}`}>
                                     {method.logo && (
-                                        <img src={method.logo} alt={method.name} className="h-3.5 object-contain" />
+                                        <img src={method.logo} alt={method.name} className="h-3 object-contain" />
                                     )}
                                     {method.name}
                                 </span>

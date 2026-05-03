@@ -1,5 +1,45 @@
 @import "tailwindcss";
 
+/* ── Tailwind v4: expose CSS variables as utility classes ─────────── */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Luxury brand palette */
+  --color-luxury-red: var(--luxury-red);
+  --color-luxury-red-accent: var(--luxury-red-accent);
+  --color-luxury-red-bright: var(--luxury-red-bright);
+  --color-luxury-gold: var(--luxury-gold);
+  --color-luxury-gold-bright: var(--luxury-gold-bright);
+  --color-luxury-gold-dark: var(--luxury-gold-dark);
+  --color-luxury-gold-light: var(--luxury-gold-light);
+  --color-luxury-black: var(--luxury-black);
+  --color-luxury-charcoal: var(--luxury-charcoal);
+  --color-luxury-cream: var(--luxury-cream);
+  --color-luxury-silver: var(--luxury-silver);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 4px);
+}
+
 :root {
   /* Premium Luxury Palette */
   --luxury-red: #1A6B3C;
@@ -434,7 +474,7 @@ body {
 
 /* Focus styles for accessibility */
 *:focus-visible {
-  outline: 2px solid var(--luxury-gold);
+  outline: 2px solid var(--primary);
   outline-offset: 2px;
 }
 
@@ -446,6 +486,16 @@ body {
 /* Smooth scrolling */
 html {
   scroll-behavior: smooth;
+}
+
+/* Hide scrollbar utility */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
 @media (prefers-reduced-motion: reduce) {

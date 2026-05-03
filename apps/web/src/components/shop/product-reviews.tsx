@@ -1,5 +1,7 @@
 import { Star } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
+import { motion } from "framer-motion"
+import { Button } from "@/components/ui/button"
 
 interface Review {
     id: string
@@ -46,33 +48,40 @@ export function ProductReviews({ reviews = mockReviews, averageRating = 4.5, rev
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {/* Summary */}
-                <div className="md:col-span-1 space-y-4 text-center md:text-left bg-gray-50 p-6 rounded-sm">
-                    <div className="text-5xl font-bold text-luxury-black font-playfair">{averageRating.toFixed(1)}</div>
-                    <div className="flex justify-center md:justify-start gap-1">
-                        {[...Array(5)].map((_, i) => (
-                            <Star
-                                key={i}
-                                className={`h-5 w-5 ${i < Math.round(averageRating) ? 'fill-luxury-gold text-luxury-gold' : 'text-gray-300'}`}
-                            />
-                        ))}
+                <div className="md:col-span-1 space-y-6 text-center md:text-left bg-gray-50/50 p-8 rounded-3xl border border-gray-100">
+                    <div className="space-y-1">
+                        <div className="text-6xl font-black text-gray-900 tracking-tighter font-mono">{averageRating.toFixed(1)}</div>
+                        <div className="flex justify-center md:justify-start gap-1 text-amber-400">
+                            {[...Array(5)].map((_, i) => (
+                                <Star
+                                    key={i}
+                                    className={`h-5 w-5 ${i < Math.round(averageRating) ? 'fill-current' : 'text-gray-200'}`}
+                                />
+                            ))}
+                        </div>
+                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Based on {reviewCount} Reports</p>
                     </div>
-                    <p className="text-sm text-gray-500 font-medium tracking-wide font-lato">Based on {reviewCount} reviews</p>
 
-                    {/* Rating Breakdown Mock */}
-                    <div className="space-y-2 w-full pt-4">
+                    {/* Rating Breakdown */}
+                    <div className="space-y-3 w-full pt-6 border-t border-gray-100">
                         {[5, 4, 3, 2, 1].map((stars) => (
-                            <div key={stars} className="flex items-center gap-2 text-xs">
-                                <span className="w-3 text-right">{stars}</span>
-                                <Star className="h-3 w-3 text-gray-400" />
-                                <div className="flex-1 h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                                    <div
-                                        className="h-full bg-luxury-gold"
-                                        style={{ width: `${Math.random() * 80 + 10}%` }} // Mock width
+                            <div key={stars} className="flex items-center gap-4 text-[10px] font-black">
+                                <span className="w-4 text-gray-400">{stars}</span>
+                                <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                                    <motion.div
+                                        initial={{ width: 0 }}
+                                        animate={{ width: `${Math.random() * 80 + 10}%` }}
+                                        transition={{ duration: 1, delay: 0.5 }}
+                                        className="h-full bg-indigo-600 rounded-full shadow-lg shadow-indigo-200"
                                     />
                                 </div>
                             </div>
                         ))}
                     </div>
+
+                    <Button className="w-full h-14 bg-black text-white hover:bg-gray-800 rounded-2xl text-[10px] font-black uppercase tracking-widest mt-4">
+                        Write a Report
+                    </Button>
                 </div>
 
                 {/* Reviews List */}

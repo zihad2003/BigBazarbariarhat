@@ -4,10 +4,28 @@ import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Star, Heart, ShoppingBag, ArrowRight, ChevronLeft, ChevronRight, Truck, RefreshCcw, ShieldCheck, Headphones, Plus } from 'lucide-react';
+import { 
+    Star, 
+    Heart, 
+    ShoppingBag, 
+    ArrowRight, 
+    ChevronLeft, 
+    ChevronRight, 
+    Truck, 
+    RefreshCcw, 
+    ShieldCheck, 
+    Headphones, 
+    Plus,
+    Clock,
+    Shirt,
+    Sparkles,
+    Trophy,
+    Package
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguageStore } from '@bigbazar/shared';
 import { DeliveryInfoModal } from '@/components/shop/delivery-info-modal';
+import { cn, formatPrice } from '@/lib/utils';
 
 // --- DATA ---
 const heroSlides = [
@@ -203,9 +221,9 @@ function ProductCard({ product, index }: { product: any; index: number }) {
                         className={`object-cover transition-transform duration-700 ${isHovered ? 'scale-110' : 'scale-100'}`}
                         quality={90}
                     />
-                    {product.salePrice && (
-                        <span className="absolute top-2 left-2 bg-destructive text-white text-[10px] font-black uppercase tracking-widest px-2 py-1">
-                            Sale
+                    {(product.salePrice || product.isFlashSale) && (
+                        <span className="absolute top-2 left-2 bg-destructive text-white text-[10px] font-black uppercase tracking-widest px-2 py-1 z-10 shadow-lg">
+                            {product.isFlashSale ? 'Flash Sale' : 'Sale'}
                         </span>
                     )}
                     {/* Wishlist */}
@@ -260,6 +278,87 @@ function ProductCard({ product, index }: { product: any; index: number }) {
         </motion.div>
     );
 }
+
+// --- FLASH SALE COMPONENT ---
+function FlashSaleSection() {
+    const [timeLeft, setTimeLeft] = useState({ h: 12, m: 45, s: 0 });
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setTimeLeft(prev => {
+                if (prev.s > 0) return { ...prev, s: prev.s - 1 };
+                if (prev.m > 0) return { ...prev, m: prev.m - 1, s: 59 };
+                if (prev.h > 0) return { ...prev, h: prev.h - 1, m: 59, s: 59 };
+                return prev;
+            });
+        }, 1000);
+        return () => clearInterval(timer);
+    }, []);
+
+    const flashProducts = [
+        { id: 'f1', name: 'Raw Denim Curation Jacket', price: 12500, salePrice: 7500, rating: 4.8, isFlashSale: true, image: 'https://images.unsplash.com/photo-1551537482-f2075a1d41f2?q=80&w=500&auto=format&fit=crop' },
+        { id: 'f2', name: 'Obsidian Wool Overcoat', price: 28000, salePrice: 15500, rating: 4.9, isFlashSale: true, image: 'https://images.unsplash.com/photo-1539533377285-b31421a7a99b?q=80&w=500&auto=format&fit=crop' },
+        { id: 'f3', name: 'Silk Flow Evening Blouse', price: 9500, salePrice: 4999, rating: 4.7, isFlashSale: true, image: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?q=80&w=500&auto=format&fit=crop' },
+        { id: 'f4', name: 'Handcrafted Leather Loafers', price: 18000, salePrice: 9500, rating: 5.0, isFlashSale: true, image: 'https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?q=80&w=500&auto=format&fit=crop' },
+        { id: 'f5', name: 'Minimalist Tote - Slate', price: 8500, salePrice: 3999, rating: 4.6, isFlashSale: true, image: 'https://images.unsplash.com/photo-1584916201218-f4242ceb4809?q=80&w=500&auto=format&fit=crop' },
+    ];
+
+    return (
+        <section className="bg-destructive/5 py-16 overflow-hidden">
+            <div className="max-w-7xl mx-auto px-4">
+                <div className="flex flex-col md:flex-row items-center justify-between mb-12 gap-8">
+                    <div className="flex items-center gap-6">
+                        <div className="bg-destructive text-white p-4 rounded-3xl shadow-xl shadow-destructive/20 animate-pulse">
+                            <Clock className="h-8 w-8" />
+                        </div>
+                        <div>
+                            <h2 className="text-4xl font-black text-foreground uppercase tracking-tighter leading-none mb-2">Flash Sale</h2>
+                            <p className="text-destructive font-black text-xs uppercase tracking-[0.3em]">Limited Time Offer</p>
+                        </div>
+                    </div>
+                    
+                    {/* Timer */}
+                    <div className="flex gap-4">
+                        {[
+                            { val: timeLeft.h, label: 'Hours' },
+                            { val: timeLeft.m, label: 'Min' },
+                            { val: timeLeft.s, label: 'Sec' }
+                        ].map((t, i) => (
+                            <div key={i} className="flex flex-col items-center">
+                                <div className="w-16 h-16 bg-white border-2 border-destructive/20 rounded-2xl flex items-center justify-center text-2xl font-black text-destructive shadow-sm">
+                                    {t.val.toString().padStart(2, '0')}
+                                </div>
+                                <span className="text-[9px] font-black uppercase tracking-widest mt-2 text-destructive/60">{t.label}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="flex overflow-x-auto gap-8 pb-12 no-scrollbar px-2 snap-x">
+                    {flashProducts.map((p, i) => (
+                        <div key={p.id} className="min-w-[280px] snap-center">
+                            <ProductCard product={p} index={i} />
+                            <div className="mt-4 bg-gray-100 h-1.5 rounded-full overflow-hidden">
+                                <motion.div 
+                                    initial={{ width: 0 }}
+                                    whileInView={{ width: '65%' }}
+                                    className="bg-destructive h-full"
+                                />
+                            </div>
+                            <p className="text-[9px] font-black uppercase tracking-widest mt-2 text-muted-foreground flex justify-between">
+                                <span>65% Reserved</span>
+                                <span>12 Left</span>
+                            </p>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+}
+
+
+
 
 // --- MAIN PAGE ---
 export default function HomePage() {
@@ -382,6 +481,12 @@ export default function HomePage() {
                     </div>
                 </div>
             </section>
+
+            {/* 6. FLASH SALE SECTION */}
+            <FlashSaleSection />
+
+
+
 
         </main>
     );
