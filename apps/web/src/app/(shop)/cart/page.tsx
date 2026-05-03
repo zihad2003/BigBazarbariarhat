@@ -97,154 +97,167 @@ export default function CartPage() {
 
     return (
         <div className="bg-white min-h-screen font-sans">
-            <div className="max-w-7xl mx-auto px-6 py-16 lg:py-24">
+            <div className="max-w-7xl mx-auto px-6 py-10 lg:py-16">
                 
                 {/* Header Section */}
-                <div className="flex justify-between items-baseline border-b border-gray-100 pb-10 mb-10">
-                    <h1 className="text-4xl md:text-5xl font-bold text-gray-900 tracking-tight">Your cart</h1>
-                    <Link href="/products" className="text-sm font-medium text-gray-600 underline underline-offset-4 hover:text-black transition-colors">
-                        Continue shopping
-                    </Link>
+                <div className="flex justify-between items-baseline border-b border-gray-100 pb-8 mb-10">
+                    <h1 className="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight">Your Cart</h1>
+                    <span className="text-sm font-bold text-gray-400 uppercase tracking-widest">{itemCount} Item{itemCount !== 1 ? 's' : ''}</span>
                 </div>
 
-                {/* Table Headers (Desktop) */}
-                <div className="hidden md:grid grid-cols-12 gap-8 mb-6 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] px-4">
-                    <div className="col-span-6">Product</div>
-                    <div className="col-span-3 text-center">Quantity</div>
-                    <div className="col-span-3 text-right">Total</div>
-                </div>
-
-                <div className="space-y-10">
-                    <AnimatePresence initial={false}>
-                        {items.map((item) => (
-                            <motion.div
-                                key={item.id}
-                                layout
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, scale: 0.95 }}
-                                className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center py-8 border-b border-gray-50 last:border-0 relative group"
-                            >
-                                {/* Product Info */}
-                                <div className="col-span-1 md:col-span-6 flex gap-6 md:gap-10">
-                                    <div className="relative w-24 md:w-32 aspect-[3/4] bg-gray-50 overflow-hidden flex-shrink-0">
-                                        <Image
-                                            src={item.image || '/placeholder.jpg'}
-                                            alt={item.name}
-                                            fill
-                                            className="object-cover"
-                                        />
-                                        <div className="absolute top-0 left-0 bg-rose-500 text-white text-[10px] font-bold px-2 py-1 uppercase tracking-wider">
-                                            New
-                                        </div>
-                                    </div>
-                                    <div className="flex flex-col justify-center space-y-2">
-                                        <Link href={`/products/${item.productId}`} className="text-base font-bold text-gray-900 hover:opacity-70 transition-opacity">
-                                            {item.name}
-                                        </Link>
-                                        <p className="text-sm text-gray-500 font-medium">Tk{item.price.toLocaleString()}.00</p>
-                                        {item.variant && (
-                                            <div className="space-y-0.5 pt-2">
-                                                {item.variant.split('/').map((v, i) => {
-                                                    const [key, val] = v.includes(':') ? v.split(':') : [i === 0 ? 'Size' : 'Color', v];
-                                                    return (
-                                                        <p key={i} className="text-[11px] text-gray-400 font-medium uppercase tracking-wider">
-                                                            {key.trim()}: {val.trim()}
-                                                        </p>
-                                                    );
-                                                })}
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-
-                                {/* Quantity Control */}
-                                <div className="col-span-1 md:col-span-3 flex items-center justify-center gap-4">
-                                    <div className="flex items-center border border-gray-200 rounded-sm overflow-hidden">
-                                        <button
-                                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                                            className="w-10 h-10 flex items-center justify-center hover:bg-gray-50 text-gray-400 transition-colors"
-                                            disabled={item.quantity <= 1}
-                                        >
-                                            <Minus className="h-3 w-3" />
-                                        </button>
-                                        <span className="w-10 text-center text-sm font-medium text-gray-900 border-x border-gray-200 py-2">
-                                            {item.quantity}
-                                        </span>
-                                        <button
-                                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                                            className="w-10 h-10 flex items-center justify-center hover:bg-gray-50 text-gray-400 transition-colors"
-                                        >
-                                            <Plus className="h-3 w-3" />
-                                        </button>
-                                    </div>
-                                    <button
-                                        onClick={() => removeItem(item.id)}
-                                        className="p-2 text-gray-400 hover:text-black transition-colors"
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
+                    {/* Left: Items List */}
+                    <div className="lg:col-span-8">
+                        <div className="space-y-6">
+                            <AnimatePresence initial={false}>
+                                {items.map((item) => (
+                                    <motion.div
+                                        key={item.id}
+                                        layout
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, scale: 0.95 }}
+                                        className="flex gap-6 md:gap-8 py-6 border-b border-gray-50 last:border-0 relative group"
                                     >
-                                        <Trash2 className="h-4 w-4" />
-                                    </button>
-                                </div>
+                                        {/* Product Image */}
+                                        <div className="relative w-24 md:w-28 aspect-[3/4] bg-gray-50 overflow-hidden flex-shrink-0 border border-gray-100">
+                                            <Image
+                                                src={item.image || '/placeholder.jpg'}
+                                                alt={item.name}
+                                                fill
+                                                className="object-cover"
+                                            />
+                                        </div>
 
-                                {/* Item Total */}
-                                <div className="col-span-1 md:col-span-3 text-right">
-                                    <p className="text-base font-medium text-gray-900">
-                                        Tk{(item.price * item.quantity).toLocaleString()}.00
-                                    </p>
-                                </div>
-                            </motion.div>
-                        ))}
-                    </AnimatePresence>
-                </div>
+                                        {/* Product Details */}
+                                        <div className="flex-1 flex flex-col md:flex-row gap-6 md:items-center">
+                                            <div className="flex-1 space-y-1">
+                                                <Link href={`/products/${item.productId}`} className="text-base font-bold text-gray-900 hover:opacity-70 transition-opacity">
+                                                    {item.name}
+                                                </Link>
+                                                <p className="text-sm text-gray-400 font-bold tracking-tight">Tk{item.price.toLocaleString()}.00</p>
+                                                {item.variant && (
+                                                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest pt-2">
+                                                        {item.variant}
+                                                    </p>
+                                                )}
+                                            </div>
 
-                {/* Footer / Summary Section */}
-                <div className="mt-20 border-t border-gray-100 pt-12 flex flex-col items-end">
-                    <div className="flex flex-col items-end space-y-4 max-w-md w-full">
-                        <div className="flex items-baseline gap-6 mb-2">
-                            <span className="text-lg font-bold text-gray-900">Estimated total</span>
-                            <div className="flex items-baseline gap-2">
-                                <span className="text-xl font-bold text-gray-900">Tk{total.toLocaleString()}.00</span>
-                                <span className="text-sm font-bold text-gray-500">BDT</span>
-                            </div>
+                                            {/* Quantity Control */}
+                                            <div className="flex items-center gap-4">
+                                                <div className="flex items-center border border-gray-200 rounded-sm overflow-hidden bg-white">
+                                                    <button
+                                                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                                        className="w-8 h-8 flex items-center justify-center hover:bg-gray-50 text-gray-400 transition-colors"
+                                                        disabled={item.quantity <= 1}
+                                                    >
+                                                        <Minus className="h-3 w-3" />
+                                                    </button>
+                                                    <span className="w-8 text-center text-xs font-bold text-gray-900 py-2">
+                                                        {item.quantity}
+                                                    </span>
+                                                    <button
+                                                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                                        className="w-8 h-8 flex items-center justify-center hover:bg-gray-50 text-gray-400 transition-colors"
+                                                    >
+                                                        <Plus className="h-3 w-3" />
+                                                    </button>
+                                                </div>
+                                                <button
+                                                    onClick={() => removeItem(item.id)}
+                                                    className="p-2 text-gray-300 hover:text-rose-500 transition-colors"
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                </button>
+                                            </div>
+
+                                            {/* Total */}
+                                            <div className="text-right min-w-[100px]">
+                                                <p className="text-base font-bold text-gray-900">
+                                                    Tk{(item.price * item.quantity).toLocaleString()}.00
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                ))}
+                            </AnimatePresence>
                         </div>
 
-                        <div className="pt-8 w-full">
+                        <div className="mt-12">
+                            <Link href="/products" className="group flex items-center gap-2 text-xs font-black uppercase tracking-widest text-gray-400 hover:text-black transition-all">
+                                <ChevronLeft className="h-4 w-4" />
+                                Continue Shopping
+                            </Link>
+                        </div>
+                    </div>
+
+                    {/* Right: Summary Sidebar */}
+                    <div className="lg:col-span-4">
+                        <div className="sticky top-32 bg-gray-50 rounded-2xl p-8 border border-gray-100">
+                            <h2 className="text-lg font-bold text-gray-900 mb-8 uppercase tracking-tight">Order Summary</h2>
+                            
+                            <div className="space-y-4 mb-8">
+                                <div className="flex justify-between text-sm text-gray-500 font-bold uppercase tracking-widest">
+                                    <span>Subtotal</span>
+                                    <span className="text-gray-900">Tk{subtotal.toLocaleString()}.00</span>
+                                </div>
+                                <div className="flex justify-between text-sm text-gray-500 font-bold uppercase tracking-widest">
+                                    <span>Shipping</span>
+                                    <span className="text-emerald-600 font-bold">Tk{shipping}.00</span>
+                                </div>
+                                {discount > 0 && (
+                                    <div className="flex justify-between text-sm text-rose-600 font-bold uppercase tracking-widest">
+                                        <span>Discount</span>
+                                        <span>-Tk{discount.toLocaleString()}.00</span>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="pt-6 border-t border-gray-200 mb-8">
+                                <div className="flex justify-between items-baseline">
+                                    <span className="text-lg font-bold text-gray-900 uppercase tracking-tight">Total</span>
+                                    <div className="text-right">
+                                        <span className="text-xs text-gray-400 font-bold mr-2">BDT</span>
+                                        <span className="text-3xl font-black text-gray-900 tracking-tighter">Tk{total.toLocaleString()}.00</span>
+                                    </div>
+                                </div>
+                            </div>
+
                             <Button
                                 onClick={() => router.push('/checkout')}
-                                className="w-full h-16 bg-black text-white hover:bg-gray-900 rounded-sm text-sm font-bold uppercase tracking-[0.2em] transition-all shadow-xl shadow-black/5"
+                                className="w-full h-20 bg-black text-white hover:bg-gray-800 rounded-sm text-xs font-black uppercase tracking-[0.3em] shadow-2xl shadow-black/20 transition-all flex items-center justify-center gap-4"
                             >
-                                Check out
+                                Checkout <ArrowRight className="h-5 w-5" />
                             </Button>
-                        </div>
 
-                        {/* Saved Items Link (Optional) */}
-                        {savedItems.length > 0 && (
-                            <div className="pt-10 w-full">
-                                <button 
-                                    onClick={() => {/* Scroll or Toggle Saved Items */}}
-                                    className="w-full py-4 border border-gray-100 rounded-sm text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-black hover:border-gray-200 transition-all flex items-center justify-center gap-2"
-                                >
-                                    <Bookmark className="h-3 w-3" /> View Saved Artifacts ({savedItems.length})
-                                </button>
+                            <div className="mt-8 flex flex-col gap-4">
+                                <div className="flex items-center gap-3 text-gray-400">
+                                    <ShieldCheck className="h-4 w-4" />
+                                    <span className="text-[10px] font-bold uppercase tracking-widest">Secure Payment</span>
+                                </div>
+                                <div className="flex items-center gap-3 text-gray-400">
+                                    <RotateCcw className="h-4 w-4" />
+                                    <span className="text-[10px] font-bold uppercase tracking-widest">30-Day Returns</span>
+                                </div>
                             </div>
-                        )}
+                        </div>
                     </div>
                 </div>
 
-                {/* Saved Items Section (Minimal) */}
+                {/* Saved Items Section */}
                 {savedItems.length > 0 && (
                     <div className="mt-32 pt-20 border-t border-gray-50">
-                        <h2 className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.3em] mb-12 text-center">Pending Acquisitions</h2>
-                        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+                        <h2 className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.3em] mb-12">Saved for Later</h2>
+                        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8">
                             {savedItems.map((item) => (
                                 <div key={item.id} className="group relative">
-                                    <div className="aspect-[3/4] bg-gray-50 overflow-hidden mb-3">
-                                        <Image src={item.image || '/placeholder.jpg'} alt={item.name} fill className="object-cover opacity-50 group-hover:opacity-100 transition-opacity" />
+                                    <div className="aspect-[3/4] bg-gray-50 overflow-hidden mb-4 border border-gray-100">
+                                        <Image src={item.image || '/placeholder.jpg'} alt={item.name} fill className="object-cover opacity-60 group-hover:opacity-100 transition-opacity" />
                                     </div>
-                                    <h3 className="text-[10px] font-bold uppercase tracking-wider text-gray-900 truncate mb-1">{item.name}</h3>
+                                    <h3 className="text-xs font-bold text-gray-900 truncate mb-2">{item.name}</h3>
                                     <div className="flex gap-4">
-                                        <button onClick={() => moveToCart(item.id)} className="text-[9px] font-bold uppercase tracking-tighter text-gray-400 hover:text-black">Reinstate</button>
-                                        <button onClick={() => removeSavedItem(item.id)} className="text-[9px] font-bold uppercase tracking-tighter text-gray-400 hover:text-rose-500">Discard</button>
+                                        <button onClick={() => moveToCart(item.id)} className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-black">Move to Cart</button>
+                                        <button onClick={() => removeSavedItem(item.id)} className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-rose-500">Remove</button>
                                     </div>
                                 </div>
                             ))}
