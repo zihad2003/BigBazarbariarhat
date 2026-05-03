@@ -161,5 +161,5 @@ export const useLanguageStore = create<LanguageState>()(
 
 export const useTranslation = () => {
     const { language } = useLanguageStore();
-    return translations[language];
+    return translations[language] || translations.en;
 };

@@ -33,7 +33,7 @@ import { MOCK_PRODUCTS } from '@/lib/mock-data/products';
 
 const getNavCategories = (t: any) => [
     {
-        name: t.categories.men,
+        name: t?.categories?.men || 'Men',
         href: '/products?category=Men',
         featured: 'https://images.unsplash.com/photo-1516259762381-22954d7d3ad2?q=80&w=800&auto=format&fit=crop',
         subcategories: [
@@ -44,7 +44,7 @@ const getNavCategories = (t: any) => [
         ]
     },
     {
-        name: t.categories.women,
+        name: t?.categories?.women || 'Women',
         href: '/products?category=Women',
         featured: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=800&auto=format&fit=crop',
         subcategories: [
@@ -55,7 +55,7 @@ const getNavCategories = (t: any) => [
         ]
     },
     {
-        name: t.categories.kidsBoys,
+        name: t?.categories?.kidsBoys || 'Kids(Boys)',
         href: '/products?category=Kids(Boys)',
         featured: 'https://images.unsplash.com/photo-1519234129322-2636a0d0d885?q=80&w=800&auto=format&fit=crop',
         subcategories: [
@@ -65,7 +65,7 @@ const getNavCategories = (t: any) => [
         ]
     },
     {
-        name: t.categories.kidsGirls,
+        name: t?.categories?.kidsGirls || 'Kids(Girls)',
         href: '/products?category=Kids(Girls)',
         featured: 'https://images.unsplash.com/photo-1514316454349-f50db90e2270?q=80&w=800&auto=format&fit=crop',
         subcategories: [
@@ -75,7 +75,7 @@ const getNavCategories = (t: any) => [
         ]
     },
     {
-        name: t.categories.weddingTouch,
+        name: t?.categories?.weddingTouch || 'Wedding Touch',
         href: '/products?category=Wedding-Touch',
         featured: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=800&auto=format&fit=crop',
         subcategories: [

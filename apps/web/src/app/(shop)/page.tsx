@@ -35,43 +35,43 @@ const getHeroSlides = (t: any) => [
     {
         id: 1,
         image: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=1800&auto=format&fit=crop',
-        title: t.hero.slide1Title,
-        subtitle: t.hero.slide1Subtitle,
-        cta: t.common.shopNow,
+        title: t?.hero?.slide1Title || 'New Season Collection',
+        subtitle: t?.hero?.slide1Subtitle || "Women's Fashion 2026",
+        cta: t?.common?.shopNow || 'Shop Now',
         href: '/women',
     },
     {
         id: 2,
         image: 'https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?q=80&w=1800&auto=format&fit=crop',
-        title: t.hero.slide2Title,
-        subtitle: t.hero.slide2Subtitle,
-        cta: t.common.explore,
+        title: t?.hero?.slide2Title || 'Premium Menswear',
+        subtitle: t?.hero?.slide2Subtitle || 'Crafted for the Modern Man',
+        cta: t?.common?.explore || 'Explore',
         href: '/men',
     },
     {
         id: 3,
         image: 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?q=80&w=1800&auto=format&fit=crop',
-        title: t.hero.slide3Title,
-        subtitle: t.hero.slide3Subtitle,
-        cta: t.common.shopNow,
+        title: t?.hero?.slide3Title || 'Flash Sale',
+        subtitle: t?.hero?.slide3Subtitle || 'Up to 50% Off — Limited Time',
+        cta: t?.common?.shopNow || 'Shop Now',
         href: '/sale',
         badge: '50% OFF',
     },
 ];
 
 const getCategoriesData = (t: any) => [
-    { key: 'women', name: t.categories.women, href: '/women', image: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=500&auto=format&fit=crop' },
-    { key: 'men', name: t.categories.men, href: '/men', image: 'https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?q=80&w=500&auto=format&fit=crop' },
-    { key: 'kids-boys', name: t.categories.kidsBoys, href: '/kids-boys', image: 'https://images.unsplash.com/photo-1519234129322-2636a0d0d885?q=80&w=500&auto=format&fit=crop' },
-    { key: 'kids-girls', name: t.categories.kidsGirls, href: '/kids-girls', image: 'https://images.unsplash.com/photo-1514316454349-f50db90e2270?q=80&w=500&auto=format&fit=crop' },
-    { key: 'wedding-touch', name: t.categories.weddingTouch, href: '/wedding-touch', image: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=500&auto=format&fit=crop' },
+    { key: 'women', name: t?.categories?.women || 'Women', href: '/women', image: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=500&auto=format&fit=crop' },
+    { key: 'men', name: t?.categories?.men || 'Men', href: '/men', image: 'https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?q=80&w=500&auto=format&fit=crop' },
+    { key: 'kids-boys', name: t?.categories?.kidsBoys || 'Kids(Boys)', href: '/kids-boys', image: 'https://images.unsplash.com/photo-1519234129322-2636a0d0d885?q=80&w=500&auto=format&fit=crop' },
+    { key: 'kids-girls', name: t?.categories?.kidsGirls || 'Kids(Girls)', href: '/kids-girls', image: 'https://images.unsplash.com/photo-1514316454349-f50db90e2270?q=80&w=500&auto=format&fit=crop' },
+    { key: 'wedding-touch', name: t?.categories?.weddingTouch || 'Wedding Touch', href: '/wedding-touch', image: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=500&auto=format&fit=crop' },
 ];
 
 const getTrustFeatures = (t: any) => [
-    { icon: Truck, title: t.features.freeShipping, desc: t.features.freeShippingDesc },
-    { icon: RefreshCcw, title: t.features.easyReturns, desc: t.features.easyReturnsDesc },
-    { icon: ShieldCheck, title: t.features.securePayment, desc: t.features.securePaymentDesc },
-    { icon: Headphones, title: t.features.support, desc: t.features.supportDesc },
+    { icon: Truck, title: t?.features?.freeShipping || 'Free Shipping', desc: t?.features?.freeShippingDesc || 'On orders over ৳2000' },
+    { icon: RefreshCcw, title: t?.features?.easyReturns || 'Easy Returns', desc: t?.features?.easyReturnsDesc || '30-day return policy' },
+    { icon: ShieldCheck, title: t?.features?.securePayment || 'Secure Payment', desc: t?.features?.securePaymentDesc || '100% secure checkout' },
+    { icon: Headphones, title: t?.features?.support || '24/7 Support', desc: t?.features?.supportDesc || 'Always here to help' },
 ];
 
 const newArrivals = [
