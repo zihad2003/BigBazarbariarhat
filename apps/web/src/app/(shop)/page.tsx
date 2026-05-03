@@ -24,47 +24,54 @@ import {
     Package
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useLanguageStore } from '@bigbazar/shared';
+import { useLanguageStore, useTranslation } from '@bigbazar/shared';
 import { useCartStore } from '@/store/cartStore';
 import { useUIStore } from '@/lib/stores/ui-store';
 import { DeliveryInfoModal } from '@/components/shop/delivery-info-modal';
 import { cn, formatPrice } from '@/lib/utils';
 
-// --- DATA ---
-const heroSlides = [
+// --- DATA HELPERS ---
+const getHeroSlides = (t: any) => [
     {
         id: 1,
         image: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=1800&auto=format&fit=crop',
-        title: 'New Season Collection',
-        subtitle: 'Women\'s Fashion 2026',
-        cta: 'Shop Now',
+        title: t.hero.slide1Title,
+        subtitle: t.hero.slide1Subtitle,
+        cta: t.common.shopNow,
         href: '/women',
     },
     {
         id: 2,
         image: 'https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?q=80&w=1800&auto=format&fit=crop',
-        title: 'Premium Menswear',
-        subtitle: 'Crafted for the Modern Man',
-        cta: 'Explore',
+        title: t.hero.slide2Title,
+        subtitle: t.hero.slide2Subtitle,
+        cta: t.common.explore,
         href: '/men',
     },
     {
         id: 3,
         image: 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?q=80&w=1800&auto=format&fit=crop',
-        title: 'Flash Sale',
-        subtitle: 'Up to 50% Off — Limited Time',
-        cta: 'Grab Deal',
+        title: t.hero.slide3Title,
+        subtitle: t.hero.slide3Subtitle,
+        cta: t.common.shopNow,
         href: '/sale',
         badge: '50% OFF',
     },
 ];
 
-const categories = [
-    { key: 'women', name: 'Women', href: '/women', image: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=500&auto=format&fit=crop' },
-    { key: 'men', name: 'Men', href: '/men', image: 'https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?q=80&w=500&auto=format&fit=crop' },
-    { key: 'kids-boys', name: 'Kids(Boys)', href: '/kids-boys', image: 'https://images.unsplash.com/photo-1519234129322-2636a0d0d885?q=80&w=500&auto=format&fit=crop' },
-    { key: 'kids-girls', name: 'Kids(Girls)', href: '/kids-girls', image: 'https://images.unsplash.com/photo-1514316454349-f50db90e2270?q=80&w=500&auto=format&fit=crop' },
-    { key: 'wedding-touch', name: 'Wedding Touch', href: '/wedding-touch', image: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=500&auto=format&fit=crop' },
+const getCategoriesData = (t: any) => [
+    { key: 'women', name: t.categories.women, href: '/women', image: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=500&auto=format&fit=crop' },
+    { key: 'men', name: t.categories.men, href: '/men', image: 'https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?q=80&w=500&auto=format&fit=crop' },
+    { key: 'kids-boys', name: t.categories.kidsBoys, href: '/kids-boys', image: 'https://images.unsplash.com/photo-1519234129322-2636a0d0d885?q=80&w=500&auto=format&fit=crop' },
+    { key: 'kids-girls', name: t.categories.kidsGirls, href: '/kids-girls', image: 'https://images.unsplash.com/photo-1514316454349-f50db90e2270?q=80&w=500&auto=format&fit=crop' },
+    { key: 'wedding-touch', name: t.categories.weddingTouch, href: '/wedding-touch', image: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=500&auto=format&fit=crop' },
+];
+
+const getTrustFeatures = (t: any) => [
+    { icon: Truck, title: t.features.freeShipping, desc: t.features.freeShippingDesc },
+    { icon: RefreshCcw, title: t.features.easyReturns, desc: t.features.easyReturnsDesc },
+    { icon: ShieldCheck, title: t.features.securePayment, desc: t.features.securePaymentDesc },
+    { icon: Headphones, title: t.features.support, desc: t.features.supportDesc },
 ];
 
 const newArrivals = [
@@ -83,17 +90,14 @@ const promoBanners = [
     { name: 'Flash Sale', tag: '50% Off', image: 'https://images.unsplash.com/photo-1607083206869-4c7672e72a8a?q=80&w=800&auto=format&fit=crop', href: '/sale' },
 ];
 
-const trustFeatures = [
-    { icon: Truck, title: 'Free Shipping', desc: 'On orders over ৳2000' },
-    { icon: RefreshCcw, title: 'Easy Returns', desc: '30-day return policy' },
-    { icon: ShieldCheck, title: 'Secure Payment', desc: '100% secure checkout' },
-    { icon: Headphones, title: '24/7 Support', desc: 'Always here to help' },
-];
+// Removed hardcoded trustFeatures to use localized ones
 
 // --- HERO SLIDER ---
 function HeroSlider() {
+    const t = useTranslation();
+    const slides = getHeroSlides(t);
     const [current, setCurrent] = useState(0);
-    const total = heroSlides.length;
+    const total = slides.length;
 
     useEffect(() => {
         const timer = setInterval(() => setCurrent(c => (c + 1) % total), 5000);
@@ -103,7 +107,7 @@ function HeroSlider() {
     return (
         <div className="relative w-full h-[60vh] md:h-[80vh] overflow-hidden bg-gray-100">
             <AnimatePresence mode="wait">
-                {heroSlides.map((slide, i) =>
+                {slides.map((slide, i) =>
                     i === current ? (
                         <motion.div
                             key={slide.id}
@@ -187,7 +191,7 @@ function HeroSlider() {
 
             {/* Dots */}
             <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex gap-2">
-                {heroSlides.map((_, i) => (
+                {slides.map((_, i) => (
                     <button
                         key={i}
                         onClick={() => setCurrent(i)}
@@ -202,6 +206,7 @@ function HeroSlider() {
 
 // --- PRODUCT CARD (Minimal, Aarong-style) ---
 function ProductCard({ product, index }: { product: any; index: number }) {
+    const t = useTranslation();
     const [isHovered, setIsHovered] = useState(false);
     const addItem = useCartStore((state) => state.addItem);
     const { addNotification } = useUIStore();
@@ -258,7 +263,7 @@ function ProductCard({ product, index }: { product: any; index: number }) {
                             className="w-full bg-foreground text-white text-[10px] uppercase tracking-widest font-bold py-3 flex items-center justify-center gap-2 hover:bg-destructive transition-colors"
                         >
                             <ShoppingBag className="h-3 w-3" />
-                            Add to Cart
+                            {t.common.addToCart}
                         </button>
                     </div>
                 </div>
@@ -293,6 +298,7 @@ function ProductCard({ product, index }: { product: any; index: number }) {
 
 // --- FLASH SALE COMPONENT ---
 function FlashSaleSection() {
+    const t = useTranslation();
     const [timeLeft, setTimeLeft] = useState({ h: 12, m: 45, s: 0 });
 
     useEffect(() => {
@@ -374,6 +380,9 @@ function FlashSaleSection() {
 
 // --- MAIN PAGE ---
 export default function HomePage() {
+    const t = useTranslation();
+    const categories = getCategoriesData(t);
+    const trustFeatures = getTrustFeatures(t);
     const [mounted, setMounted] = useState(false);
     const { language } = useLanguageStore();
 
@@ -389,7 +398,7 @@ export default function HomePage() {
             {/* 2. CATEGORY STRIP — Aarong-style square image tiles */}
             <section className="max-w-7xl mx-auto px-4 py-10 md:py-14">
                 <h2 className="text-2xl md:text-3xl font-playfair font-bold text-center text-foreground mb-8 uppercase tracking-wider">
-                    {language === 'en' ? 'Shop By Category' : 'বিভাগ অনুযায়ী কিনুন'}
+                    {t.categories.title}
                 </h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-6">
                     {categories.map((cat, i) => (
@@ -433,14 +442,14 @@ export default function HomePage() {
                 <div className="flex items-end justify-between mb-8">
                     <div>
                         <h2 className="text-2xl md:text-3xl font-playfair font-bold text-foreground uppercase tracking-wider">
-                            {language === 'en' ? 'New Arrivals' : 'নতুন পণ্য'}
+                            {t.newArrivals.title}
                         </h2>
                         <p className="text-xs text-muted-foreground uppercase tracking-widest mt-1">
-                            {language === 'en' ? "This Week's Selection" : 'এই সপ্তাহের নির্বাচন'}
+                            {t.newArrivals.subtitle}
                         </p>
                     </div>
                     <Link href="/new-arrivals" className="text-xs font-bold uppercase tracking-widest text-foreground border-b border-foreground hover:text-destructive hover:border-destructive transition-colors pb-0.5 flex items-center gap-1">
-                        {language === 'en' ? 'View All' : 'সব দেখুন'}
+                        {t.common.viewAll}
                         <ArrowRight className="h-3 w-3" />
                     </Link>
                 </div>
@@ -468,7 +477,7 @@ export default function HomePage() {
                                 <span className="text-[10px] uppercase tracking-widest font-bold text-white/70 block mb-1">{banner.tag}</span>
                                 <h3 className="text-2xl md:text-3xl font-playfair font-black">{banner.name}</h3>
                                 <div className="flex items-center gap-2 mt-2 text-xs uppercase tracking-widest text-white/80 group-hover:text-white transition-colors">
-                                    <span>Shop Now</span>
+                                    <span>{t.common.shopNow}</span>
                                     <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
                                 </div>
                             </div>

@@ -14,10 +14,11 @@ import {
 } from '@/components/ui/sheet';
 import { useUIStore } from '@/lib/stores/ui-store';
 import { useSession, signOut } from 'next-auth/react';
+import { useLanguageStore, useTranslation } from '@bigbazar/shared';
 
-const navigation = [
+const getMobileNavigation = (t: any) => [
     {
-        name: 'Men',
+        name: t.categories.men,
         href: '/products?category=Men',
         submenu: [
             { name: 'T-Shirts', href: '/products?category=Men&subcategory=T-Shirts' },
@@ -27,7 +28,7 @@ const navigation = [
         ]
     },
     {
-        name: 'Women',
+        name: t.categories.women,
         href: '/products?category=Women',
         submenu: [
             { name: 'Dresses', href: '/products?category=Women&subcategory=Dresses' },
@@ -37,7 +38,7 @@ const navigation = [
         ]
     },
     {
-        name: 'Kids(Boys)',
+        name: t.categories.kidsBoys,
         href: '/products?category=Kids(Boys)',
         submenu: [
             { name: 'T-Shirts', href: '/products?category=Kids(Boys)&subcategory=T-Shirts' },
@@ -46,7 +47,7 @@ const navigation = [
         ]
     },
     {
-        name: 'Kids(Girls)',
+        name: t.categories.kidsGirls,
         href: '/products?category=Kids(Girls)',
         submenu: [
             { name: 'Dresses', href: '/products?category=Kids(Girls)&subcategory=Dresses' },
@@ -55,7 +56,7 @@ const navigation = [
         ]
     },
     {
-        name: 'Wedding Touch',
+        name: t.categories.weddingTouch,
         href: '/products?category=Wedding-Touch',
         submenu: [
             { name: 'Panjabi', href: '/products?category=Wedding-Touch&subcategory=Panjabi' },
@@ -67,6 +68,8 @@ const navigation = [
 ];
 
 export function MobileMenu() {
+    const t = useTranslation();
+    const navigation = getMobileNavigation(t);
     const [open, setOpen] = useState(false);
     const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null);
     const { openSearch, openCart } = useUIStore();
@@ -107,7 +110,7 @@ export function MobileMenu() {
                         onClick={handleSearchClick}
                     >
                         <Search className="h-5 w-5" />
-                        <span className="uppercase tracking-widest text-xs font-bold">Search</span>
+                        <span className="uppercase tracking-widest text-xs font-bold">{t.common.search}</span>
                     </Button>
 
                     <nav className="space-y-1">
@@ -171,7 +174,7 @@ export function MobileMenu() {
                                         <User className="h-4 w-4 text-foreground" />
                                     </div>
                                     <div className="flex flex-col">
-                                        <span className="text-xs font-bold text-foreground group-hover:text-destructive transition-colors">My Account</span>
+                                        <span className="text-xs font-bold text-foreground group-hover:text-destructive transition-colors">{t.common.account}</span>
                                         <span className="text-[10px] text-muted-foreground truncate max-w-[150px]">{session.user?.email}</span>
                                     </div>
                                 </Link>
@@ -197,7 +200,7 @@ export function MobileMenu() {
                         <Link href="/wishlist" onClick={handleLinkClick}>
                             <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:text-foreground hover:bg-muted gap-2 px-2">
                                 <Heart className="h-4 w-4" />
-                                <span className="text-[10px] uppercase tracking-widest font-bold">Wishlist</span>
+                                <span className="text-[10px] uppercase tracking-widest font-bold">{t.common.wishlist}</span>
                             </Button>
                         </Link>
                         <Link href="/cart" onClick={handleLinkClick} className="flex-1">
@@ -206,7 +209,7 @@ export function MobileMenu() {
                                 className="w-full justify-start text-muted-foreground hover:text-foreground hover:bg-muted gap-2 px-2"
                             >
                                 <ShoppingBag className="h-4 w-4" />
-                                <span className="text-[10px] uppercase tracking-widest font-bold">Cart</span>
+                                <span className="text-[10px] uppercase tracking-widest font-bold">{t.common.cart}</span>
                             </Button>
                         </Link>
                     </div>

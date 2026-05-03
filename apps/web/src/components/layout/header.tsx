@@ -20,6 +20,7 @@ import {
 import { useSession, signOut } from 'next-auth/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
+import { useLanguageStore, useTranslation } from '@bigbazar/shared';
 import { useCartStore } from '@/store/cartStore';
 import { useWishlistStore } from '@/lib/stores/wishlist-store';
 import { useUIStore } from '@/lib/stores/ui-store';
@@ -30,9 +31,9 @@ import { MegaMenu } from './mega-menu';
 import { MobileMenu } from './mobile-menu';
 import { MOCK_PRODUCTS } from '@/lib/mock-data/products';
 
-const categories = [
+const getNavCategories = (t: any) => [
     {
-        name: 'Men',
+        name: t.categories.men,
         href: '/products?category=Men',
         featured: 'https://images.unsplash.com/photo-1516259762381-22954d7d3ad2?q=80&w=800&auto=format&fit=crop',
         subcategories: [
@@ -43,7 +44,7 @@ const categories = [
         ]
     },
     {
-        name: 'Women',
+        name: t.categories.women,
         href: '/products?category=Women',
         featured: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=800&auto=format&fit=crop',
         subcategories: [
@@ -54,7 +55,7 @@ const categories = [
         ]
     },
     {
-        name: 'Kids(Boys)',
+        name: t.categories.kidsBoys,
         href: '/products?category=Kids(Boys)',
         featured: 'https://images.unsplash.com/photo-1519234129322-2636a0d0d885?q=80&w=800&auto=format&fit=crop',
         subcategories: [
@@ -64,7 +65,7 @@ const categories = [
         ]
     },
     {
-        name: 'Kids(Girls)',
+        name: t.categories.kidsGirls,
         href: '/products?category=Kids(Girls)',
         featured: 'https://images.unsplash.com/photo-1514316454349-f50db90e2270?q=80&w=800&auto=format&fit=crop',
         subcategories: [
@@ -74,7 +75,7 @@ const categories = [
         ]
     },
     {
-        name: 'Wedding Touch',
+        name: t.categories.weddingTouch,
         href: '/products?category=Wedding-Touch',
         featured: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=800&auto=format&fit=crop',
         subcategories: [
@@ -86,6 +87,8 @@ const categories = [
 ];
 
 export function Header() {
+    const t = useTranslation();
+    const categories = getNavCategories(t);
     const [isScrolled, setIsScrolled] = useState(false);
     const [isSearchFocused, setIsSearchFocused] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
@@ -227,7 +230,7 @@ export function Header() {
                                     )} />
                                     <input
                                         type="text"
-                                        placeholder="Search products..."
+                                        placeholder={t.common.search}
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
                                         onFocus={() => setIsSearchFocused(true)}
@@ -360,7 +363,7 @@ export function Header() {
                                     <input
                                         autoFocus
                                         type="text"
-                                        placeholder="Search products..."
+                                        placeholder={t.common.search}
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
                                         className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-[11px] font-black uppercase tracking-widest focus:outline-none"

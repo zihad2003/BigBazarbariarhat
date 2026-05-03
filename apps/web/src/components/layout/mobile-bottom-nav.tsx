@@ -3,21 +3,19 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, LayoutGrid, ShoppingBag, Heart, User } from 'lucide-react';
+import { useLanguageStore, useTranslation } from '@bigbazar/shared';
 import { useCartStore } from '@/store/cartStore';
 import { useWishlistStore } from '@/lib/stores/wishlist-store';
 import { cn } from '@/lib/utils';
 
 export function MobileBottomNav() {
-    const pathname = usePathname();
-    const cartCount = useCartStore(state => state.getItemCount());
-    const wishlistCount = useWishlistStore(state => state.getItemCount());
-
+    const t = useTranslation();
     const navItems = [
-        { label: 'Home', icon: Home, href: '/' },
-        { label: 'Sectors', icon: LayoutGrid, href: '/products' },
-        { label: 'Cart', icon: ShoppingBag, href: '/cart', badge: cartCount },
-        { label: 'Reserved', icon: Heart, href: '/wishlist', badge: wishlistCount },
-        { label: 'Account', icon: User, href: '/account' },
+        { label: t.common.back, icon: Home, href: '/' }, // Note: Using common.back for Home or adding common.home
+        { label: t.categories.title, icon: LayoutGrid, href: '/products' },
+        { label: t.common.cart, icon: ShoppingBag, href: '/cart', badge: cartCount },
+        { label: t.common.wishlist, icon: Heart, href: '/wishlist', badge: wishlistCount },
+        { label: t.common.account, icon: User, href: '/account' },
     ];
 
     return (
