@@ -144,8 +144,11 @@ const productRepo: IProductRepository = {
   async update(id, input) {
     const existing = await productRepo.findById(id);
     if (!existing) return null;
+    const images = input.images
+      ? input.images.map((url: string) => ({ url }))
+      : existing.images;
     // TODO: persist update to DB
-    return { ...existing, ...input, updatedAt: new Date().toISOString() };
+    return { ...existing, ...input, images, updatedAt: new Date().toISOString() };
   },
 
   async delete(_id) {
@@ -158,19 +161,19 @@ const productRepo: IProductRepository = {
 
 const orderRepo: IOrderRepository = {
   async findById(id) {
-    return (MOCK_ORDERS as OrderRecord[]).find(o => o.id === id) ?? null;
+    return (MOCK_ORDERS as unknown as OrderRecord[]).find(o => o.id === id) ?? null;
   },
 
   async findByUserId(userId, filters = {}) {
     const { status, page = 1, limit = 10 } = filters;
-    let results = (MOCK_ORDERS as OrderRecord[]).filter(o => o.userId === userId);
+    let results = (MOCK_ORDERS as unknown as OrderRecord[]).filter(o => o.userId === userId);
     if (status && status !== 'all') results = results.filter(o => o.status === status);
     return paginate(results, page, limit);
   },
 
   async findAll(filters = {}) {
     const { status, page = 1, limit = 20 } = filters;
-    let results = MOCK_ORDERS as OrderRecord[];
+    let results = MOCK_ORDERS as unknown as OrderRecord[];
     if (status && status !== 'all') results = results.filter(o => o.status === status);
     return paginate(results, page, limit);
   },

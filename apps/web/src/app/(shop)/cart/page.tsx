@@ -96,333 +96,165 @@ export default function CartPage() {
     }
 
     return (
-        <div className="bg-white min-h-screen">
-            <div className="max-w-7xl mx-auto px-6 lg:px-12 py-12 lg:py-20">
+        <div className="bg-white min-h-screen font-sans">
+            <div className="max-w-6xl mx-auto px-6 py-16 lg:py-24">
                 
                 {/* Header Section */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
-                    <div>
-                        <h1 className="text-3xl font-bold text-gray-900 font-playfair">Your Shopping Cart</h1>
-                        <p className="text-sm text-gray-400 mt-1">{itemCount} {itemCount === 1 ? 'item' : 'items'} in your cart</p>
-                    </div>
-                    <Link href="/products" className="text-sm font-semibold text-gray-500 hover:text-foreground transition-all flex items-center gap-2">
-                        <ChevronLeft className="h-4 w-4" /> Continue Shopping
+                <div className="flex justify-between items-baseline border-b border-gray-100 pb-10 mb-10">
+                    <h1 className="text-4xl md:text-5xl font-bold text-gray-900 tracking-tight">Your cart</h1>
+                    <Link href="/products" className="text-sm font-medium text-gray-600 underline underline-offset-4 hover:text-black transition-colors">
+                        Continue shopping
                     </Link>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
-                    
-                    {/* Left: Cart Items List */}
-                    <div className="lg:col-span-8 space-y-12">
-                        
-                        {/* Active Items Section */}
-                        {items.length > 0 && (
-                            <div className="space-y-6">
-                                <h2 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-6">Items in Cart</h2>
-                                <div className="space-y-4">
-                                    <AnimatePresence initial={false}>
-                                        {items.map((item) => {
-                                            const itemPrice = item.product.salePrice || item.product.basePrice;
-                                            const totalPrice = (itemPrice + (item.variant?.priceAdjustment || 0)) * item.quantity;
-                                            const isLowStock = item.product.stockQuantity < item.quantity;
+                {/* Table Headers (Desktop) */}
+                <div className="hidden md:grid grid-cols-12 gap-8 mb-6 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] px-4">
+                    <div className="col-span-6">Product</div>
+                    <div className="col-span-3 text-center">Quantity</div>
+                    <div className="col-span-3 text-right">Total</div>
+                </div>
 
-                                            return (
-                                                <motion.div
-                                                    key={item.id}
-                                                    layout
-                                                    initial={{ opacity: 0, y: 20 }}
-                                                    animate={{ opacity: 1, y: 0 }}
-                                                    exit={{ opacity: 0, x: -20 }}
-                                                    className="group relative flex flex-col sm:flex-row gap-6 p-5 bg-white rounded-2xl border border-gray-100 hover:shadow-lg hover:shadow-black/5 transition-all duration-300"
-                                                >
-                                                    {/* Remove Confirmation Overlay */}
-                                                    {itemToRemove === item.id && (
-                                                        <div className="absolute inset-0 bg-white/95 backdrop-blur-md z-20 rounded-2xl flex flex-col items-center justify-center p-8 text-center animate-in fade-in zoom-in duration-300">
-                                                            <div className="w-14 h-14 bg-rose-50 rounded-xl flex items-center justify-center text-rose-500 mb-4 border border-rose-100">
-                                                                <Trash2 className="h-7 w-7" />
-                                                            </div>
-                                                            <p className="text-sm font-semibold text-gray-900 mb-6">Remove this item from your cart?</p>
-                                                            <div className="flex gap-3 w-full max-w-xs">
-                                                                <Button
-                                                                    onClick={() => { removeItem(item.id); setItemToRemove(null); }}
-                                                                    className="flex-1 rounded-xl h-11 bg-rose-500 hover:bg-rose-600 text-white font-bold text-sm"
-                                                                >
-                                                                    Remove
-                                                                </Button>
-                                                                <Button
-                                                                    variant="outline"
-                                                                    onClick={() => setItemToRemove(null)}
-                                                                    className="flex-1 rounded-xl h-11 border-gray-200 font-bold text-sm"
-                                                                >
-                                                                    Keep
-                                                                </Button>
-                                                            </div>
-                                                        </div>
-                                                    )}
-
-                                                    {/* Product Image */}
-                                                    <div className="relative w-full sm:w-32 aspect-[3/4] bg-gray-50 rounded-xl overflow-hidden flex-shrink-0 group-hover:shadow-md transition-all duration-300">
-                                                        <Image
-                                                            src={item.product.images?.[0]?.url || '/placeholder.jpg'}
-                                                            alt={item.product.name}
-                                                            fill
-                                                            className="object-cover group-hover:scale-110 transition-transform duration-1000"
-                                                        />
-                                                    </div>
-
-                                                    {/* Details & Controls */}
-                                                    <div className="flex-1 flex flex-col justify-between py-2">
-                                                        <div>
-                                                            <div className="flex justify-between items-start gap-4 mb-4">
-                                                                <div className="space-y-1">
-                                                                    <Link href={`/products/${item.product.slug}`} className="text-lg font-bold text-gray-900 hover:text-primary transition-colors leading-snug">
-                                                                        {item.product.name}
-                                                                    </Link>
-                                                                    <div className="flex flex-wrap gap-2 pt-1.5">
-                                                                        <span className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 bg-gray-50 px-2 py-0.5 rounded-md">SKU: {item.product.sku}</span>
-                                                                        {item.variant && (
-                                                                            <span className="text-[10px] font-semibold uppercase tracking-wider text-primary bg-green-50 px-2 py-0.5 rounded-md">
-                                                                                {item.variant.name}
-                                                                            </span>
-                                                                        )}
-                                                                    </div>
-                                                                </div>
-                                                                <div className="flex flex-col items-end gap-1">
-                                                                    <span className="text-lg font-bold text-gray-900">
-                                                                        {formatPrice(totalPrice)}
-                                                                    </span>
-                                                                    <span className="text-xs text-gray-400">
-                                                                        {formatPrice(itemPrice + (item.variant?.priceAdjustment || 0))} each
-                                                                    </span>
-                                                                </div>
-                                                            </div>
-
-                                                            {isLowStock && (
-                                                                <div className="flex items-center gap-2 text-rose-500 bg-rose-50 px-4 py-2 rounded-xl w-fit mb-6">
-                                                                    <AlertCircle className="h-4 w-4" />
-                                                                    <span className="text-[10px] font-black uppercase tracking-widest">Insufficient Stock (Available: {item.product.stockQuantity})</span>
-                                                                </div>
-                                                            )}
-                                                        </div>
-
-                                                        <div className="flex flex-wrap items-center justify-between gap-6 mt-auto">
-                                                            {/* Quantity Control */}
-                                                            <div className="flex items-center gap-6 bg-gray-50 rounded-2xl p-1.5 border border-gray-50">
-                                                                <button
-                                                                    onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                                                                    className="w-10 h-10 flex items-center justify-center bg-white rounded-xl shadow-sm text-gray-400 hover:text-black transition-all border border-gray-100 disabled:opacity-30"
-                                                                    disabled={item.quantity <= 1}
-                                                                >
-                                                                    <Minus className="h-4 w-4" />
-                                                                </button>
-                                                                <span className="w-6 text-center font-black text-lg text-gray-900 font-mono">
-                                                                    {item.quantity}
-                                                                </span>
-                                                                <button
-                                                                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                                                                    className="w-10 h-10 flex items-center justify-center bg-white rounded-xl shadow-sm text-gray-400 hover:text-black transition-all border border-gray-100"
-                                                                >
-                                                                    <Plus className="h-4 w-4" />
-                                                                </button>
-                                                            </div>
-
-                                                            {/* Secondary Actions */}
-                                                            <div className="flex items-center gap-6">
-                                                                <button
-                                                                    onClick={() => saveForLater(item.id)}
-                                                                    className="text-xs font-semibold text-gray-400 hover:text-primary transition-all flex items-center gap-1.5 group/btn"
-                                                                >
-                                                                    <Bookmark className="h-3.5 w-3.5 group-hover/btn:fill-current" />
-                                                                    Save for Later
-                                                                </button>
-                                                                <div className="w-px h-4 bg-gray-200" />
-                                                                <button
-                                                                    onClick={() => setItemToRemove(item.id)}
-                                                                    className="text-xs font-semibold text-gray-400 hover:text-rose-500 transition-all flex items-center gap-1.5"
-                                                                >
-                                                                    <Trash2 className="h-3.5 w-3.5" />
-                                                                    Remove
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </motion.div>
-                                            )
-                                        })}
-                                    </AnimatePresence>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Saved Items Section */}
-                        {savedItems.length > 0 && (
-                            <div className="pt-10 border-t border-gray-100 space-y-6">
-                                <div className="flex items-center justify-between">
-                                    <h2 className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
-                                        <Bookmark className="h-4 w-4" /> Saved for Later
-                                    </h2>
-                                    <span className="px-3 py-1 bg-gray-50 rounded-full text-xs font-semibold text-gray-400">{savedItems.length} items</span>
-                                </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    {savedItems.map((item) => (
-                                        <div key={item.id} className="flex gap-4 p-4 bg-gray-50/50 rounded-xl border border-transparent hover:border-gray-100 hover:bg-white transition-all group">
-                                            <div className="relative w-20 aspect-[3/4] bg-white rounded-lg overflow-hidden flex-shrink-0 grayscale opacity-50 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500">
-                                                <Image
-                                                    src={item.product.images?.[0]?.url || '/placeholder.jpg'}
-                                                    alt={item.product.name}
-                                                    fill
-                                                    className="object-cover"
-                                                />
-                                            </div>
-                                            <div className="flex-1 flex flex-col justify-center">
-                                                <h3 className="font-semibold text-gray-900 mb-1 group-hover:text-primary transition-colors line-clamp-1 text-sm">{item.product.name}</h3>
-                                                <p className="text-sm font-bold text-gray-700 mb-3">{formatPrice(item.product.salePrice || item.product.basePrice)}</p>
-                                                <div className="flex items-center gap-3">
-                                                    <button
-                                                        onClick={() => moveToCart(item.id)}
-                                                        className="text-xs font-semibold text-primary hover:text-foreground transition-all"
-                                                    >
-                                                        Move to Cart
-                                                    </button>
-                                                    <button
-                                                        onClick={() => removeSavedItem(item.id)}
-                                                        className="text-xs font-semibold text-gray-300 hover:text-rose-500 transition-all"
-                                                    >
-                                                        Remove
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Right: Order Summary Module */}
-                    <div className="lg:col-span-4">
-                        <div className="sticky top-32 space-y-8">
-                            
-                            {/* Summary Card */}
-                            <div className="bg-gray-50 rounded-2xl p-7 border border-gray-100 shadow-sm">
-                                <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wider mb-7">Order Summary</h2>
-
-                                {/* Coupon Section */}
-                                <div className="space-y-3 mb-7">
-                                    <div className="relative group">
-                                        <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-                                            <Sparkles className="h-4 w-4 text-gray-300 group-focus-within:text-primary transition-colors" />
-                                        </div>
-                                        <input
-                                            type="text"
-                                            placeholder="Enter coupon code"
-                                            value={couponInput}
-                                            onChange={(e) => setCouponInput(e.target.value)}
-                                            className="w-full pl-11 pr-24 py-3.5 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-gray-300 shadow-sm"
+                <div className="space-y-10">
+                    <AnimatePresence initial={false}>
+                        {items.map((item) => (
+                            <motion.div
+                                key={item.id}
+                                layout
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.95 }}
+                                className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center py-8 border-b border-gray-50 last:border-0 relative group"
+                            >
+                                {/* Product Info */}
+                                <div className="col-span-1 md:col-span-6 flex gap-6 md:gap-10">
+                                    <div className="relative w-24 md:w-32 aspect-[3/4] bg-gray-50 overflow-hidden flex-shrink-0">
+                                        <Image
+                                            src={item.image || '/placeholder.jpg'}
+                                            alt={item.name}
+                                            fill
+                                            className="object-cover"
                                         />
-                                        <div className="absolute right-2 top-2 bottom-2">
-                                            {couponCode ? (
-                                                <Button
-                                                    variant="ghost"
-                                                    onClick={removeCoupon}
-                                                    className="h-full px-4 hover:bg-rose-50 hover:text-rose-500 rounded-lg text-xs font-semibold text-gray-400"
-                                                >
-                                                    Remove
-                                                </Button>
-                                            ) : (
-                                                <Button
-                                                    variant="ghost"
-                                                    onClick={handleApplyCoupon}
-                                                    disabled={!couponInput.trim()}
-                                                    className="h-full px-4 hover:bg-primary hover:text-white rounded-lg text-xs font-semibold text-primary disabled:text-gray-300 transition-all"
-                                                >
-                                                    Apply
-                                                </Button>
-                                            )}
+                                        <div className="absolute top-0 left-0 bg-rose-500 text-white text-[10px] font-bold px-2 py-1 uppercase tracking-wider">
+                                            New
                                         </div>
                                     </div>
-                                    {couponMessage && (
-                                        <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className={cn("text-xs font-semibold px-1", couponMessage.type === 'error' ? 'text-rose-500' : 'text-emerald-600')}>
-                                            {couponMessage.text}
-                                        </motion.div>
-                                    )}
+                                    <div className="flex flex-col justify-center space-y-2">
+                                        <Link href={`/products/${item.productId}`} className="text-base font-bold text-gray-900 hover:opacity-70 transition-opacity">
+                                            {item.name}
+                                        </Link>
+                                        <p className="text-sm text-gray-500 font-medium">Tk{item.price.toLocaleString()}.00</p>
+                                        {item.variant && (
+                                            <div className="space-y-0.5 pt-2">
+                                                {item.variant.split('/').map((v, i) => {
+                                                    const [key, val] = v.includes(':') ? v.split(':') : [i === 0 ? 'Size' : 'Color', v];
+                                                    return (
+                                                        <p key={i} className="text-[11px] text-gray-400 font-medium uppercase tracking-wider">
+                                                            {key.trim()}: {val.trim()}
+                                                        </p>
+                                                    );
+                                                })}
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
 
-                                {/* Price Breakdown */}
-                                <div className="space-y-4 pt-6 border-t border-gray-200">
-                                    <div className="flex justify-between items-center text-sm text-gray-500">
-                                        <span>Subtotal</span>
-                                        <span className="font-semibold text-gray-800">{formatPrice(subtotal)}</span>
-                                    </div>
-                                    {discount > 0 && (
-                                        <div className="flex justify-between items-center text-sm text-emerald-600">
-                                            <span>Discount</span>
-                                            <span className="font-semibold">− {formatPrice(discount)}</span>
-                                        </div>
-                                    )}
-                                    <div className="flex justify-between items-center text-sm text-gray-500">
-                                        <span>Shipping</span>
-                                        <span className={cn("font-semibold", shipping === 0 ? 'text-primary' : 'text-gray-800')}>
-                                            {shipping === 0 ? 'Free' : formatPrice(shipping)}
+                                {/* Quantity Control */}
+                                <div className="col-span-1 md:col-span-3 flex items-center justify-center gap-4">
+                                    <div className="flex items-center border border-gray-200 rounded-sm overflow-hidden">
+                                        <button
+                                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                            className="w-10 h-10 flex items-center justify-center hover:bg-gray-50 text-gray-400 transition-colors"
+                                            disabled={item.quantity <= 1}
+                                        >
+                                            <Minus className="h-3 w-3" />
+                                        </button>
+                                        <span className="w-10 text-center text-sm font-medium text-gray-900 border-x border-gray-200 py-2">
+                                            {item.quantity}
                                         </span>
+                                        <button
+                                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                            className="w-10 h-10 flex items-center justify-center hover:bg-gray-50 text-gray-400 transition-colors"
+                                        >
+                                            <Plus className="h-3 w-3" />
+                                        </button>
                                     </div>
-
-                                    {subtotal > 0 && subtotal < 1000 && (
-                                        <div className="p-3 bg-green-50 border border-green-100 rounded-xl">
-                                            <p className="text-xs font-medium text-primary text-center">
-                                                Add {formatPrice(1000 - subtotal)} more for free shipping!
-                                            </p>
-                                        </div>
-                                    )}
-
-                                    <div className="flex justify-between items-center pt-5 border-t border-gray-200">
-                                        <div>
-                                            <p className="text-xs text-gray-400 mb-1">Total</p>
-                                            <span className="text-3xl font-bold text-gray-900">{formatPrice(total)}</span>
-                                        </div>
-                                        <ShieldCheck className="h-7 w-7 text-gray-200" />
-                                    </div>
-                                </div>
-
-                                {/* Checkout Button */}
-                                <div className="mt-7 space-y-3">
-                                    <Button
-                                        onClick={() => router.push('/checkout')}
-                                        disabled={items.length === 0}
-                                        className="w-full h-14 bg-foreground text-white hover:bg-primary rounded-xl text-sm font-bold uppercase tracking-wider gap-2 transition-all group"
+                                    <button
+                                        onClick={() => removeItem(item.id)}
+                                        className="p-2 text-gray-400 hover:text-black transition-colors"
                                     >
-                                        Proceed to Checkout <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                                    </Button>
-                                    <div className="flex items-center justify-center gap-2 text-xs text-gray-400">
-                                        <ShieldCheck className="h-3.5 w-3.5" /> Secure & encrypted checkout
-                                    </div>
+                                        <Trash2 className="h-4 w-4" />
+                                    </button>
                                 </div>
-                            </div>
 
-                            {/* Trust Badges */}
-                            <div className="bg-white rounded-2xl p-5 border border-gray-100 space-y-4">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center text-emerald-500">
-                                        <Truck className="h-5 w-5" />
-                                    </div>
-                                    <div>
-                                        <h4 className="text-xs font-bold text-gray-900">Fast Delivery</h4>
-                                        <p className="text-[11px] text-gray-400">Nationwide delivery available</p>
-                                    </div>
+                                {/* Item Total */}
+                                <div className="col-span-1 md:col-span-3 text-right">
+                                    <p className="text-base font-medium text-gray-900">
+                                        Tk{(item.price * item.quantity).toLocaleString()}.00
+                                    </p>
                                 </div>
-                                <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center text-primary">
-                                        <RotateCcw className="h-5 w-5" />
-                                    </div>
-                                    <div>
-                                        <h4 className="text-xs font-bold text-gray-900">Easy Returns</h4>
-                                        <p className="text-[11px] text-gray-400">30-day return policy</p>
-                                    </div>
-                                </div>
+                            </motion.div>
+                        ))}
+                    </AnimatePresence>
+                </div>
+
+                {/* Footer / Summary Section */}
+                <div className="mt-20 border-t border-gray-100 pt-12 flex flex-col items-end">
+                    <div className="flex flex-col items-end space-y-4 max-w-md w-full">
+                        <div className="flex items-baseline gap-6 mb-2">
+                            <span className="text-lg font-bold text-gray-900">Estimated total</span>
+                            <div className="flex items-baseline gap-2">
+                                <span className="text-xl font-bold text-gray-900">Tk{total.toLocaleString()}.00</span>
+                                <span className="text-sm font-bold text-gray-500">BDT</span>
                             </div>
                         </div>
+                        
+                        <p className="text-[11px] text-gray-400 text-right leading-relaxed font-medium uppercase tracking-wider">
+                            Taxes, discounts and <Link href="/shipping" className="underline underline-offset-2 hover:text-black transition-colors">shipping</Link> calculated at checkout.
+                        </p>
+
+                        <div className="pt-8 w-full">
+                            <Button
+                                onClick={() => router.push('/checkout')}
+                                className="w-full h-16 bg-black text-white hover:bg-gray-900 rounded-sm text-sm font-bold uppercase tracking-[0.2em] transition-all shadow-xl shadow-black/5"
+                            >
+                                Check out
+                            </Button>
+                        </div>
+
+                        {/* Saved Items Link (Optional) */}
+                        {savedItems.length > 0 && (
+                            <div className="pt-10 w-full">
+                                <button 
+                                    onClick={() => {/* Scroll or Toggle Saved Items */}}
+                                    className="w-full py-4 border border-gray-100 rounded-sm text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-black hover:border-gray-200 transition-all flex items-center justify-center gap-2"
+                                >
+                                    <Bookmark className="h-3 w-3" /> View Saved Artifacts ({savedItems.length})
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
+
+                {/* Saved Items Section (Minimal) */}
+                {savedItems.length > 0 && (
+                    <div className="mt-32 pt-20 border-t border-gray-50">
+                        <h2 className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.3em] mb-12 text-center">Pending Acquisitions</h2>
+                        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+                            {savedItems.map((item) => (
+                                <div key={item.id} className="group relative">
+                                    <div className="aspect-[3/4] bg-gray-50 overflow-hidden mb-3">
+                                        <Image src={item.image || '/placeholder.jpg'} alt={item.name} fill className="object-cover opacity-50 group-hover:opacity-100 transition-opacity" />
+                                    </div>
+                                    <h3 className="text-[10px] font-bold uppercase tracking-wider text-gray-900 truncate mb-1">{item.name}</h3>
+                                    <div className="flex gap-4">
+                                        <button onClick={() => moveToCart(item.id)} className="text-[9px] font-bold uppercase tracking-tighter text-gray-400 hover:text-black">Reinstate</button>
+                                        <button onClick={() => removeSavedItem(item.id)} className="text-[9px] font-bold uppercase tracking-tighter text-gray-400 hover:text-rose-500">Discard</button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     )

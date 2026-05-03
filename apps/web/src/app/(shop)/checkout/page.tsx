@@ -14,6 +14,7 @@ import {
     CheckCircle2,
     Lock,
     ArrowLeft,
+    ArrowRight,
     Loader2,
     Truck,
     ShieldCheck,
@@ -431,8 +432,8 @@ export default function CheckoutPage() {
                                         <div key={item.id} className="flex gap-6 group">
                                             <div className="relative w-20 aspect-[3/4] bg-gray-50 rounded-2xl overflow-hidden shrink-0 border border-gray-50">
                                                 <Image
-                                                    src={item.product.images?.[0]?.url || '/placeholder.jpg'}
-                                                    alt={item.product.name}
+                                                    src={item.image || '/placeholder.jpg'}
+                                                    alt={item.name}
                                                     fill
                                                     className="object-cover group-hover:scale-110 transition-transform duration-1000"
                                                 />
@@ -441,11 +442,11 @@ export default function CheckoutPage() {
                                                 </div>
                                             </div>
                                             <div className="flex-1 py-1">
-                                                <h4 className="font-black text-xs text-gray-900 line-clamp-2 uppercase tracking-tight mb-2">{item.product.name}</h4>
+                                                <h4 className="font-black text-xs text-gray-900 line-clamp-2 uppercase tracking-tight mb-2">{item.name}</h4>
                                                 <div className="flex items-center justify-between mt-auto">
-                                                    <span className="text-[9px] font-black text-gray-300 uppercase tracking-widest">{item.variant?.name || 'Standard'}</span>
+                                                    <span className="text-[9px] font-black text-gray-300 uppercase tracking-widest">{item.variant || 'Standard'}</span>
                                                     <span className="font-black text-sm text-gray-900 font-mono tracking-tighter">
-                                                        {formatPrice((item.product.salePrice || item.product.basePrice + (item.variant?.priceAdjustment || 0)) * item.quantity)}
+                                                        {formatPrice(item.price * item.quantity)}
                                                     </span>
                                                 </div>
                                             </div>

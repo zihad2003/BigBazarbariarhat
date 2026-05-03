@@ -16,7 +16,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useWishlistStore } from '@/lib/stores/wishlist-store';
 import { useSession } from 'next-auth/react';
 import { MOCK_ORDERS } from '@/lib/mock-data/orders';
-import { formatPrice } from '@/lib/utils';
+import { formatPrice, cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 
 export default function AccountDashboard() {

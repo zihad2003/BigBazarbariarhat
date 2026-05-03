@@ -37,7 +37,7 @@ export function MobileBottomNav() {
                             <item.icon className={cn("h-5 w-5", isActive ? "stroke-[2.5]" : "stroke-[2]")} />
                             <span className="text-[8px] font-black uppercase tracking-widest">{item.label}</span>
                             
-                            {item.badge > 0 && !isActive && (
+                            {(item.badge ?? 0) > 0 && !isActive && (
                                 <span className="absolute top-1 right-2 w-4 h-4 bg-red-500 text-white text-[8px] font-black rounded-full flex items-center justify-center border-2 border-white">
                                     {item.badge}
                                 </span>

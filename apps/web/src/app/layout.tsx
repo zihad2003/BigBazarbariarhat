@@ -84,16 +84,10 @@ export default function RootLayout({
         <Providers>
           {children}
           <CartDrawer />
-          <Toaster 
+          <Toaster
             position="top-right"
             toastOptions={{
               className: 'rounded-2xl border-slate-100 shadow-2xl font-black uppercase tracking-widest text-[10px]',
-              success: {
-                className: 'bg-emerald-50 text-emerald-900 border-emerald-100',
-              },
-              error: {
-                className: 'bg-rose-50 text-rose-900 border-rose-100',
-              },
             }}
           />
         </Providers>

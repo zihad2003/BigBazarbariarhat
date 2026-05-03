@@ -6,8 +6,8 @@ import { Plus, Heart, ShoppingBag, Star, ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ProductQuickView } from './product-quick-view'
 import { formatPrice, cn } from '@/lib/utils'
-import type { Product} from '@bigbazar/shared';
-import { useCartStore } from '@bigbazar/shared'
+import type { Product } from '@/types/product'
+import { useCartStore } from '@/store/cartStore'
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useUIStore } from '@/lib/stores/ui-store'
@@ -27,7 +27,7 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
     const [isAdding, setIsAdding] = useState(false)
     const [isDeliveryModalOpen, setIsDeliveryModalOpen] = useState(false)
 
-    const isOutOfStock = product.stockQuantity <= 0
+    const isOutOfStock = product.stock <= 0
     const secondaryImage = product.images?.[1]?.url
     const price = product.salePrice || product.basePrice
     const discount = product.salePrice
@@ -43,7 +43,14 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
         // Add artificial delay for premium feel
         await new Promise(resolve => setTimeout(resolve, 500))
 
-        addItem(product, 1)
+        addItem({
+            productId: product.id,
+            name: product.name,
+            price: product.salePrice ?? product.basePrice,
+            image: product.images?.[0]?.url ?? '',
+            quantity: 1,
+            stock: product.stock,
+        })
         addNotification({
             type: 'success',
             message: `${product.name} appended to curation`
@@ -55,7 +62,7 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
     const handleToggleWishlist = (e: React.MouseEvent) => {
         e.preventDefault()
         e.stopPropagation()
-        toggleWishlist(product)
+        toggleWishlist(product as any)
         const isNowInWishlist = isInWishlist(product.id)
         addNotification({
             type: isNowInWishlist ? 'info' : 'success',
@@ -123,11 +130,11 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
                 <div className="flex-1 flex flex-col py-2">
                     <div className="flex items-center justify-between mb-4">
                         <span className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.2em] bg-indigo-50 px-3 py-1 rounded-lg">
-                            {product.category?.name || 'Artifact'}
+                            {product.category || 'Artifact'}
                         </span>
                         <div className="flex items-center gap-1.5 bg-amber-50 px-3 py-1 rounded-lg">
                             <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                            <span className="text-[10px] font-black text-amber-600">{product.averageRating || '5.0'}</span>
+                            <span className="text-[10px] font-black text-amber-600">{product.rating || '5.0'}</span>
                         </div>
                     </div>
 
@@ -304,11 +311,11 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
             <div className="mt-8 px-2 space-y-3">
                 <div className="flex items-center justify-between mb-2">
                     <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
-                        {product.category?.name || 'Big Bazar'}
+                        {product.category || 'Big Bazar'}
                     </span>
                     <div className="flex items-center gap-1">
                         <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                        <span className="text-[10px] font-black text-gray-900">{product.averageRating || '5.0'}</span>
+                        <span className="text-[10px] font-black text-gray-900">{product.rating || '5.0'}</span>
                     </div>
                 </div>
 

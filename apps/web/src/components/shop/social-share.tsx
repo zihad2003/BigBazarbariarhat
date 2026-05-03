@@ -5,6 +5,7 @@ import { Facebook, Twitter, Linkedin, Link2, Mail } from 'lucide-react'
 interface SocialShareProps {
     url: string
     title: string
+    className?: string
 }
 
 export function SocialShare({ url, title }: SocialShareProps) {

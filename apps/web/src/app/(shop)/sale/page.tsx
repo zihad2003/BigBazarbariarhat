@@ -240,7 +240,7 @@ export default function SalePage() {
                         </div>
                     ) : products.length > 0 ? (
                         <>
-                            <ProductGrid products={products} />
+                            <ProductGrid products={products as any[]} />
 
                             {/* Pagination */}
                             {total > (filters.limit || 12) && (

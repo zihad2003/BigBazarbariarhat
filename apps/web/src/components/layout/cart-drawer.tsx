@@ -7,11 +7,14 @@ import Link from 'next/link';
 import { useCartStore } from '@/store/cartStore';
 import { useUIStore } from '@/store/uiStore';
 import { Button } from '@/components/ui/button';
-import { cn, formatPrice } from '@/lib/utils';
+import { formatPrice } from '@/lib/utils';
 
 export function CartDrawer() {
     const { isCartOpen, setCartOpen } = useUIStore();
-    const { items, removeItem, updateQuantity, subtotal, total, itemCount } = useCartStore();
+    const { items, removeItem, updateQuantity, getSubtotal, getTotal, getItemCount } = useCartStore();
+    const subtotal = getSubtotal();
+    const total = getTotal();
+    const itemCount = getItemCount();
 
     return (
         <AnimatePresence>

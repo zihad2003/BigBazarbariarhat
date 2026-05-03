@@ -304,7 +304,7 @@ export default function ShopPage({ params: paramsPromise }: { params: Promise<{ 
                         </div>
                     </div>
 
-                    <ProductGrid products={products} isLoading={loading && products.length === 0} viewMode={viewMode} />
+                    <ProductGrid products={products as any[]} isLoading={loading && products.length === 0} viewMode={viewMode} />
 
                     {(!loading && products.length === 0) && (
                         <div className="animate-in fade-in zoom-in-95 duration-700">

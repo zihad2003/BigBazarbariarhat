@@ -1,4 +1,4 @@
-import type { Product } from "@bigbazar/shared"
+import type { Product } from '@/types/product'
 import { ProductCard } from "./product-card"
 
 interface RelatedProductsProps {

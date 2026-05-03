@@ -12,8 +12,8 @@ import {
     SheetTitle,
     SheetTrigger,
 } from '@/components/ui/sheet';
-import type { Product} from '@bigbazar/shared';
-import { useCartStore } from '@bigbazar/shared';
+import type { Product } from '@/types/product';
+import { useCartStore } from '@/store/cartStore';
 import { formatPrice } from '@/lib/utils';
 import { useUIStore } from '@/lib/stores/ui-store';
 import { SocialShare } from './social-share';
@@ -33,7 +33,7 @@ export function ProductQuickView({ product }: ProductQuickViewProps) {
     const [isDeliveryModalOpen, setIsDeliveryModalOpen] = useState(false);
 
     const price = product.salePrice || product.basePrice;
-    const isOutOfStock = product.stockQuantity <= 0;
+    const isOutOfStock = product.stock <= 0;
     const discount = product.salePrice
         ? Math.round(((product.basePrice - product.salePrice) / product.basePrice) * 100)
         : 0;
@@ -43,7 +43,14 @@ export function ProductQuickView({ product }: ProductQuickViewProps) {
         // Add artificial delay for premium feel
         await new Promise(resolve => setTimeout(resolve, 600));
 
-        addItem(product, quantity);
+        addItem({
+            productId: product.id,
+            name: product.name,
+            price: product.salePrice ?? product.basePrice,
+            image: product.images?.[0]?.url ?? '',
+            quantity,
+            stock: product.stock,
+        });
         addNotification({
             type: 'success',
             message: `${product.name} appended to curation`,
@@ -115,7 +122,7 @@ export function ProductQuickView({ product }: ProductQuickViewProps) {
                         <div>
                             <div className="flex items-center gap-3 mb-4">
                                 <p className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.2em]">
-                                    {product.category?.name || 'Curated Collection'}
+                                    {product.category || 'Curated Collection'}
                                 </p>
                                 <div className="h-px flex-1 bg-gray-100" />
                             </div>
@@ -141,7 +148,7 @@ export function ProductQuickView({ product }: ProductQuickViewProps) {
                                         {[...Array(5)].map((_, i) => (
                                             <Star
                                                 key={i}
-                                                className={`h-3 w-3 ${i < Math.round(product.averageRating || 0) ? 'fill-current' : 'text-gray-200'}`}
+                                                className={`h-3 w-3 ${i < Math.round(product.rating || 0) ? 'fill-current' : 'text-gray-200'}`}
                                             />
                                         ))}
                                     </div>

@@ -33,7 +33,7 @@ export default function SearchResultsPage() {
     const [sortBy, setSortBy] = useState('relevance');
 
     const { addItem: addToCart } = useCartStore();
-    const { toggleItem: toggleWishlist, hasItem: isInWishlist } = useWishlistStore();
+    const { toggleItem: toggleWishlist, isInWishlist } = useWishlistStore();
     const { openCart, addNotification } = useUIStore();
 
     useEffect(() => {
@@ -59,7 +59,14 @@ export default function SearchResultsPage() {
     }, [query, selectedCategory, sortBy]);
 
     const handleAddToCart = (product: any) => {
-        addToCart(product, 1);
+        addToCart({
+            productId: product.id,
+            name: product.name,
+            price: product.salePrice ?? product.basePrice,
+            image: product.images?.[0]?.url ?? '',
+            quantity: 1,
+            stock: product.stock ?? product.stockQuantity ?? 0,
+        });
         addNotification({ type: 'success', message: 'Artifact synchronized with curation.' });
         openCart();
     };

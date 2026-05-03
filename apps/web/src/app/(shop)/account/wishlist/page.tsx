@@ -3,22 +3,12 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { 
-    Heart, 
-    ShoppingBag, 
-    Trash2, 
-    ArrowRight, 
-    Star,
-    Plus,
-    Loader2,
-    ChevronRight,
-    ShoppingBasket
-} from 'lucide-react';
+import { Heart, Trash2, ArrowRight, Star, Plus, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { useWishlistStore } from '@/lib/stores/wishlist-store';
 import { useCartStore } from '@/store/cartStore';
-import { formatPrice, cn } from '@/lib/utils';
+import { formatPrice } from '@/lib/utils';
 import { useUIStore } from '@/lib/stores/ui-store';
 
 export default function AccountWishlistPage() {
@@ -32,8 +22,15 @@ export default function AccountWishlistPage() {
     }, []);
 
     const handleAddToCart = (item: any) => {
-        addToCart(item, 1);
-        addNotification({ type: 'success', message: 'Artifact synchronized with curation.' });
+        addToCart({
+            productId: item.productId,
+            name: item.product?.name ?? '',
+            price: item.product?.salePrice ?? item.product?.basePrice ?? 0,
+            image: item.product?.images?.[0]?.url ?? '',
+            quantity: 1,
+            stock: item.product?.stockQuantity ?? 0,
+        });
+        addNotification({ type: 'success', message: `${item.product?.name ?? 'Item'} added to cart.` });
         openCart();
     };
 
@@ -84,15 +81,15 @@ export default function AccountWishlistPage() {
                             >
                                 {/* Image Container */}
                                 <div className="relative aspect-[3/4] bg-gray-50 overflow-hidden">
-                                    <Image 
-                                        src={item.images?.[0]?.url || '/placeholder.jpg'} 
-                                        alt={item.name} 
-                                        fill 
-                                        className="object-cover group-hover:scale-110 transition-transform duration-1000" 
+                                    <Image
+                                        src={item.product?.images?.[0]?.url || '/placeholder.jpg'}
+                                        alt={item.product?.name ?? 'Product'}
+                                        fill
+                                        className="object-cover group-hover:scale-110 transition-transform duration-1000"
                                     />
                                     <div className="absolute top-4 right-4 flex flex-col gap-2">
-                                        <button 
-                                            onClick={() => removeFromWishlist(item.id)}
+                                        <button
+                                            onClick={() => removeFromWishlist(item.productId)}
                                             className="w-10 h-10 bg-white/90 backdrop-blur-md rounded-xl flex items-center justify-center text-rose-500 shadow-lg border border-white hover:bg-rose-50 transition-all group/btn"
                                         >
                                             <Trash2 className="h-4 w-4" />
@@ -112,22 +109,22 @@ export default function AccountWishlistPage() {
                                 <div className="p-6 space-y-4">
                                     <div className="flex justify-between items-start gap-4">
                                         <div>
-                                            <h3 className="font-black text-gray-900 uppercase tracking-tight group-hover:text-indigo-600 transition-colors line-clamp-1">{item.name}</h3>
-                                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Ref: {item.sku || 'ART-001'}</p>
+                                            <h3 className="font-black text-gray-900 uppercase tracking-tight group-hover:text-primary transition-colors line-clamp-1">{item.product?.name}</h3>
+                                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Ref: {item.product?.sku ?? 'N/A'}</p>
                                         </div>
                                     </div>
                                     <div className="flex items-end justify-between">
                                         <div className="flex flex-col">
                                             <span className="text-xl font-black text-gray-900 font-mono tracking-tighter">
-                                                {formatPrice(item.salePrice || item.basePrice)}
+                                                {formatPrice(item.product?.salePrice ?? item.product?.basePrice ?? 0)}
                                             </span>
-                                            {item.salePrice && (
-                                                <span className="text-[9px] text-gray-400 line-through font-mono">{formatPrice(item.basePrice)}</span>
+                                            {item.product?.salePrice && (
+                                                <span className="text-[9px] text-gray-400 line-through font-mono">{formatPrice(item.product.basePrice)}</span>
                                             )}
                                         </div>
                                         <div className="flex items-center gap-1 text-amber-400">
                                             <Star className="h-3 w-3 fill-current" />
-                                            <span className="text-[10px] font-black text-gray-900">{item.rating || '4.8'}</span>
+                                            <span className="text-[10px] font-black text-gray-900">{item.product?.averageRating ?? '4.8'}</span>
                                         </div>
                                     </div>
                                 </div>

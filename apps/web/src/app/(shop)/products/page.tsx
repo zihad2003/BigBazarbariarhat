@@ -54,12 +54,12 @@ export default function ProductsPage() {
 
     // Derived Data
     const categories = useMemo(() => {
-        const cats = Array.from(new Set(MOCK_PRODUCTS.map(p => p.category?.name).filter(Boolean)));
+        const cats = Array.from(new Set(MOCK_PRODUCTS.map(p => p.category).filter(Boolean)));
         return cats.sort();
     }, []);
 
     const brands = useMemo(() => {
-        const b = Array.from(new Set(MOCK_PRODUCTS.map(p => p.brand?.name).filter(Boolean)));
+        const b = Array.from(new Set(MOCK_PRODUCTS.map(p => p.brand).filter(Boolean)));
         return b.sort();
     }, []);
 
@@ -84,12 +84,12 @@ export default function ProductsPage() {
 
         // Category
         if (selectedCategory) {
-            results = results.filter(p => p.category?.name === selectedCategory);
+            results = results.filter(p => p.category === selectedCategory);
         }
 
         // Brands
         if (selectedBrands.length > 0) {
-            results = results.filter(p => p.brand?.name && selectedBrands.includes(p.brand.name));
+            results = results.filter(p => p.brand && selectedBrands.includes(p.brand));
         }
 
         // Price
@@ -100,7 +100,7 @@ export default function ProductsPage() {
 
         // Rating
         if (minRating) {
-            results = results.filter(p => (p.averageRating || 0) >= minRating);
+            results = results.filter(p => (p.rating || 0) >= minRating);
         }
 
         // Sorting
@@ -111,7 +111,7 @@ export default function ProductsPage() {
             switch (sortBy) {
                 case 'price_low': return priceA - priceB;
                 case 'price_high': return priceB - priceA;
-                case 'rating': return (b.averageRating || 0) - (a.averageRating || 0);
+                case 'rating': return (b.rating || 0) - (a.rating || 0);
                 case 'newest':
                 default: return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
             }

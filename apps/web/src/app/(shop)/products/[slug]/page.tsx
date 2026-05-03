@@ -29,11 +29,12 @@ import { RelatedProducts } from '@/components/shop/related-products';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { formatPrice, cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
 import { DeliveryInfoModal } from '@/components/shop/delivery-info-modal';
 import { useCartStore } from '@/store/cartStore';
 import { useWishlistStore } from '@/lib/stores/wishlist-store';
 import { useUIStore } from '@/lib/stores/ui-store';
-import type { Product, ProductVariant } from '@bigbazar/shared';
+import type { Product, ProductVariant } from '@/types/product';
 
 export default function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
     const resolvedParams = use(params);
@@ -61,7 +62,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
     const relatedProducts = useMemo(() => {
         if (!product) return [];
         return MOCK_PRODUCTS
-            .filter(p => p.categoryId === product.categoryId && p.id !== product.id)
+            .filter(p => p.category === product.category && p.id !== product.id)
             .slice(0, 4);
     }, [product]);
 
@@ -84,7 +85,15 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
         // Premium artificial delay
         await new Promise(resolve => setTimeout(resolve, 600));
 
-        addItem(product, quantity, selectedVariant || undefined);
+        addItem({
+            productId: product.id,
+            name: product.name,
+            price: product.salePrice ?? product.basePrice,
+            image: product.images?.[0]?.url ?? '',
+            quantity,
+            variant: selectedVariant?.name,
+            stock: product.stock,
+        });
         addNotification({
             type: 'success',
             message: `${product.name} added to cart`,
@@ -136,7 +145,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
         ? Math.round(((product.basePrice - product.salePrice) / product.basePrice) * 100)
         : 0;
 
-    const isOutOfStock = product.stockQuantity <= 0;
+    const isOutOfStock = product.stock <= 0;
 
     const tabs = [
         { id: 'description', label: 'Description', icon: Info },
@@ -154,7 +163,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                     <ChevronRight className="h-3 w-3 text-gray-300" />
                     <Link href="/products" className="text-xs font-semibold text-gray-400 hover:text-gray-700 transition-colors">Products</Link>
                     <ChevronRight className="h-3 w-3 text-gray-300" />
-                    <Link href={`/products?category=${product.category?.name}`} className="text-xs font-semibold text-gray-400 hover:text-gray-700 transition-colors">{product.category?.name}</Link>
+                    <Link href={`/products?category=${product.category}`} className="text-xs font-semibold text-gray-400 hover:text-gray-700 transition-colors">{product.category}</Link>
                     <ChevronRight className="h-3 w-3 text-gray-300" />
                     <span className="text-xs font-semibold text-primary truncate">{product.name}</span>
                 </nav>
@@ -189,10 +198,10 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                                 <div className="flex items-center justify-between mb-6">
                                     <div className="flex items-center gap-4">
                                         <span className="text-[10px] font-bold text-primary uppercase tracking-[0.2em] bg-green-50 px-3 py-1.5 rounded-lg border border-green-100">
-                                            {product.category?.name}
+                                            {product.category}
                                         </span>
                                         <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">
-                                            {product.brand?.name || 'Big Bazar'}
+                                            {product.brand || 'Big Bazar'}
                                         </span>
                                     </div>
                                     <div className={cn(
@@ -219,7 +228,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                                             {[...Array(5)].map((_, i) => (
                                                 <Star
                                                     key={i}
-                                                    className={`h-4 w-4 ${i < Math.floor(product.averageRating || 0) ? 'fill-current' : 'text-gray-200'}`}
+                                                    className={`h-4 w-4 ${i < Math.floor(product.rating || 0) ? 'fill-current' : 'text-gray-200'}`}
                                                 />
                                             ))}
                                         </div>
@@ -444,13 +453,13 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
 
                                 {activeTab === 'specifications' && (
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                        {product.attributes?.map((attr: any) => (
+                                        {(product as any).attributes?.map((attr: any) => (
                                             <div key={attr.key} className="flex flex-col gap-1.5 p-5 bg-gray-50 rounded-xl border border-gray-100 hover:bg-white hover:shadow-md transition-all duration-300">
                                                 <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{attr.key}</span>
                                                 <span className="text-sm font-bold text-gray-900">{attr.value}</span>
                                             </div>
                                         ))}
-                                        {(!product.attributes || product.attributes.length === 0) && (
+                                        {(!(product as any).attributes || (product as any).attributes.length === 0) && (
                                             <div className="col-span-full py-16 text-center bg-gray-50 rounded-2xl border border-dashed border-gray-200">
                                                 <ClipboardList className="h-8 w-8 text-gray-200 mx-auto mb-3" />
                                                 <p className="text-gray-400 font-medium text-sm">No specifications available</p>
@@ -461,7 +470,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
 
                                 {activeTab === 'reviews' && (
                                     <div className="bg-white rounded-3xl">
-                                        <ProductReviews averageRating={product.averageRating} reviewCount={product.reviewCount} />
+                                        <ProductReviews averageRating={product.rating} reviewCount={product.reviewCount} />
                                     </div>
                                 )}
                             </motion.div>
