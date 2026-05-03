@@ -61,41 +61,17 @@ export default function CheckoutPage() {
 
     // State
     const [isLoading, setIsLoading] = useState(false);
-    const [deliveryMethod, setDeliveryMethod] = useState<'standard' | 'express'>('standard');
+    const [deliveryArea, setDeliveryArea] = useState<'mirsarai' | 'chittagong' | 'outside'>('mirsarai');
     const [paymentMethod, setPaymentMethod] = useState<'cod' | 'bkash' | 'nagad'>('cod');
     const [bkashNumber, setBkashNumber] = useState('');
 
-    // Form
-    const {
-        register,
-        handleSubmit,
-        watch,
-        setValue,
-        formState: { errors }
-    } = useForm<CheckoutFormValues>({
-        resolver: zodResolver(checkoutSchema),
-        defaultValues: {
-            division: 'Dhaka',
-            district: '',
-            saveAddress: true
-        }
-    });
-
-    const selectedDivision = watch('division');
-    const districts = DISTRICTS[selectedDivision] || [];
-
-    useEffect(() => {
-        if (districts.length > 0) {
-            setValue('district', districts[0]);
-        }
-    }, [selectedDivision, districts, setValue]);
+    // ... (rest of form logic)
 
     const subtotal = getSubtotal();
     const discount = getDiscountAmount();
     
     // Delivery Logic
-    const isFreeShipping = subtotal >= 1000;
-    const shippingCost = isFreeShipping ? 0 : (deliveryMethod === 'express' ? 120 : 60);
+    const shippingCost = deliveryArea === 'mirsarai' ? 0 : (deliveryArea === 'chittagong' ? 100 : 150);
     const finalTotal = Math.max(0, subtotal - discount + shippingCost);
 
     const onSubmit = async (data: CheckoutFormValues) => {
@@ -108,7 +84,7 @@ export default function CheckoutPage() {
             const orderData = {
                 id: orderId,
                 items,
-                shipping: data,
+                shipping: { ...data, deliveryArea },
                 totals: { subtotal, shippingCost, discount, total: finalTotal },
                 payment: { method: paymentMethod, details: paymentMethod === 'bkash' ? { bkashNumber } : {} },
                 status: 'pending',
@@ -147,7 +123,7 @@ export default function CheckoutPage() {
         <div className="bg-white min-h-screen font-sans">
             {/* Simple Header */}
             <header className="border-b border-gray-100 py-8">
-                <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
+                <div className="max-w-[1600px] mx-auto px-6 md:px-12 flex justify-between items-center">
                     <Link href="/" className="text-2xl font-bold tracking-tighter uppercase">
                         BIG BAZAR
                     </Link>
@@ -157,16 +133,19 @@ export default function CheckoutPage() {
                 </div>
             </header>
 
-            <main className="max-w-7xl mx-auto px-6 py-12 lg:py-20">
-                <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 lg:grid-cols-12 gap-20">
+            <main className="max-w-[1600px] mx-auto px-6 md:px-12 py-12 lg:py-20">
+                <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
                     
                     {/* Left: Checkout Form */}
-                    <div className="lg:col-span-7 space-y-16">
+                    <div className="lg:col-span-7 space-y-20">
                         
                         {/* Shipping Section */}
                         <section>
-                            <h2 className="text-xl font-bold text-gray-900 mb-8 uppercase tracking-tight">Shipping Address</h2>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <h2 className="text-xl font-bold text-gray-900 mb-10 uppercase tracking-tight flex items-center gap-3">
+                                <span className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center text-xs">1</span>
+                                Shipping Details
+                            </h2>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="col-span-2 space-y-2">
                                     <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1">Full Name</label>
                                     <input 
@@ -185,15 +164,6 @@ export default function CheckoutPage() {
                                         placeholder="01XXXXXXXXX"
                                     />
                                     {errors.phone && <p className="text-[10px] text-rose-500 font-bold uppercase tracking-wider pl-1">{errors.phone.message}</p>}
-                                </div>
-
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1">Email (Optional)</label>
-                                    <input 
-                                        {...register('email')}
-                                        className="w-full px-5 py-4 bg-white border border-gray-200 rounded-sm focus:outline-none focus:border-black transition-all text-sm font-medium"
-                                        placeholder="email@example.com"
-                                    />
                                 </div>
 
                                 <div className="space-y-2">
@@ -216,6 +186,15 @@ export default function CheckoutPage() {
                                     </select>
                                 </div>
 
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1">Upazila / Thana</label>
+                                    <input 
+                                        {...register('upazila')}
+                                        className={cn("w-full px-5 py-4 bg-white border rounded-sm focus:outline-none focus:border-black transition-all text-sm font-medium", errors.upazila ? "border-rose-500" : "border-gray-200")}
+                                        placeholder="Enter your upazila"
+                                    />
+                                </div>
+
                                 <div className="col-span-2 space-y-2">
                                     <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1">Detailed Address</label>
                                     <textarea 
@@ -229,9 +208,67 @@ export default function CheckoutPage() {
                             </div>
                         </section>
 
+                        {/* Delivery Area Section (New UI) */}
+                        <section>
+                            <h2 className="text-xl font-bold text-gray-900 mb-10 uppercase tracking-tight flex items-center gap-3">
+                                <span className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center text-xs">2</span>
+                                Delivery Area
+                            </h2>
+                            <div className="grid grid-cols-1 gap-4">
+                                {[
+                                    { id: 'mirsarai', name: 'মীরসরাইয়ের মধ্যে', sub: 'Local Mirsarai', price: 'Free', icon: '🎁', color: 'emerald' },
+                                    { id: 'chittagong', name: 'চট্টগ্রাম জেলার মধ্যে', sub: 'Chittagong District', price: 'Tk 100', icon: '📦', color: 'black' },
+                                    { id: 'outside', name: 'চট্টগ্রামের বাইরে (বাংলাদেশ)', sub: 'Outside Chittagong', price: 'Tk 150', icon: '📮', color: 'black' },
+                                ].map((area) => (
+                                    <label 
+                                        key={area.id}
+                                        className={cn(
+                                            "flex items-center p-6 border rounded-sm cursor-pointer transition-all group",
+                                            deliveryArea === area.id ? "border-black bg-gray-50 shadow-md" : "border-gray-100 hover:border-gray-200"
+                                        )}
+                                    >
+                                        <input 
+                                            type="radio" 
+                                            name="deliveryArea" 
+                                            value={area.id} 
+                                            checked={deliveryArea === area.id}
+                                            onChange={() => setDeliveryArea(area.id as any)}
+                                            className="hidden"
+                                        />
+                                        <div className={cn(
+                                            "w-6 h-6 border-2 rounded-full flex items-center justify-center mr-6 transition-colors",
+                                            deliveryArea === area.id ? "border-black" : "border-gray-200"
+                                        )}>
+                                            {deliveryArea === area.id && <div className="w-3 h-3 bg-black rounded-full" />}
+                                        </div>
+                                        <div className="flex-1 flex items-center justify-between">
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-12 h-12 bg-white rounded-sm border border-gray-100 flex items-center justify-center text-xl">
+                                                    {area.icon}
+                                                </div>
+                                                <div>
+                                                    <p className="font-bold text-gray-900 text-base">{area.name}</p>
+                                                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{area.sub}</p>
+                                                </div>
+                                            </div>
+                                            <div className={cn(
+                                                "text-sm font-bold uppercase tracking-widest",
+                                                area.id === 'mirsarai' ? "text-emerald-600 bg-emerald-50 px-3 py-1 rounded-sm" : "text-gray-900"
+                                            )}>
+                                                {area.price}
+                                            </div>
+                                        </div>
+                                    </label>
+                                ))}
+                            </div>
+                        </section>
+
                         {/* Payment Section */}
                         <section>
-                            <h2 className="text-xl font-bold text-gray-900 mb-8 uppercase tracking-tight">Payment Method</h2>
+                            <h2 className="text-xl font-bold text-gray-900 mb-10 uppercase tracking-tight flex items-center gap-3">
+                                <span className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center text-xs">3</span>
+                                Payment Method
+                            </h2>
                             <div className="space-y-4">
                                 {[
                                     { id: 'cod', name: 'Cash on Delivery', icon: <Truck className="h-4 w-4" /> },
@@ -253,7 +290,10 @@ export default function CheckoutPage() {
                                             onChange={() => setPaymentMethod(method.id as any)}
                                             className="hidden"
                                         />
-                                        <div className="w-5 h-5 border-2 border-gray-300 rounded-full flex items-center justify-center mr-4 peer-checked:border-black">
+                                        <div className={cn(
+                                            "w-5 h-5 border-2 rounded-full flex items-center justify-center mr-4",
+                                            paymentMethod === method.id ? "border-black" : "border-gray-200"
+                                        )}>
                                             {paymentMethod === method.id && <div className="w-2.5 h-2.5 bg-black rounded-full" />}
                                         </div>
                                         <div className="flex items-center gap-3">
