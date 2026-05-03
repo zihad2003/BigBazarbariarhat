@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { MOCK_PRODUCTS } from '@/lib/mock-data/products';
 import { ProductGrid } from '@/components/shop/product-grid';
+import { Breadcrumbs } from '@/components/shop/breadcrumbs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { 
@@ -224,8 +225,13 @@ export default function ProductsPage() {
 
     return (
         <div className="min-h-screen bg-white">
-            <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12 lg:py-20">
-                
+            <div className="max-w-7xl mx-auto px-6 lg:px-8 py-10">
+                <Breadcrumbs 
+                    items={[
+                        { label: t?.common?.products || 'Products', active: true }
+                    ]} 
+                />
+
                 {/* Header Module */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
                     <div className="space-y-4">

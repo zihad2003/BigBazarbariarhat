@@ -19,8 +19,12 @@ import { useUIStore } from '@/lib/stores/ui-store';
 import { useWishlistStore } from '@/lib/stores/wishlist-store';
 import { motion, AnimatePresence } from 'framer-motion';
 import { formatPrice, cn } from '@/lib/utils';
+import { useLanguageStore, useTranslation } from '@bigbazar/shared';
+import { Breadcrumbs } from '@/components/shop/breadcrumbs';
 
 export default function WishlistPage() {
+    const { language } = useLanguageStore();
+    const t = useTranslation();
     const { items, removeItem, clearWishlist } = useWishlistStore();
     const { addItem } = useCartStore();
     const { addNotification } = useUIStore();
@@ -59,7 +63,12 @@ export default function WishlistPage() {
 
     return (
         <div className="bg-white min-h-screen">
-            <div className="max-w-7xl mx-auto px-6 lg:px-12 py-12">
+            <div className="max-w-7xl mx-auto px-6 lg:px-12 py-10">
+                <Breadcrumbs 
+                    items={[
+                        { label: t?.common?.wishlist || 'Wishlist', active: true }
+                    ]} 
+                />
 
                 {/* Visual Navigation Header */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-10 mb-20">

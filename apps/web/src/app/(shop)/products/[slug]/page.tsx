@@ -23,6 +23,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { MOCK_PRODUCTS } from '@/lib/mock-data/products';
 import { ProductGallery } from '@/components/shop/product-gallery';
+import { Breadcrumbs } from '@/components/shop/breadcrumbs';
 import { SocialShare } from '@/components/shop/social-share';
 import { ProductReviews } from '@/components/shop/product-reviews';
 import { RelatedProducts } from '@/components/shop/related-products';
@@ -163,15 +164,13 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
             <div className="max-w-7xl mx-auto px-6 lg:px-12 py-8 lg:py-12">
                 
                 {/* Breadcrumb Navigation */}
-                <nav className="flex items-center gap-3 mb-10 overflow-x-auto no-scrollbar">
-                    <Link href="/" className="text-xs font-semibold text-gray-400 hover:text-gray-700 transition-colors">Home</Link>
-                    <ChevronRight className="h-3 w-3 text-gray-300" />
-                    <Link href="/products" className="text-xs font-semibold text-gray-400 hover:text-gray-700 transition-colors">Products</Link>
-                    <ChevronRight className="h-3 w-3 text-gray-300" />
-                    <Link href={`/products?category=${product.category}`} className="text-xs font-semibold text-gray-400 hover:text-gray-700 transition-colors">{product.category}</Link>
-                    <ChevronRight className="h-3 w-3 text-gray-300" />
-                    <span className="text-xs font-semibold text-primary truncate">{product.name}</span>
-                </nav>
+                <Breadcrumbs 
+                    items={[
+                        { label: t?.common?.products || 'Products', href: '/products' },
+                        { label: product.category, href: `/products?category=${product.category}` },
+                        { label: product.name, active: true }
+                    ]} 
+                />
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 mb-32">
                     

@@ -24,7 +24,10 @@ export const translations = {
             back: 'Back',
             next: 'Next',
             previous: 'Previous',
-            orderNow: 'Order Now'
+            orderNow: 'Order Now',
+            home: 'Home',
+            products: 'Products',
+            sale: 'Sale'
         },
         hero: {
             title: 'Refined Elegance',
@@ -93,7 +96,10 @@ export const translations = {
             back: 'পিছনে',
             next: 'পরবর্তী',
             previous: 'পূর্ববর্তী',
-            orderNow: 'অর্ডার করুন'
+            orderNow: 'অর্ডার করুন',
+            home: 'হোম',
+            products: 'পণ্য',
+            sale: 'সেল'
         },
         hero: {
             title: 'মার্জিত শৈলী',

@@ -22,10 +22,12 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { formatPrice, cn } from '@/lib/utils'
 import { useCartStore } from '@/store/cartStore'
-import { useLanguageStore } from '@bigbazar/shared'
+import { useLanguageStore, useTranslation } from '@bigbazar/shared'
+import { Breadcrumbs } from '@/components/shop/breadcrumbs'
 
 export default function CartPage() {
     const { language } = useLanguageStore()
+    const t = useTranslation()
     const router = useRouter()
     const {
         items,
@@ -99,7 +101,12 @@ export default function CartPage() {
 
     return (
         <div className="bg-white min-h-screen font-sans">
-            <div className="max-w-7xl mx-auto px-6 py-10 lg:py-16">
+            <div className="max-w-7xl mx-auto px-6 py-10">
+                <Breadcrumbs 
+                    items={[
+                        { label: t?.common?.cart || 'Cart', active: true }
+                    ]} 
+                />
                 
                 {/* Header Section */}
                 <div className="flex justify-between items-baseline border-b border-gray-100 pb-8 mb-10">

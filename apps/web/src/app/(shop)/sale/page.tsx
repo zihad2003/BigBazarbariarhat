@@ -9,8 +9,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Loader2, Search, SlidersHorizontal, X } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { useLanguageStore, useTranslation } from '@bigbazar/shared';
+import { Breadcrumbs } from '@/components/shop/breadcrumbs';
 
 export default function SalePage() {
+    const { language } = useLanguageStore();
+    const t = useTranslation();
     const router = useRouter();
     const searchParams = useSearchParams();
 
@@ -92,8 +96,13 @@ export default function SalePage() {
     };
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <h1 className="text-4xl font-black mb-8 text-red-600">Flash Sale</h1>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <Breadcrumbs 
+                items={[
+                    { label: t?.common?.sale || 'Sale', active: true }
+                ]} 
+            />
+            <h1 className="text-4xl lg:text-5xl font-black mb-12 text-red-600 tracking-tight">Flash Sale</h1>
 
             <div className="flex flex-col lg:flex-row gap-8">
                 {/* Mobile Filter Sheet */}

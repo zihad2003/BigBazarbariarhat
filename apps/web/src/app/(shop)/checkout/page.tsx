@@ -22,7 +22,8 @@ import { useCartStore } from '@/store/cartStore';
 import { useUIStore } from '@/lib/stores/ui-store';
 import { cn, formatPrice } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useLanguageStore } from '@bigbazar/shared';
+import { useLanguageStore, useTranslation } from '@bigbazar/shared';
+import { Breadcrumbs } from '@/components/shop/breadcrumbs';
 
 // --- BD Geography Data ---
 const DIVISIONS = [
@@ -57,6 +58,7 @@ type CheckoutFormValues = z.infer<typeof checkoutSchema>;
 
 export default function CheckoutPage() {
     const { language } = useLanguageStore();
+    const t = useTranslation();
     const router = useRouter();
     const { items, getSubtotal, clearCart, getDiscountAmount } = useCartStore();
     const { addNotification } = useUIStore();
@@ -151,7 +153,13 @@ export default function CheckoutPage() {
                 </div>
             </header>
 
-            <main className="max-w-[1600px] mx-auto px-6 md:px-12 py-12 lg:py-20">
+            <main className="max-w-[1600px] mx-auto px-6 md:px-12 py-10">
+                <Breadcrumbs 
+                    items={[
+                        { label: t?.common?.cart || 'Cart', href: '/cart' },
+                        { label: t?.common?.checkout || 'Checkout', active: true }
+                    ]} 
+                />
                 <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
                     
                     {/* Right: Checkout Form (Visual Order 2) */}
