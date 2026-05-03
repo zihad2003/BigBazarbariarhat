@@ -19,10 +19,22 @@ export const fetchHandler = async <T = any>(url: string, options: RequestInit = 
             },
         });
 
-        const data = await response.json();
+        const contentType = response.headers.get('content-type');
+        let data: any;
+        
+        if (contentType && contentType.includes('application/json')) {
+            data = await response.json();
+        } else {
+            const text = await response.text();
+            throw new ApiError(
+                `Invalid response format. Expected JSON but received ${contentType || 'unknown'}.`,
+                response.status,
+                { raw: text.substring(0, 200) }
+            );
+        }
 
         if (!response.ok) {
-            throw new ApiError(data.message || 'An error occurred', response.status, data);
+            throw new ApiError(data?.message || 'An error occurred', response.status, data);
         }
 
         return data;
