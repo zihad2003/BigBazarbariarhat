@@ -17,7 +17,6 @@ import {
     TrendingUp,
     ArrowRight
 } from 'lucide-react';
-import { useSession, signOut } from 'next-auth/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { useLanguageStore, useTranslation } from '@bigbazar/shared';
@@ -99,7 +98,6 @@ export function Header() {
     
     const pathname = usePathname();
     const router = useRouter();
-    const { data: session } = useSession();
     const cartCount = useCartStore(state => state.getItemCount());
     const wishlistCount = useWishlistStore(state => state.getItemCount());
     const { openCart } = useUIStore();
@@ -340,7 +338,7 @@ export function Header() {
                                 </Link>
                                 <Link href="/account/profile" className="hidden sm:block p-1 bg-slate-100 rounded-2xl hover:ring-4 hover:ring-indigo-600/10 transition-all">
                                     <div className="w-10 h-10 bg-white rounded-[0.9rem] flex items-center justify-center text-slate-900 font-black text-xs uppercase tracking-tighter">
-                                        {session?.user?.name?.charAt(0) || <User className="h-5 w-5" />}
+                                        <User className="h-5 w-5" />
                                     </div>
                                 </Link>
                             </div>

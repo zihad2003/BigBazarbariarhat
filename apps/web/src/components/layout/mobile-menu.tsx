@@ -13,7 +13,6 @@ import {
     SheetTrigger,
 } from '@/components/ui/sheet';
 import { useUIStore } from '@/lib/stores/ui-store';
-import { useSession, signOut } from 'next-auth/react';
 import { useLanguageStore, useTranslation } from '@bigbazar/shared';
 
 const getMobileNavigation = (t: any) => [
@@ -73,7 +72,6 @@ export function MobileMenu() {
     const [open, setOpen] = useState(false);
     const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null);
     const { openSearch, openCart } = useUIStore();
-    const { data: session, status } = useSession();
 
     const handleLinkClick = () => {
         setOpen(false);
@@ -166,35 +164,15 @@ export function MobileMenu() {
                 </div>
 
                 <div className="p-6 border-t border-border space-y-4 bg-background">
-                    {status === 'authenticated' ? (
-                        <div className="space-y-3">
-                            <div className="flex items-center justify-between px-2">
-                                <Link href="/account" onClick={handleLinkClick} className="flex items-center gap-3 group">
-                                    <div className="w-8 h-8 rounded-full ring-2 ring-destructive/50 flex items-center justify-center overflow-hidden">
-                                        <User className="h-4 w-4 text-foreground" />
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <span className="text-xs font-bold text-foreground group-hover:text-destructive transition-colors">{t.common.account}</span>
-                                        <span className="text-[10px] text-muted-foreground truncate max-w-[150px]">{session.user?.email}</span>
-                                    </div>
-                                </Link>
-                                <Button 
-                                    variant="ghost" 
-                                    size="icon" 
-                                    onClick={() => signOut({ callbackUrl: '/' })}
-                                    className="text-muted-foreground hover:text-destructive"
-                                >
-                                    <LogOut className="h-4 w-4" />
-                                </Button>
-                            </div>
+                    <Link href="/account" onClick={handleLinkClick} className="flex items-center gap-3 px-2 py-3 bg-muted/50 rounded-2xl group">
+                        <div className="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center">
+                            <User className="h-5 w-5 text-foreground" />
                         </div>
-                    ) : (
-                        <Link href="/login" onClick={handleLinkClick}>
-                            <Button variant="outline" className="w-full border-foreground text-foreground hover:bg-destructive hover:border-destructive hover:text-white uppercase tracking-widest text-xs font-bold transition-all">
-                                Sign In / Register
-                            </Button>
-                        </Link>
-                    )}
+                        <div className="flex flex-col">
+                            <span className="text-xs font-bold text-foreground group-hover:text-destructive transition-colors">{t.common.account}</span>
+                            <span className="text-[10px] text-muted-foreground">Manage your orders</span>
+                        </div>
+                    </Link>
 
                     <div className="grid grid-cols-2 gap-3 mt-4">
                         <Link href="/wishlist" onClick={handleLinkClick}>
