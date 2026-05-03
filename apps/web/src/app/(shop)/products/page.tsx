@@ -53,7 +53,7 @@ export default function ProductsPage() {
     const itemsPerPage = 12;
 
     // Derived Data
-    const categories = ['New Arrivals', 'Men', 'Women', 'kid(boys)', 'kids(girls)', 'Sale'];
+    const categories = ['New Arrivals', 'Men', 'Women', 'Kids(Boys)', 'Kids(Girls)', 'Wedding Touch', 'Sale'];
 
     const brands = useMemo(() => {
         const b = Array.from(new Set(MOCK_PRODUCTS.map(p => p.brand).filter(Boolean)));
