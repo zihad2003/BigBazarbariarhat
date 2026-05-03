@@ -111,53 +111,7 @@ export function FilterSidebar({ onFilterChange, activeFilters, onClearAll }: Fil
                 </div>
             </div>
 
-            {/* Price Filter */}
-            <div>
-                <h3 className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-6 px-1">Price Range</h3>
-                <div className="px-1 space-y-6">
-                    <Slider
-                        defaultValue={[activeFilters.minPrice || 0, activeFilters.maxPrice || 50000]}
-                        max={50000}
-                        step={500}
-                        onValueCommit={handlePriceChange}
-                        className="my-10"
-                    />
-                    <div className="flex items-center justify-between gap-4">
-                        <div className="flex-1 bg-gray-50 p-3 rounded-xl border border-gray-100">
-                            <span className="text-[10px] font-black text-gray-400 uppercase block mb-1">Min</span>
-                            <span className="font-bold">৳{activeFilters.minPrice || 0}</span>
-                        </div>
-                        <div className="flex-1 bg-gray-50 p-3 rounded-xl border border-gray-100">
-                            <span className="text-[10px] font-black text-gray-400 uppercase block mb-1">Max</span>
-                            <span className="font-bold">৳{activeFilters.maxPrice || 50000}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
-            {/* Brands Filter */}
-            {metadata.brands.length > 0 && (
-                <div>
-                    <h3 className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-6 px-1">Brands</h3>
-                    <div className="space-y-3">
-                        {metadata.brands.map((brand) => (
-                            <div key={brand.id} className="flex items-center space-x-3 p-1">
-                                <Checkbox
-                                    id={brand.id}
-                                    checked={activeFilters.brand === brand.slug}
-                                    onCheckedChange={() => handleBrandToggle(brand.slug)}
-                                />
-                                <label
-                                    htmlFor={brand.id}
-                                    className="text-sm font-bold text-gray-600 cursor-pointer select-none"
-                                >
-                                    {brand.name}
-                                </label>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            )}
 
             {/* Rating Filter */}
             <div>
