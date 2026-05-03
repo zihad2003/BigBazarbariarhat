@@ -154,66 +154,66 @@ export function Header() {
                 <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
                     <div className="flex items-center justify-between h-24 lg:h-28">
                         
-                        {/* Left Section: Mobile Menu & Logo */}
-                        <div className="flex items-center gap-2 md:gap-4 shrink-0 mr-8">
+                        {/* Left & Center: Logo + Navigation */}
+                        <div className="flex items-center gap-8 2xl:gap-12">
                             <MobileMenu />
                             {/* Logo */}
-                            <Link href="/" className="group">
-                            <div className="flex items-center">
-                                <h1 className="text-2xl font-bold tracking-tighter uppercase hidden sm:block font-playfair">
-                                    <span className="text-[#E11D48]">BIG</span> <span className="text-[#0F172A]">BAZAR</span>
-                                </h1>
-                            </div>
-                        </Link>
-                        </div>
-
-                        {/* Navigation - Desktop */}
-                        <nav className="hidden xl:flex items-center gap-6 2xl:gap-10">
-                            {categories.filter(c => !c.isHidden).map((category) => (
-                                <div 
-                                    key={category.name}
-                                    className="relative group/mega"
-                                    onMouseEnter={() => setActiveMegaMenu(category.name)}
-                                    onMouseLeave={() => setActiveMegaMenu(null)}
-                                >
-                                    <Link href={category.href} className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest hover:text-primary transition-colors py-10">
-                                        {category.name} <ChevronDown className={cn("h-3 w-3 transition-transform duration-300", activeMegaMenu === category.name && "rotate-180")} />
-                                    </Link>
-
-                                    <AnimatePresence>
-                                        {activeMegaMenu === category.name && (
-                                            <motion.div
-                                                initial={{ opacity: 0, y: 10 }}
-                                                animate={{ opacity: 1, y: 0 }}
-                                                exit={{ opacity: 0, y: 10 }}
-                                                className="absolute top-full left-1/2 -translate-x-1/2 w-[400px] bg-white rounded-[2rem] shadow-2xl border border-slate-100 p-6 overflow-hidden z-50"
-                                            >
-                                                <div className="grid grid-cols-2 gap-6">
-                                                    <div className="space-y-4">
-                                                        <h3 className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">{category.name} Collection</h3>
-                                                        <ul className="space-y-3">
-                                                            {category.subcategories.map((sub) => (
-                                                                <li key={sub.name}>
-                                                                    <Link href={sub.href} className="text-sm font-black text-slate-900 hover:text-primary transition-colors uppercase tracking-tight block">
-                                                                        {sub.name}
-                                                                    </Link>
-                                                                </li>
-                                                            ))}
-                                                        </ul>
-                                                    </div>
-                                                    <div className="aspect-[4/5] relative rounded-xl overflow-hidden group/img">
-                                                        <div className="absolute inset-0 bg-slate-900/10 group-hover/img:bg-slate-900/0 transition-colors z-10" />
-                                                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent z-10" />
-                                                        <Image src={category.featured} alt={category.name} fill className="object-cover group-hover/img:scale-110 transition-transform duration-700" />
-                                                        <span className="absolute bottom-3 left-4 text-[8px] font-black text-white uppercase tracking-widest z-20">Explore</span>
-                                                    </div>
-                                                </div>
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
+                            <Link href="/" className="group shrink-0">
+                                <div className="flex items-center">
+                                    <h1 className="text-2xl font-bold tracking-tighter uppercase hidden sm:block font-playfair">
+                                        <span className="text-[#E11D48]">BIG</span> <span className="text-[#0F172A]">BAZAR</span>
+                                    </h1>
                                 </div>
-                            ))}
-                        </nav>
+                            </Link>
+
+                            {/* Navigation - Desktop */}
+                            <nav className="hidden xl:flex items-center gap-6 2xl:gap-10">
+                                {categories.filter(c => !c.isHidden).map((category) => (
+                                    <div 
+                                        key={category.name}
+                                        className="relative group/mega"
+                                        onMouseEnter={() => setActiveMegaMenu(category.name)}
+                                        onMouseLeave={() => setActiveMegaMenu(null)}
+                                    >
+                                        <Link href={category.href} className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest hover:text-primary transition-colors py-10">
+                                            {category.name} <ChevronDown className={cn("h-3 w-3 transition-transform duration-300", activeMegaMenu === category.name && "rotate-180")} />
+                                        </Link>
+
+                                        <AnimatePresence>
+                                            {activeMegaMenu === category.name && (
+                                                <motion.div
+                                                    initial={{ opacity: 0, y: 10 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    exit={{ opacity: 0, y: 10 }}
+                                                    className="absolute top-full left-1/2 -translate-x-1/2 w-[400px] bg-white rounded-[2rem] shadow-2xl border border-slate-100 p-6 overflow-hidden z-50"
+                                                >
+                                                    <div className="grid grid-cols-2 gap-6">
+                                                        <div className="space-y-4">
+                                                            <h3 className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">{category.name} Collection</h3>
+                                                            <ul className="space-y-3">
+                                                                {category.subcategories.map((sub) => (
+                                                                    <li key={sub.name}>
+                                                                        <Link href={sub.href} className="text-sm font-black text-slate-900 hover:text-primary transition-colors uppercase tracking-tight block">
+                                                                            {sub.name}
+                                                                        </Link>
+                                                                    </li>
+                                                                ))}
+                                                            </ul>
+                                                        </div>
+                                                        <div className="aspect-[4/5] relative rounded-xl overflow-hidden group/img">
+                                                            <div className="absolute inset-0 bg-slate-900/10 group-hover/img:bg-slate-900/0 transition-colors z-10" />
+                                                            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent z-10" />
+                                                            <Image src={category.featured} alt={category.name} fill className="object-cover group-hover/img:scale-110 transition-transform duration-700" />
+                                                            <span className="absolute bottom-3 left-4 text-[8px] font-black text-white uppercase tracking-widest z-20">Explore</span>
+                                                        </div>
+                                                    </div>
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+                                    </div>
+                                ))}
+                            </nav>
+                        </div>
 
                         {/* Search & Actions */}
                         <div className="flex items-center gap-6 flex-1 justify-end max-w-xl">
