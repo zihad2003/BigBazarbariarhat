@@ -130,26 +130,6 @@ export default function SalePage() {
                                 </div>
                             </div>
 
-                            {/* Price Range */}
-                            <div>
-                                <h3 className="font-bold mb-4">Price Range</h3>
-                                <div className="flex gap-4">
-                                    <Input
-                                        type="number"
-                                        placeholder="Min"
-                                        value={filters.minPrice || ''}
-                                        onChange={(e) => handleFilterChange('minPrice', e.target.value ? Number(e.target.value) : undefined)}
-                                        className="w-full"
-                                    />
-                                    <Input
-                                        type="number"
-                                        placeholder="Max"
-                                        value={filters.maxPrice || ''}
-                                        onChange={(e) => handleFilterChange('maxPrice', e.target.value ? Number(e.target.value) : undefined)}
-                                        className="w-full"
-                                    />
-                                </div>
-                            </div>
                         </div>
                     </SheetContent>
                 </Sheet>
@@ -177,25 +157,6 @@ export default function SalePage() {
                         </div>
                     </div>
 
-                    <div>
-                        <h3 className="font-black text-xl mb-6">Price Range</h3>
-                        <div className="grid grid-cols-2 gap-2">
-                            <Input
-                                type="number"
-                                placeholder="Min"
-                                value={filters.minPrice || ''}
-                                onChange={(e) => handleFilterChange('minPrice', e.target.value ? Number(e.target.value) : undefined)}
-                                className="w-full"
-                            />
-                            <Input
-                                type="number"
-                                placeholder="Max"
-                                value={filters.maxPrice || ''}
-                                onChange={(e) => handleFilterChange('maxPrice', e.target.value ? Number(e.target.value) : undefined)}
-                                className="w-full"
-                            />
-                        </div>
-                    </div>
 
                     {(filters.categoryId || filters.minPrice || filters.maxPrice || filters.search) && (
                         <Button

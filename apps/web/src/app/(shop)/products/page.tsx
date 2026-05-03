@@ -176,49 +176,7 @@ export default function ProductsPage() {
                 </div>
             </div>
 
-            {/* Price Range */}
-            <div>
-                <h3 className="text-xs font-black text-gray-900 uppercase tracking-[0.2em] mb-6">Price Range</h3>
-                <div className="px-2">
-                    <Slider
-                        defaultValue={[0, 150000]}
-                        max={150000}
-                        step={1000}
-                        value={priceRange}
-                        onValueChange={(val) => { setPriceRange(val as [number, number]); setCurrentPage(1); }}
-                        className="mb-6"
-                    />
-                    <div className="flex items-center justify-between gap-4">
-                        <div className="flex-1 bg-gray-50 p-3 rounded-xl border border-gray-100">
-                            <span className="text-[8px] font-black text-gray-400 uppercase block mb-1">Min</span>
-                            <span className="text-xs font-bold">৳{priceRange[0].toLocaleString()}</span>
-                        </div>
-                        <div className="flex-1 bg-gray-50 p-3 rounded-xl border border-gray-100">
-                            <span className="text-[8px] font-black text-gray-400 uppercase block mb-1">Max</span>
-                            <span className="text-xs font-bold">৳{priceRange[1].toLocaleString()}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
-            {/* Brands */}
-            <div>
-                <h3 className="text-xs font-black text-gray-900 uppercase tracking-[0.2em] mb-6">Brands</h3>
-                <div className="grid grid-cols-1 gap-3">
-                    {brands.map(brand => (
-                        <div key={brand} className="flex items-center space-x-3 group cursor-pointer" onClick={() => toggleBrand(brand as string)}>
-                            <Checkbox 
-                                id={`brand-${brand}`} 
-                                checked={selectedBrands.includes(brand as string)}
-                                className="rounded-md border-gray-200 data-[state=checked]:bg-black data-[state=checked]:border-black"
-                            />
-                            <label className="text-sm font-bold text-gray-500 group-hover:text-black cursor-pointer transition-colors">
-                                {brand}
-                            </label>
-                        </div>
-                    ))}
-                </div>
-            </div>
 
             {/* Ratings */}
             <div>
