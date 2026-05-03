@@ -14,7 +14,7 @@ export default auth((req) => {
   }
 
   // Protect sensitive routes
-  if ((isAccountPage || isCheckoutPage) && !isLoggedIn) {
+  if (isAccountPage && !isLoggedIn) {
      let callbackUrl = req.nextUrl.pathname;
      if (req.nextUrl.search) {
        callbackUrl += req.nextUrl.search;

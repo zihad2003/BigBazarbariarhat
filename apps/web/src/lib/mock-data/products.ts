@@ -3,14 +3,14 @@ import { Product } from '@/types/product';
 export const MOCK_PRODUCTS: Product[] = [
     {
         id: 'p1',
-        name: 'Monochrome Essential Tee',
-        slug: 'monochrome-essential-tee',
-        description: 'The cornerstone of any modern wardrobe. Crafted from 220GSM organic cotton for a structured yet soft feel. Features a reinforced collar and a relaxed industrial fit.',
+        name: 'Essential Cotton Tee',
+        slug: 'essential-cotton-tee',
+        description: 'The cornerstone of any modern wardrobe. Crafted from 220GSM organic cotton for a structured yet soft feel. Features a reinforced collar and a relaxed comfortable fit.',
         shortDescription: 'Premium 220GSM organic cotton tee.',
         basePrice: 2400,
         salePrice: 1800,
         category: 'Men',
-        brand: 'Curator',
+        brand: 'Boutique',
         sku: 'TSH-001',
         stock: 50,
         images: [
@@ -28,13 +28,13 @@ export const MOCK_PRODUCTS: Product[] = [
     },
     {
         id: 'p2',
-        name: 'Raw Denim Curation Jacket',
-        slug: 'raw-denim-curation-jacket',
-        description: 'Unwashed 14oz Japanese selvedge denim. This artifact will evolve with you, developing unique fades and character over time. Triple-needle stitched for maximum durability.',
+        name: 'Raw Denim Jacket',
+        slug: 'raw-denim-jacket',
+        description: 'Unwashed 14oz Japanese selvedge denim. This piece will evolve with you, developing unique fades and character over time. Triple-needle stitched for maximum durability.',
         shortDescription: '14oz Japanese selvedge denim jacket.',
         basePrice: 12500,
         category: 'Men',
-        brand: 'Industrial',
+        brand: 'Classic',
         sku: 'JKT-002',
         stock: 15,
         images: [
@@ -51,14 +51,14 @@ export const MOCK_PRODUCTS: Product[] = [
     },
     {
         id: 'p3',
-        name: 'Silk Flow Midi Dress',
-        slug: 'silk-flow-midi-dress',
-        description: 'A manifestation of elegance. Pure mulberry silk that drapes effortlessly. Designed with a subtle industrial sheen and minimalist lines for the modern curator.',
+        name: 'Silk Midi Dress',
+        slug: 'silk-midi-dress',
+        description: 'A touch of elegance. Pure mulberry silk that drapes effortlessly. Designed with a subtle sheen and minimalist lines for a modern look.',
         shortDescription: 'Pure mulberry silk midi dress.',
         basePrice: 15800,
         salePrice: 12500,
         category: 'Women',
-        brand: 'Manifest',
+        brand: 'Elegance',
         sku: 'DRS-003',
         stock: 12,
         images: [
@@ -77,11 +77,11 @@ export const MOCK_PRODUCTS: Product[] = [
         id: 'p4',
         name: 'Structured Wool Overcoat',
         slug: 'structured-wool-overcoat',
-        description: 'Heavyweight Melton wool construction. Featuring architectural shoulders and a deep obsidian finish. The ultimate external layer for cold-climate synchronization.',
+        description: 'Heavyweight Melton wool construction. Featuring architectural shoulders and a deep obsidian finish. The ultimate external layer for cold weather.',
         shortDescription: 'Heavyweight Melton wool overcoat.',
         basePrice: 28000,
         category: 'Women',
-        brand: 'Curator',
+        brand: 'Classic',
         sku: 'COA-004',
         stock: 10,
         images: [
@@ -106,10 +106,10 @@ const generateMoreProducts = () => {
         'Women': ['Dresses', 'Blouses', 'Trousers', 'Skirts'],
         'kid(boys)': ['T-Shirts', 'Pants', 'Sets'],
         'kids(girls)': ['Dresses', 'Tops', 'Skirts'],
-        'New Arrivals': ['Spring Edit', 'Summer Drop'],
-        'Sale': ['Last Chance', 'Seasonal Clearance']
+        'New Arrivals': ['Spring Edition', 'Summer Collection'],
+        'Sale': ['Last Chance', 'Seasonal Sale']
     };
-    const brands = ['Curator', 'Manifest', 'Industrial', 'Nexus', 'Prime', 'Alpha'];
+    const brands = ['Boutique', 'Classic', 'Modern', 'Essential', 'Premium', 'Urban'];
     
     for (let i = 5; i <= 30; i++) {
         const cat = categories[i % categories.length];
@@ -117,10 +117,10 @@ const generateMoreProducts = () => {
         const sub = categorySubs[i % categorySubs.length];
         MOCK_PRODUCTS.push({
             id: `p${i}`,
-            name: `${brands[i % brands.length]} ${sub} Artifact #${i}`,
-            slug: `${brands[i % brands.length].toLowerCase()}-${sub.toLowerCase()}-artifact-${i}`,
-            description: `A premium garment from our ${cat} collection. This ${sub} piece is designed for maximum versatility and industrial longevity.`,
-            shortDescription: `Curated ${sub} essential.`,
+            name: `${brands[i % brands.length]} ${sub} #${i}`,
+            slug: `${brands[i % brands.length].toLowerCase()}-${sub.toLowerCase()}-${i}`,
+            description: `A premium garment from our ${cat} collection. This ${sub} piece is designed for maximum comfort and style.`,
+            shortDescription: `Premium ${sub} essential.`,
             basePrice: 1500 + (i * 200),
             category: cat,
             brand: brands[i % brands.length],
@@ -133,7 +133,7 @@ const generateMoreProducts = () => {
             reviewCount: i * 8,
             isFeatured: i % 4 === 0,
             isNew: i % 3 === 0,
-            tags: [cat.toLowerCase(), sub.toLowerCase(), 'curated'],
+            tags: [cat.toLowerCase(), sub.toLowerCase(), 'quality'],
             createdAt: '2026-04-01T00:00:00Z',
             updatedAt: '2026-04-01T00:00:00Z',
             status: 'active'
