@@ -57,9 +57,9 @@ export default function SignupPage() {
                         <UserPlus className="h-8 w-8" />
                     </div>
                     <div>
-                        <CardTitle className="text-3xl font-black tracking-tight uppercase">Register</CardTitle>
+                        <CardTitle className="text-3xl font-black tracking-tight uppercase">Create Account</CardTitle>
                         <CardDescription className="text-xs font-black text-gray-400 uppercase tracking-widest mt-2">
-                            Join the Big Bazar Curation
+                            Join Big Bazar today
                         </CardDescription>
                     </div>
                 </CardHeader>
@@ -71,7 +71,7 @@ export default function SignupPage() {
                             </div>
                         )}
                         <div className="space-y-2">
-                            <label htmlFor="name" className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-2">Full Identification</label>
+                            <label htmlFor="name" className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-2">Full Name</label>
                             <Input
                                 id="name"
                                 type="text"
@@ -95,7 +95,7 @@ export default function SignupPage() {
                             />
                         </div>
                         <div className="space-y-2">
-                            <label htmlFor="password" className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-2">Access Key (Password)</label>
+                            <label htmlFor="password" className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-2">Password</label>
                             <Input
                                 id="password"
                                 type="password"
@@ -114,7 +114,7 @@ export default function SignupPage() {
                                 <Loader2 className="h-4 w-4 animate-spin" />
                             ) : (
                                 <span className="flex items-center gap-2">
-                                    Initiate Membership <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                                    Create Account <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                                 </span>
                             )}
                         </Button>
@@ -128,10 +128,10 @@ export default function SignupPage() {
                     </div>
                     <div className="flex items-center gap-3 text-emerald-500 bg-emerald-50 px-4 py-2 rounded-full border border-emerald-100">
                         <ShieldCheck className="h-3 w-3" />
-                        <span className="text-[9px] font-black uppercase tracking-widest">Authorized Enrollment</span>
+                        <span className="text-[9px] font-black uppercase tracking-widest">Secure Sign Up</span>
                     </div>
                     <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">
-                        Already a curator? <Link href="/login" className="text-black hover:underline">Authenticate Here</Link>
+                        Already have an account? <Link href="/login" className="text-black hover:underline">Log In Here</Link>
                     </p>
                 </CardFooter>
             </Card>

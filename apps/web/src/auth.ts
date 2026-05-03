@@ -13,7 +13,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
 
-        // Temporary mock for successful auth without database
+        // Mock Admin User
         if (credentials.email === "admin@bigbazar.com" && credentials.password === "admin123") {
             return {
               id: "1",
@@ -23,7 +23,13 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             };
         }
 
-        return null;
+        // Mock Guest User (Allows any other login to succeed for now)
+        return {
+          id: Math.random().toString(36).substr(2, 9),
+          email: credentials.email as string,
+          name: (credentials.email as string).split('@')[0],
+          role: "USER",
+        };
       },
     }),
   ],

@@ -101,7 +101,7 @@ export default function LoginPage() {
                                 <Loader2 className="h-4 w-4 animate-spin" />
                             ) : (
                                 <span className="flex items-center gap-2">
-                                    Authenticate <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                                    Log In <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                                 </span>
                             )}
                         </Button>
@@ -110,15 +110,15 @@ export default function LoginPage() {
                 <CardFooter className="px-8 pb-10 flex flex-col items-center gap-6 border-t border-gray-50 pt-8">
                     <div className="flex items-center gap-4 text-gray-400">
                         <div className="h-px w-8 bg-gray-100" />
-                        <span className="text-[9px] font-black uppercase tracking-[0.2em]">Secure Authentication</span>
+                        <span className="text-[9px] font-black uppercase tracking-[0.2em]">Secure Connection</span>
                         <div className="h-px w-8 bg-gray-100" />
                     </div>
                     <div className="flex items-center gap-3 text-emerald-500 bg-emerald-50 px-4 py-2 rounded-full border border-emerald-100">
                         <ShieldCheck className="h-3 w-3" />
-                        <span className="text-[9px] font-black uppercase tracking-widest">End-to-End Encrypted</span>
+                        <span className="text-[9px] font-black uppercase tracking-widest">Secure Login</span>
                     </div>
                     <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">
-                        New here? <Link href="/register" className="text-black hover:underline">Create Account</Link>
+                        New here? <Link href="/signup" className="text-black hover:underline">Create Account</Link>
                     </p>
                 </CardFooter>
             </Card>
