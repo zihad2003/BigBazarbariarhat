@@ -62,7 +62,7 @@ export function CartDrawer() {
                     >
                         {/* Header */}
                         <div className="border-b border-gray-50 bg-white relative z-10">
-                            <div className="max-w-4xl mx-auto w-full flex items-baseline justify-between p-8 md:p-12">
+                            <div className="max-w-6xl mx-auto w-full flex items-baseline justify-between p-8 md:p-12">
                                 <h2 className="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight">Your cart</h2>
                                 <button
                                     onClick={closeCart}
@@ -76,7 +76,7 @@ export function CartDrawer() {
                         {/* Free Shipping Progress (Twelve Style) */}
                         {items.length > 0 && freeShippingProgress < 100 && (
                             <div className="bg-white border-b border-gray-50">
-                                <div className="max-w-4xl mx-auto w-full px-8 py-4">
+                                <div className="max-w-6xl mx-auto w-full px-8 py-4">
                                     <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 text-center">
                                         Add ৳{(FREE_SHIPPING_THRESHOLD - subtotal).toLocaleString()} more for complimentary shipping
                                     </p>
@@ -85,7 +85,7 @@ export function CartDrawer() {
                         )}
 
                         {/* Table Headers (Desktop) */}
-                        <div className="hidden md:grid max-w-4xl mx-auto w-full grid-cols-12 gap-8 mt-10 mb-4 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] px-8">
+                        <div className="hidden md:grid max-w-6xl mx-auto w-full grid-cols-12 gap-8 mt-10 mb-4 text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] px-8">
                             <div className="col-span-6">Product</div>
                             <div className="col-span-3 text-center">Quantity</div>
                             <div className="col-span-3 text-right">Total</div>
@@ -93,7 +93,7 @@ export function CartDrawer() {
 
                         {/* Cart Items */}
                         <div className="flex-1 overflow-y-auto no-scrollbar">
-                            <div className="max-w-4xl mx-auto w-full p-8 md:p-12 pt-0 space-y-10">
+                            <div className="max-w-6xl mx-auto w-full p-8 md:p-12 pt-0 space-y-10">
                                 {items.length === 0 && savedItems.length === 0 ? (
                                     <div className="flex flex-col items-center justify-center h-full text-center py-32">
                                         <ShoppingBag className="h-12 w-12 text-gray-100 mb-6" />
@@ -192,7 +192,7 @@ export function CartDrawer() {
                         {/* Footer / Summary Section */}
                         {items.length > 0 && (
                             <div className="border-t border-gray-100 bg-white">
-                                <div className="max-w-4xl mx-auto w-full p-8 md:p-12 flex flex-col items-end">
+                                <div className="max-w-6xl mx-auto w-full p-8 md:p-12 flex flex-col items-end">
                                     <div className="flex flex-col items-end space-y-4 max-w-sm w-full">
                                         <div className="flex items-baseline gap-6 mb-2">
                                             <span className="text-base font-bold text-gray-900 uppercase tracking-tight">Estimated total</span>
@@ -201,10 +201,6 @@ export function CartDrawer() {
                                                 <span className="text-xs font-bold text-gray-500">BDT</span>
                                             </div>
                                         </div>
-                                        
-                                        <p className="text-[10px] text-gray-400 text-right leading-relaxed font-medium uppercase tracking-[0.1em]">
-                                            Taxes, discounts and <Link href="/cart" onClick={closeCart} className="underline underline-offset-2 hover:text-black transition-colors">shipping</Link> calculated at checkout.
-                                        </p>
 
                                         <div className="pt-6 w-full space-y-3">
                                             <Button

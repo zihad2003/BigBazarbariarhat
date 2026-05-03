@@ -97,7 +97,7 @@ export default function CartPage() {
 
     return (
         <div className="bg-white min-h-screen font-sans">
-            <div className="max-w-6xl mx-auto px-6 py-16 lg:py-24">
+            <div className="max-w-7xl mx-auto px-6 py-16 lg:py-24">
                 
                 {/* Header Section */}
                 <div className="flex justify-between items-baseline border-b border-gray-100 pb-10 mb-10">
@@ -207,10 +207,6 @@ export default function CartPage() {
                                 <span className="text-sm font-bold text-gray-500">BDT</span>
                             </div>
                         </div>
-                        
-                        <p className="text-[11px] text-gray-400 text-right leading-relaxed font-medium uppercase tracking-wider">
-                            Taxes, discounts and <Link href="/shipping" className="underline underline-offset-2 hover:text-black transition-colors">shipping</Link> calculated at checkout.
-                        </p>
 
                         <div className="pt-8 w-full">
                             <Button
