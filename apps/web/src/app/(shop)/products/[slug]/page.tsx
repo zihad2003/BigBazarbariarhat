@@ -29,6 +29,7 @@ import { RelatedProducts } from '@/components/shop/related-products';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { formatPrice, cn } from '@/lib/utils';
+import { useRouter } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
 import { DeliveryInfoModal } from '@/components/shop/delivery-info-modal';
 import { useCartStore } from '@/store/cartStore';
@@ -39,6 +40,7 @@ import type { Product, ProductVariant } from '@/types/product';
 export default function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
     const resolvedParams = use(params);
     const { slug } = resolvedParams;
+    const router = useRouter();
 
     // UI State
     const [isLoading, setIsLoading] = useState(true);
@@ -331,7 +333,10 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                                             </Button>
 
                                             <Button
-                                                onClick={() => setIsDeliveryModalOpen(true)}
+                                                onClick={() => {
+                                                    handleAddToCart();
+                                                    router.push('/checkout');
+                                                }}
                                                 disabled={isOutOfStock}
                                                 className="flex-1 h-14 bg-destructive text-white hover:bg-red-700 rounded-xl text-xs font-bold uppercase tracking-wider gap-2"
                                             >
@@ -494,11 +499,6 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                 </div>
             </div>
             
-            <DeliveryInfoModal
-                isOpen={isDeliveryModalOpen}
-                onClose={() => setIsDeliveryModalOpen(false)}
-                productName={product.name}
-            />
         </div>
     );
 }

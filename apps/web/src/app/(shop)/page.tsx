@@ -24,6 +24,8 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguageStore } from '@bigbazar/shared';
+import { useCartStore } from '@/store/cartStore';
+import { useUIStore } from '@/lib/stores/ui-store';
 import { DeliveryInfoModal } from '@/components/shop/delivery-info-modal';
 import { cn, formatPrice } from '@/lib/utils';
 
@@ -200,7 +202,8 @@ function HeroSlider() {
 // --- PRODUCT CARD (Minimal, Aarong-style) ---
 function ProductCard({ product, index }: { product: any; index: number }) {
     const [isHovered, setIsHovered] = useState(false);
-    const [isDeliveryModalOpen, setIsDeliveryModalOpen] = useState(false);
+    const addItem = useCartStore((state) => state.addItem);
+    const { openCart, addNotification } = useUIStore();
 
     return (
         <motion.div
@@ -237,11 +240,23 @@ function ProductCard({ product, index }: { product: any; index: number }) {
                     {/* Quick Add */}
                     <div className={`absolute bottom-0 left-0 right-0 transition-all duration-300 ${isHovered ? 'translate-y-0' : 'translate-y-full'}`}>
                         <button
-                            onClick={(e) => { e.preventDefault(); setIsDeliveryModalOpen(true); }}
+                            onClick={(e) => { 
+                                e.preventDefault(); 
+                                addItem({
+                                    productId: product.id,
+                                    name: product.name,
+                                    price: product.salePrice ?? product.price,
+                                    image: product.image,
+                                    quantity: 1,
+                                    stock: 100,
+                                });
+                                addNotification({ type: 'success', message: `${product.name} added to cart` });
+                                openCart();
+                            }}
                             className="w-full bg-foreground text-white text-[10px] uppercase tracking-widest font-bold py-3 flex items-center justify-center gap-2 hover:bg-destructive transition-colors"
                         >
                             <ShoppingBag className="h-3 w-3" />
-                            Quick Order
+                            Add to Cart
                         </button>
                     </div>
                 </div>
@@ -270,11 +285,6 @@ function ProductCard({ product, index }: { product: any; index: number }) {
                     )}
                 </div>
             </div>
-            <DeliveryInfoModal
-                isOpen={isDeliveryModalOpen}
-                onClose={() => setIsDeliveryModalOpen(false)}
-                productName={product.name}
-            />
         </motion.div>
     );
 }
