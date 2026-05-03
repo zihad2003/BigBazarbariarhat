@@ -14,7 +14,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useUIStore } from '@/lib/stores/ui-store'
 import { useWishlistStore } from '@/lib/stores/wishlist-store'
 import { DeliveryInfoModal } from './delivery-info-modal'
-import { useLanguageStore } from '@bigbazar/shared'
+import { useLanguageStore, useTranslation } from '@bigbazar/shared'
 
 interface ProductCardProps {
     product: Product
@@ -23,6 +23,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
     const { language } = useLanguageStore()
+    const t = useTranslation()
     const { addItem } = useCartStore()
     const { toggleItem: toggleWishlist, isInWishlist } = useWishlistStore()
     const { addNotification } = useUIStore()
@@ -264,42 +265,40 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
                 </div>
 
                 {/* Dynamic Action: Add to Cart */}
-                <div className={`absolute inset-x-6 bottom-6 z-10 flex flex-col gap-2 transition-all duration-500 ${isHovered && !isOutOfStock ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>
+                <div className={cn(
+                    "absolute inset-x-6 bottom-6 z-10 transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]",
+                    isHovered && !isOutOfStock 
+                        ? "translate-y-0 opacity-100 scale-100" 
+                        : "translate-y-8 opacity-0 scale-95 pointer-events-none"
+                )}>
                     <Button
                         onClick={handleAddToCart}
-                        className="w-full h-12 bg-luxury-gold text-luxury-black hover:bg-white font-black uppercase tracking-widest text-[9px] rounded-xl shadow-2xl shadow-luxury-gold/20 flex items-center justify-center gap-2 border border-white/10"
-                    >
-                        <ShoppingBag className="h-3.5 w-3.5" />
-                        Add to Cart
-                    </Button>
-
-                    <Button
-                        onClick={handleAddToCart}
-                        disabled={isOutOfStock || isAdding}
-                        className="w-full h-10 bg-black text-white hover:bg-gray-800 font-black uppercase tracking-widest text-[8px] rounded-xl shadow-xl shadow-black/10 group/btn overflow-hidden relative border border-white/10"
+                        disabled={isAdding || isOutOfStock}
+                        className="w-full h-14 bg-luxury-gold text-luxury-black hover:bg-white font-black uppercase tracking-[0.2em] text-[10px] rounded-2xl shadow-[0_20px_40px_-10px_rgba(212,175,55,0.4)] flex items-center justify-center gap-3 border border-white/10 transition-all duration-500 hover:-translate-y-1"
                     >
                         <AnimatePresence mode="wait">
                             {isAdding ? (
-                                <motion.span
+                                <motion.div
                                     key="adding"
-                                    initial={{ y: 20, opacity: 0 }}
+                                    initial={{ y: 10, opacity: 0 }}
                                     animate={{ y: 0, opacity: 1 }}
-                                    exit={{ y: -20, opacity: 0 }}
+                                    exit={{ y: -10, opacity: 0 }}
                                     className="flex items-center gap-2"
                                 >
-                                    Adding...
-                                </motion.span>
+                                    <div className="h-3 w-3 border-2 border-luxury-black/30 border-t-luxury-black rounded-full animate-spin" />
+                                    <span>{language === 'bn' ? 'যোগ করা হচ্ছে...' : 'Adding...'}</span>
+                                </motion.div>
                             ) : (
-                                <motion.span
+                                <motion.div
                                     key="idle"
-                                    initial={{ y: 20, opacity: 0 }}
+                                    initial={{ y: 10, opacity: 0 }}
                                     animate={{ y: 0, opacity: 1 }}
-                                    exit={{ y: -20, opacity: 0 }}
+                                    exit={{ y: -10, opacity: 0 }}
                                     className="flex items-center gap-2"
                                 >
-                                    <Plus className="h-3 w-3" />
-                                    Add to Cart
-                                </motion.span>
+                                    <ShoppingBag className="h-4 w-4" />
+                                    <span>{t?.common?.addToCart || (language === 'bn' ? 'কার্টে যোগ করুন' : 'Add to Cart')}</span>
+                                </motion.div>
                             )}
                         </AnimatePresence>
                     </Button>
