@@ -218,11 +218,12 @@ const orderRepo: IOrderRepository = {
 // ── Category repository ──────────────────────────────────────────────────────
 
 const MOCK_CATEGORIES: CategoryRecord[] = [
-  { id: 'cat-1', name: 'Men', slug: 'men', description: "Men's clothing and accessories" },
-  { id: 'cat-2', name: 'Women', slug: 'women', description: "Women's clothing and accessories" },
-  { id: 'cat-3', name: 'Kids', slug: 'kids', description: "Children's clothing" },
-  { id: 'cat-4', name: 'Accessories', slug: 'accessories', description: 'Bags, belts, jewelry and more' },
-  { id: 'cat-5', name: 'Shoes', slug: 'shoes', description: 'Footwear for all' },
+  { id: 'cat-1', name: 'New Arrivals', slug: 'new-arrivals', description: "Latest product drops" },
+  { id: 'cat-2', name: 'Men', slug: 'men', description: "Men's clothing and accessories" },
+  { id: 'cat-3', name: 'Women', slug: 'women', description: "Women's clothing and accessories" },
+  { id: 'cat-4', name: 'kid(boys)', slug: 'kid-boys', description: "Boys clothing" },
+  { id: 'cat-5', name: 'kids(girls)', slug: 'kids-girls', description: "Girls clothing" },
+  { id: 'cat-6', name: 'Sale', slug: 'sale', description: "Seasonal clearance and discounts" },
 ];
 
 const categoryRepo: ICategoryRepository = {

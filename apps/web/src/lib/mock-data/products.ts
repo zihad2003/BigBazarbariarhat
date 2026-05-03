@@ -100,12 +100,12 @@ export const MOCK_PRODUCTS: Product[] = [
 
 // Helper for generating more mock data
 const generateMoreProducts = () => {
-    const categories = ['Men', 'Women', 'Accessories', 'Shoes', 'New Arrivals', 'Sale'];
+    const categories = ['New Arrivals', 'Men', 'Women', 'kid(boys)', 'kids(girls)', 'Sale'];
     const subcats = {
         'Men': ['T-Shirts', 'Denim', 'Knitwear', 'Outerwear'],
         'Women': ['Dresses', 'Blouses', 'Trousers', 'Skirts'],
-        'Accessories': ['Bags', 'Belts', 'Wallets', 'Jewelry'],
-        'Shoes': ['Boots', 'Sneakers', 'Loafers', 'Formal'],
+        'kid(boys)': ['T-Shirts', 'Pants', 'Sets'],
+        'kids(girls)': ['Dresses', 'Tops', 'Skirts'],
         'New Arrivals': ['Spring Edit', 'Summer Drop'],
         'Sale': ['Last Chance', 'Seasonal Clearance']
     };

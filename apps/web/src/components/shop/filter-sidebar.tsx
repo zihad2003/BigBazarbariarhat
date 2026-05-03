@@ -94,20 +94,23 @@ export function FilterSidebar({ onFilterChange, activeFilters, onClearAll }: Fil
             <div>
                 <h3 className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-6 px-1">Categories</h3>
                 <div className="space-y-3">
-                    {metadata.categories.map((cat) => (
-                        <button
-                            key={cat.id}
-                            onClick={() => handleCategoryToggle(cat.slug)}
-                            aria-pressed={activeFilters.category === cat.slug}
-                            className={cn(
-                                "flex items-center justify-between w-full group p-3 rounded-2xl transition-all",
-                                activeFilters.category === cat.slug ? "bg-black text-white shadow-xl shadow-black/10" : "hover:bg-gray-100 text-gray-600"
-                            )}
-                        >
-                            <span className="font-bold">{cat.name}</span>
-                            <ChevronDown className={cn("h-4 w-4 opacity-0 group-hover:opacity-100 -rotate-90 transition-all", activeFilters.category === cat.slug && "opacity-100")} />
-                        </button>
-                    ))}
+                    {['New Arrivals', 'Men', 'Women', 'kid(boys)', 'kids(girls)', 'Sale'].map((catName) => {
+                        const slug = catName.toLowerCase().replace(/\s+/g, '-');
+                        return (
+                            <button
+                                key={catName}
+                                onClick={() => handleCategoryToggle(slug)}
+                                aria-pressed={activeFilters.category === slug}
+                                className={cn(
+                                    "flex items-center justify-between w-full group p-3 rounded-2xl transition-all",
+                                    activeFilters.category === slug ? "bg-black text-white shadow-xl shadow-black/10" : "hover:bg-gray-100 text-gray-600"
+                                )}
+                            >
+                                <span className="font-bold">{catName}</span>
+                                <ChevronDown className={cn("h-4 w-4 opacity-0 group-hover:opacity-100 -rotate-90 transition-all", activeFilters.category === slug && "opacity-100")} />
+                            </button>
+                        );
+                    })}
                 </div>
             </div>
 

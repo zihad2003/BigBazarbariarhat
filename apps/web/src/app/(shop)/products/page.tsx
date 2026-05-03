@@ -53,10 +53,7 @@ export default function ProductsPage() {
     const itemsPerPage = 12;
 
     // Derived Data
-    const categories = useMemo(() => {
-        const cats = Array.from(new Set(MOCK_PRODUCTS.map(p => p.category).filter(Boolean)));
-        return cats.sort();
-    }, []);
+    const categories = ['New Arrivals', 'Men', 'Women', 'kid(boys)', 'kids(girls)', 'Sale'];
 
     const brands = useMemo(() => {
         const b = Array.from(new Set(MOCK_PRODUCTS.map(p => p.brand).filter(Boolean)));
