@@ -198,53 +198,54 @@ export function ProductQuickView({ product }: ProductQuickViewProps) {
                                 </div>
                             )}
 
-                            <div className="flex flex-col gap-4">
+                            <div className="flex flex-col gap-3">
+                                {/* Add to Cart */}
                                 <Button
                                     onClick={handleAddToCart}
-                                    className="w-full h-16 bg-luxury-gold text-luxury-black hover:bg-white transition-all font-black uppercase tracking-widest text-[10px] rounded-2xl shadow-2xl shadow-luxury-gold/20 flex items-center gap-2 group border border-white/10"
-                                >
-                                    <ShoppingBag className="h-4 w-4 group-hover:scale-110 transition-transform" />
-                                    Add to Cart
-                                </Button>
-
-                                <Button
-                                    onClick={handleAddToCart}
-                                    disabled={isOutOfStock || isAdding}
-                                    className="w-full h-14 bg-black text-white hover:bg-gray-800 transition-all font-black uppercase tracking-widest text-[10px] rounded-2xl shadow-xl shadow-black/10 group overflow-hidden relative border border-gray-100"
+                                    disabled={isAdding || isOutOfStock}
+                                    className="w-full h-16 bg-luxury-gold text-luxury-black hover:bg-white transition-all font-black uppercase tracking-widest text-[10px] rounded-2xl shadow-2xl shadow-luxury-gold/20 flex items-center justify-center gap-2 group border border-white/10"
                                 >
                                     <AnimatePresence mode="wait">
                                         {isAdding ? (
-                                            <motion.div
-                                                key="loading"
-                                                initial={{ y: 20, opacity: 0 }}
-                                                animate={{ y: 0, opacity: 1 }}
-                                                exit={{ y: -20, opacity: 0 }}
-                                                className="flex items-center gap-2"
-                                            >
+                                            <motion.div key="adding" initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -10, opacity: 0 }} className="flex items-center gap-2">
                                                 <Loader2 className="h-4 w-4 animate-spin" />
-                                                Adding...
+                                                <span>{language === 'bn' ? 'যোগ করা হচ্ছে...' : 'Adding...'}</span>
                                             </motion.div>
                                         ) : (
-                                            <motion.div
-                                                key="idle"
-                                                initial={{ y: 20, opacity: 0 }}
-                                                animate={{ y: 0, opacity: 1 }}
-                                                exit={{ y: -20, opacity: 0 }}
-                                                className="flex items-center gap-2"
-                                            >
-                                                <Plus className="h-4 w-4 group-hover:scale-110 transition-transform" />
-                                                {isOutOfStock ? 'Notify Availability' : 'Add to Cart'}
+                                            <motion.div key="idle" initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -10, opacity: 0 }} className="flex items-center gap-2">
+                                                <ShoppingBag className="h-4 w-4" />
+                                                <span>{t?.common?.addToCart || 'Add to Cart'}</span>
                                             </motion.div>
                                         )}
                                     </AnimatePresence>
                                 </Button>
+
+                                {/* Order Now */}
+                                <Button
+                                    onClick={() => {
+                                        addItem({
+                                            productId: product.id,
+                                            name: product.name,
+                                            price: product.salePrice ?? product.basePrice,
+                                            image: product.images?.[0]?.url ?? '',
+                                            quantity,
+                                            stock: product.stock,
+                                        });
+                                        router.push('/checkout');
+                                    }}
+                                    disabled={isOutOfStock}
+                                    className="w-full h-14 bg-black text-white hover:bg-gray-800 transition-all font-black uppercase tracking-widest text-[10px] rounded-2xl shadow-xl shadow-black/10 flex items-center justify-center gap-2 border border-white/10"
+                                >
+                                    <ArrowRight className="h-4 w-4" />
+                                    {t?.common?.orderNow || 'Order Now'}
+                                </Button>
+                            </div>
 
                                 <Link href={`/products/${product.slug || product.id}`} className="block">
                                     <Button variant="ghost" className="w-full h-14 text-gray-400 hover:text-black uppercase tracking-widest text-[10px] font-black group transition-all">
                                         View Full Details <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
                                     </Button>
                                 </Link>
-                            </div>
                         </div>
 
                         {/* Connection Channels */}

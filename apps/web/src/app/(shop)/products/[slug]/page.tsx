@@ -35,11 +35,12 @@ import { DeliveryInfoModal } from '@/components/shop/delivery-info-modal';
 import { useCartStore } from '@/store/cartStore';
 import { useWishlistStore } from '@/lib/stores/wishlist-store';
 import { useUIStore } from '@/lib/stores/ui-store';
-import { useLanguageStore } from '@bigbazar/shared';
+import { useLanguageStore, useTranslation } from '@bigbazar/shared';
 import type { Product, ProductVariant } from '@/types/product';
 
 export default function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
     const { language } = useLanguageStore();
+    const t = useTranslation();
     const resolvedParams = use(params);
     const { slug } = resolvedParams;
     const router = useRouter();
@@ -324,14 +325,14 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                                             <Button
                                                 onClick={handleAddToCart}
                                                 disabled={isOutOfStock || isAdding}
-                                                className="flex-1 h-14 bg-foreground text-white hover:bg-gray-800 rounded-xl text-xs font-bold uppercase tracking-wider gap-2 transition-all"
+                                                className="flex-1 h-14 bg-luxury-gold text-luxury-black hover:bg-white rounded-xl text-[10px] font-black uppercase tracking-widest gap-2 transition-all shadow-lg shadow-luxury-gold/10"
                                             >
                                                 {isAdding ? (
                                                     <Loader2 className="h-4 w-4 animate-spin" />
                                                 ) : (
                                                     <ShoppingBag className="h-4 w-4" />
                                                 )}
-                                                Add to Cart
+                                                {t?.common?.addToCart || 'Add to Cart'}
                                             </Button>
 
                                             <Button
@@ -340,9 +341,10 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                                                     router.push('/checkout');
                                                 }}
                                                 disabled={isOutOfStock}
-                                                className="flex-1 h-14 bg-destructive text-white hover:bg-red-700 rounded-xl text-xs font-bold uppercase tracking-wider gap-2"
+                                                className="flex-1 h-14 bg-black text-white hover:bg-gray-900 rounded-xl text-[10px] font-black uppercase tracking-widest gap-2 shadow-lg shadow-black/10"
                                             >
-                                                Buy Now
+                                                <ArrowRight className="h-4 w-4" />
+                                                {t?.common?.orderNow || 'Order Now'}
                                             </Button>
                                         </div>
 

@@ -264,43 +264,54 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
                     <ProductQuickView product={product} />
                 </div>
 
-                {/* Dynamic Action: Add to Cart */}
+                {/* Dynamic Action: Cart & Checkout */}
                 <div className={cn(
-                    "absolute inset-x-6 bottom-6 z-10 transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]",
+                    "absolute inset-x-6 bottom-6 z-10 flex flex-col gap-2 transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]",
                     isHovered && !isOutOfStock 
                         ? "translate-y-0 opacity-100 scale-100" 
                         : "translate-y-8 opacity-0 scale-95 pointer-events-none"
                 )}>
+                    {/* Add to Cart */}
                     <Button
                         onClick={handleAddToCart}
                         disabled={isAdding || isOutOfStock}
-                        className="w-full h-14 bg-luxury-gold text-luxury-black hover:bg-white font-black uppercase tracking-[0.2em] text-[10px] rounded-2xl shadow-[0_20px_40px_-10px_rgba(212,175,55,0.4)] flex items-center justify-center gap-3 border border-white/10 transition-all duration-500 hover:-translate-y-1"
+                        className="w-full h-12 bg-luxury-gold text-luxury-black hover:bg-white font-black uppercase tracking-[0.2em] text-[9px] rounded-xl shadow-xl shadow-luxury-gold/20 flex items-center justify-center gap-3 border border-white/10 transition-all duration-300"
                     >
                         <AnimatePresence mode="wait">
                             {isAdding ? (
-                                <motion.div
-                                    key="adding"
-                                    initial={{ y: 10, opacity: 0 }}
-                                    animate={{ y: 0, opacity: 1 }}
-                                    exit={{ y: -10, opacity: 0 }}
-                                    className="flex items-center gap-2"
-                                >
+                                <motion.div key="adding" initial={{ y: 5, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -5, opacity: 0 }} className="flex items-center gap-2">
                                     <div className="h-3 w-3 border-2 border-luxury-black/30 border-t-luxury-black rounded-full animate-spin" />
                                     <span>{language === 'bn' ? 'যোগ করা হচ্ছে...' : 'Adding...'}</span>
                                 </motion.div>
                             ) : (
-                                <motion.div
-                                    key="idle"
-                                    initial={{ y: 10, opacity: 0 }}
-                                    animate={{ y: 0, opacity: 1 }}
-                                    exit={{ y: -10, opacity: 0 }}
-                                    className="flex items-center gap-2"
-                                >
-                                    <ShoppingBag className="h-4 w-4" />
-                                    <span>{t?.common?.addToCart || (language === 'bn' ? 'কার্টে যোগ করুন' : 'Add to Cart')}</span>
+                                <motion.div key="idle" initial={{ y: 5, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -5, opacity: 0 }} className="flex items-center gap-2">
+                                    <ShoppingBag className="h-3.5 w-3.5" />
+                                    <span>{t?.common?.addToCart || 'Add to Cart'}</span>
                                 </motion.div>
                             )}
                         </AnimatePresence>
+                    </Button>
+
+                    {/* Order Now (Quick Buy) */}
+                    <Button
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            addItem({
+                                productId: product.id,
+                                name: product.name,
+                                price: product.salePrice ?? product.basePrice,
+                                image: product.images?.[0]?.url ?? '',
+                                quantity: 1,
+                                stock: product.stock,
+                            });
+                            router.push('/checkout');
+                        }}
+                        disabled={isOutOfStock}
+                        className="w-full h-10 bg-black text-white hover:bg-gray-800 font-black uppercase tracking-[0.2em] text-[8px] rounded-xl shadow-lg border border-white/10 transition-all duration-300"
+                    >
+                        <ArrowRight className="h-3 w-3 mr-2" />
+                        {t?.common?.orderNow || 'Order Now'}
                     </Button>
                 </div>
             </div>

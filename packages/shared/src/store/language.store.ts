@@ -23,7 +23,8 @@ export const translations = {
             free: 'Free',
             back: 'Back',
             next: 'Next',
-            previous: 'Previous'
+            previous: 'Previous',
+            orderNow: 'Order Now'
         },
         hero: {
             title: 'Refined Elegance',
@@ -91,7 +92,8 @@ export const translations = {
             free: 'ফ্রি',
             back: 'পিছনে',
             next: 'পরবর্তী',
-            previous: 'পূর্ববর্তী'
+            previous: 'পূর্ববর্তী',
+            orderNow: 'অর্ডার করুন'
         },
         hero: {
             title: 'মার্জিত শৈলী',
