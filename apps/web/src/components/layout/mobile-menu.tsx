@@ -18,7 +18,7 @@ import { useLanguageStore, useTranslation } from '@bigbazar/shared';
 
 const getMobileNavigation = (t: any) => [
     {
-        name: t.categories.men,
+        name: t?.categories?.men || 'Men',
         href: '/products?category=Men',
         submenu: [
             { name: 'T-Shirts', href: '/products?category=Men&subcategory=T-Shirts' },
@@ -28,7 +28,7 @@ const getMobileNavigation = (t: any) => [
         ]
     },
     {
-        name: t.categories.women,
+        name: t?.categories?.women || 'Women',
         href: '/products?category=Women',
         submenu: [
             { name: 'Dresses', href: '/products?category=Women&subcategory=Dresses' },
@@ -38,7 +38,7 @@ const getMobileNavigation = (t: any) => [
         ]
     },
     {
-        name: t.categories.kidsBoys,
+        name: t?.categories?.kidsBoys || 'Kids(Boys)',
         href: '/products?category=Kids(Boys)',
         submenu: [
             { name: 'T-Shirts', href: '/products?category=Kids(Boys)&subcategory=T-Shirts' },
@@ -47,7 +47,7 @@ const getMobileNavigation = (t: any) => [
         ]
     },
     {
-        name: t.categories.kidsGirls,
+        name: t?.categories?.kidsGirls || 'Kids(Girls)',
         href: '/products?category=Kids(Girls)',
         submenu: [
             { name: 'Dresses', href: '/products?category=Kids(Girls)&subcategory=Dresses' },
@@ -56,7 +56,7 @@ const getMobileNavigation = (t: any) => [
         ]
     },
     {
-        name: t.categories.weddingTouch,
+        name: t?.categories?.weddingTouch || 'Wedding Touch',
         href: '/products?category=Wedding-Touch',
         submenu: [
             { name: 'Panjabi', href: '/products?category=Wedding-Touch&subcategory=Panjabi' },
