@@ -14,7 +14,7 @@ export default function ShopLayout({
             <SearchModal />
             <CartDrawer />
             <Toaster />
-            <main className="min-h-screen">
+            <main className="min-h-screen pb-24 md:pb-0">
                 {children}
             </main>
             <Footer />

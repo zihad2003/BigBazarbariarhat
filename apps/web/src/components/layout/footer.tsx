@@ -55,7 +55,7 @@ export function Footer() {
     const [currentLanguage, setCurrentLanguage] = useState<'EN' | 'BN'>('EN');
 
     return (
-        <footer className="bg-background text-muted-foreground border-t border-border font-lato">
+        <footer className="bg-background text-muted-foreground border-t border-border font-lato pb-24 md:pb-0">
             {/* Features Bar */}
             <div className="border-b border-border bg-gradient-to-r from-background via-card to-background relative overflow-hidden">
                 <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>

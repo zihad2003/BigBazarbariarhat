@@ -219,7 +219,7 @@ export function Header() {
                         <div className="flex items-center gap-6 flex-1 justify-end max-w-xl">
                             
                             {/* Search Bar - Desktop */}
-                            <div ref={searchRef} className="hidden md:block relative flex-1 max-w-md">
+                            <div ref={searchRef} className="hidden lg:block relative flex-1 max-w-md">
                                 <form onSubmit={handleSearch} className="relative group">
                                     <Search className={cn(
                                         "absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 transition-colors",
@@ -319,7 +319,7 @@ export function Header() {
                             <div className="flex items-center gap-3">
                                 <button 
                                     onClick={() => setIsSearchFocused(true)}
-                                    className="md:hidden p-3 bg-slate-50 hover:bg-slate-100 rounded-2xl transition-all" 
+                                    className="lg:hidden p-3 bg-slate-50 hover:bg-slate-100 rounded-2xl transition-all" 
                                     aria-label="Search"
                                 >
                                     <Search className="h-5 w-5 text-slate-900" />
