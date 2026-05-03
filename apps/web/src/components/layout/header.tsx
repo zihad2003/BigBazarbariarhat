@@ -155,7 +155,7 @@ export function Header() {
                     <div className="flex items-center justify-between h-24 lg:h-28">
                         
                         {/* Left Section: Mobile Menu & Logo */}
-                        <div className="flex items-center gap-2 md:gap-4 shrink-0">
+                        <div className="flex items-center gap-2 md:gap-4 shrink-0 mr-8">
                             <MobileMenu />
                             {/* Logo */}
                             <Link href="/" className="group">
@@ -168,7 +168,7 @@ export function Header() {
                         </div>
 
                         {/* Navigation - Desktop */}
-                        <nav className="hidden xl:flex items-center gap-10">
+                        <nav className="hidden xl:flex items-center gap-6 2xl:gap-10">
                             {categories.filter(c => !c.isHidden).map((category) => (
                                 <div 
                                     key={category.name}
