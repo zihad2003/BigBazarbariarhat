@@ -2,241 +2,173 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import {
     ArrowLeft,
     Save,
     Image as ImageIcon,
     Loader2,
-    Sparkles,
+    Plus,
+    Tag,
+    Type,
     LayoutGrid,
-    Type
+    Check
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-
-const categorySchema = z.object({
-    name: z.string().min(3, 'Collection name must be at least 3 characters'),
-    slug: z.string().min(3, 'URI Slug is required'),
-    description: z.string().optional(),
-    displayOrder: z.string().refine((val) => !isNaN(Number(val)), 'Sequence must be numeric'),
-    isActive: z.boolean().default(true),
-    // parentId: z.string().optional(), // Future implementation
-});
-
-type CategoryFormValues = z.infer<typeof categorySchema>;
 
 export default function NewCategoryPage() {
     const router = useRouter();
-    const [saving, setSaving] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-    const {
-        register,
-        handleSubmit,
-        setValue,
-        watch,
-        formState: { errors }
-    } = useForm<CategoryFormValues>({
-        resolver: zodResolver(categorySchema),
-        defaultValues: {
-            isActive: true,
-            displayOrder: '0',
-        }
-    });
+    // Form State
+    const [name, setName] = useState('');
+    const [slug, setSlug] = useState('');
+    const [description, setDescription] = useState('');
+    const [order, setOrder] = useState('0');
+    const [status, setStatus] = useState('active');
 
-    const watchName = watch('name');
-
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setImagePreview(reader.result as string);
-            };
-            reader.readAsDataURL(file);
-        }
-    };
-
-    const onCategorySubmit = async (data: CategoryFormValues) => {
-        setSaving(true);
-        try {
-            // Include simulated image in payload if needed by backend, or mock it
-            const payload = { ...data, image: imagePreview };
-
-            const res = await fetch('/api/categories', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-            const result = await res.json();
-            if (result.success) {
-                router.push('/categories');
-            }
-        } catch (error) {
-            console.error('Submission failed:', error);
-        } finally {
-            setSaving(false);
-        }
+    const handleSave = async () => {
+        setLoading(true);
+        // Mock save
+        await new Promise(r => setTimeout(r, 1000));
+        router.push('/categories');
     };
 
     const generateSlug = () => {
-        if (!watchName) return;
-        const slug = watchName
-            .toLowerCase()
-            .replace(/[^a-z0-9]+/g, '-')
-            .replace(/(^-|-$)/g, '');
-        setValue('slug', slug);
+        const s = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        setSlug(s);
     };
 
     return (
-        <div className="max-w-4xl mx-auto space-y-12 pb-20">
-            {/* Navigation Header */}
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 border-b border-gray-100 pb-10">
-                <div className="flex items-center gap-6">
-                    <button
-                        onClick={() => router.back()}
-                        className="w-14 h-14 bg-white border border-gray-100 rounded-2xl flex items-center justify-center hover:bg-black hover:text-white transition-all shadow-sm"
-                    >
-                        <ArrowLeft className="h-6 w-6" />
+        <div className="max-w-[800px] mx-auto pb-20">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-10 pb-6 border-b border-border">
+                <div className="flex items-center gap-4">
+                    <button onClick={() => router.back()} className="p-2 hover:bg-muted rounded-lg transition-colors">
+                        <ArrowLeft className="w-5 h-5 text-muted-foreground" />
                     </button>
                     <div>
-                        <div className="flex items-center gap-3 mb-2">
-                            <h1 className="text-4xl font-black text-gray-900 tracking-tighter">New Collection</h1>
-                            <Sparkles className="h-6 w-6 text-indigo-600" />
-                        </div>
-                        <p className="text-gray-400 font-bold uppercase tracking-[0.2em] text-[10px]">Taxonomy Node: <span className="text-gray-900">{watchName || 'Awaiting Input'}</span></p>
+                        <h1 className="text-xl font-semibold text-foreground">Add New Category</h1>
+                        <p className="text-[13px] text-muted-foreground">Create a new group for your products.</p>
                     </div>
                 </div>
-                <div className="flex gap-4">
-                    <Button variant="outline" onClick={() => router.back()} className="h-14 px-8 border-2 rounded-2xl text-xs font-black uppercase tracking-widest">
-                        Discard
-                    </Button>
-                    <Button
-                        onClick={handleSubmit(onCategorySubmit)}
-                        disabled={saving}
-                        className="h-14 px-10 bg-black text-white rounded-2xl text-xs font-black uppercase tracking-widest gap-3 shadow-2xl shadow-black/10 transition-all hover:scale-105 active:scale-95 disabled:opacity-50"
+                <div className="flex items-center gap-3">
+                    <button onClick={() => router.back()} className="px-4 py-2 text-[13px] font-medium text-muted-foreground hover:text-foreground transition-colors">
+                        Cancel
+                    </button>
+                    <button
+                        onClick={handleSave}
+                        disabled={loading}
+                        className="px-6 py-2 bg-primary text-primary-foreground rounded-lg text-[13px] font-semibold hover:bg-primary/90 transition flex items-center gap-2"
                     >
-                        {saving ? <Loader2 className="h-5 w-5 animate-spin" /> : <Save className="h-5 w-5" />}
-                        {saving ? 'Manifesting...' : 'Publish Collection'}
-                    </Button>
+                        {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+                        Save Category
+                    </button>
                 </div>
             </div>
 
-            <div className="flex flex-col gap-10">
-                {/* Main Form Content */}
-                <form className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <section className="bg-white rounded-[3rem] border border-gray-100 p-10 shadow-sm relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-40 h-40 bg-indigo-50 rounded-bl-[10rem] opacity-30" />
-                        <h3 className="text-xl font-black text-gray-900 mb-8 border-b border-gray-50 pb-6 uppercase tracking-widest flex items-center gap-3">
-                            <LayoutGrid className="h-5 w-5 text-indigo-600" />
-                            Collection Profile
-                        </h3>
-
-                        <div className="space-y-8">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                <div className="space-y-4">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Collection Name</label>
-                                    <input
-                                        {...register('name')}
-                                        onBlur={generateSlug}
-                                        className="w-full h-16 px-6 bg-gray-50 border border-transparent rounded-[1.5rem] font-bold text-gray-900 focus:bg-white focus:border-indigo-600 transition-all outline-none"
-                                        placeholder="e.g. Urban Streetwear"
-                                    />
-                                    {errors.name && <p className="text-rose-500 text-xs font-bold uppercase tracking-widest ml-4">{errors.name.message}</p>}
-                                </div>
-
-                                <div className="space-y-4">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">URI Slug</label>
-                                    <input
-                                        {...register('slug')}
-                                        className="w-full h-16 px-6 bg-gray-50 border border-transparent rounded-[1.5rem] font-bold text-gray-900 focus:bg-white focus:border-indigo-600 transition-all outline-none"
-                                        placeholder="urban-streetwear"
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="space-y-4">
-                                <div className="flex justify-between items-center ml-4">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Narrative Description</label>
-                                    <div className="flex gap-2">
-                                        <button type="button" className="p-1 hover:bg-gray-100 rounded text-[10px] font-bold uppercase">B</button>
-                                        <button type="button" className="p-1 hover:bg-gray-100 rounded text-[10px] font-bold uppercase italic">I</button>
-                                    </div>
-                                </div>
-                                <textarea
-                                    {...register('description')}
-                                    rows={4}
-                                    className="w-full p-6 bg-gray-50 border border-transparent rounded-[1.5rem] font-bold text-gray-900 focus:bg-white focus:border-indigo-600 transition-all outline-none resize-none"
+            <div className="space-y-6">
+                {/* Information */}
+                <div className="bg-card border border-border rounded-xl p-6">
+                    <h2 className="text-sm font-semibold mb-6 flex items-center gap-2">
+                        <Tag className="w-4 h-4 text-primary" />
+                        Category Details
+                    </h2>
+                    <div className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-1.5">
+                                <label className="text-[12px] font-medium text-muted-foreground">Category Name</label>
+                                <input
+                                    type="text"
+                                    value={name}
+                                    onChange={e => setName(e.target.value)}
+                                    onBlur={generateSlug}
+                                    placeholder="e.g. Wedding Wear"
+                                    className="w-full h-11 px-4 bg-background border border-input rounded-lg text-[13px] outline-none focus:ring-2 focus:ring-ring transition"
                                 />
                             </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                <div className="space-y-4">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Display Sequence</label>
-                                    <input
-                                        {...register('displayOrder')}
-                                        type="number"
-                                        className="w-full h-16 px-6 bg-gray-50 border border-transparent rounded-[1.5rem] font-bold text-gray-900 focus:bg-white focus:border-indigo-600 transition-all outline-none"
-                                        placeholder="0"
-                                    />
-                                </div>
-
-                                <div className="space-y-4 flex flex-col justify-center">
-                                    <label className="flex items-center gap-4 p-4 bg-gray-50 rounded-[1.5rem] cursor-pointer hover:bg-gray-100 transition-all">
-                                        <input
-                                            type="checkbox"
-                                            {...register('isActive')}
-                                            className="w-6 h-6 rounded-lg accent-indigo-600"
-                                        />
-                                        <div>
-                                            <div className="text-sm font-black text-gray-900 uppercase tracking-widest">Active Status</div>
-                                            <div className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Visible in storefront</div>
-                                        </div>
-                                    </label>
-                                </div>
+                            <div className="space-y-1.5">
+                                <label className="text-[12px] font-medium text-muted-foreground">Slug (URL)</label>
+                                <input
+                                    type="text"
+                                    value={slug}
+                                    onChange={e => setSlug(e.target.value)}
+                                    placeholder="wedding-wear"
+                                    className="w-full h-11 px-4 bg-background border border-input rounded-lg text-[13px] outline-none focus:ring-2 focus:ring-ring transition text-muted-foreground"
+                                />
                             </div>
                         </div>
-                    </section>
+                        <div className="space-y-1.5">
+                            <label className="text-[12px] font-medium text-muted-foreground">Description</label>
+                            <textarea
+                                rows={4}
+                                value={description}
+                                onChange={e => setDescription(e.target.value)}
+                                placeholder="Describe what products belong here..."
+                                className="w-full p-4 bg-background border border-input rounded-lg text-[13px] outline-none focus:ring-2 focus:ring-ring transition resize-none"
+                            />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-1.5">
+                                <label className="text-[12px] font-medium text-muted-foreground">Sort Order</label>
+                                <input
+                                    type="number"
+                                    value={order}
+                                    onChange={e => setOrder(e.target.value)}
+                                    className="w-full h-11 px-4 bg-background border border-input rounded-lg text-[13px] outline-none focus:ring-2 focus:ring-ring transition"
+                                />
+                            </div>
+                            <div className="space-y-1.5">
+                                <label className="text-[12px] font-medium text-muted-foreground">Status</label>
+                                <select value={status} onChange={e => setStatus(e.target.value)} className="w-full h-11 px-3 bg-background border border-input rounded-lg text-[13px] outline-none font-semibold text-emerald-600">
+                                    <option value="active">Active (Visible)</option>
+                                    <option value="draft">Draft (Hidden)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                    <section className="bg-white rounded-[3rem] border border-gray-100 p-10 shadow-sm relative overflow-hidden">
-                        <h3 className="text-xl font-black text-gray-900 mb-8 border-b border-gray-50 pb-6 uppercase tracking-widest flex items-center gap-3">
-                            <ImageIcon className="h-5 w-5 text-indigo-600" />
-                            Visual Identity
-                        </h3>
-
-                        <div className="flex flex-col md:flex-row gap-8 items-center">
-                            <div className="relative w-full md:w-64 aspect-square bg-gray-50 rounded-[2rem] border-2 border-dashed border-gray-200 overflow-hidden flex items-center justify-center group hover:border-indigo-200 transition-all">
-                                {imagePreview ? (
-                                    <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
-                                ) : (
-                                    <div className="text-center p-6">
-                                        <ImageIcon className="h-12 w-12 text-gray-300 mx-auto mb-4 group-hover:text-indigo-400 transition-colors" />
-                                        <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest group-hover:text-indigo-400">Cover Image</p>
-                                    </div>
-                                )}
+                {/* Photo */}
+                <div className="bg-card border border-border rounded-xl p-6">
+                    <h2 className="text-sm font-semibold mb-4 flex items-center gap-2">
+                        <ImageIcon className="w-4 h-4 text-primary" />
+                        Category Image
+                    </h2>
+                    <div className="flex items-center gap-8">
+                        <div className="w-32 h-32 bg-muted/40 rounded-xl border-2 border-dashed border-border flex flex-col items-center justify-center text-center relative overflow-hidden group cursor-pointer hover:bg-muted/60 transition">
+                            {imagePreview ? (
+                                <img src={imagePreview} className="absolute inset-0 w-full h-full object-cover" />
+                            ) : (
+                                <Plus className="w-6 h-6 text-muted-foreground" />
+                            )}
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={e => {
+                                    const file = e.target.files?.[0];
+                                    if (file) setImagePreview(URL.createObjectURL(file));
+                                }}
+                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                            />
+                        </div>
+                        <div className="flex-1">
+                            <p className="text-[13px] font-medium text-foreground">Upload a cover photo</p>
+                            <p className="text-[12px] text-muted-foreground mt-1">This image will show at the top of the category page.</p>
+                            <button className="mt-4 px-4 py-2 border border-border rounded-lg text-[12px] font-bold hover:bg-muted/60 transition relative overflow-hidden">
+                                Choose Photo
                                 <input
                                     type="file"
                                     accept="image/*"
-                                    onChange={handleImageChange}
+                                    onChange={e => {
+                                        const file = e.target.files?.[0];
+                                        if (file) setImagePreview(URL.createObjectURL(file));
+                                    }}
                                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                    aria-label="Upload category image"
                                 />
-                            </div>
-                            <div className="flex-1 space-y-4">
-                                <h4 className="text-lg font-black text-gray-900">Collection Aesthetic</h4>
-                                <p className="text-gray-400 font-medium leading-relaxed max-w-md">
-                                    Upload a high-fidelity visual to represent this collection. This asset will be utilized in catalog headers and promotional cards.
-                                </p>
-                                <Button type="button" className="pointer-events-none bg-gray-900 text-white rounded-xl text-xs font-black uppercase tracking-widest h-12 px-6">
-                                    Recommended: 1200x600px
-                                </Button>
-                            </div>
+                            </button>
                         </div>
-                    </section>
-                </form>
+                    </div>
+                </div>
             </div>
         </div>
     );

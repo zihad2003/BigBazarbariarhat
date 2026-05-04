@@ -228,7 +228,7 @@ export default function AnalyticsPage() {
                 <div className="bg-white rounded-[4rem] border border-gray-100 p-12 shadow-sm group">
                     <h3 className="text-2xl font-black text-gray-900 mb-12 tracking-tight italic flex items-center gap-4">
                         <BarChart3 className="h-6 w-6 text-indigo-500" />
-                        Top Tier Brand Traction
+                        Popular Categories
                     </h3>
                     <div className="h-[300px] w-full">
                         <ResponsiveContainer width="100%" height="100%">

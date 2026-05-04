@@ -75,6 +75,40 @@ export function Footer() {
                 </div>
             </div>
 
+            {/* Newsletter */}
+            <div className="border-b border-border">
+                <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12">
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+                        <div className="text-center md:text-left">
+                            <h3 className="font-playfair font-bold text-foreground text-lg uppercase tracking-widest mb-1">
+                                Stay in the loop
+                            </h3>
+                            <p className="text-sm text-muted-foreground">
+                                New arrivals, exclusive offers and style tips — straight to your inbox.
+                            </p>
+                        </div>
+                        <form
+                            onSubmit={(e) => e.preventDefault()}
+                            className="flex w-full md:w-auto gap-2"
+                        >
+                            <input
+                                type="email"
+                                required
+                                placeholder="your@email.com"
+                                className="flex-1 md:w-72 h-11 px-4 rounded-full border border-border bg-background text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-destructive transition-colors"
+                            />
+                            <button
+                                type="submit"
+                                className="h-11 px-6 rounded-full bg-destructive text-white text-[11px] font-black uppercase tracking-widest hover:bg-destructive/90 transition-colors flex items-center gap-2 shrink-0"
+                            >
+                                <Send className="h-4 w-4" />
+                                Subscribe
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
             {/* Main Footer */}
             <div className="max-w-7xl mx-auto px-6 lg:px-8 py-16">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-10">
