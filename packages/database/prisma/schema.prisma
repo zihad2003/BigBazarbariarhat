@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -48,7 +48,7 @@ model Product {
   salePrice     Decimal?  @db.Decimal(10, 2)
   sku           String    @unique
   stock         Int       @default(0)
-  images        String[]
+  images        Json?
   categoryId    String
   category      Category  @relation(fields: [categoryId], references: [id])
   isActive      Boolean   @default(true)
