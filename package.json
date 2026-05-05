@@ -19,11 +19,9 @@
     "test": "npm run test -w apps/web",
     "test:watch": "npm run test:watch -w apps/web",
     "test:coverage": "npm run test:coverage -w apps/web",
-    "type-check": "npm run type-check -w apps/web",
-    "prepare": "husky"
+    "type-check": "npm run type-check -w apps/web"
   },
   "devDependencies": {
-    "lint-staged": "^15.0.0",
     "prettier": "^3.0.0"
   },
   "dependencies": {

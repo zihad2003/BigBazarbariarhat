@@ -5,8 +5,9 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
     LayoutDashboard, Package, ShoppingCart, Users, Settings,
-    Menu, X, ChevronDown, TrendingUp, Percent, Bell, Search, User
+    Menu, X, ChevronDown, TrendingUp, Percent, Bell, Search, User, LogOut
 } from 'lucide-react';
+import { signOut } from 'next-auth/react';
 import { ThemeSwitcher } from '@/components/theme-switcher';
 
 /* ──────────────────── Navigation config ──────────────────── */
@@ -128,14 +129,23 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
                 {/* User (bottom) */}
                 <div className="border-t border-border p-3 shrink-0">
-                    <div className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-muted/60 transition-colors cursor-pointer">
-                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                            <User className="w-4 h-4 text-primary" />
+                    <div className="flex items-center justify-between gap-3 px-3 py-2 rounded-lg hover:bg-muted/60 transition-colors group">
+                        <div className="flex items-center gap-3 overflow-hidden">
+                            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                                <User className="w-4 h-4 text-primary" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                                <p className="text-[13px] font-medium text-foreground truncate">Admin</p>
+                                <p className="text-[11px] text-muted-foreground truncate">admin@bigbazar.com</p>
+                            </div>
                         </div>
-                        <div className="min-w-0 flex-1">
-                            <p className="text-[13px] font-medium text-foreground truncate">Admin</p>
-                            <p className="text-[11px] text-muted-foreground truncate">admin@bigbazar.com</p>
-                        </div>
+                        <button
+                            onClick={() => signOut({ callbackUrl: '/login' })}
+                            className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-md transition-all opacity-0 group-hover:opacity-100"
+                            title="Log Out"
+                        >
+                            <LogOut className="w-4 h-4" />
+                        </button>
                     </div>
                 </div>
             </aside>

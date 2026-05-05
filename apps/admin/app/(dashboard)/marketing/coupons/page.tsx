@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import {
     Ticket,
@@ -8,49 +8,50 @@ import {
     Search,
     Trash2,
     Calendar,
-    Edit3,
     ArrowRight,
     Loader2,
     TrendingUp,
-    Users
 } from 'lucide-react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useToast } from '@/components/ui/use-toast';
 
 export default function CouponsPage() {
-    const [coupons, setCoupons] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
+    const { toast } = useToast();
+    const queryClient = useQueryClient();
 
-    const fetchCoupons = async () => {
-        setLoading(true);
-        try {
+    // Fetch Coupons
+    const { data: coupons = [], isLoading, error } = useQuery({
+        queryKey: ['coupons', searchQuery],
+        queryFn: async () => {
             const res = await fetch(`/api/marketing/coupons?q=${searchQuery}`);
             const result = await res.json();
-            if (result.success) {
-                setCoupons(result.data);
-            }
-        } catch (error) {
-            console.error('Failed to fetch coupons:', error);
-        } finally {
-            setLoading(false);
+            if (!result.success) throw new Error(result.error);
+            return result.data;
+        },
+    });
+
+    // Delete Mutation
+    const deleteMutation = useMutation({
+        mutationFn: async (id: string) => {
+            const res = await fetch(`/api/marketing/coupons/${id}`, { method: 'DELETE' });
+            if (!res.ok) throw new Error('Failed to delete coupon');
+            return id;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['coupons'] });
+            toast({ title: 'Success', description: 'Coupon deleted successfully.' });
+        },
+        onError: (err: any) => {
+            toast({ title: 'Error', description: err.message, variant: 'destructive' });
         }
-    };
+    });
 
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            fetchCoupons();
-        }, 500);
-        return () => clearTimeout(timer);
-    }, [searchQuery]);
-
-    const deleteCoupon = async (e: React.MouseEvent, id: string) => {
+    const handleDelete = (e: React.MouseEvent, id: string) => {
         e.preventDefault();
         e.stopPropagation();
-        if (!confirm('Are you sure you want to delete this coupon?')) return;
-        try {
-            const res = await fetch(`/api/marketing/coupons/${id}`, { method: 'DELETE' });
-            if (res.ok) fetchCoupons();
-        } catch (error) {
-            console.error('Delete failed:', error);
+        if (confirm('Are you sure you want to delete this coupon?')) {
+            deleteMutation.mutate(id);
         }
     };
 
@@ -63,7 +64,7 @@ export default function CouponsPage() {
                     <p className="text-[13px] text-muted-foreground mt-0.5">Create and manage discount codes for your customers.</p>
                 </div>
                 <Link href="/marketing/coupons/new">
-                    <button className="px-6 py-2 bg-primary text-primary-foreground rounded-lg text-[13px] font-semibold hover:bg-primary/90 transition flex items-center gap-2">
+                    <button className="px-6 py-2 bg-primary text-primary-foreground rounded-lg text-[13px] font-semibold hover:bg-primary/90 transition flex items-center gap-2 shadow-sm">
                         <Plus className="w-4 h-4" />
                         Add Coupon
                     </button>
@@ -79,23 +80,27 @@ export default function CouponsPage() {
                         placeholder="Search by code or description..."
                         value={searchQuery}
                         onChange={e => setSearchQuery(e.target.value)}
-                        className="w-full h-10 pl-10 pr-4 bg-card border border-border rounded-lg text-[13px] outline-none focus:ring-2 focus:ring-ring transition"
+                        className="w-full h-10 pl-10 pr-4 bg-card border border-border rounded-lg text-[13px] outline-none focus:ring-2 focus:ring-primary/20 transition"
                     />
                 </div>
             </div>
 
             {/* List */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {loading && coupons.length === 0 ? (
+                {isLoading ? (
                     [...Array(6)].map((_, i) => (
                         <div key={i} className="h-48 bg-muted/20 border border-border rounded-xl animate-pulse" />
                     ))
+                ) : error ? (
+                    <div className="col-span-full py-20 text-center bg-card border border-border rounded-xl">
+                        <p className="text-[13px] text-destructive font-medium">Error loading coupons. Please try again.</p>
+                    </div>
                 ) : coupons.length === 0 ? (
                     <div className="col-span-full py-20 text-center bg-card border border-border rounded-xl">
                         <Ticket className="w-10 h-10 text-muted-foreground/30 mx-auto mb-4" />
                         <p className="text-[13px] text-muted-foreground">No coupons found.</p>
                     </div>
-                ) : coupons.map((coupon) => (
+                ) : coupons.map((coupon: any) => (
                     <Link
                         href={`/marketing/coupons/${coupon.id}`}
                         key={coupon.id}
@@ -114,10 +119,11 @@ export default function CouponsPage() {
                                     {coupon.isActive ? 'Active' : 'Inactive'}
                                 </span>
                                 <button
-                                    onClick={(e) => deleteCoupon(e, coupon.id)}
-                                    className="p-1.5 hover:bg-destructive/10 rounded-lg text-muted-foreground hover:text-destructive transition-colors relative z-20"
+                                    onClick={(e) => handleDelete(e, coupon.id)}
+                                    disabled={deleteMutation.isPending}
+                                    className="p-1.5 hover:bg-destructive/10 rounded-lg text-muted-foreground hover:text-destructive transition-colors relative z-20 disabled:opacity-50"
                                 >
-                                    <Trash2 className="w-4 h-4" />
+                                    {deleteMutation.isPending && deleteMutation.variables === coupon.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
                                 </button>
                             </div>
                         </div>

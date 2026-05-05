@@ -1,7 +1,7 @@
 # Big Bazar Admin Dashboard Modernization
 
 ## Objective
-Modernize the admin dashboard with a minimalist, proportional design (13px base) and replace all technical jargon with simple business language.
+Modernize the admin dashboard with a minimalist, proportional design (13px base), replace technical jargon with business language, and optimize the architecture for production readiness.
 
 ## Progress Tracking
 
@@ -9,45 +9,43 @@ Modernize the admin dashboard with a minimalist, proportional design (13px base)
 - [x] Sidebar Navigation (Removed Brands, Simplified Icons)
 - [x] Top Navigation / Global Layout
 - [x] Main Dashboard (Analytics & KPIs)
+- [x] **Sign Out functionality** (NextAuth integration)
 
 ### Management Sections
-- [x] Products List (Category filters, clean table)
-- [x] Add/Edit Product (Two-column layout, simple category flow)
+- [x] Products List (Clean table, category filters)
+- [x] Add/Edit Product (Two-column layout)
 - [x] Categories List
-- [x] Add/Edit Category (Minimalist layout, simple terms)
-- [x] Order List (Clean table, simple status)
-- [x] Order Details (Receipt-style layout, simple terms)
-- [x] Customer List (Proportional table, simple terms)
-- [x] Customer Details (Two-column layout, organized overview)
-- [x] Inventory Management (High-density table, quick edit)
+- [x] Add/Edit Category
+- [x] Order List
+- [x] Order Details (Receipt-style)
+- [x] Customer List
+- [x] Customer Details (Two-column overview)
+- [x] Inventory Management (High-density table)
+- [x] Coupons List (**React Query + Mock API**)
+- [x] Banners List
 
-### Marketing & Tools
-- [x] Coupons List (Ticket-style cards)
-- [x] Banners List (Beautiful image previews)
-- [x] Add/Edit Coupon (Two-column layout, simple terms)
-- [x] Add/Edit Banner (Two-column layout, image previews)
+### Security & Architecture
+- [x] **Route Protection**: Implemented Next.js Middleware.
+- [x] **Authentication**: Integrated NextAuth correctly with Login/Logout flows.
+- [x] **Data Fetching**: Integrated TanStack Query (React Query) for state management.
+- [x] **Global Feedback**: Added Toaster for success/error notifications.
+- [x] **API Layer**: Created initial API routes with a `MockDB` service.
 
-### System
-- [x] Settings (Sidebar navigation, simple terms)
+## Production Gap Analysis (Remaining Tasks)
+1.  **Database Migration**: Replace `lib/mock-db.ts` with Prisma/PostgreSQL.
+2.  **Real API Routes**: Implement API routes for Products, Orders, and Customers.
+3.  **File Management**: Fully integrate Cloudinary for real image uploads.
+4.  **Error Boundaries**: Add global error boundaries to prevent app crashes on API failure.
+5.  **Performance**: Add skeleton loaders for all table views.
+6.  **Environment Setup**: Configure production environment variables.
 
-## Terminology Mapping (Easy Words)
-| Legacy/Technical Term | New Business Term |
+## Terminology Mapping
+| Legacy Term | New Term |
 | :--- | :--- |
 | Logistics Ledger | Orders |
 | Entity Distribution | Categories |
 | Manifest | Order / Banner / Item |
-| Operational Directives | Actions / Manage |
+| Operational Directives | Manage |
 | Remittance Nodes | Payments |
-| Access Protocols | Security |
-| Global Identity | Store Details |
-| Intelligence Hub | Analytics |
-| Latent Potential | New Customer / Leads |
-| Synchronizing Taxonomy | Loading... |
+| Intelligence Hub | Reports |
 | Manifest Quantum | Stock Level |
-| Visual Assets | Banners |
-| Incentive Logic | Discount Rules |
-
-## Next Steps
-1. Final review of all forms for "Easy Word" consistency.
-2. Conduct accessibility check (color contrast, focus states).
-3. Production build and validation.

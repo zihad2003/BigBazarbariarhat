@@ -1,11 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Lock, Mail, Loader2, AlertCircle } from 'lucide-react';
+import { signIn } from 'next-auth/react';
 
 export default function LoginPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const callbackUrl = searchParams.get('callbackUrl') || '/';
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -16,14 +19,23 @@ export default function LoginPage() {
         setLoading(true);
         setError(null);
 
-        // Mock auth
-        await new Promise(r => setTimeout(r, 400));
-        if (email === 'admin@bigbazar.com' && password === 'admin123') {
-            router.push('/');
-        } else {
-            setError('Invalid email or password');
+        try {
+            const result = await signIn('credentials', {
+                email,
+                password,
+                redirect: false,
+            });
+
+            if (result?.error) {
+                setError('Invalid email or password');
+            } else {
+                router.push(callbackUrl);
+            }
+        } catch (err) {
+            setError('An unexpected error occurred');
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     return (
