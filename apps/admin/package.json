@@ -12,6 +12,7 @@
         "@bigbazar/types": "*",
         "@bigbazar/ui": "*",
         "@bigbazar/validation": "*",
+        "@bigbazar/db": "*",
         "@hookform/resolvers": "^3.3.4",
         "@radix-ui/react-dialog": "^1.0.5",
         "@radix-ui/react-dropdown-menu": "^2.1.16",

@@ -19,6 +19,7 @@
     "@bigbazar/types": "*",
     "@bigbazar/ui": "*",
     "@bigbazar/validation": "*",
+    "@bigbazar/db": "*",
     "@hookform/resolvers": "^3.10.0",
     "@radix-ui/react-checkbox": "^1.3.3",
     "@radix-ui/react-slider": "^1.3.6",
