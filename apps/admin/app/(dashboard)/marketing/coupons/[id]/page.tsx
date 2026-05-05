@@ -7,18 +7,17 @@ import {
     Ticket,
     Save,
     Loader2,
-    Sparkles,
     Calendar,
     DollarSign,
     Percent,
     Truck,
+    Info,
+    CheckCircle2,
     Trash2
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useToast } from '@/components/ui/use-toast';
 
 const couponSchema = z.object({
     code: z.string().min(3, 'Code must be at least 3 characters'),
@@ -39,7 +38,6 @@ export default function EditCouponPage() {
     const params = useParams();
     const [saving, setSaving] = useState(false);
     const [loading, setLoading] = useState(true);
-    const { toast } = useToast();
 
     const {
         register,
@@ -72,8 +70,6 @@ export default function EditCouponPage() {
                         endDate: new Date(c.endDate).toISOString().split('T')[0],
                         isActive: c.isActive,
                     });
-                } else {
-                    toast({ title: 'Error', description: 'Failed to load promotion.', variant: 'destructive' });
                 }
             } catch (error) {
                 console.error('Failed to load coupon:', error);
@@ -83,7 +79,7 @@ export default function EditCouponPage() {
         };
 
         if (params.id) fetchCoupon();
-    }, [params.id, reset, toast]);
+    }, [params.id, reset]);
 
     const onSubmit = async (data: CouponFormValues) => {
         setSaving(true);
@@ -106,218 +102,228 @@ export default function EditCouponPage() {
 
             const result = await res.json();
             if (result.success) {
-                toast({ title: 'Success', description: 'Promotion manifest updated.' });
                 router.push('/marketing/coupons');
-            } else {
-                toast({ title: 'Error', description: result.error || 'Failed to update promotion.', variant: 'destructive' });
             }
         } catch (error) {
             console.error('Update failed:', error);
-            toast({ title: 'Error', description: 'Network anomaly detected.', variant: 'destructive' });
         } finally {
             setSaving(false);
         }
     };
 
     const handleDelete = async () => {
-        if (!confirm('Are you sure you want to terminate this promotional manifest? This action is irreversible.')) return;
+        if (!confirm('Are you sure you want to delete this coupon? This action cannot be undone.')) return;
 
         try {
             const res = await fetch(`/api/marketing/coupons/${params.id}`, { method: 'DELETE' });
             if (res.ok) {
-                toast({ title: 'Terminated', description: 'Promotion manifest deleted.' });
                 router.push('/marketing/coupons');
             }
         } catch (error) {
-            console.error('Deletion failed:', error);
+            console.error('Delete failed:', error);
         }
     };
 
     if (loading) {
         return (
-            <div className="h-[60vh] flex flex-col items-center justify-center gap-6">
-                <Loader2 className="h-16 w-16 animate-spin text-indigo-600" />
-                <p className="text-gray-400 font-black uppercase tracking-[0.2em] text-xs text-center">Decrypting Manifest...</p>
+            <div className="h-[60vh] flex flex-col items-center justify-center gap-4">
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                <p className="text-[13px] text-muted-foreground">Loading coupon details...</p>
             </div>
         );
     }
 
     return (
-        <div className="max-w-4xl mx-auto space-y-12 pb-20">
+        <div className="max-w-[1000px] mx-auto pb-20">
             {/* Header */}
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 border-b border-gray-100 pb-10">
-                <div className="flex items-center gap-6">
-                    <button
-                        onClick={() => router.back()}
-                        className="w-14 h-14 bg-white border border-gray-100 rounded-2xl flex items-center justify-center hover:bg-black hover:text-white transition-all shadow-sm"
-                    >
-                        <ArrowLeft className="h-6 w-6" />
+            <div className="flex items-center justify-between mb-10 pb-6 border-b border-border">
+                <div className="flex items-center gap-4">
+                    <button onClick={() => router.back()} className="p-2 hover:bg-muted rounded-lg transition-colors">
+                        <ArrowLeft className="w-5 h-5 text-muted-foreground" />
                     </button>
                     <div>
-                        <div className="flex items-center gap-3 mb-2">
-                            <h1 className="text-4xl font-black text-gray-900 tracking-tighter">Edit Promotion</h1>
-                            <Sparkles className="h-6 w-6 text-indigo-600" />
-                        </div>
-                        <p className="text-gray-400 font-bold uppercase tracking-[0.2em] text-[10px]">reconfigure incentive manifest</p>
+                        <h1 className="text-xl font-semibold text-foreground">Edit Coupon</h1>
+                        <p className="text-[13px] text-muted-foreground mt-0.5">Modify your existing discount code.</p>
                     </div>
                 </div>
-                <div className="flex gap-4">
-                    <Button variant="outline" onClick={handleDelete} className="h-14 px-8 border-2 border-rose-100 text-rose-500 hover:bg-rose-50 rounded-2xl text-xs font-black uppercase tracking-widest gap-2">
-                        <Trash2 className="h-4 w-4" />
-                        Terminate
-                    </Button>
-                    <Button
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={handleDelete}
+                        className="px-4 py-2 text-[13px] font-medium text-rose-500 hover:bg-rose-50 rounded-lg transition-colors flex items-center gap-2"
+                    >
+                        <Trash2 className="w-4 h-4" />
+                        Delete
+                    </button>
+                    <button
                         onClick={handleSubmit(onSubmit)}
                         disabled={saving}
-                        className="h-14 px-10 bg-black text-white rounded-2xl text-xs font-black uppercase tracking-widest gap-3 shadow-2xl shadow-black/10 transition-all hover:scale-105 active:scale-95 disabled:opacity-50"
+                        className="px-6 py-2 bg-primary text-primary-foreground rounded-lg text-[13px] font-semibold hover:bg-primary/90 transition flex items-center gap-2 shadow-sm"
                     >
-                        {saving ? <Loader2 className="h-5 w-5 animate-spin" /> : <Save className="h-5 w-5" />}
-                        {saving ? 'Updating...' : 'Save Revisions'}
-                    </Button>
+                        {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                        {saving ? 'Saving...' : 'Save Changes'}
+                    </button>
                 </div>
             </div>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-10">
-                {/* Core Details */}
-                <section className="bg-white rounded-[3rem] border border-gray-100 p-10 shadow-sm relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-40 h-40 bg-indigo-50 rounded-bl-[10rem] opacity-30" />
-                    <h3 className="text-xl font-black text-gray-900 mb-8 border-b border-gray-50 pb-6 uppercase tracking-widest flex items-center gap-3">
-                        <Ticket className="h-5 w-5 text-indigo-600" />
-                        Promotion Identity
-                    </h3>
-
-                    <div className="space-y-8">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div className="space-y-4">
-                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Codename (Required)</label>
+            <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Main Content */}
+                <div className="lg:col-span-2 space-y-6">
+                    {/* Coupon Details */}
+                    <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+                        <h2 className="text-sm font-semibold mb-6 flex items-center gap-2">
+                            <Ticket className="w-4 h-4 text-primary" />
+                            Coupon Details
+                        </h2>
+                        <div className="space-y-6">
+                            <div className="space-y-2">
+                                <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider">Coupon Code</label>
                                 <input
                                     {...register('code')}
-                                    className="w-full h-16 px-6 bg-gray-50 border border-transparent rounded-[1.5rem] font-black text-xl text-gray-900 focus:bg-white focus:border-indigo-600 transition-all outline-none uppercase placeholder:text-gray-300"
-                                    placeholder="e.g. SUMMER2024"
+                                    className="w-full h-12 px-4 bg-muted/20 border border-border rounded-lg text-[16px] font-bold text-foreground outline-none focus:ring-2 focus:ring-primary/20 transition uppercase placeholder:text-muted-foreground/50"
+                                    placeholder="e.g. SUMMER50"
                                 />
-                                {errors.code && <p className="text-rose-500 text-xs font-bold uppercase tracking-widest ml-4">{errors.code.message}</p>}
+                                {errors.code && <p className="text-destructive text-[11px] font-medium">{errors.code.message}</p>}
                             </div>
 
-                            <div className="space-y-4 flex flex-col justify-center">
-                                <label className="flex items-center gap-4 p-4 bg-gray-50 rounded-[1.5rem] cursor-pointer hover:bg-gray-100 transition-all">
-                                    <input
-                                        type="checkbox"
-                                        {...register('isActive')}
-                                        className="w-6 h-6 rounded-lg accent-indigo-600"
-                                    />
-                                    <div>
-                                        <div className="text-sm font-black text-gray-900 uppercase tracking-widest">Active Status</div>
-                                        <div className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Live in checkout</div>
-                                    </div>
-                                </label>
+                            <div className="space-y-2">
+                                <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider">Description</label>
+                                <textarea
+                                    {...register('description')}
+                                    rows={3}
+                                    className="w-full p-4 bg-muted/20 border border-border rounded-lg text-[13px] text-foreground outline-none focus:ring-2 focus:ring-primary/20 transition resize-none"
+                                    placeholder="Add internal notes or public description..."
+                                />
                             </div>
-                        </div>
-
-                        <div className="space-y-4">
-                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Narrative Description</label>
-                            <textarea
-                                {...register('description')}
-                                rows={3}
-                                className="w-full p-6 bg-gray-50 border border-transparent rounded-[1.5rem] font-medium text-gray-900 focus:bg-white focus:border-indigo-600 transition-all outline-none resize-none"
-                                placeholder="Internal notes regarding this promotion..."
-                            />
                         </div>
                     </div>
-                </section>
 
-                {/* Value & Logic */}
-                <section className="bg-white rounded-[3rem] border border-gray-100 p-10 shadow-sm relative overflow-hidden">
-                    <h3 className="text-xl font-black text-gray-900 mb-8 border-b border-gray-50 pb-6 uppercase tracking-widest flex items-center gap-3">
-                        <DollarSign className="h-5 w-5 text-emerald-500" />
-                        Incentive Logic
-                    </h3>
-
-                    <div className="space-y-8">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    {/* Discount Rules */}
+                    <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+                        <h2 className="text-sm font-semibold mb-6 flex items-center gap-2">
+                            <DollarSign className="w-4 h-4 text-primary" />
+                            Discount Rules
+                        </h2>
+                        <div className="space-y-8">
                             <div className="space-y-4">
-                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Mechanism</label>
-                                <div className="grid grid-cols-3 gap-2 bg-gray-50 p-2 rounded-[1.5rem]">
-                                    {['PERCENTAGE', 'FIXED_AMOUNT', 'FREE_SHIPPING'].map((type) => (
+                                <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider">Discount Type</label>
+                                <div className="grid grid-cols-3 gap-3">
+                                    {[
+                                        { id: 'PERCENTAGE', label: 'Percentage', icon: Percent },
+                                        { id: 'FIXED_AMOUNT', label: 'Fixed Amount', icon: DollarSign },
+                                        { id: 'FREE_SHIPPING', label: 'Free Shipping', icon: Truck },
+                                    ].map((type) => (
                                         <button
-                                            key={type}
+                                            key={type.id}
                                             type="button"
-                                            onClick={() => setValue('discountType', type as any)}
-                                            className={`h-12 rounded-xl text-[10px] font-black uppercase transition-all flex items-center justify-center ${discountType === type ? 'bg-white shadow-md text-indigo-600' : 'text-gray-400 hover:text-gray-900'}`}
+                                            onClick={() => setValue('discountType', type.id as any)}
+                                            className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl border transition-all ${discountType === type.id ? 'bg-primary/5 border-primary text-primary' : 'bg-muted/20 border-border text-muted-foreground hover:bg-muted/40 hover:text-foreground'}`}
                                         >
-                                            {type === 'PERCENTAGE' && <Percent className="h-4 w-4" />}
-                                            {type === 'FIXED_AMOUNT' && <DollarSign className="h-4 w-4" />}
-                                            {type === 'FREE_SHIPPING' && <Truck className="h-4 w-4" />}
+                                            <type.icon className="w-5 h-5" />
+                                            <span className="text-[12px] font-bold uppercase tracking-wider">{type.label}</span>
                                         </button>
                                     ))}
                                 </div>
                             </div>
 
-                            <div className="space-y-4 md:col-span-2">
-                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">
-                                    {discountType === 'PERCENTAGE' ? 'Percentage Value (%)' : 'Monetary Value (৳)'}
-                                </label>
-                                <input
-                                    {...register('discountValue')}
-                                    type="number"
-                                    disabled={discountType === 'FREE_SHIPPING'}
-                                    className="w-full h-16 px-6 bg-gray-50 border border-transparent rounded-[1.5rem] font-black text-gray-900 focus:bg-white focus:border-indigo-600 transition-all outline-none disabled:opacity-50"
-                                    placeholder="0"
-                                />
-                                {errors.discountValue && <p className="text-rose-500 text-xs font-bold uppercase tracking-widest ml-4">{errors.discountValue.message}</p>}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                    <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider">
+                                        {discountType === 'PERCENTAGE' ? 'Discount Percentage (%)' : 'Discount Amount (৳)'}
+                                    </label>
+                                    <div className="relative">
+                                        <input
+                                            {...register('discountValue')}
+                                            type="number"
+                                            disabled={discountType === 'FREE_SHIPPING'}
+                                            className="w-full h-11 px-4 bg-muted/20 border border-border rounded-lg text-[14px] font-bold text-foreground outline-none focus:ring-2 focus:ring-primary/20 transition disabled:opacity-50"
+                                            placeholder="0"
+                                        />
+                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground">
+                                            {discountType === 'PERCENTAGE' ? '%' : '৳'}
+                                        </div>
+                                    </div>
+                                    {errors.discountValue && <p className="text-destructive text-[11px] font-medium">{errors.discountValue.message}</p>}
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider">Minimum Order (৳)</label>
+                                    <input
+                                        {...register('minOrderAmount')}
+                                        type="number"
+                                        className="w-full h-11 px-4 bg-muted/20 border border-border rounded-lg text-[14px] font-bold text-foreground outline-none focus:ring-2 focus:ring-primary/20 transition"
+                                        placeholder="0"
+                                    />
+                                </div>
                             </div>
                         </div>
+                    </div>
+                </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div className="space-y-4">
-                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Minimum Cart Value</label>
+                {/* Sidebar */}
+                <div className="space-y-6">
+                    {/* Active Status */}
+                    <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+                        <h2 className="text-sm font-semibold mb-6 flex items-center gap-2">
+                            <CheckCircle2 className="w-4 h-4 text-primary" />
+                            Visibility
+                        </h2>
+                        <label className="flex items-center gap-3 p-4 bg-muted/20 rounded-xl border border-border cursor-pointer hover:bg-muted/40 transition">
+                            <input
+                                type="checkbox"
+                                {...register('isActive')}
+                                className="w-5 h-5 rounded border-border text-primary focus:ring-primary"
+                            />
+                            <div>
+                                <p className="text-[13px] font-bold text-foreground">Active</p>
+                                <p className="text-[11px] text-muted-foreground">Live in checkout</p>
+                            </div>
+                        </label>
+                    </div>
+
+                    {/* Active Dates */}
+                    <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+                        <h2 className="text-sm font-semibold mb-6 flex items-center gap-2">
+                            <Calendar className="w-4 h-4 text-primary" />
+                            Active Dates
+                        </h2>
+                        <div className="space-y-4">
+                            <div className="space-y-2">
+                                <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Start Date</label>
                                 <input
-                                    {...register('minOrderAmount')}
-                                    type="number"
-                                    className="w-full h-16 px-6 bg-gray-50 border border-transparent rounded-[1.5rem] font-bold text-gray-900 focus:bg-white focus:border-indigo-600 transition-all outline-none"
-                                    placeholder="0"
+                                    {...register('startDate')}
+                                    type="date"
+                                    className="w-full h-10 px-3 bg-muted/20 border border-border rounded-lg text-[13px] font-medium outline-none focus:ring-2 focus:ring-primary/20 transition"
                                 />
                             </div>
-                            <div className="space-y-4">
-                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Total Usage Limit</label>
+                            <div className="space-y-2">
+                                <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">End Date</label>
                                 <input
-                                    {...register('usageLimit')}
-                                    type="number"
-                                    className="w-full h-16 px-6 bg-gray-50 border border-transparent rounded-[1.5rem] font-bold text-gray-900 focus:bg-white focus:border-indigo-600 transition-all outline-none"
-                                    placeholder="Unlimited"
+                                    {...register('endDate')}
+                                    type="date"
+                                    className="w-full h-10 px-3 bg-muted/20 border border-border rounded-lg text-[13px] font-medium outline-none focus:ring-2 focus:ring-primary/20 transition"
                                 />
                             </div>
                         </div>
                     </div>
-                </section>
 
-                {/* Timeline */}
-                <section className="bg-white rounded-[3rem] border border-gray-100 p-10 shadow-sm relative overflow-hidden">
-                    <h3 className="text-xl font-black text-gray-900 mb-8 border-b border-gray-50 pb-6 uppercase tracking-widest flex items-center gap-3">
-                        <Calendar className="h-5 w-5 text-indigo-600" />
-                        Temporal Parameters
-                    </h3>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div className="space-y-4">
-                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Initiation Date</label>
+                    {/* Usage Limit */}
+                    <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+                        <h2 className="text-sm font-semibold mb-6 flex items-center gap-2">
+                            <Info className="w-4 h-4 text-primary" />
+                            Usage Limit
+                        </h2>
+                        <div className="space-y-2">
+                            <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Total Uses</label>
                             <input
-                                {...register('startDate')}
-                                type="date"
-                                className="w-full h-16 px-6 bg-gray-50 border border-transparent rounded-[1.5rem] font-bold text-gray-900 focus:bg-white focus:border-indigo-600 transition-all outline-none"
+                                {...register('usageLimit')}
+                                type="number"
+                                className="w-full h-10 px-3 bg-muted/20 border border-border rounded-lg text-[13px] font-medium outline-none focus:ring-2 focus:ring-primary/20 transition"
+                                placeholder="Unlimited"
                             />
-                            {errors.startDate && <p className="text-rose-500 text-xs font-bold uppercase tracking-widest ml-4">{errors.startDate.message}</p>}
-                        </div>
-                        <div className="space-y-4">
-                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Termination Date</label>
-                            <input
-                                {...register('endDate')}
-                                type="date"
-                                className="w-full h-16 px-6 bg-gray-50 border border-transparent rounded-[1.5rem] font-bold text-gray-900 focus:bg-white focus:border-indigo-600 transition-all outline-none"
-                            />
-                            {errors.endDate && <p className="text-rose-500 text-xs font-bold uppercase tracking-widest ml-4">{errors.endDate.message}</p>}
+                            <p className="text-[11px] text-muted-foreground mt-2">Leave blank for unlimited uses.</p>
                         </div>
                     </div>
-                </section>
+                </div>
             </form>
         </div>
     );

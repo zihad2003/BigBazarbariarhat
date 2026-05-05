@@ -9,10 +9,11 @@ import {
     Trash2,
     Calendar,
     Edit3,
-    ArrowRight
+    ArrowRight,
+    Loader2,
+    TrendingUp,
+    Users
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 
 export default function CouponsPage() {
     const [coupons, setCoupons] = useState<any[]>([]);
@@ -28,7 +29,7 @@ export default function CouponsPage() {
                 setCoupons(result.data);
             }
         } catch (error) {
-            console.error('Failed to fetch promotions:', error);
+            console.error('Failed to fetch coupons:', error);
         } finally {
             setLoading(false);
         }
@@ -44,119 +45,109 @@ export default function CouponsPage() {
     const deleteCoupon = async (e: React.MouseEvent, id: string) => {
         e.preventDefault();
         e.stopPropagation();
-        if (!confirm('Are you sure you want to terminate this promotional manifest?')) return;
+        if (!confirm('Are you sure you want to delete this coupon?')) return;
         try {
             const res = await fetch(`/api/marketing/coupons/${id}`, { method: 'DELETE' });
             if (res.ok) fetchCoupons();
         } catch (error) {
-            console.error('Termination failed:', error);
+            console.error('Delete failed:', error);
         }
     };
 
     return (
-        <div className="space-y-12">
-            {/* Master Header */}
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-8 border-b border-gray-100 pb-12">
+        <div className="space-y-6">
+            {/* Header */}
+            <div className="flex items-center justify-between pb-6 border-b border-border">
                 <div>
-                    <h1 className="text-5xl font-black text-gray-900 tracking-tighter italic">Promotions</h1>
-                    <p className="text-gray-400 font-bold uppercase tracking-[0.2em] text-[10px] mt-3">Architect limited-time incentive manifests</p>
+                    <h1 className="text-xl font-semibold text-foreground">Coupons</h1>
+                    <p className="text-[13px] text-muted-foreground mt-0.5">Create and manage discount codes for your customers.</p>
                 </div>
                 <Link href="/marketing/coupons/new">
-                    <Button
-                        className="h-16 px-10 bg-black text-white rounded-3xl text-[10px] font-black uppercase tracking-widest gap-3 shadow-2xl shadow-black/20 hover:scale-105 active:scale-95 transition-all"
-                    >
-                        <Plus className="h-5 w-5" />
-                        Inject Promotion
-                    </Button>
+                    <button className="px-6 py-2 bg-primary text-primary-foreground rounded-lg text-[13px] font-semibold hover:bg-primary/90 transition flex items-center gap-2">
+                        <Plus className="w-4 h-4" />
+                        Add Coupon
+                    </button>
                 </Link>
             </div>
 
-            {/* Matrix Console */}
-            <div className="bg-white rounded-[3rem] border border-gray-100 p-8 shadow-sm">
-                <div className="flex flex-col lg:flex-row gap-8">
-                    <div className="flex-1 relative group">
-                        <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300 group-focus-within:text-black transition-colors" />
-                        <input
-                            type="text"
-                            placeholder="Trace promotion by code or narrative..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-16 pr-8 py-5 bg-gray-50 border border-transparent rounded-2xl text-base focus:bg-white focus:border-indigo-100 outline-none transition-all font-bold placeholder:text-gray-300"
-                        />
-                    </div>
+            {/* Filters */}
+            <div className="flex flex-col md:flex-row gap-3">
+                <div className="flex-1 relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <input
+                        type="text"
+                        placeholder="Search by code or description..."
+                        value={searchQuery}
+                        onChange={e => setSearchQuery(e.target.value)}
+                        className="w-full h-10 pl-10 pr-4 bg-card border border-border rounded-lg text-[13px] outline-none focus:ring-2 focus:ring-ring transition"
+                    />
                 </div>
             </div>
 
-            {/* Manifest List */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {loading ? (
+            {/* List */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {loading && coupons.length === 0 ? (
                     [...Array(6)].map((_, i) => (
-                        <div key={i} className="h-64 bg-gray-50 rounded-[3rem] animate-pulse" />
+                        <div key={i} className="h-48 bg-muted/20 border border-border rounded-xl animate-pulse" />
                     ))
                 ) : coupons.length === 0 ? (
-                    <div className="col-span-full py-20 text-center">
-                        <div className="w-20 h-20 bg-gray-50 rounded-[2rem] flex items-center justify-center mx-auto mb-6">
-                            <Ticket className="h-10 w-10 text-gray-300" />
-                        </div>
-                        <p className="text-gray-400 font-bold uppercase tracking-widest text-xs">No active promotions detected in segment</p>
+                    <div className="col-span-full py-20 text-center bg-card border border-border rounded-xl">
+                        <Ticket className="w-10 h-10 text-muted-foreground/30 mx-auto mb-4" />
+                        <p className="text-[13px] text-muted-foreground">No coupons found.</p>
                     </div>
                 ) : coupons.map((coupon) => (
                     <Link
                         href={`/marketing/coupons/${coupon.id}`}
                         key={coupon.id}
-                        className="bg-white rounded-[3rem] border border-gray-100 p-8 shadow-sm hover:shadow-2xl hover:shadow-indigo-900/5 transition-all group relative overflow-hidden block"
+                        className="bg-card border border-border rounded-xl p-6 shadow-sm hover:border-primary/30 transition-all group relative overflow-hidden block"
                     >
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-bl-[8rem] opacity-30 group-hover:scale-110 transition-transform" />
+                        {/* Ticket Notch Effect */}
+                        <div className="absolute top-1/2 -translate-y-1/2 -left-3 w-6 h-6 bg-background border border-border rounded-full" />
+                        <div className="absolute top-1/2 -translate-y-1/2 -right-3 w-6 h-6 bg-background border border-border rounded-full" />
 
-                        <div className="flex justify-between items-start mb-8 relative z-10">
-                            <div className="w-14 h-14 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-indigo-500/20 group-hover:scale-110 transition-transform duration-500">
-                                <Ticket className="h-7 w-7" />
+                        <div className="flex justify-between items-start mb-6">
+                            <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary">
+                                <Ticket className="w-5 h-5" />
                             </div>
-                            <div className="flex gap-2">
+                            <div className="flex items-center gap-2">
+                                <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${coupon.isActive ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-muted text-muted-foreground border-border'}`}>
+                                    {coupon.isActive ? 'Active' : 'Inactive'}
+                                </span>
                                 <button
                                     onClick={(e) => deleteCoupon(e, coupon.id)}
-                                    className="w-10 h-10 bg-rose-50 text-rose-500 rounded-xl flex items-center justify-center hover:bg-rose-500 hover:text-white transition-all z-20 relative"
-                                    title="Decommission Promotion"
+                                    className="p-1.5 hover:bg-destructive/10 rounded-lg text-muted-foreground hover:text-destructive transition-colors relative z-20"
                                 >
-                                    <Trash2 className="h-4 w-4" />
+                                    <Trash2 className="w-4 h-4" />
                                 </button>
                             </div>
                         </div>
 
-                        <div className="space-y-2 mb-6">
-                            <h3 className="text-3xl font-black text-gray-900 tracking-tighter uppercase italic group-hover:text-indigo-600 transition-colors">{coupon.code}</h3>
-                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest leading-relaxed line-clamp-1">{coupon.description || 'No operational narrative'}</p>
+                        <div className="space-y-1 mb-6">
+                            <h3 className="text-lg font-bold text-foreground tracking-tight group-hover:text-primary transition-colors">{coupon.code}</h3>
+                            <p className="text-[12px] text-muted-foreground line-clamp-1">{coupon.description || 'No description provided'}</p>
                         </div>
 
-                        <div className="flex items-center gap-4 py-6 border-y border-gray-50">
+                        <div className="flex items-center gap-6 py-4 border-y border-border border-dashed">
                             <div>
-                                <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Incentive Value</p>
-                                <h4 className="text-2xl font-black text-indigo-600 tracking-tighter">
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-0.5">Discount</p>
+                                <p className="text-[18px] font-bold text-primary">
                                     {coupon.discountType === 'PERCENTAGE' ? `${coupon.discountValue}%` : `৳${Number(coupon.discountValue).toLocaleString()}`}
-                                </h4>
+                                </p>
                             </div>
-                            <div className="w-px h-10 bg-gray-100" />
+                            <div className="w-px h-8 bg-border" />
                             <div>
-                                <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Utilization</p>
-                                <h4 className="text-2xl font-black text-gray-900 tracking-tighter">{coupon.currentUsage} <span className="text-xs text-gray-300">/ {coupon.usageLimit || '∞'}</span></h4>
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-0.5">Usage</p>
+                                <p className="text-[18px] font-bold text-foreground">{coupon.currentUsage} <span className="text-[11px] text-muted-foreground font-normal">/ {coupon.usageLimit || '∞'}</span></p>
                             </div>
                         </div>
 
-                        <div className="mt-8 flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                                <Calendar className="h-4 w-4 text-gray-300" />
-                                <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">
-                                    {new Date(coupon.endDate).toLocaleDateString()}
-                                </span>
+                        <div className="mt-6 flex items-center justify-between text-[11px] text-muted-foreground">
+                            <div className="flex items-center gap-2">
+                                <Calendar className="w-3.5 h-3.5" />
+                                <span>Expires {new Date(coupon.endDate).toLocaleDateString()}</span>
                             </div>
-                            <Badge className={coupon.isActive ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-gray-50 text-gray-400 border-gray-100'}>
-                                {coupon.isActive ? 'Active' : 'Latent'}
-                            </Badge>
-                        </div>
-
-                        <div className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0 duration-300">
-                            <div className="flex items-center gap-1 text-[10px] font-black uppercase text-indigo-600">
-                                Configure <ArrowRight className="h-3 w-3" />
+                            <div className="flex items-center gap-1 text-primary font-bold uppercase opacity-0 group-hover:opacity-100 transition-opacity">
+                                Edit <ArrowRight className="w-3 h-3" />
                             </div>
                         </div>
                     </Link>

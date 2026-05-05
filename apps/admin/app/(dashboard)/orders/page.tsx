@@ -47,7 +47,10 @@ export default function OrdersPage() {
     };
 
     useEffect(() => {
-        fetchOrders(1);
+        const timer = setTimeout(() => {
+            fetchOrders(1);
+        }, 500);
+        return () => clearTimeout(timer);
     }, [searchQuery]);
 
     const getStatusStyle = (status: string) => {
@@ -64,24 +67,24 @@ export default function OrdersPage() {
     return (
         <div className="space-y-6">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex items-center justify-between pb-6 border-b border-border">
                 <div>
                     <h1 className="text-xl font-semibold text-foreground">Orders</h1>
                     <p className="text-[13px] text-muted-foreground mt-0.5">Manage and track your customer orders.</p>
                 </div>
                 <button className="px-4 py-2 border border-border rounded-lg text-[13px] font-medium hover:bg-muted/60 transition flex items-center gap-2">
                     <Download className="w-4 h-4" />
-                    Download Orders
+                    Export
                 </button>
             </div>
 
             {/* Filters */}
-            <div className="flex gap-3">
+            <div className="flex flex-col md:flex-row gap-3">
                 <div className="flex-1 relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <input
                         type="text"
-                        placeholder="Search orders..."
+                        placeholder="Search by order number or name..."
                         value={searchQuery}
                         onChange={e => setSearchQuery(e.target.value)}
                         className="w-full h-10 pl-10 pr-4 bg-card border border-border rounded-lg text-[13px] outline-none focus:ring-2 focus:ring-ring transition"
@@ -89,58 +92,62 @@ export default function OrdersPage() {
                 </div>
                 <button className="px-4 h-10 border border-border rounded-lg flex items-center gap-2 text-[13px] font-medium hover:bg-muted/60 transition">
                     <Filter className="w-4 h-4" />
-                    Filter
+                    More Filters
                 </button>
             </div>
 
             {/* Table */}
-            <div className="bg-card border border-border rounded-xl overflow-hidden">
+            <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left">
+                    <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="border-b border-border bg-muted/20">
-                                <th className="px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Order ID</th>
-                                <th className="px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Customer</th>
-                                <th className="px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Date</th>
-                                <th className="px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Total</th>
-                                <th className="px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Status</th>
-                                <th className="px-4 py-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider text-right">Actions</th>
+                            <tr className="bg-muted/20 border-b border-border">
+                                <th className="px-6 py-4 text-[12px] font-bold text-muted-foreground uppercase tracking-wider">Order</th>
+                                <th className="px-6 py-4 text-[12px] font-bold text-muted-foreground uppercase tracking-wider">Customer</th>
+                                <th className="px-6 py-4 text-[12px] font-bold text-muted-foreground uppercase tracking-wider">Date</th>
+                                <th className="px-6 py-4 text-[12px] font-bold text-muted-foreground uppercase tracking-wider">Total</th>
+                                <th className="px-6 py-4 text-[12px] font-bold text-muted-foreground uppercase tracking-wider">Status</th>
+                                <th className="px-6 py-4 text-right text-[12px] font-bold text-muted-foreground uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-border">
-                            {loading ? (
+                            {loading && orders.length === 0 ? (
                                 [...Array(5)].map((_, i) => (
                                     <tr key={i} className="animate-pulse">
-                                        <td colSpan={6} className="px-4 py-8"><div className="h-4 bg-muted rounded w-1/4" /></td>
+                                        <td colSpan={6} className="px-6 py-6 h-20 bg-muted/5"></td>
                                     </tr>
                                 ))
                             ) : orders.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6} className="px-4 py-20 text-center">
-                                        <Package className="w-10 h-10 text-muted/30 mx-auto mb-3" />
+                                    <td colSpan={6} className="py-20 text-center">
+                                        <Package className="w-10 h-10 text-muted-foreground/30 mx-auto mb-4" />
                                         <p className="text-[13px] text-muted-foreground">No orders found.</p>
                                     </td>
                                 </tr>
                             ) : orders.map(order => (
-                                <tr key={order.id} className="hover:bg-muted/30 transition-colors group">
-                                    <td className="px-4 py-4 text-[13px] font-semibold text-foreground">#{order.orderNumber}</td>
-                                    <td className="px-4 py-4">
-                                        <div className="text-[13px] font-medium">{order.user?.firstName || order.guestName || 'Guest'}</div>
-                                        <div className="text-[11px] text-muted-foreground">{order.user?.email || order.guestEmail}</div>
+                                <tr key={order.id} className="hover:bg-muted/10 transition-colors group">
+                                    <td className="px-6 py-4 text-[14px] font-bold text-foreground">#{order.orderNumber}</td>
+                                    <td className="px-6 py-4">
+                                        <div className="text-[14px] font-semibold text-foreground">{order.user?.firstName || order.guestName || 'Guest'}</div>
+                                        <div className="text-[12px] text-muted-foreground">{order.user?.email || order.guestEmail}</div>
                                     </td>
-                                    <td className="px-4 py-4 text-[13px] text-muted-foreground">
+                                    <td className="px-6 py-4 text-[13px] text-muted-foreground">
                                         {new Date(order.createdAt).toLocaleDateString()}
                                     </td>
-                                    <td className="px-4 py-4 text-[13px] font-bold">৳{order.totalAmount.toLocaleString()}</td>
-                                    <td className="px-4 py-4">
-                                        <span className={`px-2.5 py-1 rounded-full text-[11px] font-semibold border ${getStatusStyle(order.status)}`}>
+                                    <td className="px-6 py-4 text-[14px] font-bold text-foreground">৳{order.totalAmount.toLocaleString()}</td>
+                                    <td className="px-6 py-4">
+                                        <span className={`px-2.5 py-1 rounded text-[10px] font-bold border ${getStatusStyle(order.status)}`}>
                                             {order.status}
                                         </span>
                                     </td>
-                                    <td className="px-4 py-4 text-right">
-                                        <Link href={`/orders/${order.id}`} className="p-2 hover:bg-muted rounded-lg text-muted-foreground hover:text-foreground transition-colors inline-block">
-                                            <Eye className="w-4 h-4" />
-                                        </Link>
+                                    <td className="px-6 py-4">
+                                        <div className="flex items-center justify-end gap-2">
+                                            <Link href={`/orders/${order.id}`}>
+                                                <button className="p-2 hover:bg-muted rounded-lg transition-colors text-muted-foreground hover:text-foreground">
+                                                    <Eye className="w-4 h-4" />
+                                                </button>
+                                            </Link>
+                                        </div>
                                     </td>
                                 </tr>
                             ))}
@@ -148,17 +155,41 @@ export default function OrdersPage() {
                     </table>
                 </div>
 
-                {/* Footer */}
-                <div className="px-4 py-3 border-t border-border flex items-center justify-between bg-muted/10">
-                    <p className="text-[11px] text-muted-foreground">
-                        Showing {orders.length} orders
+                {/* Pagination */}
+                <div className="px-6 py-4 border-t border-border bg-muted/10 flex items-center justify-between">
+                    <p className="text-[12px] text-muted-foreground">
+                        Showing <span className="font-bold text-foreground">{orders.length}</span> of <span className="font-bold text-foreground">{pagination.totalItems}</span> orders
                     </p>
-                    <div className="flex items-center gap-1">
-                        <button disabled className="p-1.5 border border-border rounded-md opacity-50"><ChevronLeft className="w-4 h-4" /></button>
-                        <button disabled className="p-1.5 border border-border rounded-md opacity-50"><ChevronRight className="w-4 h-4" /></button>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => fetchOrders(pagination.page - 1)}
+                            disabled={pagination.page === 1}
+                            className="p-2 border border-border rounded-lg hover:bg-muted transition-colors disabled:opacity-50"
+                        >
+                            <ChevronLeft className="w-4 h-4" />
+                        </button>
+                        <div className="flex items-center gap-1">
+                            {[...Array(pagination.totalPages)].map((_, i) => (
+                                <button
+                                    key={i}
+                                    onClick={() => fetchOrders(i + 1)}
+                                    className={`w-8 h-8 rounded-lg text-[12px] font-bold transition-all ${pagination.page === i + 1 ? 'bg-primary text-primary-foreground' : 'hover:bg-muted text-muted-foreground'}`}
+                                >
+                                    {i + 1}
+                                </button>
+                            ))}
+                        </div>
+                        <button
+                            onClick={() => fetchOrders(pagination.page + 1)}
+                            disabled={pagination.page === pagination.totalPages}
+                            className="p-2 border border-border rounded-lg hover:bg-muted transition-colors disabled:opacity-50"
+                        >
+                            <ChevronRight className="w-4 h-4" />
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     );
 }
+

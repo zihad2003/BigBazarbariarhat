@@ -18,10 +18,10 @@ import {
     Palette,
     Lock,
     Languages,
-    RefreshCw
+    RefreshCw,
+    ChevronRight,
+    Store
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 
 export default function SettingsPage() {
     const [activeTab, setActiveTab] = useState('GENERAL');
@@ -44,7 +44,7 @@ export default function SettingsPage() {
                 if (settingsResult.success) setSettings(settingsResult.data);
                 if (shippingResult.success) setShippingZones(shippingResult.data);
             } catch (error) {
-                console.error('Failed to fetch configurations:', error);
+                console.error('Failed to fetch settings:', error);
             } finally {
                 setLoading(false);
             }
@@ -53,8 +53,7 @@ export default function SettingsPage() {
         fetchAll();
     }, []);
 
-    const handleSaveGeneral = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleSave = async () => {
         setSaving(true);
         try {
             await fetch('/api/settings', {
@@ -69,151 +68,162 @@ export default function SettingsPage() {
         }
     };
 
+    if (loading) {
+        return (
+            <div className="h-[60vh] flex flex-col items-center justify-center gap-4">
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                <p className="text-[13px] text-muted-foreground">Loading settings...</p>
+            </div>
+        );
+    }
+
+    const tabs = [
+        { id: 'GENERAL', label: 'General', icon: Store, desc: 'Store info and defaults' },
+        { id: 'SHIPPING', label: 'Shipping', icon: Truck, desc: 'Delivery zones and rates' },
+        { id: 'PAYMENTS', label: 'Payments', icon: CreditCard, desc: 'Payment gateway setup' },
+        { id: 'SECURITY', label: 'Security', icon: Shield, desc: 'Login and data protection' },
+        { id: 'APPEARANCE', label: 'Theme', icon: Palette, desc: 'Visual look and feel' },
+        { id: 'LANGUAGE', label: 'Language', icon: Languages, desc: 'Language and region' },
+    ];
+
     return (
-        <div className="space-y-12 pb-20">
-            {/* Master Header */}
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-8 border-b border-gray-100 pb-12">
+        <div className="max-w-[1100px] mx-auto pb-20">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-10 pb-6 border-b border-border">
                 <div>
-                    <h1 className="text-5xl font-black text-gray-900 tracking-tighter italic">Architecture</h1>
-                    <p className="text-gray-400 font-bold uppercase tracking-[0.2em] text-[10px] mt-3 italic uppercase">Configure the foundational parameters of the enterprise portal</p>
+                    <h1 className="text-xl font-semibold text-foreground">Settings</h1>
+                    <p className="text-[13px] text-muted-foreground mt-0.5">Manage your store configuration and preferences.</p>
                 </div>
-                <div className="flex gap-4">
-                    <Button
-                        onClick={handleSaveGeneral}
-                        disabled={saving}
-                        className="h-16 px-10 bg-black text-white rounded-3xl text-[10px] font-black uppercase tracking-widest gap-3 shadow-2xl shadow-black/20 hover:scale-105 active:scale-95 transition-all"
-                    >
-                        {saving ? <Loader2 className="h-5 w-5 animate-spin" /> : <Save className="h-5 w-5" />}
-                        Commit Core Parameters
-                    </Button>
-                </div>
+                <button
+                    onClick={handleSave}
+                    disabled={saving}
+                    className="px-6 py-2 bg-primary text-primary-foreground rounded-lg text-[13px] font-semibold hover:bg-primary/90 transition flex items-center gap-2"
+                >
+                    {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                    Save All Changes
+                </button>
             </div>
 
-            <div className="flex flex-col lg:flex-row gap-12">
+            <div className="flex flex-col lg:flex-row gap-10">
                 {/* Navigation Sidebar */}
-                <aside className="lg:w-80 space-y-4">
-                    {[
-                        { id: 'GENERAL', label: 'Store Identity', icon: SettingsIcon },
-                        { id: 'SHIPPING', label: 'Logistics Manifest', icon: Truck },
-                        { id: 'PAYMENTS', label: 'Remittance Nodes', icon: CreditCard },
-                        { id: 'SECURITY', label: 'Access Protocols', icon: Shield },
-                        { id: 'APPEARANCE', label: 'Aesthetic Config', icon: Palette },
-                        { id: 'LANGUAGE', label: 'Locale Settings', icon: Languages },
-                    ].map((tab) => (
+                <aside className="lg:w-64 flex flex-col gap-1">
+                    {tabs.map((tab) => (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
-                            className={`w-full flex items-center gap-4 px-8 py-6 rounded-[2rem] text-xs font-black uppercase tracking-widest transition-all ${activeTab === tab.id ? 'bg-indigo-600 text-white shadow-2xl shadow-indigo-600/20 translate-x-4' : 'bg-white text-gray-400 border border-gray-50 hover:bg-gray-100'}`}
+                            className={`flex flex-col items-start gap-0.5 px-4 py-3 rounded-lg text-left transition-all ${activeTab === tab.id ? 'bg-primary text-primary-foreground shadow-md shadow-primary/20' : 'hover:bg-muted/60 text-muted-foreground hover:text-foreground'}`}
                         >
-                            <tab.icon className="h-5 w-5" />
-                            {tab.label}
+                            <div className="flex items-center gap-3">
+                                <tab.icon className={`w-4 h-4 ${activeTab === tab.id ? 'text-primary-foreground' : 'text-muted-foreground'}`} />
+                                <span className="text-[13px] font-semibold">{tab.label}</span>
+                            </div>
+                            <span className={`text-[11px] ml-7 ${activeTab === tab.id ? 'text-primary-foreground/70' : 'text-muted-foreground/60'}`}>{tab.desc}</span>
                         </button>
                     ))}
                 </aside>
 
-                {/* Configuration Console */}
+                {/* Content Area */}
                 <main className="flex-1">
                     {activeTab === 'GENERAL' && (
-                        <div className="space-y-10 animate-in fade-in duration-500">
-                            <section className="bg-white rounded-[4rem] border border-gray-100 p-12 shadow-sm">
-                                <h3 className="text-2xl font-black text-gray-900 mb-10 tracking-tight italic flex items-center gap-4">
-                                    <Globe className="h-6 w-6 text-indigo-600" />
-                                    Global Identity
-                                </h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                                    <div className="space-y-4">
-                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4 italic">Enterprise Name</label>
-                                        <input
-                                            className="w-full h-16 px-8 bg-gray-50 border border-transparent rounded-[1.5rem] font-black text-gray-900 focus:bg-white focus:border-indigo-600 transition-all outline-none italic"
-                                            value={settings.store_name || ''}
-                                            onChange={e => setSettings({ ...settings, store_name: e.target.value })}
-                                        />
+                        <div className="space-y-6 animate-in fade-in duration-300">
+                            <div className="bg-card border border-border rounded-xl p-6">
+                                <h2 className="text-sm font-semibold mb-6 flex items-center gap-2">
+                                    <Globe className="w-4 h-4 text-primary" />
+                                    Store Details
+                                </h2>
+                                <div className="space-y-4">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="space-y-1.5">
+                                            <label className="text-[12px] font-medium text-muted-foreground">Store Name</label>
+                                            <input
+                                                className="w-full h-11 px-4 bg-background border border-input rounded-lg text-[13px] outline-none focus:ring-2 focus:ring-ring transition"
+                                                value={settings.store_name || ''}
+                                                onChange={e => setSettings({ ...settings, store_name: e.target.value })}
+                                            />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <label className="text-[12px] font-medium text-muted-foreground">Support Email</label>
+                                            <input
+                                                className="w-full h-11 px-4 bg-background border border-input rounded-lg text-[13px] outline-none focus:ring-2 focus:ring-ring transition"
+                                                value={settings.support_email || ''}
+                                                onChange={e => setSettings({ ...settings, support_email: e.target.value })}
+                                            />
+                                        </div>
                                     </div>
-                                    <div className="space-y-4">
-                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4 italic">Public Intel Email</label>
-                                        <input
-                                            className="w-full h-16 px-8 bg-gray-50 border border-transparent rounded-[1.5rem] font-bold text-indigo-600 focus:bg-white focus:border-indigo-600 transition-all outline-none"
-                                            value={settings.support_email || ''}
-                                            onChange={e => setSettings({ ...settings, support_email: e.target.value })}
-                                        />
-                                    </div>
-                                    <div className="md:col-span-2 space-y-4">
-                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4 italic">Global Manifest Narrative (Meta Description)</label>
+                                    <div className="space-y-1.5">
+                                        <label className="text-[12px] font-medium text-muted-foreground">Store Description (SEO)</label>
                                         <textarea
                                             rows={4}
-                                            className="w-full p-8 bg-gray-50 border border-transparent rounded-[2.5rem] font-medium text-gray-900 focus:bg-white focus:border-indigo-600 transition-all outline-none italic"
+                                            className="w-full p-4 bg-background border border-input rounded-lg text-[13px] outline-none focus:ring-2 focus:ring-ring transition resize-none"
                                             value={settings.store_description || ''}
                                             onChange={e => setSettings({ ...settings, store_description: e.target.value })}
                                         />
                                     </div>
                                 </div>
-                            </section>
+                            </div>
 
-                            <section className="bg-black rounded-[4rem] p-12 text-white shadow-2xl shadow-black/30 relative overflow-hidden group">
-                                <div className="absolute top-0 right-0 p-12 opacity-5 scale-150 rotate-12 group-hover:scale-[1.7] transition-transform">
-                                    <Lock className="h-40 w-40 text-white" />
-                                </div>
-                                <h3 className="text-2xl font-black mb-10 border-b border-white/10 pb-8 tracking-tight italic flex items-center gap-4 text-indigo-400">
-                                    <CreditCard className="h-6 w-6" />
-                                    Transactional Currency
-                                </h3>
-                                <div className="flex flex-wrap gap-6 relative z-10">
+                            <div className="bg-card border border-border rounded-xl p-6">
+                                <h2 className="text-sm font-semibold mb-6 flex items-center gap-2">
+                                    <CreditCard className="w-4 h-4 text-primary" />
+                                    Store Currency
+                                </h2>
+                                <div className="flex flex-wrap gap-3">
                                     {['BDT', 'USD', 'EUR', 'GBP'].map((curr) => (
                                         <button
                                             key={curr}
                                             onClick={() => setSettings({ ...settings, currency: curr })}
-                                            className={`px-10 py-5 rounded-2xl text-[10px] font-black uppercase tracking-widest border-2 transition-all ${settings.currency === curr ? 'bg-indigo-600 border-indigo-500 scale-110 shadow-xl' : 'bg-white/5 border-white/10 text-gray-400 hover:border-white/20'}`}
+                                            className={`px-6 py-2 rounded-lg text-[12px] font-bold border transition-all ${settings.currency === curr ? 'bg-primary text-primary-foreground border-primary shadow-sm' : 'bg-background border-input text-muted-foreground hover:bg-muted/60'}`}
                                         >
                                             {curr}
                                         </button>
                                     ))}
                                 </div>
-                            </section>
+                            </div>
                         </div>
                     )}
 
                     {activeTab === 'SHIPPING' && (
-                        <div className="space-y-10 animate-in slide-in-from-right-10 duration-500">
-                            <div className="flex justify-between items-center bg-white rounded-[3rem] border border-gray-100 p-10 shadow-sm">
+                        <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-300">
+                            <div className="flex justify-between items-center bg-card border border-border rounded-xl p-6">
                                 <div>
-                                    <h3 className="text-2xl font-black text-gray-900 tracking-tight italic">Logistics Hub</h3>
-                                    <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mt-1 italic">Define geographical fulfillment zones</p>
+                                    <h2 className="text-sm font-semibold">Shipping Zones</h2>
+                                    <p className="text-[12px] text-muted-foreground mt-0.5">Manage where you ship and how much you charge.</p>
                                 </div>
-                                <Button className="h-14 px-8 bg-black text-white rounded-2xl text-[10px] font-black uppercase tracking-widest gap-3 shadow-xl shadow-black/20 transform hover:-translate-y-1 transition-all">
-                                    <Plus className="h-5 w-5" />
-                                    Inject Zone
-                                </Button>
+                                <button className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-[12px] font-bold hover:bg-primary/90 transition flex items-center gap-2">
+                                    <Plus className="w-3.5 h-3.5" />
+                                    Add Zone
+                                </button>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {shippingZones.length === 0 ? (
-                                    <div className="col-span-2 text-center py-20 bg-gray-50 rounded-[3rem] border border-dashed border-gray-200">
-                                        <Truck className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                                        <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px]">No logistics zones mapped</p>
+                                    <div className="col-span-2 text-center py-12 bg-muted/20 rounded-xl border-2 border-dashed border-border">
+                                        <Truck className="w-8 h-8 text-muted-foreground mx-auto mb-3" />
+                                        <p className="text-[13px] text-muted-foreground font-medium">No shipping zones added yet.</p>
                                     </div>
                                 ) : (
                                     shippingZones.map((zone) => (
-                                        <div key={zone.id} className="bg-white rounded-[3.5rem] border border-gray-100 p-10 shadow-sm hover:shadow-2xl hover:shadow-indigo-900/5 transition-all group">
-                                            <div className="flex justify-between items-start mb-8">
-                                                <div className="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 shadow-sm group-hover:bg-indigo-600 group-hover:text-white transition-all">
-                                                    <Truck className="h-7 w-7" />
+                                        <div key={zone.id} className="bg-card border border-border rounded-xl p-5 hover:border-primary/30 transition-all group">
+                                            <div className="flex justify-between items-start mb-4">
+                                                <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary">
+                                                    <Truck className="w-5 h-5" />
                                                 </div>
-                                                <Badge className="bg-emerald-50 text-emerald-600 border-emerald-100 uppercase tracking-widest text-[8px] font-black">
-                                                    Active Manifest
-                                                </Badge>
+                                                <span className="px-2 py-0.5 bg-emerald-50 text-emerald-600 rounded text-[10px] font-bold border border-emerald-100">
+                                                    Active
+                                                </span>
                                             </div>
-                                            <h4 className="text-2xl font-black text-gray-900 tracking-tighter italic mb-4">{zone.name}</h4>
-                                            <div className="flex flex-wrap gap-2 mb-8">
+                                            <h4 className="text-[15px] font-bold text-foreground">{zone.name}</h4>
+                                            <div className="flex flex-wrap gap-1.5 mt-3">
                                                 {zone.cities.map((city: string, i: number) => (
-                                                    <span key={i} className="px-3 py-1 bg-gray-50 rounded-lg text-[9px] font-black text-gray-400 uppercase tracking-widest border border-gray-100 italic">
+                                                    <span key={i} className="px-2 py-0.5 bg-muted rounded text-[10px] text-muted-foreground font-medium">
                                                         {city}
                                                     </span>
                                                 ))}
                                             </div>
-                                            <div className="pt-8 border-t border-gray-50 flex justify-between items-center mt-auto">
-                                                <span className="text-[9px] font-black text-gray-300 uppercase tracking-widest italic">{zone.rates.length} Rate Protocols</span>
-                                                <button className="p-3 bg-gray-50 rounded-xl hover:bg-rose-50 hover:text-rose-500 transition-all border border-gray-100">
-                                                    <Trash2 className="h-4 w-4" />
+                                            <div className="pt-4 mt-6 border-t border-border flex justify-between items-center">
+                                                <span className="text-[11px] text-muted-foreground">{zone.rates.length} Rates</span>
+                                                <button className="p-2 text-muted-foreground hover:text-destructive transition-colors">
+                                                    <Trash2 className="w-4 h-4" />
                                                 </button>
                                             </div>
                                         </div>
@@ -224,178 +234,164 @@ export default function SettingsPage() {
                     )}
 
                     {activeTab === 'PAYMENTS' && (
-                        <div className="space-y-10 animate-in slide-in-from-right-10 duration-500">
-                            <section className="bg-white rounded-[4rem] border border-gray-100 p-12 shadow-sm">
-                                <h3 className="text-2xl font-black text-gray-900 mb-10 tracking-tight italic flex items-center gap-4">
-                                    <CreditCard className="h-6 w-6 text-indigo-600" />
-                                    Payment Gateways
-                                </h3>
-                                <div className="space-y-6">
+                        <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-300">
+                            <div className="bg-card border border-border rounded-xl p-6">
+                                <h2 className="text-sm font-semibold mb-6 flex items-center gap-2">
+                                    <CreditCard className="w-4 h-4 text-primary" />
+                                    Payment Methods
+                                </h2>
+                                <div className="space-y-3">
                                     {['Stripe', 'SSLCommerz', 'Cash on Delivery'].map((method) => (
-                                        <div key={method} className="flex items-center justify-between p-8 bg-gray-50 rounded-[2.5rem] border border-gray-100">
-                                            <div className="flex items-center gap-6">
-                                                <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-sm">
-                                                    <CreditCard className="h-8 w-8 text-gray-900" />
+                                        <div key={method} className="flex items-center justify-between p-4 bg-muted/20 border border-border rounded-xl hover:border-primary/30 transition">
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-12 h-12 bg-background rounded-lg flex items-center justify-center border border-border">
+                                                    <CreditCard className="w-6 h-6 text-foreground" />
                                                 </div>
                                                 <div>
-                                                    <h4 className="text-xl font-black text-gray-900 tracking-tight">{method}</h4>
-                                                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">
-                                                        {method === 'Cash on Delivery' ? 'Offline Transaction' : 'Digital Remittance'}
+                                                    <h4 className="text-[14px] font-bold text-foreground">{method}</h4>
+                                                    <p className="text-[11px] text-muted-foreground">
+                                                        {method === 'Cash on Delivery' ? 'Pay upon receipt' : 'Secure online payment'}
                                                     </p>
                                                 </div>
                                             </div>
                                             <div className="flex items-center gap-4">
-                                                <span className="w-3 h-3 bg-emerald-500 rounded-full shadow-[0_0_10px_rgba(16,185,129,0.5)]"></span>
-                                                <span className="text-xs font-black uppercase tracking-widest text-emerald-600">Active</span>
-                                                <Button variant="outline" className="ml-4 h-12 px-6 rounded-xl text-[10px] font-black uppercase tracking-widest border-2">
-                                                    Configure
-                                                </Button>
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
+                                                    <span className="text-[11px] font-bold text-emerald-600">Connected</span>
+                                                </div>
+                                                <button className="px-3 py-1.5 bg-background border border-border rounded-lg text-[11px] font-bold hover:bg-muted/60 transition">
+                                                    Setup
+                                                </button>
                                             </div>
                                         </div>
                                     ))}
                                 </div>
-                            </section>
+                            </div>
                         </div>
                     )}
 
                     {activeTab === 'SECURITY' && (
-                        <div className="space-y-10 animate-in slide-in-from-right-10 duration-500">
-                            <section className="bg-white rounded-[4rem] border border-gray-100 p-12 shadow-sm">
-                                <h3 className="text-2xl font-black text-gray-900 mb-10 tracking-tight italic flex items-center gap-4">
-                                    <Shield className="h-6 w-6 text-rose-600" />
-                                    Access Control Protocols
-                                </h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                    <div className="p-8 bg-rose-50/50 rounded-[2.5rem] border border-rose-100">
-                                        <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center mb-6 shadow-sm text-rose-600">
-                                            <Lock className="h-6 w-6" />
+                        <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-300">
+                            <div className="bg-card border border-border rounded-xl p-6">
+                                <h2 className="text-sm font-semibold mb-6 flex items-center gap-2">
+                                    <Shield className="w-4 h-4 text-primary" />
+                                    Security Protocols
+                                </h2>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="p-5 bg-muted/20 border border-border rounded-xl">
+                                        <div className="w-10 h-10 bg-background rounded-lg flex items-center justify-center mb-4 border border-border text-primary">
+                                            <Lock className="w-5 h-5" />
                                         </div>
-                                        <h4 className="text-lg font-black text-gray-900 mb-2">Admin Authentication</h4>
-                                        <p className="text-sm text-gray-500 mb-6">Enforce 2FA for all administrative access nodes.</p>
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-12 h-6 bg-rose-200 rounded-full relative cursor-pointer">
-                                                <div className="absolute right-1 top-1 w-4 h-4 bg-white rounded-full shadow-sm"></div>
+                                        <h4 className="text-[14px] font-bold text-foreground">Two-Factor Auth</h4>
+                                        <p className="text-[12px] text-muted-foreground mt-1 mb-4">Add an extra layer of security to your account.</p>
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-10 h-5 bg-primary/20 rounded-full relative cursor-pointer">
+                                                <div className="absolute right-0.5 top-0.5 w-4 h-4 bg-primary rounded-full shadow-sm"></div>
                                             </div>
-                                            <span className="text-xs font-black uppercase tracking-widest text-rose-600">Enabled</span>
+                                            <span className="text-[11px] font-bold text-primary">Enabled</span>
                                         </div>
                                     </div>
-                                    <div className="p-8 bg-gray-50 rounded-[2.5rem] border border-gray-100 pl-10">
-                                        <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center mb-6 shadow-sm text-gray-600">
-                                            <Database className="h-6 w-6" />
+                                    <div className="p-5 bg-muted/20 border border-border rounded-xl">
+                                        <div className="w-10 h-10 bg-background rounded-lg flex items-center justify-center mb-4 border border-border text-muted-foreground">
+                                            <Database className="w-5 h-5" />
                                         </div>
-                                        <h4 className="text-lg font-black text-gray-900 mb-2">Database Encryption</h4>
-                                        <p className="text-sm text-gray-500 mb-6">At-rest encryption protocol status.</p>
-                                        <span className="px-3 py-1 bg-emerald-100 text-emerald-600 rounded-lg text-[10px] font-black uppercase tracking-widest">
-                                            Secured (AES-256)
+                                        <h4 className="text-[14px] font-bold text-foreground">Data Encryption</h4>
+                                        <p className="text-[12px] text-muted-foreground mt-1 mb-4">Your data is secured with AES-256 encryption.</p>
+                                        <span className="px-2 py-0.5 bg-emerald-50 text-emerald-600 rounded text-[10px] font-bold border border-emerald-100">
+                                            Verified Secure
                                         </span>
                                     </div>
                                 </div>
-                            </section>
+                            </div>
                         </div>
                     )}
 
                     {activeTab === 'APPEARANCE' && (
-                        <div className="space-y-10 animate-in slide-in-from-right-10 duration-500">
-                            <section className="bg-white rounded-[4rem] border border-gray-100 p-12 shadow-sm">
-                                <h3 className="text-2xl font-black text-gray-900 mb-10 tracking-tight italic flex items-center gap-4">
-                                    <Palette className="h-6 w-6 text-indigo-600" />
-                                    Visual Identity System
-                                </h3>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                                    {['Light Mode', 'Dark Mode', 'System Sync'].map((theme) => (
-                                        <div key={theme} className={`p-8 rounded-[2.5rem] border-2 cursor-pointer transition-all ${theme === 'Light Mode' ? 'border-indigo-600 bg-indigo-50' : 'border-gray-100 bg-white hover:border-gray-200'}`}>
-                                            <div className="w-full aspect-video bg-gray-200 rounded-2xl mb-6 overflow-hidden relative">
-                                                {theme === 'Light Mode' && <div className="absolute inset-0 bg-white"></div>}
-                                                {theme === 'Dark Mode' && <div className="absolute inset-0 bg-gray-900"></div>}
-                                                {theme === 'System Sync' && <div className="absolute inset-0 bg-gradient-to-br from-white to-gray-900"></div>}
+                        <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-300">
+                            <div className="bg-card border border-border rounded-xl p-6">
+                                <h2 className="text-sm font-semibold mb-6 flex items-center gap-2">
+                                    <Palette className="w-4 h-4 text-primary" />
+                                    Theme Selection
+                                </h2>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    {['Light', 'Dark', 'System'].map((theme) => (
+                                        <div key={theme} className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${theme === 'Light' ? 'border-primary bg-primary/5' : 'border-border bg-background hover:border-muted-foreground/30'}`}>
+                                            <div className="w-full aspect-[4/3] bg-muted rounded-lg mb-4 overflow-hidden relative border border-border/50">
+                                                {theme === 'Light' && <div className="absolute inset-0 bg-white"></div>}
+                                                {theme === 'Dark' && <div className="absolute inset-0 bg-zinc-950"></div>}
+                                                {theme === 'System' && <div className="absolute inset-0 bg-gradient-to-br from-white to-zinc-950"></div>}
                                             </div>
-                                            <h4 className="text-lg font-black text-gray-900 text-center">{theme}</h4>
+                                            <h4 className="text-[13px] font-bold text-center">{theme} Mode</h4>
                                         </div>
                                     ))}
                                 </div>
-                            </section>
+                            </div>
                         </div>
                     )}
 
                     {activeTab === 'LANGUAGE' && (
-                        <div className="space-y-10 animate-in slide-in-from-right-10 duration-500">
-                            <section className="bg-white rounded-[4rem] border border-gray-100 p-12 shadow-sm">
-                                <h3 className="text-2xl font-black text-gray-900 mb-10 tracking-tight italic flex items-center gap-4">
-                                    <Languages className="h-6 w-6 text-indigo-600" />
-                                    Default Language Configuration
-                                </h3>
-                                <p className="text-gray-500 text-sm mb-8 italic">
-                                    Define the architectural default language. Manual customer-side toggles are currently operational restricted to ensure brand consistency.
-                                </p>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-300">
+                            <div className="bg-card border border-border rounded-xl p-6">
+                                <h2 className="text-sm font-semibold mb-6 flex items-center gap-2">
+                                    <Languages className="w-4 h-4 text-primary" />
+                                    Default Language
+                                </h2>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     {[
-                                        { code: 'en', name: 'English', flag: '🇬🇧', description: 'English - United States' },
-                                        { code: 'bn', name: 'Bengali', flag: '🇧🇩', description: 'বাংলা - Bangladesh' }
+                                        { code: 'en', name: 'English', flag: '🇬🇧', desc: 'United States' },
+                                        { code: 'bn', name: 'Bengali', flag: '🇧🇩', desc: 'Bangladesh' }
                                     ].map((lang) => (
                                         <div
                                             key={lang.code}
                                             onClick={() => setSettings({ ...settings, default_language: lang.code })}
-                                            className={`p-8 rounded-[2rem] border-2 cursor-pointer transition-all duration-300 ${settings.default_language === lang.code
-                                                ? 'bg-indigo-50 border-indigo-500 shadow-xl shadow-indigo-500/10'
-                                                : 'bg-gray-50 border-gray-200 hover:border-gray-300'
+                                            className={`p-5 rounded-xl border-2 cursor-pointer transition-all ${settings.default_language === lang.code
+                                                ? 'bg-primary/5 border-primary'
+                                                : 'bg-muted/20 border-border hover:border-muted-foreground/30'
                                                 }`}
                                         >
-                                            <div className="flex items-center gap-4 mb-4">
-                                                <span className="text-5xl">{lang.flag}</span>
+                                            <div className="flex items-center gap-4 mb-3">
+                                                <span className="text-3xl">{lang.flag}</span>
                                                 <div>
-                                                    <h4 className="text-2xl font-black text-gray-900 tracking-tight">{lang.name}</h4>
-                                                    <p className="text-xs text-gray-500 uppercase tracking-widest mt-1">{lang.code.toUpperCase()}</p>
+                                                    <h4 className="text-[15px] font-bold text-foreground">{lang.name}</h4>
+                                                    <p className="text-[11px] text-muted-foreground uppercase font-mono">{lang.code}</p>
                                                 </div>
                                             </div>
-                                            <p className="text-sm text-gray-400 font-medium">{lang.description}</p>
+                                            <p className="text-[12px] text-muted-foreground">{lang.desc}</p>
                                             {settings.default_language === lang.code && (
-                                                <div className="mt-6 flex items-center gap-2 text-indigo-600 text-xs font-black uppercase tracking-widest">
-                                                    <CheckCircle2 className="h-4 w-4" />
-                                                    Currently Active
+                                                <div className="mt-4 flex items-center gap-2 text-primary text-[10px] font-bold uppercase tracking-wider">
+                                                    <CheckCircle2 className="w-3.5 h-3.5" />
+                                                    Default Language
                                                 </div>
                                             )}
                                         </div>
                                     ))}
                                 </div>
-                            </section>
+                            </div>
 
-                            <section className="bg-gradient-to-br from-indigo-600 to-purple-600 rounded-[4rem] p-12 text-white shadow-2xl shadow-indigo-600/20 relative overflow-hidden">
-                                <div className="absolute top-0 right-0 p-12 opacity-10">
-                                    <RefreshCw className="h-40 w-40" />
+                            <div className="bg-primary text-primary-foreground rounded-xl p-6 shadow-lg shadow-primary/20 relative overflow-hidden group">
+                                <div className="absolute -right-4 -top-4 p-8 opacity-10 group-hover:scale-110 transition-transform">
+                                    <Languages className="w-32 h-32" />
                                 </div>
                                 <div className="relative z-10">
-                                    <div className="flex items-center gap-4 mb-6">
-                                        <div className="p-4 bg-white/20 backdrop-blur-sm rounded-2xl">
-                                            <Languages className="h-8 w-8" />
-                                        </div>
-                                        <div>
-                                            <h3 className="text-2xl font-black tracking-tight italic">Language Toggle Mode</h3>
-                                            <p className="text-indigo-200 text-sm uppercase tracking-widest">User Control</p>
-                                        </div>
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <RefreshCw className="w-5 h-5" />
+                                        <h3 className="text-[15px] font-bold">Manual Switcher</h3>
                                     </div>
-                                    <div className="grid grid-cols-2 gap-6 mt-8">
-                                        <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-                                            <h4 className="text-xs font-black uppercase tracking-widest mb-3 text-indigo-200">Current Status</h4>
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-3 h-3 bg-red-400 rounded-full"></div>
-                                                <span className="text-lg font-bold">Disabled</span>
-                                            </div>
+                                    <p className="text-[13px] text-primary-foreground/80 leading-relaxed mb-6">
+                                        Allow customers to manually switch languages on the storefront. Currently restricted to ensure consistent brand experience.
+                                    </p>
+                                    <div className="flex items-center gap-4">
+                                        <div className="px-4 py-2 bg-white/10 rounded-lg border border-white/20">
+                                            <p className="text-[10px] uppercase font-bold text-primary-foreground/60 mb-0.5">Status</p>
+                                            <p className="text-[13px] font-bold">Disabled</p>
                                         </div>
-                                        <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-                                            <h4 className="text-xs font-black uppercase tracking-widest mb-3 text-indigo-200">Available Languages</h4>
-                                            <div className="flex items-center gap-3">
-                                                <span className="text-lg font-bold">2</span>
-                                                <span className="text-indigo-200 text-sm">(EN, BN)</span>
-                                            </div>
+                                        <div className="px-4 py-2 bg-white/10 rounded-lg border border-white/20">
+                                            <p className="text-[10px] uppercase font-bold text-primary-foreground/60 mb-0.5">Supported</p>
+                                            <p className="text-[13px] font-bold">EN, BN</p>
                                         </div>
-                                    </div>
-                                    <div className="mt-8 p-6 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10">
-                                        <p className="text-sm text-indigo-100 leading-relaxed">
-                                            The storefront currently operates in the default language set above. The manual language toggle has been disabled to ensure a consistent brand experience as per administration policy.
-                                        </p>
                                     </div>
                                 </div>
-                            </section>
+                            </div>
                         </div>
                     )}
                 </main>

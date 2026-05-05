@@ -13,19 +13,12 @@ import {
     Loader2,
     Plus,
     Users,
-    UserPlus,
     Mail,
     Phone,
-    Trophy,
     ShoppingBag,
-    Star,
-    ExternalLink,
-    Trash2
+    Trash2,
+    User
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Badge } from '@/components/ui/badge';
-import { SafeImage } from '@/components/ui/safe-image';
 
 export default function CustomersPage() {
     const [customers, setCustomers] = useState<any[]>([]);
@@ -47,15 +40,14 @@ export default function CustomersPage() {
                 });
             }
         } catch (error) {
-            console.error('Failed to fetch entities:', error);
+            console.error('Failed to fetch customers:', error);
         } finally {
             setLoading(false);
         }
     };
 
     const handleDelete = async (id: string) => {
-        if (!confirm('Are you absolutely certain you wish to decommission this entity? This action is irreversible.')) return;
-
+        if (!confirm('Are you sure you want to delete this customer?')) return;
         try {
             const res = await fetch(`/api/customers/${id}`, { method: 'DELETE' });
             const result = await res.json();
@@ -63,7 +55,7 @@ export default function CustomersPage() {
                 setCustomers(prev => prev.filter(c => c.id !== id));
             }
         } catch (error) {
-            console.error('Decommissioning failed:', error);
+            console.error('Delete failed:', error);
         }
     };
 
@@ -75,164 +67,124 @@ export default function CustomersPage() {
     }, [searchQuery]);
 
     return (
-        <div className="space-y-10">
-            {/* Master Header */}
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6 border-b border-gray-100 pb-10">
+        <div className="space-y-6">
+            {/* Header */}
+            <div className="flex items-center justify-between pb-6 border-b border-border">
                 <div>
-                    <h1 className="text-5xl font-black text-gray-900 tracking-tighter">Associates</h1>
-                    <p className="text-gray-400 font-bold uppercase tracking-[0.2em] text-xs mt-2">Manage customer identity and lifetime engagement</p>
+                    <h1 className="text-xl font-semibold text-foreground">Customers</h1>
+                    <p className="text-[13px] text-muted-foreground mt-0.5">Manage your customer list and order history.</p>
                 </div>
-                <div className="flex gap-4">
-                    <Button variant="outline" className="h-14 px-8 border-2 rounded-2xl text-[10px] font-black uppercase tracking-widest gap-3 shadow-sm hover:bg-black hover:text-white transition-all">
-                        <Download className="h-4 w-4" />
-                        Export Ledger
-                    </Button>
+                <div className="flex items-center gap-3">
+                    <button className="px-4 py-2 border border-border rounded-lg text-[13px] font-medium hover:bg-muted/60 transition flex items-center gap-2">
+                        <Download className="w-4 h-4" />
+                        Export
+                    </button>
                     <Link href="/customers/new">
-                        <Button className="h-16 px-10 bg-black text-white rounded-3xl text-[10px] font-black uppercase tracking-widest gap-3 shadow-2xl shadow-black/20 hover:scale-105 active:scale-95 transition-all">
-                            <Plus className="h-5 w-5" />
-                            Integrate New Associate
-                        </Button>
+                        <button className="px-6 py-2 bg-primary text-primary-foreground rounded-lg text-[13px] font-semibold hover:bg-primary/90 transition flex items-center gap-2">
+                            <Plus className="w-4 h-4" />
+                            Add Customer
+                        </button>
                     </Link>
-                    <Button className="h-14 px-10 bg-indigo-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest gap-3 shadow-xl shadow-indigo-500/20 hover:scale-105 active:scale-95 transition-all">
-                        <UserPlus className="h-4 w-4" />
-                        Internal Registration
-                    </Button>
                 </div>
             </div>
 
-            {/* Matrix Filters */}
-            <div className="bg-white rounded-[2.5rem] border border-gray-100 p-6 shadow-sm relative overflow-hidden group">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-bl-full opacity-0 group-hover:opacity-30 transition-opacity" />
-                <div className="flex flex-col lg:flex-row gap-6 relative z-10">
-                    <div className="flex-1 relative">
-                        <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300 group-focus-within:text-black transition-colors" />
-                        <input
-                            type="text"
-                            placeholder="Identify associate by name, email or global ID..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-14 pr-6 py-4 bg-gray-50 border border-transparent rounded-[1.25rem] text-base focus:outline-none focus:bg-white focus:border-indigo-100 transition-all font-bold placeholder:text-gray-300"
-                        />
-                    </div>
-                    <div className="flex gap-4">
-                        <select className="px-6 py-4 bg-gray-50 border border-transparent rounded-[1.25rem] text-xs font-black uppercase tracking-widest focus:outline-none focus:bg-white focus:border-indigo-100 transition-all appearance-none cursor-pointer">
-                            <option>All Segments</option>
-                            <option>High Velocity</option>
-                            <option>Latent Potential</option>
-                            <option>Churn Risk</option>
-                        </select>
-                        <Button variant="outline" className="h-14 px-8 border-2 rounded-2xl text-[10px] font-black uppercase tracking-widest">
-                            <Filter className="h-4 w-4 mr-2" />
-                            Refine
-                        </Button>
-                    </div>
+            {/* Filters */}
+            <div className="flex flex-col md:flex-row gap-3">
+                <div className="flex-1 relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <input
+                        type="text"
+                        placeholder="Search by name or email..."
+                        value={searchQuery}
+                        onChange={e => setSearchQuery(e.target.value)}
+                        className="w-full h-10 pl-10 pr-4 bg-card border border-border rounded-lg text-[13px] outline-none focus:ring-2 focus:ring-ring transition"
+                    />
+                </div>
+                <div className="flex items-center gap-2">
+                    <select className="h-10 px-3 bg-card border border-border rounded-lg text-[13px] outline-none focus:ring-2 focus:ring-ring transition">
+                        <option value="">All Segments</option>
+                        <option value="loyal">Loyal Customers</option>
+                        <option value="new">New Customers</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                    <button className="px-4 h-10 border border-border rounded-lg flex items-center gap-2 text-[13px] font-medium hover:bg-muted/60 transition-colors">
+                        <Filter className="w-4 h-4" />
+                        More Filters
+                    </button>
                 </div>
             </div>
 
-            {/* Entity Manifest Table */}
-            <div className="bg-white rounded-[3rem] border border-gray-100 overflow-hidden shadow-2xl shadow-gray-200/50">
+            {/* Table */}
+            <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
                 <div className="overflow-x-auto">
-                    <table className="w-full border-collapse">
+                    <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="bg-gray-50/50 border-b border-gray-50 text-left">
-                                <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Associate Profile</th>
-                                <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Classification</th>
-                                <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Transaction Vol.</th>
-                                <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Lifetime Valuation</th>
-                                <th className="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Registration</th>
-                                <th className="px-8 py-6 text-right text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Directives</th>
+                            <tr className="bg-muted/20 border-b border-border">
+                                <th className="px-6 py-4 text-[12px] font-bold text-muted-foreground uppercase tracking-wider">Customer</th>
+                                <th className="px-6 py-4 text-[12px] font-bold text-muted-foreground uppercase tracking-wider">Orders</th>
+                                <th className="px-6 py-4 text-[12px] font-bold text-muted-foreground uppercase tracking-wider">Total Spent</th>
+                                <th className="px-6 py-4 text-[12px] font-bold text-muted-foreground uppercase tracking-wider">Joined</th>
+                                <th className="px-6 py-4 text-right text-[12px] font-bold text-muted-foreground uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-50">
+                        <tbody className="divide-y divide-border">
                             {loading && customers.length === 0 ? (
                                 [...Array(5)].map((_, i) => (
                                     <tr key={i} className="animate-pulse">
-                                        <td className="px-8 py-6">
-                                            <div className="flex items-center gap-4">
-                                                <Skeleton className="h-12 w-12 rounded-2xl" />
-                                                <div className="space-y-2">
-                                                    <Skeleton className="h-4 w-32" />
-                                                    <Skeleton className="h-3 w-40" />
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-8 py-6"><Skeleton className="h-4 w-24" /></td>
-                                        <td className="px-8 py-6"><Skeleton className="h-6 w-20 rounded-lg" /></td>
-                                        <td className="px-8 py-6">
-                                            <div className="space-y-2">
-                                                <Skeleton className="h-4 w-16" />
-                                                <Skeleton className="h-3 w-20" />
-                                            </div>
-                                        </td>
-                                        <td className="px-8 py-6"><Skeleton className="h-4 w-10" /></td>
-                                        <td className="px-8 py-6 flex justify-end gap-2"><Skeleton className="h-10 w-10 rounded-xl" /><Skeleton className="h-10 w-10 rounded-xl" /></td>
+                                        <td colSpan={5} className="px-6 py-6 h-20 bg-muted/5"></td>
                                     </tr>
                                 ))
                             ) : customers.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6} className="py-20 text-center">
-                                        <div className="w-20 h-20 bg-gray-50 rounded-3xl flex items-center justify-center mx-auto mb-6">
-                                            <Users className="h-10 w-10 text-gray-200" />
-                                        </div>
-                                        <p className="text-gray-400 font-bold uppercase tracking-widest text-xs">No entities found in registry</p>
+                                    <td colSpan={5} className="py-20 text-center">
+                                        <Users className="w-10 h-10 text-muted-foreground/30 mx-auto mb-4" />
+                                        <p className="text-[13px] text-muted-foreground">No customers found.</p>
                                     </td>
                                 </tr>
                             ) : customers.map((customer) => (
-                                <tr key={customer.id} className="hover:bg-gray-50/80 transition-all group">
-                                    <td className="px-8 py-6">
-                                        <div className="flex items-center gap-5">
-                                            <div className="w-14 h-14 bg-indigo-50 border-2 border-white shadow-lg rounded-2xl flex items-center justify-center text-indigo-600 font-black text-xl overflow-hidden group-hover:scale-110 transition-transform">
-                                                {customer.avatar ? <SafeImage src={customer.avatar} alt={customer.firstName || ''} className="w-full h-full" /> : (customer.firstName?.[0] || 'U')}
+                                <tr key={customer.id} className="hover:bg-muted/10 transition-colors group">
+                                    <td className="px-6 py-4">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center text-primary font-bold text-[14px]">
+                                                {customer.avatar ? (
+                                                    <img src={customer.avatar} className="w-full h-full object-cover rounded-full" />
+                                                ) : (customer.firstName?.[0] || 'U')}
                                             </div>
                                             <div>
-                                                <div className="font-black text-gray-900 tracking-tight text-lg">{customer.firstName || 'Unknown'} {customer.lastName || ''}</div>
-                                                <div className="text-[10px] text-gray-400 font-black uppercase tracking-widest flex items-center gap-2">
-                                                    <Mail className="h-3 w-3" />
-                                                    {customer.email}
-                                                </div>
+                                                <p className="text-[14px] font-semibold text-foreground">{customer.firstName} {customer.lastName}</p>
+                                                <p className="text-[12px] text-muted-foreground">{customer.email}</p>
                                             </div>
                                         </div>
                                     </td>
-                                    <td className="px-8 py-6">
-                                        <div className="flex flex-col gap-1">
-                                            <Badge variant="secondary" className="bg-indigo-50 text-indigo-600 border-indigo-100 uppercase tracking-widest text-[9px] w-fit">
-                                                {customer.totalSpent > 5000 ? 'Platinum Partner' : 'Standard Tier'}
-                                            </Badge>
+                                    <td className="px-6 py-4">
+                                        <div className="flex items-center gap-2 text-[13px] text-foreground">
+                                            <ShoppingBag className="w-3.5 h-3.5 text-muted-foreground" />
+                                            {customer.orderCount}
                                         </div>
                                     </td>
-                                    <td className="px-8 py-6">
-                                        <div className="flex items-center gap-2">
-                                            <ShoppingBag className="h-4 w-4 text-gray-300" />
-                                            <span className="text-gray-900 font-black italic">{customer.orderCount} Manifests</span>
-                                        </div>
-                                    </td>
-                                    <td className="px-8 py-6">
+                                    <td className="px-6 py-4">
                                         <div className="flex flex-col">
-                                            <span className="text-lg font-black text-gray-900 tracking-tighter italic">৳{customer.totalSpent.toLocaleString()}</span>
-                                            <span className="text-[9px] font-black text-emerald-500 uppercase tracking-widest flex items-center gap-1">
-                                                <Trophy className="h-3 w-3" /> Verified Capital
-                                            </span>
+                                            <span className="text-[14px] font-bold text-foreground">৳{customer.totalSpent.toLocaleString()}</span>
+                                            {customer.totalSpent > 5000 && (
+                                                <span className="text-[10px] font-bold text-primary uppercase">Loyal</span>
+                                            )}
                                         </div>
                                     </td>
-                                    <td className="px-8 py-6 text-sm text-gray-500 font-bold uppercase tracking-widest text-[10px]">
+                                    <td className="px-6 py-4 text-[13px] text-muted-foreground">
                                         {new Date(customer.createdAt).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}
                                     </td>
-                                    <td className="px-8 py-6">
-                                        <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-all">
+                                    <td className="px-6 py-4">
+                                        <div className="flex items-center justify-end gap-2">
                                             <Link href={`/customers/${customer.id}`}>
-                                                <button className="p-3 bg-white shadow-xl border border-gray-100 rounded-2xl hover:bg-black hover:text-white transition-all">
-                                                    <Eye className="h-5 w-5" />
+                                                <button className="p-2 hover:bg-muted rounded-lg transition-colors text-muted-foreground hover:text-foreground">
+                                                    <Eye className="w-4 h-4" />
                                                 </button>
                                             </Link>
                                             <button
                                                 onClick={() => handleDelete(customer.id)}
-                                                className="p-3 bg-white shadow-sm border border-gray-100 rounded-xl hover:bg-rose-500 hover:text-white transition-all group/del"
-                                                title="Decommission Associate"
+                                                className="p-2 hover:bg-destructive/10 rounded-lg transition-colors text-muted-foreground hover:text-destructive"
                                             >
-                                                <Trash2 className="h-5 w-5" />
-                                            </button>
-                                            <button className="p-3 bg-white shadow-xl border border-gray-100 rounded-2xl hover:bg-gray-100 transition-all">
-                                                <MoreVertical className="h-5 w-5 text-gray-400" />
+                                                <Trash2 className="w-4 h-4" />
                                             </button>
                                         </div>
                                     </td>
@@ -242,25 +194,25 @@ export default function CustomersPage() {
                     </table>
                 </div>
 
-                {/* Ledger Navigation */}
-                <div className="px-12 py-10 bg-gray-50/30 border-t border-gray-50 flex flex-col sm:flex-row items-center justify-between gap-8">
-                    <div className="text-[10px] text-gray-400 font-black uppercase tracking-[0.2em] flex items-center gap-3">
-                        Total Entity Count: <span className="text-gray-900 bg-white px-3 py-1 rounded-lg border border-gray-100">{pagination.totalItems}</span>
-                    </div>
-                    <div className="flex items-center gap-3">
+                {/* Pagination */}
+                <div className="px-6 py-4 border-t border-border bg-muted/10 flex items-center justify-between">
+                    <p className="text-[12px] text-muted-foreground">
+                        Showing <span className="font-bold text-foreground">{customers.length}</span> of <span className="font-bold text-foreground">{pagination.totalItems}</span> customers
+                    </p>
+                    <div className="flex items-center gap-2">
                         <button
                             onClick={() => fetchCustomers(pagination.page - 1)}
                             disabled={pagination.page === 1}
-                            className="w-14 h-14 border-2 border-gray-100 rounded-[1.25rem] flex items-center justify-center hover:bg-black hover:text-white transition-all disabled:opacity-20 disabled:hover:bg-transparent"
+                            className="p-2 border border-border rounded-lg hover:bg-muted transition-colors disabled:opacity-50"
                         >
-                            <ChevronLeft className="h-6 w-6" />
+                            <ChevronLeft className="w-4 h-4" />
                         </button>
-                        <div className="flex items-center gap-2 px-6">
+                        <div className="flex items-center gap-1">
                             {[...Array(pagination.totalPages)].map((_, i) => (
                                 <button
                                     key={i}
                                     onClick={() => fetchCustomers(i + 1)}
-                                    className={`w-12 h-12 rounded-xl font-black text-xs transition-all ${pagination.page === i + 1 ? 'bg-black text-white shadow-xl scale-110' : 'text-gray-400 hover:text-gray-900'}`}
+                                    className={`w-8 h-8 rounded-lg text-[12px] font-bold transition-all ${pagination.page === i + 1 ? 'bg-primary text-primary-foreground' : 'hover:bg-muted text-muted-foreground'}`}
                                 >
                                     {i + 1}
                                 </button>
@@ -269,9 +221,9 @@ export default function CustomersPage() {
                         <button
                             onClick={() => fetchCustomers(pagination.page + 1)}
                             disabled={pagination.page === pagination.totalPages}
-                            className="w-14 h-14 border-2 border-gray-100 rounded-[1.25rem] flex items-center justify-center hover:bg-black hover:text-white transition-all disabled:opacity-20 disabled:hover:bg-transparent"
+                            className="p-2 border border-border rounded-lg hover:bg-muted transition-colors disabled:opacity-50"
                         >
-                            <ChevronRight className="h-6 w-6" />
+                            <ChevronRight className="w-4 h-4" />
                         </button>
                     </div>
                 </div>

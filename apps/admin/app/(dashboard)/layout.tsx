@@ -30,7 +30,7 @@ const nav: NavItem[] = [
     { label: 'Orders', href: '/orders', icon: ShoppingCart },
     { label: 'Customers', href: '/customers', icon: Users },
     {
-        label: 'Offers', icon: Percent, children: [
+        label: 'Marketing', icon: Percent, children: [
             { label: 'Coupons', href: '/marketing/coupons' },
             { label: 'Banners', href: '/marketing/banners' },
         ],
@@ -43,7 +43,7 @@ const nav: NavItem[] = [
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     const [open, setOpen] = useState(false);
-    const [expanded, setExpanded] = useState<string[]>(['Catalog']);
+    const [expanded, setExpanded] = useState<string[]>(['Products']);
     const path = usePathname();
 
     const toggle = (label: string) =>

@@ -12,13 +12,13 @@ import {
     Smartphone,
     Link as LinkIcon,
     Trash2,
-    Type
+    Type,
+    CheckCircle2,
+    Layers
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useToast } from '@/components/ui/use-toast';
 
 const bannerSchema = z.object({
     title: z.string().min(3, 'Title is required'),
@@ -39,7 +39,6 @@ export default function EditBannerPage() {
     const params = useParams();
     const [saving, setSaving] = useState(false);
     const [loading, setLoading] = useState(true);
-    const { toast } = useToast();
 
     const {
         register,
@@ -68,8 +67,6 @@ export default function EditBannerPage() {
                         displayOrder: b.displayOrder.toString(),
                         isActive: b.isActive,
                     });
-                } else {
-                    toast({ title: 'Error', description: 'Failed to load asset.', variant: 'destructive' });
                 }
             } catch (error) {
                 console.error('Failed to load banner:', error);
@@ -79,7 +76,7 @@ export default function EditBannerPage() {
         };
 
         if (params.id) fetchBanner();
-    }, [params.id, reset, toast]);
+    }, [params.id, reset]);
 
     const onSubmit = async (data: BannerFormValues) => {
         setSaving(true);
@@ -97,110 +94,201 @@ export default function EditBannerPage() {
 
             const result = await res.json();
             if (result.success) {
-                toast({ title: 'Success', description: 'Visual asset updated successfully.' });
                 router.push('/marketing/banners');
-            } else {
-                toast({ title: 'Error', description: result.error || 'Failed to update asset.', variant: 'destructive' });
             }
         } catch (error) {
             console.error('Update failed:', error);
-            toast({ title: 'Error', description: 'Network anomaly detected.', variant: 'destructive' });
         } finally {
             setSaving(false);
         }
     };
 
     const handleDelete = async () => {
-        if (!confirm('Are you sure you want to decommission this visual asset? This action is irreversible.')) return;
+        if (!confirm('Are you sure you want to delete this banner? This action cannot be undone.')) return;
 
         try {
             const res = await fetch(`/api/marketing/banners/${params.id}`, { method: 'DELETE' });
             if (res.ok) {
-                toast({ title: 'Terminated', description: 'Visual asset deleted.' });
                 router.push('/marketing/banners');
             }
         } catch (error) {
-            console.error('Deletion failed:', error);
+            console.error('Delete failed:', error);
         }
     };
 
     if (loading) {
         return (
-            <div className="h-[60vh] flex flex-col items-center justify-center gap-6">
-                <Loader2 className="h-16 w-16 animate-spin text-indigo-600" />
-                <p className="text-gray-400 font-black uppercase tracking-[0.2em] text-xs text-center">Interrogating Asset Hub...</p>
+            <div className="h-[60vh] flex flex-col items-center justify-center gap-4">
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                <p className="text-[13px] text-muted-foreground">Loading banner details...</p>
             </div>
         );
     }
 
     return (
-        <div className="max-w-4xl mx-auto space-y-12 pb-20">
+        <div className="max-w-[1000px] mx-auto pb-20">
             {/* Header */}
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 border-b border-gray-100 pb-10">
-                <div className="flex items-center gap-6">
-                    <button
-                        onClick={() => router.back()}
-                        className="w-14 h-14 bg-white border border-gray-100 rounded-2xl flex items-center justify-center hover:bg-black hover:text-white transition-all shadow-sm"
-                    >
-                        <ArrowLeft className="h-6 w-6" />
+            <div className="flex items-center justify-between mb-10 pb-6 border-b border-border">
+                <div className="flex items-center gap-4">
+                    <button onClick={() => router.back()} className="p-2 hover:bg-muted rounded-lg transition-colors">
+                        <ArrowLeft className="w-5 h-5 text-muted-foreground" />
                     </button>
                     <div>
-                        <div className="flex items-center gap-3 mb-2">
-                            <h1 className="text-4xl font-black text-gray-900 tracking-tighter">Edit Asset</h1>
-                            <ImageIcon className="h-6 w-6 text-indigo-600" />
-                        </div>
-                        <p className="text-gray-400 font-bold uppercase tracking-[0.2em] text-[10px]">reconfigure visual intelligence</p>
+                        <h1 className="text-xl font-semibold text-foreground">Edit Banner</h1>
+                        <p className="text-[13px] text-muted-foreground mt-0.5">Modify your promotional banner.</p>
                     </div>
                 </div>
-                <div className="flex gap-4">
-                    <Button variant="outline" onClick={handleDelete} className="h-14 px-8 border-2 border-rose-100 text-rose-500 hover:bg-rose-50 rounded-2xl text-xs font-black uppercase tracking-widest gap-2">
-                        <Trash2 className="h-4 w-4" />
-                        Terminate
-                    </Button>
-                    <Button
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={handleDelete}
+                        className="px-4 py-2 text-[13px] font-medium text-rose-500 hover:bg-rose-50 rounded-lg transition-colors flex items-center gap-2"
+                    >
+                        <Trash2 className="w-4 h-4" />
+                        Delete
+                    </button>
+                    <button
                         onClick={handleSubmit(onSubmit)}
                         disabled={saving}
-                        className="h-14 px-10 bg-black text-white rounded-2xl text-xs font-black uppercase tracking-widest gap-3 shadow-2xl shadow-black/10 transition-all hover:scale-105 active:scale-95 disabled:opacity-50"
+                        className="px-6 py-2 bg-primary text-primary-foreground rounded-lg text-[13px] font-semibold hover:bg-primary/90 transition flex items-center gap-2 shadow-sm"
                     >
-                        {saving ? <Loader2 className="h-5 w-5 animate-spin" /> : <Save className="h-5 w-5" />}
-                        {saving ? 'Updating...' : 'Save Revisions'}
-                    </Button>
+                        {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                        {saving ? 'Saving...' : 'Save Changes'}
+                    </button>
                 </div>
             </div>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-10">
-                {/* Core Narrative */}
-                <section className="bg-white rounded-[3rem] border border-gray-100 p-10 shadow-sm relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-40 h-40 bg-indigo-50 rounded-bl-[10rem] opacity-30" />
-                    <h3 className="text-xl font-black text-gray-900 mb-8 border-b border-gray-50 pb-6 uppercase tracking-widest flex items-center gap-3">
-                        <Type className="h-5 w-5 text-indigo-600" />
-                        Narrative & Position
-                    </h3>
+            <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Main Content */}
+                <div className="lg:col-span-2 space-y-6">
+                    {/* Banner Content */}
+                    <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+                        <h2 className="text-sm font-semibold mb-6 flex items-center gap-2">
+                            <Type className="w-4 h-4 text-primary" />
+                            Banner Content
+                        </h2>
+                        <div className="space-y-6">
+                            <div className="grid grid-cols-1 gap-6">
+                                <div className="space-y-2">
+                                    <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider">Title</label>
+                                    <input
+                                        {...register('title')}
+                                        className="w-full h-11 px-4 bg-muted/20 border border-border rounded-lg text-[14px] font-medium text-foreground outline-none focus:ring-2 focus:ring-primary/20 transition placeholder:text-muted-foreground/50"
+                                        placeholder="e.g. New Summer Collection"
+                                    />
+                                    {errors.title && <p className="text-destructive text-[11px] font-medium">{errors.title.message}</p>}
+                                </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div className="space-y-4">
-                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Primary Narrative (Title)</label>
-                            <input
-                                {...register('title')}
-                                className="w-full h-16 px-6 bg-gray-50 border border-transparent rounded-[1.5rem] font-black text-xl text-gray-900 focus:bg-white focus:border-indigo-600 transition-all outline-none placeholder:text-gray-300"
-                                placeholder="Returns & Exchanges"
-                            />
-                            {errors.title && <p className="text-rose-500 text-xs font-bold uppercase tracking-widest ml-4">{errors.title.message}</p>}
+                                <div className="space-y-2">
+                                    <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider">Subtitle</label>
+                                    <input
+                                        {...register('subtitle')}
+                                        className="w-full h-11 px-4 bg-muted/20 border border-border rounded-lg text-[14px] font-medium text-foreground outline-none focus:ring-2 focus:ring-primary/20 transition placeholder:text-muted-foreground/50"
+                                        placeholder="e.g. Up to 50% off on all items"
+                                    />
+                                </div>
+                            </div>
                         </div>
-                        <div className="space-y-4">
-                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Secondary Narrative (Subtitle)</label>
-                            <input
-                                {...register('subtitle')}
-                                className="w-full h-16 px-6 bg-gray-50 border border-transparent rounded-[1.5rem] font-bold text-gray-900 focus:bg-white focus:border-indigo-600 transition-all outline-none"
-                                placeholder="Hassle-free policy"
-                            />
-                        </div>
+                    </div>
 
-                        <div className="space-y-4">
-                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Structural Position</label>
+                    {/* Images */}
+                    <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+                        <h2 className="text-sm font-semibold mb-6 flex items-center gap-2">
+                            <ImageIcon className="w-4 h-4 text-primary" />
+                            Images
+                        </h2>
+                        <div className="space-y-6">
+                            <div className="space-y-2">
+                                <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                                    <Monitor className="w-3.5 h-3.5" /> Desktop Image URL
+                                </label>
+                                <input
+                                    {...register('imageDesktop')}
+                                    className="w-full h-11 px-4 bg-muted/20 border border-border rounded-lg text-[13px] font-medium text-primary outline-none focus:ring-2 focus:ring-primary/20 transition"
+                                    placeholder="https://example.com/banner-desktop.jpg"
+                                />
+                                {errors.imageDesktop && <p className="text-destructive text-[11px] font-medium">{errors.imageDesktop.message}</p>}
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                                    <Smartphone className="w-3.5 h-3.5" /> Mobile Image URL (Optional)
+                                </label>
+                                <input
+                                    {...register('imageMobile')}
+                                    className="w-full h-11 px-4 bg-muted/20 border border-border rounded-lg text-[13px] font-medium text-primary outline-none focus:ring-2 focus:ring-primary/20 transition"
+                                    placeholder="https://example.com/banner-mobile.jpg"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Link & Ordering */}
+                    <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+                        <h2 className="text-sm font-semibold mb-6 flex items-center gap-2">
+                            <LinkIcon className="w-4 h-4 text-primary" />
+                            Link & Ordering
+                        </h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider">Link URL</label>
+                                <input
+                                    {...register('linkUrl')}
+                                    className="w-full h-11 px-4 bg-muted/20 border border-border rounded-lg text-[13px] font-medium text-foreground outline-none focus:ring-2 focus:ring-primary/20 transition"
+                                    placeholder="/shop/new-arrivals"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider">Button Text</label>
+                                <input
+                                    {...register('linkText')}
+                                    className="w-full h-11 px-4 bg-muted/20 border border-border rounded-lg text-[13px] font-medium text-foreground outline-none focus:ring-2 focus:ring-primary/20 transition"
+                                    placeholder="Shop Now"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider">Sort Order</label>
+                                <input
+                                    {...register('displayOrder')}
+                                    type="number"
+                                    className="w-full h-11 px-4 bg-muted/20 border border-border rounded-lg text-[13px] font-medium text-foreground outline-none focus:ring-2 focus:ring-primary/20 transition"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Sidebar */}
+                <div className="space-y-6">
+                    {/* Active Status */}
+                    <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+                        <h2 className="text-sm font-semibold mb-6 flex items-center gap-2">
+                            <CheckCircle2 className="w-4 h-4 text-primary" />
+                            Visibility
+                        </h2>
+                        <label className="flex items-center gap-3 p-4 bg-muted/20 rounded-xl border border-border cursor-pointer hover:bg-muted/40 transition">
+                            <input
+                                type="checkbox"
+                                {...register('isActive')}
+                                className="w-5 h-5 rounded border-border text-primary focus:ring-primary"
+                            />
+                            <div>
+                                <p className="text-[13px] font-bold text-foreground">Active</p>
+                                <p className="text-[11px] text-muted-foreground">Show this banner on the website</p>
+                            </div>
+                        </label>
+                    </div>
+
+                    {/* Placement */}
+                    <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+                        <h2 className="text-sm font-semibold mb-6 flex items-center gap-2">
+                            <Layers className="w-4 h-4 text-primary" />
+                            Placement
+                        </h2>
+                        <div className="space-y-2">
+                            <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Position</label>
                             <select
                                 {...register('position')}
-                                className="w-full h-16 px-6 bg-gray-50 border border-transparent rounded-[1.5rem] font-black text-gray-900 focus:bg-white focus:border-indigo-600 transition-all outline-none appearance-none cursor-pointer"
+                                className="w-full h-10 px-3 bg-muted/20 border border-border rounded-lg text-[13px] font-medium outline-none focus:ring-2 focus:ring-primary/20 transition appearance-none cursor-pointer"
                             >
                                 <option value="HOME_HERO">Home Hero</option>
                                 <option value="HOME_SECONDARY">Home Secondary</option>
@@ -209,90 +297,8 @@ export default function EditBannerPage() {
                                 <option value="CHECKOUT_TOP">Checkout Top</option>
                             </select>
                         </div>
-
-                        <div className="space-y-4 flex flex-col justify-center">
-                            <label className="flex items-center gap-4 p-4 bg-gray-50 rounded-[1.5rem] cursor-pointer hover:bg-gray-100 transition-all">
-                                <input
-                                    type="checkbox"
-                                    {...register('isActive')}
-                                    className="w-6 h-6 rounded-lg accent-indigo-600"
-                                />
-                                <div>
-                                    <div className="text-sm font-black text-gray-900 uppercase tracking-widest">Active Status</div>
-                                    <div className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Live in storefront</div>
-                                </div>
-                            </label>
-                        </div>
                     </div>
-                </section>
-
-                {/* Visual Artifacts */}
-                <section className="bg-white rounded-[3rem] border border-gray-100 p-10 shadow-sm relative overflow-hidden">
-                    <h3 className="text-xl font-black text-gray-900 mb-8 border-b border-gray-50 pb-6 uppercase tracking-widest flex items-center gap-3">
-                        <Layout className="h-5 w-5 text-indigo-600" />
-                        Visual Artifacts
-                    </h3>
-
-                    <div className="space-y-8">
-                        <div className="space-y-4">
-                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4 flex items-center gap-2">
-                                <Monitor className="h-3 w-3" /> Desktop Artifact URL
-                            </label>
-                            <input
-                                {...register('imageDesktop')}
-                                className="w-full h-16 px-6 bg-gray-50 border border-transparent rounded-[1.5rem] font-bold text-indigo-600 focus:bg-white focus:border-indigo-600 transition-all outline-none placeholder:text-indigo-200"
-                                placeholder="https://..."
-                            />
-                            {errors.imageDesktop && <p className="text-rose-500 text-xs font-bold uppercase tracking-widest ml-4">{errors.imageDesktop.message}</p>}
-                        </div>
-
-                        <div className="space-y-4">
-                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4 flex items-center gap-2">
-                                <Smartphone className="h-3 w-3" /> Mobile Artifact URL (Optional)
-                            </label>
-                            <input
-                                {...register('imageMobile')}
-                                className="w-full h-16 px-6 bg-gray-50 border border-transparent rounded-[1.5rem] font-bold text-indigo-600 focus:bg-white focus:border-indigo-600 transition-all outline-none placeholder:text-indigo-200"
-                                placeholder="https://..."
-                            />
-                        </div>
-                    </div>
-                </section>
-
-                {/* Routing Logic */}
-                <section className="bg-white rounded-[3rem] border border-gray-100 p-10 shadow-sm relative overflow-hidden">
-                    <h3 className="text-xl font-black text-gray-900 mb-8 border-b border-gray-50 pb-6 uppercase tracking-widest flex items-center gap-3">
-                        <LinkIcon className="h-5 w-5 text-indigo-600" />
-                        Action Routing
-                    </h3>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div className="space-y-4">
-                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Destination URL</label>
-                            <input
-                                {...register('linkUrl')}
-                                className="w-full h-16 px-6 bg-gray-50 border border-transparent rounded-[1.5rem] font-bold text-gray-900 focus:bg-white focus:border-indigo-600 transition-all outline-none"
-                                placeholder="/shop/new-arrivals"
-                            />
-                        </div>
-                        <div className="space-y-4">
-                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Action Label</label>
-                            <input
-                                {...register('linkText')}
-                                className="w-full h-16 px-6 bg-gray-50 border border-transparent rounded-[1.5rem] font-bold text-gray-900 focus:bg-white focus:border-indigo-600 transition-all outline-none"
-                                placeholder="Shop Now"
-                            />
-                        </div>
-                        <div className="space-y-4">
-                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Display Sequence</label>
-                            <input
-                                {...register('displayOrder')}
-                                type="number"
-                                className="w-full h-16 px-6 bg-gray-50 border border-transparent rounded-[1.5rem] font-bold text-gray-900 focus:bg-white focus:border-indigo-600 transition-all outline-none"
-                            />
-                        </div>
-                    </div>
-                </section>
+                </div>
             </form>
         </div>
     );

@@ -12,12 +12,10 @@ import {
     Database,
     Loader2,
     Save,
-    X
+    X,
+    TrendingDown,
+    Layers
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { useToast } from '@/components/ui/use-toast';
-import { SafeImage } from '@/components/ui/safe-image';
 
 export default function InventoryPage() {
     const [variants, setVariants] = useState<any[]>([]);
@@ -27,7 +25,6 @@ export default function InventoryPage() {
     const [editingId, setEditingId] = useState<string | null>(null);
     const [newStock, setNewStock] = useState<string>('');
     const [updating, setUpdating] = useState(false);
-    const { toast } = useToast();
 
     const fetchInventory = async () => {
         setLoading(true);
@@ -39,11 +36,6 @@ export default function InventoryPage() {
             }
         } catch (error) {
             console.error('Failed to fetch inventory:', error);
-            toast({
-                title: 'Synchronization Error',
-                description: 'Failed to fetch inventory manifest.',
-                variant: 'destructive',
-            });
         } finally {
             setLoading(false);
         }
@@ -57,14 +49,7 @@ export default function InventoryPage() {
     }, [searchQuery, statusFilter]);
 
     const handleUpdateStock = async (id: string, quantity: string) => {
-        if (!quantity || isNaN(Number(quantity))) {
-            toast({
-                title: 'Invalid Input',
-                description: 'Please enter a valid numeric quantity.',
-                variant: 'destructive',
-            });
-            return;
-        }
+        if (!quantity || isNaN(Number(quantity))) return;
 
         setUpdating(true);
         try {
@@ -76,33 +61,18 @@ export default function InventoryPage() {
             if (res.ok) {
                 setEditingId(null);
                 fetchInventory();
-                toast({
-                    title: 'Manifest Updated',
-                    description: 'Stock quantum successfully calibrated.',
-                });
-            } else {
-                toast({
-                    title: 'Update Failed',
-                    description: 'Could not calibrate stock quantum.',
-                    variant: 'destructive',
-                });
             }
         } catch (error) {
             console.error('Stock update failed:', error);
-            toast({
-                title: 'Update Failed',
-                description: 'Network anomaly detected.',
-                variant: 'destructive',
-            });
         } finally {
             setUpdating(false);
         }
     };
 
-    const getStockBadge = (quantity: number) => {
-        if (quantity <= 0) return { label: 'Depleted', class: 'bg-rose-50 text-rose-500 border-rose-100', icon: XCircle };
-        if (quantity <= 10) return { label: 'Critical', class: 'bg-amber-50 text-amber-500 border-amber-100', icon: AlertTriangle };
-        return { label: 'Optimal', class: 'bg-emerald-50 text-emerald-500 border-emerald-100', icon: CheckCircle2 };
+    const getStockStatus = (quantity: number) => {
+        if (quantity <= 0) return { label: 'Out of Stock', class: 'bg-rose-50 text-rose-600 border-rose-100', icon: XCircle };
+        if (quantity <= 10) return { label: 'Low Stock', class: 'bg-amber-50 text-amber-600 border-amber-100', icon: AlertTriangle };
+        return { label: 'In Stock', class: 'bg-emerald-50 text-emerald-600 border-emerald-100', icon: CheckCircle2 };
     };
 
     const counts = {
@@ -112,205 +82,168 @@ export default function InventoryPage() {
     };
 
     return (
-        <div className="space-y-12" aria-label="Inventory Management Dashboard">
-            {/* Master Header */}
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-8 border-b border-gray-100 pb-12">
+        <div className="space-y-6">
+            {/* Header */}
+            <div className="flex items-center justify-between pb-6 border-b border-border">
                 <div>
-                    <h1 className="text-5xl font-black text-gray-900 tracking-tighter italic">Stock Intelligence</h1>
-                    <p className="text-gray-400 font-bold uppercase tracking-[0.2em] text-[10px] mt-3 uppercase italic">Monitor and calibrate the physical manifest of the enterprise</p>
+                    <h1 className="text-xl font-semibold text-foreground">Inventory</h1>
+                    <p className="text-[13px] text-muted-foreground mt-0.5">Manage your product stock levels and availability.</p>
                 </div>
-                <div className="flex gap-4">
-                    <Button
-                        onClick={() => fetchInventory()}
-                        aria-label="Synchronize inventory data"
-                        variant="outline"
-                        className="h-16 px-8 border-2 rounded-3xl text-[10px] font-black uppercase tracking-widest gap-3 shadow-sm hover:bg-gray-50 transition-colors"
-                    >
-                        <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} aria-hidden="true" />
-                        Synchronize
-                    </Button>
+                <button
+                    onClick={() => fetchInventory()}
+                    className="px-4 py-2 border border-border rounded-lg text-[13px] font-medium hover:bg-muted/60 transition flex items-center gap-2"
+                >
+                    <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+                    Refresh
+                </button>
+            </div>
+
+            {/* Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {[
+                    { label: 'Total Items', value: counts.total, icon: Layers, color: 'text-primary bg-primary/10' },
+                    { label: 'Low Stock', value: counts.low, icon: TrendingDown, color: 'text-amber-600 bg-amber-50' },
+                    { label: 'Out of Stock', value: counts.out, icon: XCircle, color: 'text-rose-600 bg-rose-50' },
+                ].map((stat, i) => (
+                    <div key={i} className="bg-card border border-border rounded-xl p-5 shadow-sm">
+                        <div className={`w-8 h-8 rounded-lg ${stat.color} flex items-center justify-center mb-4`}>
+                            <stat.icon className="w-4 h-4" />
+                        </div>
+                        <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">{stat.label}</p>
+                        <p className="text-[20px] font-bold text-foreground mt-1">{stat.value}</p>
+                    </div>
+                ))}
+            </div>
+
+            {/* Filters */}
+            <div className="flex flex-col md:flex-row gap-3">
+                <div className="flex-1 relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <input
+                        type="text"
+                        placeholder="Search by SKU or product name..."
+                        value={searchQuery}
+                        onChange={e => setSearchQuery(e.target.value)}
+                        className="w-full h-10 pl-10 pr-4 bg-card border border-border rounded-lg text-[13px] outline-none focus:ring-2 focus:ring-ring transition"
+                    />
+                </div>
+                <div className="flex items-center gap-1.5 p-1 bg-muted/40 rounded-lg border border-border">
+                    {['ALL', 'LOW_STOCK', 'OUT_OF_STOCK'].map((f) => (
+                        <button
+                            key={f}
+                            onClick={() => setStatusFilter(f)}
+                            className={`px-4 py-1.5 rounded-md text-[12px] font-semibold transition-all ${statusFilter === f ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+                        >
+                            {f === 'ALL' ? 'All Items' : f.replace(/_/g, ' ')}
+                        </button>
+                    ))}
                 </div>
             </div>
 
-            {/* Performance Banners */}
-            <section aria-label="Inventory Statistics" className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {[
-                    { label: 'Total SKU Nodes', value: counts.total, icon: Database, color: 'text-indigo-600' },
-                    { label: 'Critical Variance', value: counts.low, icon: AlertTriangle, color: 'text-amber-500' },
-                    { label: 'Inert Artifacts', value: counts.out, icon: XCircle, color: 'text-rose-500' },
-                ].map((stat, i) => (
-                    <div key={i} className="bg-white p-10 rounded-[3rem] border border-gray-100 shadow-sm relative group hover:shadow-lg transition-all duration-300">
-                        <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 transition-all text-black">
-                            <stat.icon className="h-20 w-20" aria-hidden="true" />
-                        </div>
-                        <stat.icon className={`h-8 w-8 ${stat.color} mb-6`} aria-hidden="true" />
-                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 italic">{stat.label}</p>
-                        <h4 className="text-4xl font-black text-gray-900 tracking-tighter italic">{stat.value}</h4>
-                    </div>
-                ))}
-            </section>
-
-            {/* Matrix Filters */}
-            <section aria-label="Search and Filters" className="bg-white rounded-[3rem] border border-gray-100 p-8 shadow-sm">
-                <div className="flex flex-col lg:flex-row gap-8">
-                    <div className="flex-1 relative group">
-                        <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300 group-focus-within:text-black transition-colors" aria-hidden="true" />
-                        <input
-                            type="text"
-                            aria-label="Search inventory by SKU, ID or Name"
-                            placeholder="Identify artifact by SKU, Variant ID or Name..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-16 pr-8 py-5 bg-gray-50 border border-transparent rounded-[1.5rem] text-base focus:bg-white focus:border-indigo-100 outline-none transition-all font-bold placeholder:text-gray-300"
-                        />
-                    </div>
-                    <div className="flex gap-4" role="group" aria-label="Stock status filters">
-                        {['ALL', 'LOW_STOCK', 'OUT_OF_STOCK'].map((f) => (
-                            <button
-                                key={f}
-                                onClick={() => setStatusFilter(f)}
-                                aria-pressed={statusFilter === f}
-                                className={`px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${statusFilter === f ? 'bg-black text-white shadow-xl scale-105' : 'bg-gray-50 text-gray-400 hover:text-black hover:bg-gray-100'}`}
-                            >
-                                {f.replace(/_/g, ' ')}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* Inventory Manifest Table */}
-            <section aria-label="Inventory List" className="bg-white rounded-[4rem] border border-gray-100 overflow-hidden shadow-2xl shadow-gray-200/50">
+            {/* Table */}
+            <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
                 <div className="overflow-x-auto">
-                    <table className="w-full border-collapse">
+                    <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="bg-gray-50/50 border-b border-gray-50 text-left">
-                                <th className="px-10 py-8 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] italic">Artifact Manifest</th>
-                                <th className="px-10 py-8 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] italic">Identification (SKU)</th>
-                                <th className="px-10 py-8 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] italic">Collection Path</th>
-                                <th className="px-10 py-8 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] italic">Inventory Status</th>
-                                <th className="px-10 py-8 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] italic">Current Quantum</th>
-                                <th className="px-10 py-8 text-right text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] italic">Directives</th>
+                            <tr className="bg-muted/20 border-b border-border">
+                                <th className="px-6 py-4 text-[12px] font-bold text-muted-foreground uppercase tracking-wider">Product</th>
+                                <th className="px-6 py-4 text-[12px] font-bold text-muted-foreground uppercase tracking-wider">SKU</th>
+                                <th className="px-6 py-4 text-[12px] font-bold text-muted-foreground uppercase tracking-wider">Category</th>
+                                <th className="px-6 py-4 text-[12px] font-bold text-muted-foreground uppercase tracking-wider">Status</th>
+                                <th className="px-6 py-4 text-[12px] font-bold text-muted-foreground uppercase tracking-wider">Stock</th>
+                                <th className="px-6 py-4 text-right text-[12px] font-bold text-muted-foreground uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-50">
+                        <tbody className="divide-y divide-border">
                             {loading && variants.length === 0 ? (
                                 [...Array(5)].map((_, i) => (
                                     <tr key={i} className="animate-pulse">
-                                        <td className="px-10 py-8">
-                                            <div className="flex items-center gap-6">
-                                                <Skeleton className="w-16 h-16 rounded-2xl" />
-                                                <div className="space-y-2">
-                                                    <Skeleton className="h-5 w-48" />
-                                                    <Skeleton className="h-3 w-32" />
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-10 py-8"><Skeleton className="h-6 w-24 rounded-lg" /></td>
-                                        <td className="px-10 py-8"><Skeleton className="h-4 w-32" /></td>
-                                        <td className="px-10 py-8"><Skeleton className="h-8 w-24 rounded-xl" /></td>
-                                        <td className="px-10 py-8"><Skeleton className="h-8 w-16" /></td>
-                                        <td className="px-10 py-8 flex justify-end gap-2"><Skeleton className="h-12 w-12 rounded-2xl" /></td>
+                                        <td colSpan={6} className="px-6 py-6 h-20 bg-muted/5"></td>
                                     </tr>
                                 ))
                             ) : variants.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6} className="py-40 text-center">
-                                        <div className="w-20 h-20 bg-gray-50 rounded-3xl flex items-center justify-center mx-auto mb-6">
-                                            <Package className="h-10 w-10 text-gray-200" aria-hidden="true" />
-                                        </div>
-                                        <p className="text-[10px] text-gray-400 font-black uppercase tracking-[0.3em]">No artifact variants detected in current sector.</p>
+                                    <td colSpan={6} className="py-20 text-center">
+                                        <Package className="w-10 h-10 text-muted-foreground/30 mx-auto mb-4" />
+                                        <p className="text-[13px] text-muted-foreground">No inventory items found.</p>
                                     </td>
                                 </tr>
                             ) : variants.map((v) => {
-                                const status = getStockBadge(v.stockQuantity);
+                                const status = getStockStatus(v.stockQuantity);
                                 const Icon = status.icon;
                                 return (
-                                    <tr key={v.id} className="hover:bg-gray-50/50 transition-all group">
-                                        <td className="px-10 py-8">
-                                            <div className="flex items-center gap-6">
-                                                <div className="w-16 h-16 bg-white border border-gray-100 rounded-2xl flex items-center justify-center p-2 shadow-sm overflow-hidden group-hover:scale-110 transition-transform">
-                                                    {v.images?.[0] ? <SafeImage src={v.images[0]} alt="" className="w-full h-full rounded-lg" /> : <Package className="h-8 w-8 text-gray-100" aria-hidden="true" />}
+                                    <tr key={v.id} className="hover:bg-muted/10 transition-colors group">
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 bg-muted rounded-lg border border-border flex-shrink-0 overflow-hidden">
+                                                    {v.images?.[0] ? <img src={v.images[0]} className="w-full h-full object-cover" /> : <Package className="w-5 h-5 text-muted-foreground m-auto" />}
                                                 </div>
                                                 <div>
-                                                    <h4 className="font-black text-gray-900 tracking-tight italic text-lg">{v.product.name}</h4>
-                                                    <p className="text-[10px] text-indigo-400 font-black uppercase tracking-widest mt-1 italic">{v.name}</p>
+                                                    <p className="text-[14px] font-semibold text-foreground">{v.product.name}</p>
+                                                    <p className="text-[11px] text-primary font-medium">{v.name}</p>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-10 py-8">
-                                            <span className="font-mono text-xs font-black text-gray-600 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100">{v.sku}</span>
+                                        <td className="px-6 py-4">
+                                            <span className="font-mono text-[11px] font-bold text-muted-foreground">{v.sku}</span>
                                         </td>
-                                        <td className="px-10 py-8">
-                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.1em] italic">{v.product.category?.name || 'Unclassified'}</span>
+                                        <td className="px-6 py-4">
+                                            <span className="text-[12px] text-muted-foreground">{v.product.category?.name || 'Uncategorized'}</span>
                                         </td>
-                                        <td className="px-10 py-8">
-                                            <span className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest border flex items-center gap-2 w-fit ${status.class}`}>
-                                                <Icon className="h-3 w-3" aria-hidden="true" />
+                                        <td className="px-6 py-4">
+                                            <span className={`px-2 py-1 rounded text-[10px] font-bold border flex items-center gap-1.5 w-fit ${status.class}`}>
+                                                <Icon className="w-3 h-3" />
                                                 {status.label}
                                             </span>
                                         </td>
-                                        <td className="px-10 py-8">
+                                        <td className="px-6 py-4">
                                             {editingId === v.id ? (
-                                                <div className="flex items-center gap-2 animate-in fade-in duration-300">
+                                                <div className="flex items-center gap-2">
                                                     <input
                                                         type="number"
-                                                        aria-label={`Update stock for ${v.name}`}
-                                                        className="w-24 h-12 px-4 bg-white border-2 border-indigo-600 rounded-xl font-black text-lg focus:outline-none shadow-xl transform scale-105"
+                                                        className="w-16 h-8 px-2 bg-background border border-primary rounded text-[13px] font-bold outline-none ring-2 ring-primary/20"
                                                         value={newStock}
                                                         autoFocus
                                                         onChange={e => setNewStock(e.target.value)}
-                                                        onKeyDown={(e) => {
+                                                        onKeyDown={e => {
                                                             if (e.key === 'Enter') handleUpdateStock(v.id, newStock);
                                                             if (e.key === 'Escape') setEditingId(null);
                                                         }}
                                                     />
                                                 </div>
                                             ) : (
-                                                <div className="flex flex-col">
-                                                    <span className={`text-2xl font-black italic tracking-tighter ${v.stockQuantity <= 10 ? 'text-amber-500' : 'text-gray-900'}`}>
-                                                        {v.stockQuantity} <span className="text-[10px] text-gray-300 not-italic uppercase tracking-widest ml-1 font-bold">Units</span>
-                                                    </span>
-                                                </div>
+                                                <p className={`text-[15px] font-bold ${v.stockQuantity <= 10 ? 'text-amber-600' : 'text-foreground'}`}>
+                                                    {v.stockQuantity}
+                                                </p>
                                             )}
                                         </td>
-                                        <td className="px-10 py-8">
-                                            <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-all focus-within:opacity-100">
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center justify-end gap-2">
                                                 {editingId === v.id ? (
-                                                    <div className="flex gap-2">
+                                                    <>
                                                         <button
-                                                            onClick={(e) => {
-                                                                e.preventDefault();
-                                                                setEditingId(null);
-                                                            }}
-                                                            className="p-4 bg-white text-gray-400 border border-gray-100 rounded-2xl hover:bg-rose-50 hover:text-rose-500 transition-all"
-                                                            aria-label="Cancel editing"
+                                                            onClick={() => setEditingId(null)}
+                                                            className="p-1.5 hover:bg-muted rounded text-muted-foreground"
                                                         >
-                                                            <X className="h-5 w-5" aria-hidden="true" />
+                                                            <X className="w-4 h-4" />
                                                         </button>
                                                         <button
-                                                            onClick={(e) => {
-                                                                e.preventDefault();
-                                                                handleUpdateStock(v.id, newStock);
-                                                            }}
+                                                            onClick={() => handleUpdateStock(v.id, newStock)}
                                                             disabled={updating}
-                                                            className="p-4 bg-indigo-600 text-white rounded-2xl shadow-xl shadow-indigo-500/20 hover:scale-110 active:scale-90 transition-all"
-                                                            aria-label="Save stock change"
+                                                            className="p-1.5 bg-primary text-primary-foreground rounded shadow-sm"
                                                         >
-                                                            {updating ? <Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" /> : <Save className="h-5 w-5" aria-hidden="true" />}
+                                                            {updating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                                                         </button>
-                                                    </div>
+                                                    </>
                                                 ) : (
                                                     <button
-                                                        onClick={(e) => {
-                                                            e.preventDefault();
+                                                        onClick={() => {
                                                             setEditingId(v.id);
                                                             setNewStock(v.stockQuantity.toString());
                                                         }}
-                                                        className="p-4 bg-white shadow-xl border border-gray-100 rounded-2xl hover:bg-black hover:text-white transition-all group/btn"
-                                                        aria-label={`Edit stock for ${v.name}`}
+                                                        className="p-2 hover:bg-muted rounded-lg text-muted-foreground hover:text-foreground transition-colors"
                                                     >
-                                                        <Edit3 className="h-5 w-5" aria-hidden="true" />
+                                                        <Edit3 className="w-4 h-4" />
                                                     </button>
                                                 )}
                                             </div>
@@ -321,7 +254,7 @@ export default function InventoryPage() {
                         </tbody>
                     </table>
                 </div>
-            </section>
+            </div>
         </div>
     );
 }

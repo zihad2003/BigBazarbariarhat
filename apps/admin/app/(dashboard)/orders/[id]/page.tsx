@@ -23,22 +23,9 @@ import {
     Calendar,
     ExternalLink,
     MessageSquare,
-    Save
+    Save,
+    Check
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { SafeImage } from '@/components/ui/safe-image';
-
-const formatDate = (date: string | Date, includeTime = true) => {
-    const d = new Date(date);
-    return new Intl.DateTimeFormat('en-US', {
-        month: 'long',
-        day: 'numeric',
-        year: 'numeric',
-        hour: includeTime ? '2-digit' : undefined,
-        minute: includeTime ? '2-digit' : undefined,
-    }).format(d);
-};
 
 export default function OrderDetailPage() {
     const router = useRouter();
@@ -86,7 +73,6 @@ export default function OrderDetailPage() {
             const result = await res.json();
             if (result.success) {
                 setOrder(result.data);
-                // toast.success('Manifest updated successfully');
             }
         } catch (error) {
             console.error('Update failed:', error);
@@ -97,335 +83,232 @@ export default function OrderDetailPage() {
 
     if (loading) {
         return (
-            <div className="h-[60vh] flex flex-col items-center justify-center gap-6">
-                <Loader2 className="h-16 w-16 animate-spin text-indigo-600" />
-                <p className="text-gray-400 font-black uppercase tracking-[0.2em] text-xs text-center">Interrogating Logistics Ledger...</p>
+            <div className="h-[60vh] flex flex-col items-center justify-center gap-4">
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                <p className="text-[13px] text-muted-foreground">Loading order details...</p>
             </div>
         );
     }
 
     if (!order) {
         return (
-            <div className="text-center py-20">
-                <AlertCircle className="h-20 w-20 text-rose-500 mx-auto mb-6" />
-                <h2 className="text-3xl font-black text-gray-900 tracking-tighter">Order Vanished</h2>
-                <p className="text-gray-400 font-bold uppercase tracking-widest text-xs mt-3">The requested transaction manifest could not be found.</p>
-                <Button onClick={() => router.back()} className="mt-8">Return to Inventory</Button>
+            <div className="h-[60vh] flex flex-col items-center justify-center gap-4">
+                <AlertCircle className="w-10 h-10 text-destructive" />
+                <h2 className="text-lg font-semibold">Order Not Found</h2>
+                <button onClick={() => router.back()} className="text-primary text-[13px] font-medium hover:underline">
+                    Back to Orders
+                </button>
             </div>
         );
     }
 
-    const getStatusConfig = (s: string) => {
+    const getStatusStyle = (s: string) => {
         switch (s) {
-            case 'PENDING': return { color: 'text-amber-600 bg-amber-50 border-amber-100', icon: Clock, label: 'Awaiting Authorization' };
-            case 'CONFIRMED': return { color: 'text-indigo-600 bg-indigo-50 border-indigo-100', icon: CheckCircle2, label: 'Confirmed' };
-            case 'PROCESSING': return { color: 'text-blue-600 bg-blue-50 border-blue-100', icon: Package, label: 'In Preparation' };
-            case 'SHIPPED': return { color: 'text-violet-600 bg-violet-50 border-violet-100', icon: Truck, label: 'In Transit' };
-            case 'DELIVERED': return { color: 'text-emerald-600 bg-emerald-50 border-emerald-100', icon: ShoppingBag, label: 'Transferred' };
-            case 'CANCELLED': return { color: 'text-rose-600 bg-rose-50 border-rose-100', icon: XCircle, label: 'Terminated' };
-            default: return { color: 'text-gray-600 bg-gray-50 border-gray-100', icon: Clock, label: s };
+            case 'PENDING': return 'bg-amber-50 text-amber-600 border-amber-100';
+            case 'CONFIRMED': return 'bg-blue-50 text-blue-600 border-blue-100';
+            case 'PROCESSING': return 'bg-indigo-50 text-indigo-600 border-indigo-100';
+            case 'SHIPPED': return 'bg-purple-50 text-purple-600 border-purple-100';
+            case 'DELIVERED': return 'bg-emerald-50 text-emerald-600 border-emerald-100';
+            case 'CANCELLED': return 'bg-rose-50 text-rose-600 border-rose-100';
+            default: return 'bg-muted text-muted-foreground border-border';
         }
     };
 
-    const statusConfig = getStatusConfig(order.status);
-
     return (
-        <div className="max-w-7xl mx-auto space-y-12 pb-20">
-            {/* Master Header */}
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 border-b border-gray-100 pb-12">
-                <div className="flex items-center gap-8">
-                    <button
-                        onClick={() => router.back()}
-                        className="w-16 h-16 bg-white border border-gray-100 rounded-[2rem] flex items-center justify-center hover:bg-black hover:text-white transition-all shadow-sm group"
-                    >
-                        <ArrowLeft className="h-6 w-6 group-hover:-translate-x-1 transition-transform" />
+        <div className="max-w-[1100px] mx-auto pb-20">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-10 pb-6 border-b border-border">
+                <div className="flex items-center gap-4">
+                    <button onClick={() => router.back()} className="p-2 hover:bg-muted rounded-lg transition-colors">
+                        <ArrowLeft className="w-5 h-5 text-muted-foreground" />
                     </button>
                     <div>
-                        <div className="flex items-center gap-4 mb-3">
-                            <h1 className="text-5xl font-black text-gray-900 tracking-tighter italic">#{order.orderNumber}</h1>
-                            <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${statusConfig.color}`}>
-                                {statusConfig.label}
+                        <div className="flex items-center gap-3">
+                            <h1 className="text-xl font-semibold text-foreground">Order #{order.orderNumber}</h1>
+                            <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${getStatusStyle(order.status)}`}>
+                                {order.status}
                             </span>
                         </div>
-                        <p className="text-gray-400 font-bold uppercase tracking-[0.2em] text-[10px] flex items-center gap-3">
-                            Initiated on {formatDate(order.createdAt)}
-                            <span className="w-1 h-1 bg-gray-300 rounded-full" />
-                            Global Ledger ID: {order.id}
-                        </p>
+                        <p className="text-[13px] text-muted-foreground mt-0.5">Placed on {new Date(order.createdAt).toLocaleDateString()}</p>
                     </div>
                 </div>
-                <div className="flex gap-4">
-                    <Button variant="outline" className="h-16 px-8 border-2 rounded-3xl text-[10px] font-black uppercase tracking-widest gap-3 shadow-sm">
-                        <Printer className="h-5 w-5" />
-                        Print Manifest
-                    </Button>
-                    <Button
+                <div className="flex items-center gap-3">
+                    <button className="px-4 py-2 border border-border rounded-lg text-[13px] font-medium hover:bg-muted/60 transition flex items-center gap-2">
+                        <Printer className="w-4 h-4" />
+                        Print Invoice
+                    </button>
+                    <button
                         onClick={handleUpdateOrder}
                         disabled={updating}
-                        className="h-16 px-12 bg-black text-white rounded-3xl text-[10px] font-black uppercase tracking-widest gap-3 shadow-2xl shadow-black/20 hover:scale-105 active:scale-95 transition-all"
+                        className="px-6 py-2 bg-primary text-primary-foreground rounded-lg text-[13px] font-semibold hover:bg-primary/90 transition flex items-center gap-2"
                     >
-                        {updating ? <Loader2 className="h-5 w-5 animate-spin" /> : <Save className="h-5 w-5" />}
-                        Authorize Fulfillment
-                    </Button>
+                        {updating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                        Save Changes
+                    </button>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-                {/* Fulfillment Controls & Summary */}
-                <div className="lg:col-span-2 space-y-12">
-                    {/* Catalog Manifest (Items) */}
-                    <section className="bg-white rounded-[4rem] border border-gray-100 overflow-hidden shadow-2xl shadow-indigo-900/5">
-                        <div className="p-12 border-b border-gray-50 flex justify-between items-center bg-gray-50/30">
-                            <h3 className="text-2xl font-black text-gray-900 tracking-tight uppercase flex items-center gap-4">
-                                <ShoppingBag className="h-6 w-6 text-indigo-600" />
-                                Catalog Items
-                                <span className="ml-2 px-3 py-1 bg-white text-gray-400 rounded-xl text-xs border border-gray-100 font-black">{order.items.length}</span>
-                            </h3>
-                            <Link href={`/products`} className="text-xs font-black text-indigo-600 uppercase tracking-widest hover:underline flex items-center gap-2">
-                                Inventory Master <ExternalLink className="h-3 w-3" />
-                            </Link>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Left Column: Order Items & Notes */}
+                <div className="lg:col-span-2 space-y-6">
+                    {/* Items */}
+                    <div className="bg-card border border-border rounded-xl overflow-hidden">
+                        <div className="p-5 border-b border-border bg-muted/20">
+                            <h2 className="text-sm font-semibold flex items-center gap-2">
+                                <ShoppingBag className="w-4 h-4 text-primary" />
+                                Order Items
+                            </h2>
                         </div>
-                        <div className="divide-y divide-gray-50">
+                        <div className="divide-y divide-border">
                             {order.items.map((item: any) => (
-                                <div key={item.id} className="p-10 flex items-center gap-8 hover:bg-gray-50/50 transition-colors group">
-                                    <div className="w-24 h-24 bg-gray-100 rounded-[2rem] overflow-hidden border border-gray-100 flex-shrink-0 group-hover:scale-110 transition-transform duration-500">
+                                <div key={item.id} className="p-5 flex items-center gap-4 group">
+                                    <div className="w-16 h-16 bg-muted rounded-lg overflow-hidden border border-border flex-shrink-0">
                                         {item.product.images?.[0] ? (
-                                            <SafeImage src={item.product.images[0].url} alt={item.productName || ''} className="w-full h-full" />
-                                        ) : <div className="w-full h-full flex items-center justify-center text-gray-300 font-black">NA</div>}
+                                            <img src={item.product.images[0].url} alt="" className="w-full h-full object-cover" />
+                                        ) : <div className="w-full h-full flex items-center justify-center text-muted-foreground text-[10px]">No image</div>}
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <h4 className="text-xl font-black text-gray-900 truncate tracking-tight">{item.productName}</h4>
-                                        <div className="flex items-center gap-4 mt-2">
-                                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest font-mono">SKU: {item.sku}</p>
+                                        <h4 className="text-[14px] font-semibold text-foreground truncate">{item.productName}</h4>
+                                        <div className="flex items-center gap-2 mt-1">
+                                            <span className="text-[11px] text-muted-foreground font-mono">SKU: {item.sku}</span>
                                             {item.variantName && (
-                                                <>
-                                                    <span className="w-1 h-1 bg-gray-300 rounded-full" />
-                                                    <p className="text-[10px] font-black text-gray-900 uppercase tracking-widest">{item.variantName}</p>
-                                                </>
+                                                <span className="text-[11px] px-1.5 py-0.5 bg-muted rounded text-muted-foreground font-medium">{item.variantName}</span>
                                             )}
                                         </div>
                                     </div>
                                     <div className="text-right">
-                                        <p className="text-2xl font-black text-gray-900">৳{Number(item.totalPrice).toLocaleString()}</p>
-                                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">
+                                        <p className="text-[14px] font-bold text-foreground">৳{Number(item.totalPrice).toLocaleString()}</p>
+                                        <p className="text-[11px] text-muted-foreground mt-0.5">
                                             {item.quantity} × ৳{Number(item.unitPrice).toLocaleString()}
                                         </p>
                                     </div>
                                 </div>
                             ))}
                         </div>
-                        {/* Summary Block */}
-                        <div className="p-12 bg-black text-white space-y-6">
-                            <div className="flex justify-between text-indigo-300/60 font-black uppercase tracking-[0.2em] text-[10px]">
-                                <span>Sub-Total Manifest</span>
+                        {/* Summary */}
+                        <div className="p-5 bg-muted/10 border-t border-border space-y-3">
+                            <div className="flex justify-between text-[13px] text-muted-foreground">
+                                <span>Subtotal</span>
                                 <span>৳{Number(order.subtotal).toLocaleString()}</span>
                             </div>
-                            <div className="flex justify-between text-emerald-400/60 font-black uppercase tracking-[0.2em] text-[10px]">
-                                <span>Promotion Applied</span>
-                                <span>- ৳{Number(order.discountAmount).toLocaleString()}</span>
+                            <div className="flex justify-between text-[13px] text-muted-foreground">
+                                <span>Discount</span>
+                                <span className="text-emerald-600">- ৳{Number(order.discountAmount).toLocaleString()}</span>
                             </div>
-                            <div className="flex justify-between text-indigo-300/60 font-black uppercase tracking-[0.2em] text-[10px]">
-                                <span>Logistics Overhead</span>
+                            <div className="flex justify-between text-[13px] text-muted-foreground">
+                                <span>Shipping</span>
                                 <span>+ ৳{Number(order.shippingCost).toLocaleString()}</span>
                             </div>
-                            <div className="pt-6 border-t border-white/10 flex justify-between items-end">
-                                <div>
-                                    <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-1 italic">Authorized Total</p>
-                                    <h3 className="text-4xl font-black tracking-tighter italic">৳{Number(order.totalAmount).toLocaleString()}</h3>
-                                </div>
-                                <div className="text-right">
-                                    <span className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border border-white/20 ${order.paymentStatus === 'PAID' ? 'text-emerald-400 bg-emerald-400/10' : 'text-amber-400 bg-amber-400/10'}`}>
-                                        Payment: {order.paymentStatus}
-                                    </span>
-                                </div>
+                            <div className="pt-3 border-t border-border flex justify-between items-center">
+                                <span className="text-[14px] font-bold text-foreground">Total</span>
+                                <span className="text-[18px] font-bold text-primary">৳{Number(order.totalAmount).toLocaleString()}</span>
                             </div>
                         </div>
-                    </section>
+                    </div>
 
-                    {/* Timeline / Fulfillment Steps */}
-                    <section className="bg-white rounded-[4rem] border border-gray-100 p-12 shadow-sm">
-                        <h3 className="text-2xl font-black text-gray-900 mb-12 uppercase tracking-tight flex items-center gap-4">
-                            <Clock className="h-6 w-6 text-indigo-600" />
-                            Fulfillment Journey
-                        </h3>
-                        <div className="space-y-12 relative before:absolute before:left-8 before:top-4 before:bottom-4 before:w-1 before:bg-gray-50 before:rounded-full">
-                            {[
-                                { status: 'DELIVERED', icon: ShoppingBag, label: 'Transferred to Customer', time: order.deliveredAt },
-                                { status: 'SHIPPED', icon: Truck, label: 'Handed to Carrier', time: order.status === 'SHIPPED' ? order.updatedAt : null },
-                                { status: 'PROCESSING', icon: Package, label: 'In Curation Hub', time: order.status === 'PROCESSING' ? order.updatedAt : null },
-                                { status: 'CONFIRMED', icon: CheckCircle2, label: 'Inventory Authorized', time: order.status === 'CONFIRMED' ? order.updatedAt : null },
-                                { status: 'PENDING', icon: Clock, label: 'Order Registered', time: order.createdAt },
-                            ].map((step, idx) => (
-                                <div key={idx} className={`relative pl-24 transition-opacity ${!step.time ? 'opacity-30 grayscale' : 'opacity-100'}`}>
-                                    <div className={`absolute left-0 w-16 h-16 rounded-3xl flex items-center justify-center transition-all shadow-xl ${step.time ? 'bg-black text-white' : 'bg-gray-50 text-gray-300'}`}>
-                                        <step.icon className="h-6 w-6" />
-                                    </div>
-                                    <div>
-                                        <h4 className="text-xl font-black text-gray-900 tracking-tight">{step.label}</h4>
-                                        {step.time && (
-                                            <p className="text-xs font-black text-indigo-600 uppercase tracking-widest mt-1">
-                                                {formatDate(step.time)}
-                                            </p>
-                                        )}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </section>
+                    {/* Admin Notes */}
+                    <div className="bg-card border border-border rounded-xl p-6">
+                        <h2 className="text-sm font-semibold mb-4 flex items-center gap-2">
+                            <MessageSquare className="w-4 h-4 text-primary" />
+                            Internal Notes
+                        </h2>
+                        <textarea
+                            value={adminNotes}
+                            onChange={(e) => setAdminNotes(e.target.value)}
+                            placeholder="Add a note for internal reference..."
+                            className="w-full p-4 bg-background border border-input rounded-lg text-[13px] outline-none focus:ring-2 focus:ring-ring transition resize-none h-24"
+                        />
+                    </div>
                 </div>
 
-                {/* Account & Logistics Context */}
-                <div className="space-y-12">
-                    {/* Entity Information (Customer) */}
-                    <section className="bg-white rounded-[4rem] border border-gray-100 p-12 shadow-sm relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 w-40 h-40 bg-indigo-50 rounded-bl-[10rem] opacity-30 group-hover:scale-110 transition-transform" />
-                        <h3 className="text-xl font-black text-gray-900 mb-10 border-b border-gray-50 pb-6 uppercase tracking-widest flex items-center gap-3">
-                            <User className="h-5 w-5 text-indigo-600" />
-                            Entity Profile
-                        </h3>
-                        {order.user ? (
-                            <div className="space-y-8">
-                                <div className="flex items-center gap-6">
-                                    <div className="w-20 h-20 bg-indigo-100 rounded-[2rem] overflow-hidden border-4 border-white shadow-xl">
-                                        {order.user.avatar ? <SafeImage src={order.user.avatar} alt={order.user.firstName || ''} className="w-full h-full" /> : <div className="w-full h-full flex items-center justify-center text-indigo-600 font-black text-xl">{order.user.firstName?.[0] || 'U'}</div>}
-                                    </div>
-                                    <div>
-                                        <h4 className="text-2xl font-black text-gray-900 tracking-tighter italic">{order.user.firstName} {order.user.lastName}</h4>
-                                        <span className="px-3 py-1 bg-indigo-50 text-indigo-600 rounded-lg text-[10px] font-black uppercase tracking-widest border border-indigo-100">Registered</span>
-                                    </div>
-                                </div>
-                                <div className="space-y-4 pt-4">
-                                    <div className="flex items-center gap-4 text-gray-400 group/item">
-                                        <div className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400 group-hover/item:bg-indigo-600 group-hover/item:text-white transition-all">
-                                            <Mail className="h-4 w-4" />
-                                        </div>
-                                        <span className="text-sm font-bold text-gray-900">{order.user.email}</span>
-                                    </div>
-                                    <div className="flex items-center gap-4 text-gray-400 group/item">
-                                        <div className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400 group-hover/item:bg-indigo-600 group-hover/item:text-white transition-all">
-                                            <Phone className="h-4 w-4" />
-                                        </div>
-                                        <span className="text-sm font-bold text-gray-900">{order.guestPhone || 'No Phone Sync'}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="space-y-8">
-                                <div className="flex items-center gap-6">
-                                    <div className="w-20 h-20 bg-amber-100 rounded-[2rem] flex items-center justify-center border-4 border-white shadow-xl">
-                                        <User className="h-10 w-10 text-amber-600" />
-                                    </div>
-                                    <div>
-                                        <h4 className="text-2xl font-black text-gray-900 tracking-tighter italic">{order.guestName || 'Guest Associate'}</h4>
-                                        <span className="px-3 py-1 bg-amber-50 text-amber-600 rounded-lg text-[10px] font-black uppercase tracking-widest border border-amber-100">Unregistered</span>
-                                    </div>
-                                </div>
-                                <div className="space-y-4 pt-4">
-                                    <div className="flex items-center gap-4 text-gray-400">
-                                        <Mail className="h-5 w-5" />
-                                        <span className="text-sm font-bold text-gray-900">{order.guestEmail}</span>
-                                    </div>
-                                    <div className="flex items-center gap-4 text-gray-400">
-                                        <Phone className="h-5 w-5" />
-                                        <span className="text-sm font-bold text-gray-900">{order.guestPhone}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                    </section>
-
-                    {/* Logistics Coordinates (Shipping) */}
-                    <section className="bg-white rounded-[4rem] border border-gray-100 p-12 shadow-sm">
-                        <h3 className="text-xl font-black text-gray-900 mb-10 border-b border-gray-50 pb-6 uppercase tracking-widest flex items-center gap-3">
-                            <MapPin className="h-5 w-5 text-rose-500" />
-                            Logistics Destination
-                        </h3>
-                        <div className="space-y-6">
-                            <div className="p-8 bg-gray-50/50 rounded-[2.5rem] border border-gray-50">
-                                <p className="text-base font-black text-gray-900 leading-relaxed italic">
-                                    {order.shippingAddress ? (
-                                        <>
-                                            {order.shippingAddress.addressLine1},<br />
-                                            {order.shippingAddress.addressLine2 && <>{order.shippingAddress.addressLine2},<br /></>}
-                                            {order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.postalCode},<br />
-                                            {order.shippingAddress.country}
-                                        </>
-                                    ) : order.shippingAddressId ? (
-                                        <span className="text-rose-400">Address Node Link Broken (ID: {order.shippingAddressId})</span>
-                                    ) : order.guestAddress ? (
-                                        <>
-                                            {typeof order.guestAddress === 'string' ? order.guestAddress : (
-                                                <>
-                                                    {(order.guestAddress as any).addressLine1 || (order.guestAddress as any).address},<br />
-                                                    {(order.guestAddress as any).city}, {(order.guestAddress as any).postalCode}<br />
-                                                    {(order.guestAddress as any).country || 'Bangladesh'}
-                                                </>
-                                            )}
-                                        </>
-                                    ) : (
-                                        <span className="text-gray-400">Coordinates Not Sync&apos;d</span>
-                                    )}
-                                </p>
-                            </div>
-                            <div className="flex items-center gap-4 p-8 bg-indigo-600 text-white rounded-[2.5rem] shadow-xl shadow-indigo-500/20">
-                                <Truck className="h-10 w-10 opacity-50" />
-                                <div>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-indigo-200">Carrier Method</p>
-                                    <h4 className="text-xl font-black tracking-tighter italic">{order.shippingMethod || 'Standard Courier'}</h4>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-
-                    {/* Operational Directives (Admin Section) */}
-                    <section className="bg-black rounded-[4rem] p-12 text-white shadow-2xl shadow-black/40">
-                        <h3 className="text-xl font-black mb-10 border-b border-white/10 pb-6 uppercase tracking-widest flex items-center gap-3 text-indigo-400">
-                            <AlertCircle className="h-5 w-5" />
-                            Fulfillment Directives
-                        </h3>
-                        <div className="space-y-8">
-                            <div className="space-y-4">
-                                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-4">Manifest Status</label>
+                {/* Right Column: Order Actions & Customer Info */}
+                <div className="space-y-6">
+                    {/* Order Management */}
+                    <div className="bg-primary text-primary-foreground rounded-xl p-6 shadow-lg shadow-primary/20">
+                        <h2 className="text-sm font-semibold mb-6 flex items-center gap-2">
+                            <AlertCircle className="w-4 h-4" />
+                            Manage Order
+                        </h2>
+                        <div className="space-y-4">
+                            <div className="space-y-1.5">
+                                <label className="text-[11px] font-semibold text-primary-foreground/80 uppercase tracking-wider">Order Status</label>
                                 <select
                                     value={status}
                                     onChange={(e) => setStatus(e.target.value)}
-                                    className="w-full h-16 px-6 bg-white/5 border border-white/10 rounded-2xl font-black text-indigo-400 focus:bg-white/10 transition-all outline-none appearance-none"
+                                    className="w-full h-10 px-3 bg-white/10 border border-white/20 rounded-lg text-[13px] font-medium outline-none focus:bg-white/20"
                                 >
-                                    <option value="PENDING">Awaiting Authorization</option>
-                                    <option value="CONFIRMED">Inventory Authorized</option>
-                                    <option value="PROCESSING">In Preparation Hub</option>
-                                    <option value="SHIPPED">Handed to Carrier</option>
-                                    <option value="DELIVERED">Customer Verified Transfer</option>
-                                    <option value="CANCELLED">Manifest Terminated</option>
+                                    <option value="PENDING" className="text-black">Pending</option>
+                                    <option value="CONFIRMED" className="text-black">Confirmed</option>
+                                    <option value="PROCESSING" className="text-black">Processing</option>
+                                    <option value="SHIPPED" className="text-black">Shipped</option>
+                                    <option value="DELIVERED" className="text-black">Delivered</option>
+                                    <option value="CANCELLED" className="text-black">Cancelled</option>
                                 </select>
                             </div>
-
-                            <div className="space-y-4">
-                                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-4">Financial Clearance</label>
+                            <div className="space-y-1.5">
+                                <label className="text-[11px] font-semibold text-primary-foreground/80 uppercase tracking-wider">Payment Status</label>
                                 <select
                                     value={paymentStatus}
                                     onChange={(e) => setPaymentStatus(e.target.value)}
-                                    className="w-full h-16 px-6 bg-white/5 border border-white/10 rounded-2xl font-black text-emerald-400 focus:bg-white/10 transition-all outline-none appearance-none"
+                                    className="w-full h-10 px-3 bg-white/10 border border-white/20 rounded-lg text-[13px] font-medium outline-none focus:bg-white/20"
                                 >
-                                    <option value="PENDING">Payment Latent</option>
-                                    <option value="PAID">Capital Verified</option>
-                                    <option value="FAILED">Transaction Ruptured</option>
-                                    <option value="REFUNDED">Capital Reversed</option>
+                                    <option value="PENDING" className="text-black">Unpaid</option>
+                                    <option value="PAID" className="text-black">Paid</option>
+                                    <option value="REFUNDED" className="text-black">Refunded</option>
                                 </select>
                             </div>
+                        </div>
+                    </div>
 
-                            <div className="space-y-4">
-                                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-4">Internal Intelligence (Admin Notes)</label>
-                                <textarea
-                                    value={adminNotes}
-                                    onChange={(e) => setAdminNotes(e.target.value)}
-                                    rows={4}
-                                    className="w-full p-6 bg-white/5 border border-white/10 rounded-2xl font-medium text-white focus:bg-white/10 transition-all outline-none resize-none"
-                                    placeholder="Enter internal intelligence regarding this fulfillment..."
-                                />
+                    {/* Customer Info */}
+                    <div className="bg-card border border-border rounded-xl p-6">
+                        <h2 className="text-sm font-semibold mb-6 flex items-center gap-2">
+                            <User className="w-4 h-4 text-primary" />
+                            Customer Details
+                        </h2>
+                        <div className="flex items-center gap-4 mb-6">
+                            <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center text-primary font-bold text-lg">
+                                {order.user?.firstName?.[0] || order.guestName?.[0] || 'C'}
+                            </div>
+                            <div>
+                                <h3 className="text-[15px] font-bold text-foreground">{order.user?.firstName || order.guestName || 'Customer'}</h3>
+                                <p className="text-[12px] text-muted-foreground">{order.user ? 'Registered' : 'Guest'}</p>
                             </div>
                         </div>
-                    </section>
+                        <div className="space-y-3">
+                            <div className="flex items-center gap-3 text-muted-foreground">
+                                <Mail className="w-4 h-4" />
+                                <span className="text-[13px]">{order.user?.email || order.guestEmail}</span>
+                            </div>
+                            <div className="flex items-center gap-3 text-muted-foreground">
+                                <Phone className="w-4 h-4" />
+                                <span className="text-[13px]">{order.guestPhone}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Shipping Address */}
+                    <div className="bg-card border border-border rounded-xl p-6">
+                        <h2 className="text-sm font-semibold mb-4 flex items-center gap-2">
+                            <MapPin className="w-4 h-4 text-primary" />
+                            Shipping Address
+                        </h2>
+                        <div className="p-4 bg-muted/30 rounded-lg text-[13px] text-foreground leading-relaxed">
+                            {order.shippingAddress ? (
+                                <>
+                                    {order.shippingAddress.addressLine1},<br />
+                                    {order.shippingAddress.addressLine2 && <>{order.shippingAddress.addressLine2},<br /></>}
+                                    {order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.postalCode}
+                                </>
+                            ) : (
+                                <p>{order.guestAddress}</p>
+                            )}
+                        </div>
+                        <div className="mt-4 flex items-center gap-3 text-muted-foreground">
+                            <Truck className="w-4 h-4" />
+                            <span className="text-[12px] font-medium">{order.shippingMethod || 'Standard Delivery'}</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
