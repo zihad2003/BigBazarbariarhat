@@ -9,7 +9,8 @@ import {
     Edit,
     Layers,
     Package,
-    Loader2
+    Loader2,
+    ChevronRight
 } from 'lucide-react';
 
 export default function CategoriesPage() {

@@ -13,7 +13,7 @@ import {
     Trash2
 } from 'lucide-react';
 
-export default function EditCategoryPage() {
+export default function EditCategoryPage(props: { params: Promise<{ id: string }> }) {
     const router = useRouter();
     const params = useParams();
     const [loading, setLoading] = useState(true);

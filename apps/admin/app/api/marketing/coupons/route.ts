@@ -1,19 +1,20 @@
 import { NextResponse } from 'next/server';
-import { MockDB } from '@/lib/mock-db';
+import { prisma } from '@bigbazar/db';
 
 export async function GET(req: Request) {
     try {
         const { searchParams } = new URL(req.url);
         const query = searchParams.get('q')?.toLowerCase();
         
-        let coupons = await MockDB.getCoupons();
-        
-        if (query) {
-            coupons = coupons.filter(c => 
-                c.code.toLowerCase().includes(query) || 
-                c.description.toLowerCase().includes(query)
-            );
-        }
+        const coupons = await prisma.coupon.findMany({
+            where: query ? {
+                OR: [
+                    { code: { contains: query } },
+                    { description: { contains: query } }
+                ]
+            } : undefined,
+            orderBy: { createdAt: 'desc' }
+        });
         
         return NextResponse.json({ success: true, data: coupons });
     } catch (error) {
@@ -24,7 +25,13 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        const coupon = await MockDB.createCoupon(body);
+        const coupon = await prisma.coupon.create({
+            data: {
+                ...body,
+                startDate: new Date(body.startDate),
+                endDate: new Date(body.endDate),
+            }
+        });
         return NextResponse.json({ success: true, data: coupon });
     } catch (error) {
         return NextResponse.json({ success: false, error: 'Failed to create coupon' }, { status: 500 });

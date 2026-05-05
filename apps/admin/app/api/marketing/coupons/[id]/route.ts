@@ -1,12 +1,15 @@
 import { NextResponse } from 'next/server';
-import { MockDB } from '@/lib/mock-db';
+import { prisma } from '@bigbazar/db';
 
 export async function GET(
     req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const coupon = await MockDB.getCoupon(params.id);
+        const { id } = await params;
+        const coupon = await prisma.coupon.findUnique({
+            where: { id }
+        });
         if (!coupon) {
             return NextResponse.json({ success: false, error: 'Coupon not found' }, { status: 404 });
         }
@@ -18,14 +21,19 @@ export async function GET(
 
 export async function PATCH(
     req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const { id } = await params;
         const body = await req.json();
-        const coupon = await MockDB.updateCoupon(params.id, body);
-        if (!coupon) {
-            return NextResponse.json({ success: false, error: 'Coupon not found' }, { status: 404 });
-        }
+        const coupon = await prisma.coupon.update({
+            where: { id },
+            data: {
+                ...body,
+                startDate: body.startDate ? new Date(body.startDate) : undefined,
+                endDate: body.endDate ? new Date(body.endDate) : undefined,
+            }
+        });
         return NextResponse.json({ success: true, data: coupon });
     } catch (error) {
         return NextResponse.json({ success: false, error: 'Failed to update coupon' }, { status: 500 });
@@ -34,10 +42,13 @@ export async function PATCH(
 
 export async function DELETE(
     req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        await MockDB.deleteCoupon(params.id);
+        const { id } = await params;
+        await prisma.coupon.delete({
+            where: { id }
+        });
         return NextResponse.json({ success: true });
     } catch (error) {
         return NextResponse.json({ success: false, error: 'Failed to delete coupon' }, { status: 500 });
