@@ -62,7 +62,7 @@ export default function CustomersPage() {
     useEffect(() => {
         const timer = setTimeout(() => {
             fetchCustomers(1);
-        }, 500);
+        }, 300);
         return () => clearTimeout(timer);
     }, [searchQuery]);
 
@@ -146,12 +146,10 @@ export default function CustomersPage() {
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">
                                             <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center text-primary font-bold text-[14px]">
-                                                {customer.avatar ? (
-                                                    <img src={customer.avatar} className="w-full h-full object-cover rounded-full" />
-                                                ) : (customer.firstName?.[0] || 'U')}
+                                                {(customer.name?.[0] || 'U')}
                                             </div>
                                             <div>
-                                                <p className="text-[14px] font-semibold text-foreground">{customer.firstName} {customer.lastName}</p>
+                                                <p className="text-[14px] font-semibold text-foreground">{customer.name}</p>
                                                 <p className="text-[12px] text-muted-foreground">{customer.email}</p>
                                             </div>
                                         </div>

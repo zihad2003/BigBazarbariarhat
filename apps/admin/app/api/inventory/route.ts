@@ -1,0 +1,69 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@bigbazar/db';
+import { auth } from '@/auth';
+
+export async function GET(req: NextRequest) {
+    try {
+        const session = await auth();
+        if (!session) return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+
+        const { searchParams } = new URL(req.url);
+        const q = searchParams.get('q') || '';
+        const status = searchParams.get('status') || 'ALL';
+
+        let where: any = {};
+        if (q) {
+            where.OR = [
+                { name: { contains: q } },
+                { sku: { contains: q } }
+            ];
+        }
+        
+        if (status === 'LOW_STOCK') {
+            where.stock = { gt: 0, lte: 10 };
+        } else if (status === 'OUT_OF_STOCK') {
+            where.stock = { lte: 0 };
+        }
+
+        const products = await prisma.product.findMany({
+            where,
+            include: { category: true },
+            orderBy: { createdAt: 'desc' }
+        });
+
+        const mappedData = products.map(p => ({
+            id: p.id,
+            name: p.name,
+            sku: p.sku,
+            images: p.images,
+            stockQuantity: p.stock,
+            product: {
+                name: p.name,
+                category: p.category
+            }
+        }));
+
+        return NextResponse.json({ success: true, data: mappedData });
+    } catch (error) {
+        return NextResponse.json({ success: false, message: 'Failed to fetch inventory' }, { status: 500 });
+    }
+}
+
+export async function PATCH(req: NextRequest) {
+    try {
+        const session = await auth();
+        if (!session) return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+
+        const body = await req.json();
+        const { id, stockQuantity } = body;
+        
+        const updated = await prisma.product.update({
+            where: { id },
+            data: { stock: parseInt(stockQuantity, 10) }
+        });
+        
+        return NextResponse.json({ success: true, data: updated });
+    } catch (error) {
+        return NextResponse.json({ success: false, message: 'Failed to update stock' }, { status: 500 });
+    }
+}

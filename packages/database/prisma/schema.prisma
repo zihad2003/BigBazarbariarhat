@@ -40,24 +40,29 @@ model Category {
 }
 
 model Product {
-  id            String    @id @default(cuid())
-  name          String
-  slug          String    @unique
-  description   String?
-  price         Decimal   @db.Decimal(10, 2)
-  salePrice     Decimal?  @db.Decimal(10, 2)
-  sku           String    @unique
-  stock         Int       @default(0)
-  images        Json?
-  categoryId    String
-  category      Category  @relation(fields: [categoryId], references: [id])
-  isActive      Boolean   @default(true)
-  featured      Boolean   @default(false)
-  variants      Json?
-  orderItems    OrderItem[]
-  reviews       Review[]
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id               String    @id @default(cuid())
+  originalId       String?   @unique
+  name             String
+  slug             String    @unique
+  description      String?
+  price            Decimal   @db.Decimal(10, 2)
+  salePrice        Decimal?  @db.Decimal(10, 2)
+  sku              String    @unique
+  stock            Int       @default(0)
+  images           Json?
+  instagramReelUrl String?
+  categoryId       String
+  category         Category  @relation(fields: [categoryId], references: [id])
+  isActive         Boolean   @default(true)
+  featured         Boolean   @default(false)
+  isSale           Boolean   @default(false)
+  isHot            Boolean   @default(false)
+  isNew            Boolean   @default(false)
+  variants         Json?
+  orderItems       OrderItem[]
+  reviews          Review[]
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 }
 
 model Order {

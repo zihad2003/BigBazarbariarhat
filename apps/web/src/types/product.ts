@@ -29,6 +29,7 @@ export interface Product {
     stock: number;
     images: ProductImage[];
     variants?: ProductVariant[];
+    instagramReelUrl?: string;
     rating: number;
     reviewCount: number;
     isFeatured: boolean;

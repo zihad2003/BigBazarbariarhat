@@ -18,10 +18,11 @@ import {
     Loader2,
     ChevronRight,
     MessageSquare,
-    ClipboardList
+    ClipboardList,
+    PlayCircle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { MOCK_PRODUCTS } from '@/lib/mock-data/products';
+
 import { ProductGallery } from '@/components/shop/product-gallery';
 import { Breadcrumbs } from '@/components/shop/breadcrumbs';
 import { SocialShare } from '@/components/shop/social-share';
@@ -60,27 +61,39 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
     const isInWishlist = useWishlistStore((state) => state.isInWishlist);
     const { openCart, addNotification } = useUIStore();
 
-    // Data Fetching Simulation
-    const product = useMemo(() => {
-        return MOCK_PRODUCTS.find(p => p.slug === slug) || null;
-    }, [slug]);
+    const [product, setProduct] = useState<any>(null);
+    const [relatedProducts, setRelatedProducts] = useState<any[]>([]);
 
-    const relatedProducts = useMemo(() => {
-        if (!product) return [];
-        return MOCK_PRODUCTS
-            .filter(p => p.category === product.category && p.id !== product.id)
-            .slice(0, 4);
-    }, [product]);
+    useEffect(() => {
+        setIsLoading(true);
+        // Fetch all products since we don't have a specific slug endpoint yet
+        fetch('/api/products?limit=100')
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    const found = data.data.find((p: any) => p.slug === slug || p.id === slug);
+                    setProduct(found || null);
+                    
+                    if (found) {
+                        const related = data.data
+                            .filter((p: any) => p.categoryId === found.categoryId && p.id !== found.id)
+                            .slice(0, 4);
+                        setRelatedProducts(related);
+                    }
+                }
+                setIsLoading(false);
+            })
+            .catch(err => {
+                console.error(err);
+                setIsLoading(false);
+            });
+    }, [slug]);
 
     useEffect(() => {
         if (product) {
             if (product.variants && product.variants.length > 0) {
                 setSelectedVariant(product.variants[0]);
             }
-            const timer = setTimeout(() => setIsLoading(false), 600);
-            return () => clearTimeout(timer);
-        } else {
-            setIsLoading(false);
         }
     }, [product]);
 
@@ -155,6 +168,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
 
     const tabs = [
         { id: 'description', label: 'Description', icon: Info },
+        ...(product.instagramReelUrl ? [{ id: 'video', label: 'Product Video', icon: PlayCircle }] : []),
         { id: 'specifications', label: 'Specifications', icon: ClipboardList },
         { id: 'reviews', label: `Reviews (${product.reviewCount})`, icon: MessageSquare },
     ];
@@ -167,7 +181,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                 <Breadcrumbs 
                     items={[
                         { label: t?.common?.products || 'Products', href: '/products' },
-                        { label: product.category, href: `/products?category=${product.category}` },
+                        { label: product.category?.name || 'Category', href: `/products?category=${product.category?.slug}` },
                         { label: product.name, active: true }
                     ]} 
                 />
@@ -202,7 +216,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                                 <div className="flex items-center justify-between mb-6">
                                     <div className="flex items-center gap-4">
                                         <span className="text-[10px] font-bold text-primary uppercase tracking-[0.2em] bg-green-50 px-3 py-1.5 rounded-lg border border-green-100">
-                                            {product.category}
+                                            {product.category?.name || 'Product'}
                                         </span>
                                         <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">
                                             {product.brand || 'Big Bazar'}
@@ -479,6 +493,25 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                                 {activeTab === 'reviews' && (
                                     <div className="bg-white rounded-3xl">
                                         <ProductReviews averageRating={product.rating} reviewCount={product.reviewCount} />
+                                    </div>
+                                )}
+
+                                {activeTab === 'video' && product.instagramReelUrl && (
+                                    <div className="flex flex-col items-center justify-center py-8">
+                                        <div className="w-full max-w-sm overflow-hidden rounded-[2rem] shadow-2xl border border-gray-100 bg-gray-50 aspect-[9/16] relative">
+                                            <iframe
+                                                src={`${product.instagramReelUrl.split('?')[0]}embed`}
+                                                className="absolute inset-0 w-full h-full"
+                                                frameBorder="0"
+                                                scrolling="no"
+                                                allowTransparency={true}
+                                                allow="encrypted-media"
+                                                title="Instagram Reel"
+                                            />
+                                        </div>
+                                        <p className="mt-6 text-sm font-medium text-gray-400 flex items-center gap-2">
+                                            <PlayCircle className="w-4 h-4" /> Watch the product in action
+                                        </p>
                                     </div>
                                 )}
                             </motion.div>

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
-import { db } from '@/lib/db';
+import { prisma } from '@bigbazar/db';
 
 export async function GET(
     _req: NextRequest,
@@ -8,12 +8,20 @@ export async function GET(
 ) {
     const { id } = await params;
     try {
-        const reviews = await db.reviews.findByProductId(id);
+        const reviews = await prisma.review.findMany({
+            where: { productId: id },
+            include: { user: { select: { name: true } } },
+            orderBy: { createdAt: 'desc' }
+        });
+
         const average = reviews.length
-            ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+            ? reviews.reduce((sum: number, r: any) => sum + r.rating, 0) / reviews.length
             : 0;
+            
         const distribution = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 } as Record<number, number>;
-        reviews.forEach(r => { distribution[r.rating] = (distribution[r.rating] ?? 0) + 1; });
+        reviews.forEach((r: any) => { 
+            distribution[r.rating] = (distribution[r.rating] || 0) + 1; 
+        });
 
         return NextResponse.json({
             success: true,
@@ -22,7 +30,8 @@ export async function GET(
                 summary: { average: Math.round(average * 10) / 10, count: reviews.length, distribution },
             },
         });
-    } catch {
+    } catch (error) {
+        console.error('Reviews GET Error:', error);
         return NextResponse.json({ success: false, message: 'Failed to fetch reviews.' }, { status: 500 });
     }
 }
@@ -39,14 +48,17 @@ export async function POST(
 
     try {
         const { rating, comment } = await req.json();
-        const review = await db.reviews.create({
-            productId: id,
-            userId: session.user.id,
-            rating: Number(rating),
-            comment,
+        const review = await prisma.review.create({
+            data: {
+                productId: id,
+                userId: session.user.id,
+                rating: Number(rating),
+                comment,
+            },
+            include: { user: { select: { name: true } } }
         });
         return NextResponse.json({ success: true, data: review }, { status: 201 });
-    } catch {
+    } catch (error) {
         return NextResponse.json({ success: false, message: 'Failed to submit review.' }, { status: 500 });
     }
 }

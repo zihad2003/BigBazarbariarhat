@@ -44,7 +44,7 @@ export default function InventoryPage() {
     useEffect(() => {
         const timer = setTimeout(() => {
             fetchInventory();
-        }, 500);
+        }, 300);
         return () => clearTimeout(timer);
     }, [searchQuery, statusFilter]);
 

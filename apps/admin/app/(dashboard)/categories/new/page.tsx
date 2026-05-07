@@ -1,36 +1,78 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
     ArrowLeft,
-    Save,
     Image as ImageIcon,
     Loader2,
     Plus,
     Tag,
-    Type,
-    LayoutGrid,
     Check
 } from 'lucide-react';
 
 export default function NewCategoryPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const queryParentId = searchParams.get('parentId');
     const [loading, setLoading] = useState(false);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const [parentCategories, setParentCategories] = useState<any[]>([]);
 
     // Form State
     const [name, setName] = useState('');
     const [slug, setSlug] = useState('');
     const [description, setDescription] = useState('');
-    const [order, setOrder] = useState('0');
-    const [status, setStatus] = useState('active');
+    const [parentId, setParentId] = useState<string>('');
+
+    useEffect(() => {
+        if (queryParentId) {
+            setParentId(queryParentId);
+        }
+    }, [queryParentId]);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const res = await fetch('/api/categories');
+                const result = await res.json();
+                if (result.success) {
+                    // Only allow selecting top-level categories as parent
+                    setParentCategories(result.data.filter((c: any) => !c.parentId));
+                }
+            } catch (error) {
+                console.error('Failed to load categories:', error);
+            }
+        };
+        fetchCategories();
+    }, []);
 
     const handleSave = async () => {
         setLoading(true);
-        // Mock save
-        await new Promise(r => setTimeout(r, 1000));
-        router.push('/categories');
+        try {
+            const payload = {
+                name,
+                slug,
+                description,
+                image: imagePreview,
+                parentId: parentId || null
+            };
+
+            const res = await fetch('/api/categories', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const result = await res.json();
+            
+            if (result.success) {
+                router.push('/categories');
+            }
+        } catch (error) {
+            console.error('Failed to save:', error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const generateSlug = () => {
@@ -48,7 +90,7 @@ export default function NewCategoryPage() {
                     </button>
                     <div>
                         <h1 className="text-xl font-semibold text-foreground">Add New Category</h1>
-                        <p className="text-[13px] text-muted-foreground">Create a new group for your products.</p>
+                        <p className="text-[13px] text-muted-foreground">Create a new group or subcategory.</p>
                     </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -97,6 +139,22 @@ export default function NewCategoryPage() {
                                 />
                             </div>
                         </div>
+                        
+                        <div className="space-y-1.5">
+                            <label className="text-[12px] font-medium text-muted-foreground">Parent Category (Optional)</label>
+                            <select 
+                                value={parentId} 
+                                onChange={e => setParentId(e.target.value)} 
+                                className="w-full h-11 px-3 bg-background border border-input rounded-lg text-[13px] outline-none transition"
+                            >
+                                <option value="">None (Top Level Category)</option>
+                                {parentCategories.map(cat => (
+                                    <option key={cat.id} value={cat.id}>{cat.name}</option>
+                                ))}
+                            </select>
+                            <p className="text-[11px] text-muted-foreground mt-1">Select a parent to make this a subcategory (e.g. "T-Shirts" under "Men Collection").</p>
+                        </div>
+
                         <div className="space-y-1.5">
                             <label className="text-[12px] font-medium text-muted-foreground">Description</label>
                             <textarea
@@ -107,24 +165,7 @@ export default function NewCategoryPage() {
                                 className="w-full p-4 bg-background border border-input rounded-lg text-[13px] outline-none focus:ring-2 focus:ring-ring transition resize-none"
                             />
                         </div>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-1.5">
-                                <label className="text-[12px] font-medium text-muted-foreground">Sort Order</label>
-                                <input
-                                    type="number"
-                                    value={order}
-                                    onChange={e => setOrder(e.target.value)}
-                                    className="w-full h-11 px-4 bg-background border border-input rounded-lg text-[13px] outline-none focus:ring-2 focus:ring-ring transition"
-                                />
-                            </div>
-                            <div className="space-y-1.5">
-                                <label className="text-[12px] font-medium text-muted-foreground">Status</label>
-                                <select value={status} onChange={e => setStatus(e.target.value)} className="w-full h-11 px-3 bg-background border border-input rounded-lg text-[13px] outline-none font-semibold text-emerald-600">
-                                    <option value="active">Active (Visible)</option>
-                                    <option value="draft">Draft (Hidden)</option>
-                                </select>
-                            </div>
-                        </div>
+
                     </div>
                 </div>
 
@@ -146,7 +187,11 @@ export default function NewCategoryPage() {
                                 accept="image/*"
                                 onChange={e => {
                                     const file = e.target.files?.[0];
-                                    if (file) setImagePreview(URL.createObjectURL(file));
+                                    if (file) {
+                                        const reader = new FileReader();
+                                        reader.onloadend = () => setImagePreview(reader.result as string);
+                                        reader.readAsDataURL(file);
+                                    }
                                 }}
                                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                             />
@@ -161,7 +206,11 @@ export default function NewCategoryPage() {
                                     accept="image/*"
                                     onChange={e => {
                                         const file = e.target.files?.[0];
-                                        if (file) setImagePreview(URL.createObjectURL(file));
+                                        if (file) {
+                                            const reader = new FileReader();
+                                            reader.onloadend = () => setImagePreview(reader.result as string);
+                                            reader.readAsDataURL(file);
+                                        }
                                     }}
                                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                                 />

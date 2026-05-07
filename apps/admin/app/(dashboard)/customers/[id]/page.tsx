@@ -26,7 +26,7 @@ import {
     Edit3
 } from 'lucide-react';
 
-export default function CustomerDetailPage() {
+export default function CustomerDetailPage(props: { params: Promise<{ id: string }> }) {
     const router = useRouter();
     const params = useParams();
     const [customer, setCustomer] = useState<any>(null);
@@ -43,11 +43,9 @@ export default function CustomerDetailPage() {
                 if (result.success) {
                     setCustomer(result.data);
                     setEditForm({
-                        firstName: result.data.firstName,
-                        lastName: result.data.lastName,
+                        name: result.data.name,
+                        email: result.data.email,
                         phone: result.data.phone || '',
-                        avatar: result.data.avatar || '',
-                        role: result.data.role
                     });
                 }
             } catch (error) {
@@ -57,7 +55,7 @@ export default function CustomerDetailPage() {
             }
         };
 
-        fetchCustomer();
+        if (params.id) fetchCustomer();
     }, [params.id]);
 
     const handleSave = async () => {
@@ -111,11 +109,11 @@ export default function CustomerDetailPage() {
                     </button>
                     <div className="flex items-center gap-4">
                         <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center text-primary font-bold text-xl overflow-hidden border border-border shadow-sm">
-                            {customer.avatar ? <img src={customer.avatar} className="w-full h-full object-cover" /> : (customer.firstName?.[0] || 'U')}
+                            {customer.avatar ? <img src={customer.avatar} className="w-full h-full object-cover" /> : (customer.name?.[0] || 'U')}
                         </div>
                         <div>
                             <div className="flex items-center gap-3">
-                                <h1 className="text-xl font-semibold text-foreground">{customer.firstName} {customer.lastName}</h1>
+                                <h1 className="text-xl font-semibold text-foreground">{customer.name}</h1>
                                 {customer.stats.totalSpent > 5000 && (
                                     <span className="px-2 py-0.5 bg-primary/10 text-primary rounded text-[10px] font-bold uppercase tracking-wider border border-primary/20">
                                         Loyal Customer

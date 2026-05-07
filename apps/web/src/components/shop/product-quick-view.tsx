@@ -85,7 +85,10 @@ export function ProductQuickView({ product }: ProductQuickViewProps) {
                     {/* Visual Section */}
                     <div className="aspect-[4/5] relative bg-gray-50 group/img overflow-hidden">
                         <Image
-                            src={product.images?.[0]?.url || '/placeholder.png'}
+                            src={(() => {
+                                const firstImage = product.images?.[0];
+                                return typeof firstImage === 'string' ? firstImage : (firstImage && typeof firstImage === 'object' && 'url' in firstImage ? (firstImage as any).url : '/placeholder.png');
+                            })()}
                             alt={product.name}
                             fill
                             className="object-cover group-hover/img:scale-110 transition-transform duration-1000"
@@ -126,7 +129,7 @@ export function ProductQuickView({ product }: ProductQuickViewProps) {
                         <div>
                             <div className="flex items-center gap-3 mb-4">
                                 <p className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.2em]">
-                                    {product.category || 'Curated Collection'}
+                                    {typeof product.category === 'object' ? product.category?.name : (product.category || 'Curated Collection')}
                                 </p>
                                 <div className="h-px flex-1 bg-gray-100" />
                             </div>

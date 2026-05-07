@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { MOCK_PRODUCTS } from '@/lib/mock-data/products';
+
 import { ProductGrid } from '@/components/shop/product-grid';
 import { Breadcrumbs } from '@/components/shop/breadcrumbs';
 import { Button } from '@/components/ui/button';
@@ -45,6 +45,32 @@ export default function ProductsPage() {
     // UI State
     const [isLoading, setIsLoading] = useState(true);
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+    const [apiProducts, setApiProducts] = useState<any[]>([]);
+
+    useEffect(() => {
+        setIsLoading(true);
+        fetch('/api/products?limit=1000') // fetch all for client-side filtering for now
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    setApiProducts(data.data);
+                }
+                setIsLoading(false);
+            })
+            .catch(err => {
+                console.error(err);
+                setIsLoading(false);
+            });
+    }, []);
+
+    // Sync state with URL parameters dynamically
+    useEffect(() => {
+        const query = searchParams.get('search') || '';
+        const cat = searchParams.get('category') || null;
+        setSearchQuery(query);
+        setSelectedCategory(cat);
+        setCurrentPage(1);
+    }, [searchParams]);
 
     // Filter State
     const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
@@ -68,32 +94,36 @@ export default function ProductsPage() {
     ];
 
     const brands = useMemo(() => {
-        const b = Array.from(new Set(MOCK_PRODUCTS.map(p => p.brand).filter(Boolean)));
+        const b = Array.from(new Set(apiProducts.map(p => p.brand).filter(Boolean)));
         return b.sort();
-    }, []);
-
-    // Initial load simulation
-    useEffect(() => {
-        const timer = setTimeout(() => setIsLoading(false), 800);
-        return () => clearTimeout(timer);
-    }, []);
+    }, [apiProducts]);
 
     // Filtering Logic
     const filteredProducts = useMemo(() => {
-        let results = [...MOCK_PRODUCTS];
+        let results = [...apiProducts];
 
         // Search
         if (searchQuery) {
             const query = searchQuery.toLowerCase();
             results = results.filter(p => 
                 p.name.toLowerCase().includes(query) || 
-                p.description.toLowerCase().includes(query)
+                (p.description || '').toLowerCase().includes(query) ||
+                (typeof p.category === 'object' ? p.category?.name : p.category || '').toLowerCase().includes(query)
             );
         }
 
         // Category
         if (selectedCategory) {
-            results = results.filter(p => p.category === selectedCategory);
+            results = results.filter(p => {
+                const catName = typeof p.category === 'object' ? p.category?.name : p.category;
+                const catSlug = typeof p.category === 'object' ? p.category?.slug : null;
+                
+                return (
+                    (catName && catName.toLowerCase() === selectedCategory.toLowerCase()) ||
+                    (catSlug && catSlug.toLowerCase() === selectedCategory.toLowerCase()) ||
+                    (selectedCategory === 'New Arrivals' && p.isNew)
+                );
+            });
         }
 
         // Brands

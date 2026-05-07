@@ -53,7 +53,7 @@ export default function ProductsPage() {
     };
 
     useEffect(() => {
-        const timer = setTimeout(() => fetchProducts(1), 500);
+        const timer = setTimeout(() => fetchProducts(1), 300);
         return () => clearTimeout(timer);
     }, [searchQuery, selectedCategory]);
 

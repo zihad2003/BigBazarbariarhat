@@ -97,10 +97,41 @@ export default function CheckoutPage() {
     const onSubmit = async (data: CheckoutFormValues) => {
         setIsLoading(true);
         try {
-            // Mock API Call
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            
-            const orderId = `${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+            const payload = {
+                items: items.map(item => ({
+                    productId: item.productId || item.id,
+                    quantity: item.quantity,
+                    price: item.price
+                })),
+                shippingAddress: {
+                    fullName: data.fullName,
+                    phone: data.phone,
+                    email: data.email,
+                    division: data.division,
+                    district: data.district,
+                    upazila: data.upazila,
+                    address: data.address,
+                    deliveryNote: data.deliveryNote,
+                    deliveryArea
+                },
+                totalAmount: finalTotal,
+                paymentMethod: paymentMethod
+            };
+
+            const res = await fetch('/api/orders', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const result = await res.json();
+
+            if (!result.success) {
+                throw new Error(result.message || 'Failed to place order in database');
+            }
+
+            const dbOrder = result.data;
+            const orderId = dbOrder.orderNumber || dbOrder.id;
+
             const orderData = {
                 id: orderId,
                 items,
@@ -111,13 +142,14 @@ export default function CheckoutPage() {
                 createdAt: new Date().toISOString()
             };
 
-            // Store in localStorage
+            // Store in localStorage for immediate frontend order confirmation page support
             const orders = JSON.parse(localStorage.getItem('bigbazar-orders') || '[]');
             localStorage.setItem('bigbazar-orders', JSON.stringify([...orders, orderData]));
 
             clearCart();
             router.push(`/order-confirmation/${orderId}`);
         } catch (error) {
+            console.error('Checkout error:', error);
             addNotification({ type: 'error', message: 'Failed to process order. Please try again.' });
         } finally {
             setIsLoading(false);

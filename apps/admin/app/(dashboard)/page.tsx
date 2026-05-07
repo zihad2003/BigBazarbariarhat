@@ -1,5 +1,8 @@
 'use client';
 
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
     DollarSign, ShoppingCart, Package, Users,
     TrendingUp, TrendingDown, AlertTriangle, ArrowUpRight,
@@ -9,32 +12,7 @@ import {
     ResponsiveContainer, BarChart, Bar,
 } from 'recharts';
 
-/* ──────────────────── Mock Data ──────────────────── */
-
-const chartData = [
-    { day: 'Mon', revenue: 4000, orders: 24 },
-    { day: 'Tue', revenue: 3000, orders: 18 },
-    { day: 'Wed', revenue: 5000, orders: 32 },
-    { day: 'Thu', revenue: 2780, orders: 15 },
-    { day: 'Fri', revenue: 6890, orders: 45 },
-    { day: 'Sat', revenue: 8390, orders: 52 },
-    { day: 'Sun', revenue: 7490, orders: 48 },
-];
-
-const recentOrders = [
-    { id: '8741', customer: 'Zihad Ahmed', amount: 4500, status: 'Pending', date: 'May 4' },
-    { id: '8740', customer: 'Rahim Uddin', amount: 2200, status: 'Processing', date: 'May 4' },
-    { id: '8739', customer: 'Fatima Begum', amount: 7800, status: 'Shipped', date: 'May 3' },
-    { id: '8738', customer: 'Kamal Hossain', amount: 1250, status: 'Delivered', date: 'May 3' },
-    { id: '8737', customer: 'Nusrat Jahan', amount: 3600, status: 'Pending', date: 'May 2' },
-];
-
-const lowStock = [
-    { name: 'Premium Cotton Polo — Navy', sku: 'PLO-NVY-M', qty: 3 },
-    { name: 'Silk Blend Saree — Red', sku: 'SRE-RED-F', qty: 1 },
-    { name: 'Kids Denim Jacket', sku: 'KDJ-BLU-S', qty: 5 },
-    { name: 'Wedding Sherwani — Gold', sku: 'SHW-GLD-L', qty: 2 },
-];
+/* ──────────────────── Styles ──────────────────── */
 
 const statusStyle: Record<string, string> = {
     Pending: 'bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400',
@@ -75,7 +53,44 @@ function Stat({ label, value, change, trend, icon: Icon, accent }: {
 
 /* ──────────────────── Page ──────────────────── */
 
+/* ──────────────────── Page ──────────────────── */
+
 export default function DashboardPage() {
+    const router = useRouter();
+    const [data, setData] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                const res = await fetch('/api/dashboard/stats');
+                const json = await res.json();
+                if (json.success) setData(json.data);
+            } catch (err) {
+                console.error('Dashboard Fetch Error:', err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchStats();
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="h-[60vh] flex items-center justify-center">
+                <div className="flex flex-col items-center gap-3">
+                    <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+                    <p className="text-[13px] font-medium text-muted-foreground animate-pulse">Loading real-time stats...</p>
+                </div>
+            </div>
+        );
+    }
+
+    const stats = data?.stats || { sales: 0, orders: 0, products: 0, customers: 0 };
+    const chartData = data?.chartData || [];
+    const recentOrders = data?.recentOrders || [];
+    const lowStock = data?.lowStock || [];
+
     return (
         <div className="space-y-6 max-w-[1400px]">
 
@@ -83,7 +98,7 @@ export default function DashboardPage() {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div>
                     <h1 className="text-xl font-semibold text-foreground">Dashboard</h1>
-                    <p className="text-[13px] text-muted-foreground mt-0.5">How your store is doing.</p>
+                    <p className="text-[13px] text-muted-foreground mt-0.5">Real-time store overview.</p>
                 </div>
                 <div className="flex gap-2">
                     <button className="px-3.5 py-2 text-[13px] font-medium border border-border rounded-lg hover:bg-muted/60 transition-colors">Download</button>
@@ -96,10 +111,10 @@ export default function DashboardPage() {
 
             {/* KPI Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <Stat label="Sales" value="৳1,28,450" change="+12.4%" trend="up" icon={DollarSign} accent="bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400" />
-                <Stat label="Orders" value="342" change="+5.2%" trend="up" icon={ShoppingCart} accent="bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400" />
-                <Stat label="Products" value="1,284" change="0%" trend="flat" icon={Package} accent="bg-violet-50 text-violet-600 dark:bg-violet-900/20 dark:text-violet-400" />
-                <Stat label="Customers" value="856" change="+8.9%" trend="up" icon={Users} accent="bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400" />
+                <Stat label="Sales" value={`৳${stats.sales.toLocaleString()}`} change="+12.4%" trend="up" icon={DollarSign} accent="bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400" />
+                <Stat label="Orders" value={stats.orders.toString()} change="+5.2%" trend="up" icon={ShoppingCart} accent="bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400" />
+                <Stat label="Products" value={stats.products.toString()} change="0%" trend="flat" icon={Package} accent="bg-violet-50 text-violet-600 dark:bg-violet-900/20 dark:text-violet-400" />
+                <Stat label="Customers" value={stats.customers.toString()} change="+8.9%" trend="up" icon={Users} accent="bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400" />
             </div>
 
             {/* Charts Row */}
@@ -107,7 +122,7 @@ export default function DashboardPage() {
                 {/* Revenue Chart */}
                 <div className="lg:col-span-3 bg-card border border-border rounded-xl p-5">
                     <div className="flex items-center justify-between mb-5">
-                        <h2 className="text-sm font-semibold text-foreground">Sales</h2>
+                        <h2 className="text-sm font-semibold text-foreground">Sales Performance</h2>
                         <span className="text-[11px] text-muted-foreground">Last 7 days</span>
                     </div>
                     <div className="h-[260px]">
@@ -135,7 +150,7 @@ export default function DashboardPage() {
                 {/* Orders Chart */}
                 <div className="lg:col-span-2 bg-card border border-border rounded-xl p-5">
                     <div className="flex items-center justify-between mb-5">
-                        <h2 className="text-sm font-semibold text-foreground">Orders</h2>
+                        <h2 className="text-sm font-semibold text-foreground">Order Volume</h2>
                         <span className="text-[11px] text-muted-foreground">Last 7 days</span>
                     </div>
                     <div className="h-[260px]">
@@ -161,7 +176,7 @@ export default function DashboardPage() {
                 <div className="lg:col-span-3 bg-card border border-border rounded-xl p-5">
                     <div className="flex items-center justify-between mb-4">
                         <h2 className="text-sm font-semibold text-foreground">New Orders</h2>
-                        <button className="text-[12px] font-medium text-primary hover:underline">View all</button>
+                        <Link href="/orders" className="text-[12px] font-medium text-primary hover:underline">View all</Link>
                     </div>
                     <div className="overflow-x-auto -mx-5 px-5">
                         <table className="w-full min-w-[480px]">
@@ -175,19 +190,23 @@ export default function DashboardPage() {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-border">
-                                {recentOrders.map(o => (
-                                    <tr key={o.id} className="hover:bg-muted/30 transition-colors cursor-pointer">
+                                {recentOrders.length > 0 ? recentOrders.map((o: any) => (
+                                    <tr key={o.id} className="hover:bg-muted/30 transition-colors cursor-pointer" onClick={() => router.push(`/orders/${o.id}`)}>
                                         <td className="py-3 text-[13px] font-medium text-foreground">#{o.id}</td>
                                         <td className="py-3 text-[13px] text-foreground">{o.customer}</td>
                                         <td className="py-3 text-[13px] font-medium text-foreground">৳{o.amount.toLocaleString()}</td>
                                         <td className="py-3">
-                                            <span className={`inline-block px-2 py-0.5 rounded-md text-[11px] font-semibold ${statusStyle[o.status]}`}>
+                                            <span className={`inline-block px-2 py-0.5 rounded-md text-[11px] font-semibold ${statusStyle[o.status] || 'bg-slate-100 text-slate-600'}`}>
                                                 {o.status}
                                             </span>
                                         </td>
                                         <td className="py-3 text-[13px] text-muted-foreground">{o.date}</td>
                                     </tr>
-                                ))}
+                                )) : (
+                                    <tr>
+                                        <td colSpan={5} className="py-8 text-center text-[13px] text-muted-foreground">No recent orders.</td>
+                                    </tr>
+                                )}
                             </tbody>
                         </table>
                     </div>
@@ -197,10 +216,10 @@ export default function DashboardPage() {
                 <div className="lg:col-span-2 bg-card border border-border rounded-xl p-5">
                     <div className="flex items-center gap-2 mb-4">
                         <AlertTriangle className="w-4 h-4 text-amber-500" />
-                        <h2 className="text-sm font-semibold text-foreground">Low Stock</h2>
+                        <h2 className="text-sm font-semibold text-foreground">Low Stock Alert</h2>
                     </div>
                     <div className="space-y-3">
-                        {lowStock.map(item => (
+                        {lowStock.length > 0 ? lowStock.map((item: any) => (
                             <div key={item.sku} className="flex items-center justify-between p-3 rounded-lg bg-muted/40 hover:bg-muted/60 transition-colors">
                                 <div className="min-w-0 flex-1">
                                     <p className="text-[13px] font-medium text-foreground truncate">{item.name}</p>
@@ -211,55 +230,31 @@ export default function DashboardPage() {
                                     <p className="text-[10px] text-muted-foreground">left</p>
                                 </div>
                             </div>
-                        ))}
+                        )) : (
+                            <div className="py-8 text-center text-[13px] text-muted-foreground">
+                                <Package className="w-8 h-8 mx-auto mb-2 opacity-20" />
+                                Inventory is healthy.
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
 
-            {/* Performance Row */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {/* Logistics */}
-                <div className="bg-foreground text-background rounded-xl p-6 relative overflow-hidden">
-                    <div className="absolute -top-20 -right-20 w-56 h-56 bg-primary/15 rounded-full blur-3xl" />
-                    <div className="relative z-10">
-                        <h3 className="text-base font-semibold mb-1">Shipping Status</h3>
-                        <p className="text-sm opacity-60 mb-6">Delivery time improved by <span className="text-primary font-semibold opacity-100">1.2 days</span> this month.</p>
-                        <div className="flex gap-8">
-                            <div>
-                                <p className="text-3xl font-semibold">2.4<span className="text-base opacity-50">d</span></p>
-                                <p className="text-[11px] opacity-50 mt-1">Avg. Delivery</p>
-                            </div>
-                            <div>
-                                <p className="text-3xl font-semibold text-emerald-400">98<span className="text-base">%</span></p>
-                                <p className="text-[11px] opacity-50 mt-1">On-time Rate</p>
-                            </div>
-                            <div>
-                                <p className="text-3xl font-semibold">74<span className="text-base">%</span></p>
-                                <p className="text-[11px] opacity-50 mt-1">Success</p>
-                            </div>
+            {/* Logistics Preview */}
+            <div className="bg-foreground text-background rounded-xl p-6 relative overflow-hidden">
+                <div className="absolute -top-20 -right-20 w-56 h-56 bg-primary/15 rounded-full blur-3xl" />
+                <div className="relative z-10">
+                    <h3 className="text-base font-semibold mb-1">Operational Health</h3>
+                    <p className="text-sm opacity-60 mb-6">Database connected to <span className="text-primary font-semibold opacity-100 italic">Aiven Cloud MySQL</span></p>
+                    <div className="flex gap-8">
+                        <div>
+                            <p className="text-3xl font-semibold">Active</p>
+                            <p className="text-[11px] opacity-50 mt-1">Store Status</p>
                         </div>
-                    </div>
-                </div>
-
-                {/* Operational Metrics */}
-                <div className="bg-card border border-border rounded-xl p-6">
-                    <h3 className="text-sm font-semibold text-foreground mb-5">Work</h3>
-                    <div className="space-y-4">
-                        {[
-                            { label: 'Packing', pct: 85, color: 'bg-emerald-500' },
-                            { label: 'Talking to Customers', pct: 45, color: 'bg-amber-500' },
-                            { label: 'Restocking', pct: 95, color: 'bg-primary' },
-                        ].map(m => (
-                            <div key={m.label} className="space-y-1.5">
-                                <div className="flex justify-between text-[12px]">
-                                    <span className="text-muted-foreground font-medium">{m.label}</span>
-                                    <span className="text-foreground font-semibold">{m.pct}%</span>
-                                </div>
-                                <div className="h-2 bg-muted rounded-full overflow-hidden">
-                                    <div className={`h-full ${m.color} rounded-full`} style={{ width: `${m.pct}%` }} />
-                                </div>
-                            </div>
-                        ))}
+                        <div>
+                            <p className="text-3xl font-semibold text-emerald-400">Stable</p>
+                            <p className="text-[11px] opacity-50 mt-1">Data Latency</p>
+                        </div>
                     </div>
                 </div>
             </div>

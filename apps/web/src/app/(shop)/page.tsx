@@ -59,12 +59,12 @@ const getHeroSlides = (t: any) => [
     },
 ];
 
-const getCategoriesData = (t: any) => [
-    { key: 'women', name: t?.categories?.women || 'Women', href: '/products?category=Women', image: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=500&auto=format&fit=crop' },
-    { key: 'men', name: t?.categories?.men || 'Men', href: '/products?category=Men', image: 'https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?q=80&w=500&auto=format&fit=crop' },
-    { key: 'kids-boys', name: t?.categories?.kidsBoys || 'Kids(Boys)', href: '/products?category=Kids(Boys)', image: 'https://images.unsplash.com/photo-1519234129322-2636a0d0d885?q=80&w=500&auto=format&fit=crop' },
-    { key: 'kids-girls', name: t?.categories?.kidsGirls || 'Kids(Girls)', href: '/products?category=Kids(Girls)', image: 'https://images.unsplash.com/photo-1514316454349-f50db90e2270?q=80&w=500&auto=format&fit=crop' },
-    { key: 'wedding-touch', name: t?.categories?.weddingTouch || 'Wedding Touch', href: '/products?category=Wedding-Touch', image: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=500&auto=format&fit=crop' },
+const getCategoriesData = (t: any): any[] => [
+    { key: 'women', name: t?.categories?.women || 'Women', href: '/products?category=Women', image: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=500&auto=format&fit=crop', comingSoon: false },
+    { key: 'men', name: t?.categories?.men || 'Men', href: '/products?category=Men', image: 'https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?q=80&w=500&auto=format&fit=crop', comingSoon: false },
+    { key: 'kids-boys', name: t?.categories?.kidsBoys || 'Kids(Boys)', href: '/products?category=Kids(Boys)', image: 'https://images.unsplash.com/photo-1519234129322-2636a0d0d885?q=80&w=500&auto=format&fit=crop', comingSoon: false },
+    { key: 'kids-girls', name: t?.categories?.kidsGirls || 'Kids(Girls)', href: '/products?category=Kids(Girls)', image: 'https://images.unsplash.com/photo-1514316454349-f50db90e2270?q=80&w=500&auto=format&fit=crop', comingSoon: false },
+    { key: 'wedding-touch', name: t?.categories?.weddingTouch || 'Wedding Touch', href: '/products?category=Wedding-Touch', image: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=500&auto=format&fit=crop', comingSoon: false },
 ];
 
 const getTrustFeatures = (t: any) => [
@@ -74,23 +74,10 @@ const getTrustFeatures = (t: any) => [
     { icon: Headphones, title: t?.features?.support || '24/7 Support', desc: t?.features?.supportDesc || 'Always here to help' },
 ];
 
-const newArrivals = [
-    { id: '4', name: 'Designer Leather Jacket', price: 8999, image: 'https://images.unsplash.com/photo-1551028919-ac7f5db48e0d?q=80&w=800&auto=format&fit=crop', rating: 4.9 },
-    { id: '5', name: 'Tailored Trousers', price: 2499, image: 'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?q=80&w=800&auto=format&fit=crop', rating: 4.6 },
-    { id: '6', name: 'Linen Summer Shirt', price: 1999, salePrice: 1499, image: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=800&auto=format&fit=crop', rating: 4.5 },
-    { id: '7', name: 'Classic Oxford Shirt', price: 1499, image: 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?q=80&w=800&auto=format&fit=crop', rating: 4.8 },
-    { id: '8', name: 'Silk Evening Dress', price: 5999, image: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?q=80&w=800&auto=format&fit=crop', rating: 4.9 },
-    { id: '9', name: 'Casual Denim Jacket', price: 3499, salePrice: 2799, image: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?q=80&w=800&auto=format&fit=crop', rating: 4.7 },
-    { id: '10', name: 'Floral Maxi Dress', price: 2999, image: 'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?q=80&w=800&auto=format&fit=crop', rating: 4.6 },
-    { id: '11', name: 'Cotton Polo Shirt', price: 1299, image: 'https://images.unsplash.com/photo-1598033129183-c4f50c736f10?q=80&w=800&auto=format&fit=crop', rating: 4.5 },
-];
-
 const promoBanners = [
     { name: 'Summer Edit', tag: 'New Arrival', image: 'https://images.unsplash.com/photo-1604671801908-6f0c6a092c05?q=80&w=800&auto=format&fit=crop', href: '/collections/summer' },
     { name: 'Flash Sale', tag: '50% Off', image: 'https://images.unsplash.com/photo-1607083206869-4c7672e72a8a?q=80&w=800&auto=format&fit=crop', href: '/sale' },
 ];
-
-// Removed hardcoded trustFeatures to use localized ones
 
 // --- HERO SLIDER ---
 function HeroSlider() {
@@ -223,7 +210,7 @@ function ProductCard({ product, index }: { product: any; index: number }) {
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
-            <Link href={`/products/${product.id}`}>
+            <Link href={`/products/${product.slug || product.id}`}>
                 <div className="relative aspect-[3/4] overflow-hidden bg-gray-100 mb-3">
                     <Image
                         src={product.image}
@@ -271,16 +258,16 @@ function ProductCard({ product, index }: { product: any; index: number }) {
             </Link>
 
             <div className="space-y-3">
-                <Link href={`/products/${product.id}`}>
+                <Link href={`/products/${product.slug || product.id}`}>
                     <h3 className="text-sm font-semibold text-foreground leading-snug group-hover:text-destructive transition-colors min-h-[2.5rem] line-clamp-2">
                         {product.name}
                     </h3>
                 </Link>
                 <div className="flex items-center gap-1">
                     {[...Array(5)].map((_, i) => (
-                        <Star key={i} className={`h-3 w-3 ${i < Math.floor(product.rating) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+                        <Star key={i} className={`h-3 w-3 ${i < Math.floor(product.rating || 0) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
                     ))}
-                    <span className="text-[10px] text-muted-foreground ml-1">({product.rating})</span>
+                    <span className="text-[10px] text-muted-foreground ml-1">({product.rating || 0})</span>
                 </div>
                 <div className="flex items-center gap-2">
                     {product.salePrice ? (
@@ -298,7 +285,7 @@ function ProductCard({ product, index }: { product: any; index: number }) {
 }
 
 // --- FLASH SALE COMPONENT ---
-function FlashSaleSection() {
+function FlashSaleSection({ products }: { products: any[] }) {
     const t = useTranslation();
     const [timeLeft, setTimeLeft] = useState({ h: 12, m: 45, s: 0 });
 
@@ -314,13 +301,7 @@ function FlashSaleSection() {
         return () => clearInterval(timer);
     }, []);
 
-    const flashProducts = [
-        { id: 'f1', name: 'Raw Denim Curation Jacket', price: 12500, salePrice: 7500, rating: 4.8, isFlashSale: true, image: 'https://images.unsplash.com/photo-1551537482-f2075a1d41f2?q=80&w=500&auto=format&fit=crop' },
-        { id: 'f2', name: 'Obsidian Wool Overcoat', price: 28000, salePrice: 15500, rating: 4.9, isFlashSale: true, image: 'https://images.unsplash.com/photo-1539533377285-b31421a7a99b?q=80&w=500&auto=format&fit=crop' },
-        { id: 'f3', name: 'Silk Flow Evening Blouse', price: 9500, salePrice: 4999, rating: 4.7, isFlashSale: true, image: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?q=80&w=500&auto=format&fit=crop' },
-        { id: 'f4', name: 'Handcrafted Leather Loafers', price: 18000, salePrice: 9500, rating: 5.0, isFlashSale: true, image: 'https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?q=80&w=500&auto=format&fit=crop' },
-        { id: 'f5', name: 'Minimalist Tote - Slate', price: 8500, salePrice: 3999, rating: 4.6, isFlashSale: true, image: 'https://images.unsplash.com/photo-1584916201218-f4242ceb4809?q=80&w=500&auto=format&fit=crop' },
-    ];
+    if (!products.length) return null;
 
     return (
         <section className="bg-destructive/5 py-16 overflow-hidden">
@@ -354,7 +335,7 @@ function FlashSaleSection() {
                 </div>
 
                 <div className="flex overflow-x-auto gap-8 pb-12 no-scrollbar px-2 snap-x">
-                    {flashProducts.map((p, i) => (
+                    {products.map((p, i) => (
                         <div key={p.id} className="min-w-[280px] snap-center">
                             <ProductCard product={p} index={i} />
                             <div className="mt-4 bg-gray-100 h-1.5 rounded-full overflow-hidden">
@@ -376,18 +357,35 @@ function FlashSaleSection() {
     );
 }
 
-
-
-
 // --- MAIN PAGE ---
 export default function HomePage() {
     const t = useTranslation();
     const categories = getCategoriesData(t);
     const trustFeatures = getTrustFeatures(t);
     const [mounted, setMounted] = useState(false);
-    const { language } = useLanguageStore();
+    const [newArrivals, setNewArrivals] = useState<any[]>([]);
+    const [flashProducts, setFlashProducts] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
 
-    useEffect(() => { setMounted(true); }, []);
+    useEffect(() => {
+        setMounted(true);
+        const fetchData = async () => {
+            try {
+                const [newRes, flashRes] = await Promise.all([
+                    fetch('/api/products?limit=8&sort=newest').then(res => res.json()),
+                    fetch('/api/products/featured?limit=5').then(res => res.json())
+                ]);
+                if (newRes.success) setNewArrivals(newRes.data);
+                if (flashRes.success) setFlashProducts(flashRes.data);
+            } catch (error) {
+                console.error('Failed to fetch homepage data:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, []);
+
     if (!mounted) return null;
 
     return (
@@ -505,7 +503,7 @@ export default function HomePage() {
             </section>
 
             {/* 6. FLASH SALE SECTION */}
-            <FlashSaleSection />
+            <FlashSaleSection products={flashProducts} />
 
 
 

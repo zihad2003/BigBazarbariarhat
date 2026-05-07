@@ -1,27 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/auth';
-import { db } from '@/lib/db';
+import { prisma } from '@bigbazar/db';
 
-export async function GET() {
-    try {
-        const categories = await db.categories.findAll();
-        return NextResponse.json({ success: true, data: categories });
-    } catch {
-        return NextResponse.json({ success: false, message: 'Failed to fetch categories.' }, { status: 500 });
-    }
-}
+export async function GET(req: NextRequest) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const slug = searchParams.get('slug');
 
-export async function POST(req: NextRequest) {
-    const session = await auth();
-    if (!session || (session.user as any)?.role !== 'admin') {
-        return NextResponse.json({ success: false, message: 'Admin access required.' }, { status: 403 });
+    if (slug) {
+      const category = await prisma.category.findUnique({
+        where: { slug },
+        include: {
+          children: true,
+          _count: { select: { products: true } }
+        }
+      });
+      return NextResponse.json({ success: true, data: category ? [category] : [] });
     }
 
-    try {
-        const body = await req.json();
-        const category = await db.categories.create(body);
-        return NextResponse.json({ success: true, data: category }, { status: 201 });
-    } catch {
-        return NextResponse.json({ success: false, message: 'Failed to create category.' }, { status: 500 });
-    }
+    const categories = await prisma.category.findMany({
+      where: { parentId: null },
+      include: {
+        children: true,
+        _count: { select: { products: true } }
+      },
+      orderBy: { name: 'asc' }
+    });
+
+    return NextResponse.json({ success: true, data: categories });
+  } catch (error) {
+    console.error('Categories API Error:', error);
+    return NextResponse.json({ success: false, message: 'Failed to fetch categories.' }, { status: 500 });
+  }
 }

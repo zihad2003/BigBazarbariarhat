@@ -7,10 +7,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { formatPrice, cn } from '@/lib/utils';
+import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/store/cartStore';
 import { useUIStore } from '@/lib/stores/ui-store';
 
 export function CartDrawer() {
+    const router = useRouter();
     const {
         items,
         savedItems,

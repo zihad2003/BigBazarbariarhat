@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Menu, X, ChevronRight, ShoppingBag, User, Heart, Search, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -15,7 +15,7 @@ import {
 import { useUIStore } from '@/lib/stores/ui-store';
 import { useLanguageStore, useTranslation } from '@bigbazar/shared';
 
-const getMobileNavigation = (t: any) => [
+const getMobileNavigation = (t: any): any[] => [
     {
         name: t?.categories?.men || 'Men',
         href: '/products?category=Men',
@@ -68,7 +68,7 @@ const getMobileNavigation = (t: any) => [
 
 export function MobileMenu() {
     const t = useTranslation();
-    const navigation = getMobileNavigation(t);
+    const [navigation, setNavigation] = useState<any[]>([]);
     const [open, setOpen] = useState(false);
     const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null);
     const { openSearch, openCart } = useUIStore();
@@ -81,6 +81,35 @@ export function MobileMenu() {
         setOpen(false);
         openSearch();
     };
+
+    useEffect(() => {
+        // Initialize with default translated menu lists
+        setNavigation(getMobileNavigation(t));
+
+        // Fetch live database categories
+        const fetchNav = async () => {
+            try {
+                const res = await fetch('/api/categories');
+                const result = await res.json();
+                if (result.success && result.data && result.data.length > 0) {
+                    const mapped = result.data.map((cat: any) => ({
+                        name: cat.name,
+                        href: `/products?category=${encodeURIComponent(cat.name)}`,
+                        submenu: (cat.children || []).map((sub: any) => ({
+                            name: sub.name,
+                            href: `/products?category=${encodeURIComponent(cat.name)}&subcategory=${encodeURIComponent(sub.name)}`
+                        }))
+                    }));
+                    // Append Sale highlight menu link to navigation
+                    mapped.push({ name: 'Sale', href: '/sale', highlight: true, submenu: undefined, comingSoon: false });
+                    setNavigation(mapped);
+                }
+            } catch (error) {
+                console.error('Failed to load mobile dynamic navigation:', error);
+            }
+        };
+        fetchNav();
+    }, [t]);
 
     return (
         <Sheet open={open} onOpenChange={setOpen}>
@@ -142,7 +171,7 @@ export function MobileMenu() {
                                             className="overflow-hidden"
                                         >
                                             <div className="pl-4 pb-2 space-y-1 border-l border-border ml-2 my-2">
-                                                {item.submenu.map((subitem) => (
+                                                {item.submenu.map((subitem: any) => (
                                                     <Link
                                                         key={subitem.name}
                                                         href={subitem.href}

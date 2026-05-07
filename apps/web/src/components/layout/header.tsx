@@ -30,7 +30,7 @@ import { MegaMenu } from './mega-menu';
 import { MobileMenu } from './mobile-menu';
 import { MOCK_PRODUCTS } from '@/lib/mock-data/products';
 
-const getNavCategories = (t: any) => [
+const getNavCategories = (t: any): any[] => [
     {
         name: t?.categories?.men || 'Men',
         href: '/products?category=Men',
@@ -87,7 +87,7 @@ const getNavCategories = (t: any) => [
 
 export function Header() {
     const t = useTranslation();
-    const categories = getNavCategories(t);
+    const [categories, setCategories] = useState<any[]>([]);
     const [isScrolled, setIsScrolled] = useState(false);
     const [isSearchFocused, setIsSearchFocused] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
@@ -111,8 +111,34 @@ export function Header() {
         const saved = localStorage.getItem('recent-searches');
         if (saved) setRecentSearches(JSON.parse(saved));
         
+        // Initialize with translated static categories so it displays immediately
+        setCategories(getNavCategories(t));
+
+        // Fetch live DB categories to populate the dropdown menu dynamically!
+        const fetchNav = async () => {
+            try {
+                const res = await fetch('/api/categories');
+                const result = await res.json();
+                if (result.success && result.data && result.data.length > 0) {
+                    const mapped = result.data.map((cat: any) => ({
+                        name: cat.name,
+                        href: `/products?category=${encodeURIComponent(cat.name)}`,
+                        featured: cat.image || 'https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=800&auto=format&fit=crop', // Live Category Cover Image
+                        subcategories: (cat.children || []).map((sub: any) => ({
+                            name: sub.name,
+                            href: `/products?category=${encodeURIComponent(cat.name)}&subcategory=${encodeURIComponent(sub.name)}`
+                        }))
+                    }));
+                    setCategories(mapped);
+                }
+            } catch (error) {
+                console.error('Failed to load dynamic navigation categories:', error);
+            }
+        };
+        fetchNav();
+
         return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
+    }, [t]);
 
     // Debounced Search logic
     useEffect(() => {
@@ -141,7 +167,7 @@ export function Header() {
         localStorage.setItem('recent-searches', JSON.stringify(updated));
         
         setIsSearchFocused(false);
-        router.push(`/search?q=${encodeURIComponent(term)}`);
+        router.push(`/products?search=${encodeURIComponent(term)}`);
     };
 
     return (
@@ -192,7 +218,7 @@ export function Header() {
                                                         <div className="space-y-4">
                                                             <h3 className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">{category.name} Collection</h3>
                                                             <ul className="space-y-3">
-                                                                {category.subcategories.map((sub) => (
+                                                                {category.subcategories.map((sub: any) => (
                                                                     <li key={sub.name}>
                                                                         <Link href={sub.href} className="text-sm font-black text-slate-900 hover:text-primary transition-colors uppercase tracking-tight block">
                                                                             {sub.name}
@@ -265,7 +291,7 @@ export function Header() {
                                                     <div className="space-y-4">
                                                         <h3 className="text-[9px] font-black text-primary uppercase tracking-[0.3em]">Suggestions</h3>
                                                         <div className="space-y-3">
-                                                            {searchResults.map((p) => (
+                                                            {searchResults.map((p: any) => (
                                                                 <Link
                                                                     key={p.id}
                                                                     href={`/products/${p.slug}`}

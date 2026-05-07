@@ -19,13 +19,29 @@ export default function EditCategoryPage(props: { params: Promise<{ id: string }
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const [parentCategories, setParentCategories] = useState<any[]>([]);
 
     // Form State
     const [name, setName] = useState('');
     const [slug, setSlug] = useState('');
     const [description, setDescription] = useState('');
-    const [order, setOrder] = useState('0');
-    const [status, setStatus] = useState('active');
+    const [parentId, setParentId] = useState<string>('');
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const res = await fetch('/api/categories');
+                const result = await res.json();
+                if (result.success) {
+                    // Only allow selecting top-level categories as parent (excluding itself)
+                    setParentCategories(result.data.filter((c: any) => !c.parentId && c.id !== params.id));
+                }
+            } catch (error) {
+                console.error('Failed to load categories:', error);
+            }
+        };
+        fetchCategories();
+    }, [params.id]);
 
     useEffect(() => {
         const fetchCategory = async () => {
@@ -37,8 +53,7 @@ export default function EditCategoryPage(props: { params: Promise<{ id: string }
                     setName(cat.name);
                     setSlug(cat.slug);
                     setDescription(cat.description || '');
-                    setOrder(cat.displayOrder.toString());
-                    setStatus(cat.isActive ? 'active' : 'draft');
+                    setParentId(cat.parentId || '');
                     if (cat.image) setImagePreview(cat.image);
                 }
             } catch (error) {
@@ -58,9 +73,8 @@ export default function EditCategoryPage(props: { params: Promise<{ id: string }
                 name,
                 slug,
                 description,
-                displayOrder: order,
-                isActive: status === 'active',
-                image: imagePreview
+                image: imagePreview,
+                parentId: parentId || null
             };
 
             const res = await fetch(`/api/categories/${params.id}`, {
@@ -104,7 +118,7 @@ export default function EditCategoryPage(props: { params: Promise<{ id: string }
                     </button>
                     <div>
                         <h1 className="text-xl font-semibold text-foreground">Edit Category</h1>
-                        <p className="text-[13px] text-muted-foreground">Update the details of this category.</p>
+                        <p className="text-[13px] text-muted-foreground">Update the details of this category or subcategory.</p>
                     </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -151,6 +165,22 @@ export default function EditCategoryPage(props: { params: Promise<{ id: string }
                                 />
                             </div>
                         </div>
+
+                        <div className="space-y-1.5">
+                            <label className="text-[12px] font-medium text-muted-foreground">Parent Category (Optional)</label>
+                            <select 
+                                value={parentId} 
+                                onChange={e => setParentId(e.target.value)} 
+                                className="w-full h-11 px-3 bg-background border border-input rounded-lg text-[13px] outline-none transition"
+                            >
+                                <option value="">None (Top Level Category)</option>
+                                {parentCategories.map(cat => (
+                                    <option key={cat.id} value={cat.id}>{cat.name}</option>
+                                ))}
+                            </select>
+                            <p className="text-[11px] text-muted-foreground mt-1">Select a parent to make this a subcategory (e.g. "T-Shirts" under "Men Collection").</p>
+                        </div>
+
                         <div className="space-y-1.5">
                             <label className="text-[12px] font-medium text-muted-foreground">Description</label>
                             <textarea
@@ -160,24 +190,7 @@ export default function EditCategoryPage(props: { params: Promise<{ id: string }
                                 className="w-full p-4 bg-background border border-input rounded-lg text-[13px] outline-none focus:ring-2 focus:ring-ring transition resize-none"
                             />
                         </div>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-1.5">
-                                <label className="text-[12px] font-medium text-muted-foreground">Sort Order</label>
-                                <input
-                                    type="number"
-                                    value={order}
-                                    onChange={e => setOrder(e.target.value)}
-                                    className="w-full h-11 px-4 bg-background border border-input rounded-lg text-[13px] outline-none focus:ring-2 focus:ring-ring transition"
-                                />
-                            </div>
-                            <div className="space-y-1.5">
-                                <label className="text-[12px] font-medium text-muted-foreground">Status</label>
-                                <select value={status} onChange={e => setStatus(e.target.value)} className="w-full h-11 px-3 bg-background border border-input rounded-lg text-[13px] outline-none font-semibold text-emerald-600">
-                                    <option value="active">Active (Visible)</option>
-                                    <option value="draft">Draft (Hidden)</option>
-                                </select>
-                            </div>
-                        </div>
+
                     </div>
                 </div>
 

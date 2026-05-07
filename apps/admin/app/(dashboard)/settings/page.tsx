@@ -38,11 +38,17 @@ export default function SettingsPage() {
                     fetch('/api/settings'),
                     fetch('/api/settings/shipping')
                 ]);
-                const settingsResult = await settingsRes.json();
-                const shippingResult = await shippingRes.json();
+                if (settingsRes.ok) {
+                    const settingsResult = await settingsRes.json();
+                    if (settingsResult.success) setSettings(settingsResult.data);
+                }
 
-                if (settingsResult.success) setSettings(settingsResult.data);
-                if (shippingResult.success) setShippingZones(shippingResult.data);
+                if (shippingRes.ok) {
+                    const shippingResult = await shippingRes.json();
+                    if (shippingResult.success) setShippingZones(shippingResult.data);
+                } else {
+                    setShippingZones([]);
+                }
             } catch (error) {
                 console.error('Failed to fetch settings:', error);
             } finally {

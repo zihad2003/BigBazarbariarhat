@@ -49,7 +49,7 @@ export default function OrdersPage() {
     useEffect(() => {
         const timer = setTimeout(() => {
             fetchOrders(1);
-        }, 500);
+        }, 300);
         return () => clearTimeout(timer);
     }, [searchQuery]);
 

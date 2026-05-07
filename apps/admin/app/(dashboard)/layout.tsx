@@ -159,14 +159,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                             <button className="lg:hidden p-1.5 rounded-lg hover:bg-muted" onClick={() => setOpen(true)}>
                                 <Menu className="w-5 h-5" />
                             </button>
-                            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-muted/60 rounded-lg w-64 lg:w-80">
-                                <Search className="w-3.5 h-3.5 text-muted-foreground" />
-                                <input
-                                    type="text"
-                                    placeholder="Search..."
-                                    className="flex-1 bg-transparent text-[13px] text-foreground placeholder:text-muted-foreground outline-none"
-                                />
-                            </div>
+
                         </div>
                         <div className="flex items-center gap-2">
                             <ThemeSwitcher />

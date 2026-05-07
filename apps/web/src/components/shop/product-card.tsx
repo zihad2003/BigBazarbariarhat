@@ -32,7 +32,8 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
     const [isAdding, setIsAdding] = useState(false)
 
     const isOutOfStock = product.stock <= 0
-    const secondaryImage = product.images?.[1]?.url
+    const secondImage = product.images?.[1]
+    const secondaryImage = typeof secondImage === 'string' ? secondImage : (secondImage && typeof secondImage === 'object' && 'url' in secondImage ? (secondImage as any).url : undefined)
     const price = product.salePrice || product.basePrice
     const discount = product.salePrice
         ? Math.round(((product.basePrice - product.salePrice) / product.basePrice) * 100)
@@ -74,7 +75,8 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
         })
     }
 
-    const image = product.images?.[0]?.url || '/placeholder.png'
+    const firstImage = product.images?.[0]
+    const image = typeof firstImage === 'string' ? firstImage : (firstImage && typeof firstImage === 'object' && 'url' in firstImage ? (firstImage as any).url : '/placeholder.png')
 
     if (layout === 'list') {
         return (
@@ -134,7 +136,7 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
                 <div className="flex-1 flex flex-col py-2">
                     <div className="flex items-center justify-between mb-4">
                         <span className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.2em] bg-indigo-50 px-3 py-1 rounded-lg">
-                            {product.category || 'Artifact'}
+                            {typeof product.category === 'object' ? product.category?.name : (product.category || 'Collection')}
                         </span>
                         <div className="flex items-center gap-1.5 bg-amber-50 px-3 py-1 rounded-lg">
                             <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
@@ -320,7 +322,7 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
             <div className="mt-8 px-2 space-y-3">
                 <div className="flex items-center justify-between mb-2">
                     <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
-                        {product.category || 'Big Bazar'}
+                        {typeof product.category === 'object' ? product.category?.name : (product.category || 'Big Bazar')}
                     </span>
                     <div className="flex items-center gap-1">
                         <Star className="h-3 w-3 fill-amber-400 text-amber-400" />

@@ -55,7 +55,7 @@ export function SearchModal() {
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
         if (query.trim()) {
-            router.push(`/shop?q=${encodeURIComponent(query)}`);
+            router.push(`/products?search=${encodeURIComponent(query)}`);
             closeSearch();
         }
     };
@@ -131,7 +131,7 @@ export function SearchModal() {
                                                     <section>
                                                         <div className="flex items-center justify-between mb-8">
                                                             <h3 className="text-xs font-black text-gray-400 uppercase tracking-[0.3em]">Featured Products</h3>
-                                                            <Link href={`/shop?q=${query}`} onClick={closeSearch} className="text-indigo-600 font-black text-xs uppercase tracking-widest hover:underline">View All</Link>
+                                                            <Link href={`/products?search=${query}`} onClick={closeSearch} className="text-indigo-600 font-black text-xs uppercase tracking-widest hover:underline">View All</Link>
                                                         </div>
                                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                                                             {searchResults.products.map((item) => (

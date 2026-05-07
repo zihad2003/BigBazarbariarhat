@@ -24,7 +24,8 @@ export const MOCK_PRODUCTS: Product[] = [
         tags: ['minimalist', 'basics', 'cotton'],
         createdAt: '2026-01-01T00:00:00Z',
         updatedAt: '2026-01-01T00:00:00Z',
-        status: 'active'
+        status: 'active',
+        instagramReelUrl: 'https://www.instagram.com/reel/C3zYy-uN29P/'
     },
     {
         id: 'p2',

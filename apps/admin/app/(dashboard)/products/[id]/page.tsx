@@ -47,7 +47,14 @@ export default function EditProductPage() {
     const [stock, setStock] = useState('0');
     const [category, setCategory] = useState('');
     const [description, setDescription] = useState('');
+    const [instagramReelUrl, setInstagramReelUrl] = useState('');
     const [variants, setVariants] = useState<Variant[]>([]);
+
+    // Flags
+    const [featured, setFeatured] = useState(false);
+    const [isSale, setIsSale] = useState(false);
+    const [isHot, setIsHot] = useState(false);
+    const [isNew, setIsNew] = useState(false);
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -62,8 +69,13 @@ export default function EditProductPage() {
                     setStock(p.stockQuantity.toString());
                     setCategory(p.categoryId);
                     setDescription(p.description || '');
+                    setInstagramReelUrl(p.instagramReelUrl || '');
                     setVariants(p.variants || []);
                     if (p.images?.[0]) setImagePreview(p.images[0].url);
+                    setFeatured(p.featured || false);
+                    setIsSale(p.isSale || false);
+                    setIsHot(p.isHot || false);
+                    setIsNew(p.isNew || false);
                 }
             } catch (error) {
                 console.error('Failed to load product:', error);
@@ -77,7 +89,7 @@ export default function EditProductPage() {
     const handleSave = async () => {
         setSaving(true);
         // Mock save
-        await new Promise(r => setTimeout(r, 1000));
+
         router.push('/products');
     };
 
@@ -269,33 +281,49 @@ export default function EditProductPage() {
 
                 {/* Right Column: Settings & Photos */}
                 <div className="space-y-6">
-                    {/* Media */}
-                    <div className="bg-card border border-border rounded-xl p-6">
-                        <h2 className="text-sm font-semibold mb-4 flex items-center gap-2">
-                            <ImageIcon className="w-4 h-4 text-primary" />
-                            Product Photo
-                        </h2>
-                        <div className="aspect-square w-full bg-muted/40 rounded-xl border-2 border-dashed border-border flex flex-col items-center justify-center text-center p-6 relative overflow-hidden group cursor-pointer hover:bg-muted/60 transition">
-                            {imagePreview ? (
-                                <img src={imagePreview} className="absolute inset-0 w-full h-full object-cover" />
-                            ) : (
-                                <>
-                                    <div className="w-10 h-10 rounded-full bg-background flex items-center justify-center mb-3 shadow-sm">
-                                        <Plus className="w-5 h-5 text-muted-foreground" />
-                                    </div>
-                                    <p className="text-[12px] font-medium text-foreground">Upload Photo</p>
-                                    <p className="text-[11px] text-muted-foreground mt-1">PNG, JPG up to 5MB</p>
-                                </>
-                            )}
+                    {/* Media & Video */}
+                    <div className="bg-card border border-border rounded-xl p-6 space-y-6">
+                        <div>
+                            <h2 className="text-sm font-semibold mb-4 flex items-center gap-2">
+                                <ImageIcon className="w-4 h-4 text-primary" />
+                                Product Photo
+                            </h2>
+                            <div className="aspect-square w-full bg-muted/40 rounded-xl border-2 border-dashed border-border flex flex-col items-center justify-center text-center p-6 relative overflow-hidden group cursor-pointer hover:bg-muted/60 transition">
+                                {imagePreview ? (
+                                    <img src={imagePreview} className="absolute inset-0 w-full h-full object-cover" />
+                                ) : (
+                                    <>
+                                        <div className="w-10 h-10 rounded-full bg-background flex items-center justify-center mb-3 shadow-sm">
+                                            <Plus className="w-5 h-5 text-muted-foreground" />
+                                        </div>
+                                        <p className="text-[12px] font-medium text-foreground">Upload Photo</p>
+                                        <p className="text-[11px] text-muted-foreground mt-1">PNG, JPG up to 5MB</p>
+                                    </>
+                                )}
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={e => {
+                                        const file = e.target.files?.[0];
+                                        if (file) setImagePreview(URL.createObjectURL(file));
+                                    }}
+                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="space-y-1.5 border-t border-border pt-6">
+                            <label className="text-[12px] font-medium text-muted-foreground flex items-center gap-1.5">
+                                Instagram Reel URL (Optional)
+                            </label>
                             <input
-                                type="file"
-                                accept="image/*"
-                                onChange={e => {
-                                    const file = e.target.files?.[0];
-                                    if (file) setImagePreview(URL.createObjectURL(file));
-                                }}
-                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                type="url"
+                                placeholder="https://www.instagram.com/reel/..."
+                                value={instagramReelUrl}
+                                onChange={e => setInstagramReelUrl(e.target.value)}
+                                className="w-full h-11 px-4 bg-background border border-input rounded-lg text-[13px] outline-none focus:ring-2 focus:ring-ring transition"
                             />
+                            <p className="text-[10px] text-muted-foreground mt-1">Paste an Instagram reel URL to display the video on the product page.</p>
                         </div>
                     </div>
 
@@ -326,6 +354,32 @@ export default function EditProductPage() {
                                     <option value="draft">Draft (Hidden)</option>
                                 </select>
                             </div>
+                        </div>
+                    </div>
+
+                    {/* Flags */}
+                    <div className="bg-card border border-border rounded-xl p-6">
+                        <h2 className="text-sm font-semibold mb-4 flex items-center gap-2">
+                            <Tag className="w-4 h-4 text-primary" />
+                            Product Badges
+                        </h2>
+                        <div className="space-y-3">
+                            <label className="flex items-center gap-3 p-3 bg-muted/40 rounded-lg cursor-pointer">
+                                <input type="checkbox" checked={featured} onChange={e => setFeatured(e.target.checked)} className="w-4 h-4 rounded text-primary focus:ring-primary" />
+                                <span className="text-[13px] font-medium text-foreground">Featured (Exclusive)</span>
+                            </label>
+                            <label className="flex items-center gap-3 p-3 bg-muted/40 rounded-lg cursor-pointer">
+                                <input type="checkbox" checked={isSale} onChange={e => setIsSale(e.target.checked)} className="w-4 h-4 rounded text-primary focus:ring-primary" />
+                                <span className="text-[13px] font-medium text-foreground">On Sale</span>
+                            </label>
+                            <label className="flex items-center gap-3 p-3 bg-muted/40 rounded-lg cursor-pointer">
+                                <input type="checkbox" checked={isHot} onChange={e => setIsHot(e.target.checked)} className="w-4 h-4 rounded text-primary focus:ring-primary" />
+                                <span className="text-[13px] font-medium text-foreground">Hot Item</span>
+                            </label>
+                            <label className="flex items-center gap-3 p-3 bg-muted/40 rounded-lg cursor-pointer">
+                                <input type="checkbox" checked={isNew} onChange={e => setIsNew(e.target.checked)} className="w-4 h-4 rounded text-primary focus:ring-primary" />
+                                <span className="text-[13px] font-medium text-foreground">New Arrival</span>
+                            </label>
                         </div>
                     </div>
 
