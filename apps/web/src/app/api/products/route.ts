@@ -70,3 +70,80 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ success: false, message: 'Failed to fetch products.' }, { status: 500 });
   }
 }
+
+export async function POST(req: NextRequest) {
+  try {
+    const { auth } = await import('@/auth');
+    const session = await auth();
+    if (!session || (session.user as any)?.role !== 'ADMIN') {
+      return NextResponse.json({ success: false, message: 'Admin access required.' }, { status: 403 });
+    }
+
+    const body = await req.json();
+    const {
+      name,
+      slug,
+      fullDescription,
+      shortDescription,
+      regularPrice,
+      salePrice,
+      sku,
+      stock,
+      images,
+      instagramReelUrl,
+      category: categoryName,
+      isActive,
+      featured,
+      isSale,
+      isHot,
+      isNew,
+      variants,
+    } = body;
+
+    // Resolve categoryId
+    let category = await prisma.category.findFirst({
+      where: {
+        OR: [
+          { name: { equals: categoryName } },
+          { id: { equals: categoryName } },
+          { name: { contains: categoryName } }
+        ]
+      }
+    });
+
+    if (!category) {
+      category = await prisma.category.findFirst();
+      if (!category) {
+        return NextResponse.json({ success: false, message: 'No categories exist. Please create one first.' }, { status: 400 });
+      }
+    }
+
+    const finalSlug = slug || name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
+    const newProduct = await prisma.product.create({
+      data: {
+        name,
+        slug: finalSlug,
+        description: fullDescription || shortDescription || '',
+        price: Number(regularPrice) || 0,
+        salePrice: salePrice ? Number(salePrice) : null,
+        sku: sku || `SKU-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
+        stock: Number(stock) || 0,
+        images: images || [],
+        instagramReelUrl: instagramReelUrl || null,
+        categoryId: category.id,
+        isActive: isActive !== false,
+        featured: featured || false,
+        isSale: isSale || false,
+        isHot: isHot || false,
+        isNew: isNew || false,
+        variants: variants || [],
+      }
+    });
+
+    return NextResponse.json({ success: true, data: newProduct });
+  } catch (error: any) {
+    console.error('Product POST Error:', error);
+    return NextResponse.json({ success: false, message: error.message || 'Failed to create product.' }, { status: 500 });
+  }
+}

@@ -95,13 +95,14 @@ export function MobileMenu() {
                     const mapped = result.data.map((cat: any) => ({
                         name: cat.name,
                         href: `/products?category=${encodeURIComponent(cat.name)}`,
-                        submenu: (cat.children || []).map((sub: any) => ({
+                        isHidden: cat.isHidden || false,
+                        submenu: (cat.children || []).filter((sub: any) => !sub.isHidden).map((sub: any) => ({
                             name: sub.name,
                             href: `/products?category=${encodeURIComponent(cat.name)}&subcategory=${encodeURIComponent(sub.name)}`
                         }))
                     }));
                     // Append Sale highlight menu link to navigation
-                    mapped.push({ name: 'Sale', href: '/sale', highlight: true, submenu: undefined, comingSoon: false });
+                    mapped.push({ name: 'Sale', href: '/sale', highlight: true, submenu: undefined, comingSoon: false, isHidden: false });
                     setNavigation(mapped);
                 }
             } catch (error) {

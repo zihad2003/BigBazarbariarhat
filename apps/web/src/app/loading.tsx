@@ -10,7 +10,7 @@ export default function Loading() {
                 <div className="absolute inset-0 h-12 w-12 bg-indigo-600/10 rounded-full blur-xl animate-pulse" />
             </div>
             <p className="mt-8 text-[10px] font-black uppercase tracking-[0.4em] text-gray-400 animate-pulse">
-                Synchronizing Universe...
+                Loading Products...
             </p>
         </div>
     );

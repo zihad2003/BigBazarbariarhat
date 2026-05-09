@@ -48,8 +48,8 @@ export function Footer() {
     ];
 
     const paymentMethods = [
-        { name: 'bKash', color: 'text-[#E2136E]', border: 'border-[#E2136E]/20 hover:border-[#E2136E]/60', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/BKash_logo.svg/512px-BKash_logo.svg.png' },
-        { name: 'Nagad', color: 'text-[#ED1C24]', border: 'border-[#ED1C24]/20 hover:border-[#ED1C24]/60', logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/8/80/Nagad_Logo.svg/512px-Nagad_Logo.svg.png' },
+        { name: 'bKash', color: 'text-[#E2136E]', border: 'border-[#E2136E]/20 hover:border-[#E2136E]/60', logo: '/payments/bkash.png' },
+        { name: 'Nagad', color: 'text-[#ED1C24]', border: 'border-[#ED1C24]/20 hover:border-[#ED1C24]/60', logo: '/payments/nagad.png' },
         { name: 'COD', color: 'text-foreground', border: 'border-border hover:border-foreground/50' },
     ];
 

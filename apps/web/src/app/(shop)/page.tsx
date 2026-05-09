@@ -59,13 +59,14 @@ const getHeroSlides = (t: any) => [
     },
 ];
 
-const getCategoriesData = (t: any): any[] => [
-    { key: 'women', name: t?.categories?.women || 'Women', href: '/products?category=Women', image: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=500&auto=format&fit=crop', comingSoon: false },
-    { key: 'men', name: t?.categories?.men || 'Men', href: '/products?category=Men', image: 'https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?q=80&w=500&auto=format&fit=crop', comingSoon: false },
-    { key: 'kids-boys', name: t?.categories?.kidsBoys || 'Kids(Boys)', href: '/products?category=Kids(Boys)', image: 'https://images.unsplash.com/photo-1519234129322-2636a0d0d885?q=80&w=500&auto=format&fit=crop', comingSoon: false },
-    { key: 'kids-girls', name: t?.categories?.kidsGirls || 'Kids(Girls)', href: '/products?category=Kids(Girls)', image: 'https://images.unsplash.com/photo-1514316454349-f50db90e2270?q=80&w=500&auto=format&fit=crop', comingSoon: false },
-    { key: 'wedding-touch', name: t?.categories?.weddingTouch || 'Wedding Touch', href: '/products?category=Wedding-Touch', image: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=500&auto=format&fit=crop', comingSoon: false },
-];
+// Fallback category images — overridden by DB values
+const fallbackCategoryImages: Record<string, string> = {
+    'Women': 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=500&auto=format&fit=crop',
+    'Men': 'https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?q=80&w=500&auto=format&fit=crop',
+    'Kids(Boys)': 'https://images.unsplash.com/photo-1519234129322-2636a0d0d885?q=80&w=500&auto=format&fit=crop',
+    'Kids(Girls)': 'https://images.unsplash.com/photo-1514316454349-f50db90e2270?q=80&w=500&auto=format&fit=crop',
+    'Wedding Touch': 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=500&auto=format&fit=crop',
+};
 
 const getTrustFeatures = (t: any) => [
     { icon: Truck, title: t?.features?.freeShipping || 'Free Shipping', desc: t?.features?.freeShippingDesc || 'On orders over ৳2000' },
@@ -74,9 +75,10 @@ const getTrustFeatures = (t: any) => [
     { icon: Headphones, title: t?.features?.support || '24/7 Support', desc: t?.features?.supportDesc || 'Always here to help' },
 ];
 
-const promoBanners = [
-    { name: 'Summer Edit', tag: 'New Arrival', image: 'https://images.unsplash.com/photo-1604671801908-6f0c6a092c05?q=80&w=800&auto=format&fit=crop', href: '/collections/summer' },
-    { name: 'Flash Sale', tag: '50% Off', image: 'https://images.unsplash.com/photo-1607083206869-4c7672e72a8a?q=80&w=800&auto=format&fit=crop', href: '/sale' },
+// Promo banners are now fetched from /api/banners (position=promo)
+const defaultPromoBanners = [
+    { id: '1', title: 'Summer Edit', subtitle: 'New Arrival', imageDesktop: 'https://images.unsplash.com/photo-1604671801908-6f0c6a092c05?q=80&w=800&auto=format&fit=crop', linkUrl: '/collections/summer', linkText: 'Shop Now' },
+    { id: '2', title: 'Flash Sale', subtitle: '50% Off', imageDesktop: 'https://images.unsplash.com/photo-1607083206869-4c7672e72a8a?q=80&w=800&auto=format&fit=crop', linkUrl: '/sale', linkText: 'Shop Now' },
 ];
 
 // --- HERO SLIDER ---
@@ -360,9 +362,10 @@ function FlashSaleSection({ products }: { products: any[] }) {
 // --- MAIN PAGE ---
 export default function HomePage() {
     const t = useTranslation();
-    const categories = getCategoriesData(t);
     const trustFeatures = getTrustFeatures(t);
     const [mounted, setMounted] = useState(false);
+    const [categories, setCategories] = useState<any[]>([]);
+    const [promoBanners, setPromoBanners] = useState<any[]>(defaultPromoBanners);
     const [newArrivals, setNewArrivals] = useState<any[]>([]);
     const [flashProducts, setFlashProducts] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -371,12 +374,31 @@ export default function HomePage() {
         setMounted(true);
         const fetchData = async () => {
             try {
-                const [newRes, flashRes] = await Promise.all([
+                const [newRes, flashRes, catRes, bannerRes] = await Promise.all([
                     fetch('/api/products?limit=8&sort=newest').then(res => res.json()),
-                    fetch('/api/products/featured?limit=5').then(res => res.json())
+                    fetch('/api/products/featured?limit=5').then(res => res.json()),
+                    fetch('/api/categories').then(res => res.json()),
+                    fetch('/api/banners?position=promo').then(res => res.json()).catch(() => ({ success: false })),
                 ]);
                 if (newRes.success) setNewArrivals(newRes.data);
                 if (flashRes.success) setFlashProducts(flashRes.data);
+                
+                // Map DB categories to homepage category tiles
+                if (catRes.success && catRes.data && catRes.data.length > 0) {
+                    const mapped = catRes.data.map((cat: any) => ({
+                        key: cat.slug,
+                        name: cat.name,
+                        href: `/products?category=${encodeURIComponent(cat.name)}`,
+                        image: cat.image || fallbackCategoryImages[cat.name] || 'https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=500&auto=format&fit=crop',
+                        comingSoon: false,
+                    }));
+                    setCategories(mapped);
+                }
+
+                // Map DB banners for promo section
+                if (bannerRes.success && bannerRes.data && bannerRes.data.length > 0) {
+                    setPromoBanners(bannerRes.data);
+                }
             } catch (error) {
                 console.error('Failed to fetch homepage data:', error);
             } finally {
@@ -463,20 +485,20 @@ export default function HomePage() {
             <section className="max-w-7xl mx-auto px-4 pb-10 md:pb-14">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {promoBanners.map((banner, i) => (
-                        <Link key={i} href={banner.href} className="group block relative h-[250px] md:h-[320px] overflow-hidden">
+                        <Link key={banner.id || i} href={banner.linkUrl || '/shop'} className="group block relative h-[250px] md:h-[320px] overflow-hidden">
                             <Image
-                                src={banner.image}
-                                alt={banner.name}
+                                src={banner.imageDesktop}
+                                alt={banner.title}
                                 fill
                                 className="object-cover transition-transform duration-700 group-hover:scale-105"
                                 quality={90}
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
                             <div className="absolute bottom-6 left-6 text-white">
-                                <span className="text-[10px] uppercase tracking-widest font-bold text-white/70 block mb-1">{banner.tag}</span>
-                                <h3 className="text-2xl md:text-3xl font-playfair font-black">{banner.name}</h3>
+                                <span className="text-[10px] uppercase tracking-widest font-bold text-white/70 block mb-1">{banner.subtitle}</span>
+                                <h3 className="text-2xl md:text-3xl font-playfair font-black">{banner.title}</h3>
                                 <div className="flex items-center gap-2 mt-2 text-xs uppercase tracking-widest text-white/80 group-hover:text-white transition-colors">
-                                    <span>{t.common.shopNow}</span>
+                                    <span>{banner.linkText || t.common.shopNow}</span>
                                     <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
                                 </div>
                             </div>

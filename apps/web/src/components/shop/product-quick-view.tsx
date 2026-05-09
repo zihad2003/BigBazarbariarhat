@@ -55,10 +55,6 @@ export function ProductQuickView({ product }: ProductQuickViewProps) {
             quantity,
             stock: product.stock,
         });
-        addNotification({
-            type: 'success',
-            message: `${product.name} added to cart`,
-        });
         setIsAdding(false);
         setIsOpen(false);
         router.push('/cart');
@@ -129,7 +125,7 @@ export function ProductQuickView({ product }: ProductQuickViewProps) {
                         <div>
                             <div className="flex items-center gap-3 mb-4">
                                 <p className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.2em]">
-                                    {typeof product.category === 'object' ? product.category?.name : (product.category || 'Curated Collection')}
+                                    {typeof product.category === 'object' ? (product.category as any)?.name : (product.category || 'Curated Collection')}
                                 </p>
                                 <div className="h-px flex-1 bg-gray-100" />
                             </div>
@@ -207,7 +203,7 @@ export function ProductQuickView({ product }: ProductQuickViewProps) {
                                 <Button
                                     onClick={handleAddToCart}
                                     disabled={isAdding || isOutOfStock}
-                                    className="w-full h-16 bg-luxury-gold text-luxury-black hover:bg-white transition-all font-black uppercase tracking-widest text-[10px] rounded-2xl shadow-2xl shadow-luxury-gold/20 flex items-center justify-center gap-2 group border border-white/10"
+                                    className="w-full h-16 bg-luxury-gold text-luxury-black hover:bg-white hover:text-luxury-black transition-all font-black uppercase tracking-widest text-[10px] rounded-2xl shadow-2xl shadow-luxury-gold/20 flex items-center justify-center gap-2 group border border-white/10"
                                 >
                                     <AnimatePresence mode="wait">
                                         {isAdding ? (

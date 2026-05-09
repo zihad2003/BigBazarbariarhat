@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
+import { toast } from 'sonner';
 import { 
     Save, 
     X, 
@@ -71,6 +72,27 @@ export default function ProductForm({ initialData, isEdit }: ProductFormProps) {
         seo: initialData?.seo || { title: '', description: '', keyword: '' }
     });
 
+    // Live categories from DB
+    const [dbCategories, setDbCategories] = useState<any[]>([]);
+    useEffect(() => {
+        fetch('/api/categories?includeHidden=true')
+            .then(r => r.json())
+            .then(result => {
+                if (result.success && result.data) {
+                    // Flatten parent + children into a single list
+                    const flat: any[] = [];
+                    result.data.forEach((cat: any) => {
+                        flat.push({ id: cat.id, name: cat.name, isParent: true });
+                        (cat.children || []).forEach((sub: any) => {
+                            flat.push({ id: sub.id, name: `${cat.name} → ${sub.name}`, isParent: false });
+                        });
+                    });
+                    setDbCategories(flat);
+                }
+            })
+            .catch(console.error);
+    }, []);
+
     // Auto-generate slug
     useEffect(() => {
         if (!isEdit && formData.name) {
@@ -91,30 +113,53 @@ export default function ProductForm({ initialData, isEdit }: ProductFormProps) {
     };
 
     const handleSave = async (status: 'draft' | 'published') => {
+        const confirmMsg = isEdit 
+            ? 'Are you sure you want to update this product\'s details in the database?' 
+            : 'Are you sure you want to add this new product to the database?';
+        
+        if (!confirm(confirmMsg)) return;
+
         setIsLoading(true);
+        const toastId = toast.loading(isEdit ? 'Updating product details...' : 'Adding product to database...');
         try {
-            // Mock Save Logic
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            
-            const savedProducts = JSON.parse(localStorage.getItem('admin-products') || '[]');
-            const newProduct = {
-                ...formData,
-                id: initialData?.id || `ART-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
-                status: status,
-                updatedAt: new Date().toISOString()
+            // Find category ID
+            const matchedCategory = dbCategories.find(c => c.name === formData.category || c.id === formData.category);
+            const categoryId = matchedCategory ? matchedCategory.id : (dbCategories[0]?.id || '');
+
+            const dbBody = {
+                name: formData.name,
+                slug: formData.slug || formData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
+                fullDescription: formData.fullDescription,
+                shortDescription: formData.shortDescription,
+                regularPrice: Number(formData.regularPrice) || 0,
+                salePrice: formData.salePrice ? Number(formData.salePrice) : null,
+                sku: formData.sku,
+                stock: Number(formData.stock) || 0,
+                images: formData.images,
+                category: categoryId,
+                isActive: status === 'published',
+                variants: formData.variants,
             };
 
-            let updatedList;
-            if (isEdit) {
-                updatedList = savedProducts.map((p: any) => p.id === initialData.id ? newProduct : p);
-            } else {
-                updatedList = [newProduct, ...savedProducts];
-            }
+            const url = isEdit ? `/api/products/${initialData.id}` : '/api/products';
+            const method = isEdit ? 'PATCH' : 'POST';
 
-            localStorage.setItem('admin-products', JSON.stringify(updatedList));
-            router.push('/admin/products');
-        } catch (error) {
+            const res = await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dbBody)
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                toast.success(isEdit ? 'Product updated successfully! 🎉' : 'New product added successfully! 🎉', { id: toastId });
+                router.push('/admin/products');
+            } else {
+                toast.error(data.message || 'Failed to save product details.', { id: toastId });
+            }
+        } catch (error: any) {
             console.error('Save failed', error);
+            toast.error(error.message || 'An unexpected error occurred.', { id: toastId });
         } finally {
             setIsLoading(false);
         }
@@ -214,10 +259,20 @@ export default function ProductForm({ initialData, isEdit }: ProductFormProps) {
                                 onChange={(e) => handleChange('category', e.target.value)}
                                 className="w-full px-8 py-5 bg-slate-50 border border-slate-100 rounded-[1.5rem] focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:bg-white transition-all text-sm font-black appearance-none"
                             >
-                                <option>Electronics</option>
-                                <option>Clothing</option>
-                                <option>Home & Living</option>
-                                <option>Food & Grocery</option>
+                                <option value="">Select Category</option>
+                                {dbCategories.length > 0 ? dbCategories.map(c => (
+                                    <option key={c.id} value={c.name} style={c.isParent ? { fontWeight: 'bold' } : {}}>
+                                        {c.isParent ? c.name : `  └ ${c.name}`}
+                                    </option>
+                                )) : (
+                                    <>
+                                        <option>Men</option>
+                                        <option>Women</option>
+                                        <option>Kids(Boys)</option>
+                                        <option>Kids(Girls)</option>
+                                        <option>Wedding Touch</option>
+                                    </>
+                                )}
                             </select>
                         </div>
                         <div className="space-y-3 md:col-span-2">

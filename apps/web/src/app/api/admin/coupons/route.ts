@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
-import { db } from '@/lib/db';
+import { prisma } from '@bigbazar/db';
 
 export async function GET() {
     const session = await auth();
@@ -9,9 +9,12 @@ export async function GET() {
     }
 
     try {
-        const coupons = await db.coupons.findAll();
+        const coupons = await prisma.coupon.findMany({
+            orderBy: { createdAt: 'desc' }
+        });
         return NextResponse.json({ success: true, data: coupons });
-    } catch {
+    } catch (error) {
+        console.error('Coupons GET Error:', error);
         return NextResponse.json({ success: false, message: 'Failed to fetch coupons.' }, { status: 500 });
     }
 }
@@ -24,9 +27,22 @@ export async function POST(req: NextRequest) {
 
     try {
         const body = await req.json();
-        const coupon = await db.coupons.create(body);
+        const coupon = await prisma.coupon.create({
+            data: {
+                code: body.code,
+                description: body.description || null,
+                discountType: body.discountType,
+                discountValue: body.discountValue,
+                minOrderAmount: body.minOrderAmount ? parseFloat(body.minOrderAmount) : 0,
+                usageLimit: body.usageLimit ? parseInt(body.usageLimit) : null,
+                startDate: new Date(body.startDate),
+                endDate: new Date(body.endDate),
+                isActive: body.isActive !== false,
+            }
+        });
         return NextResponse.json({ success: true, data: coupon }, { status: 201 });
-    } catch {
+    } catch (error) {
+        console.error('Coupons POST Error:', error);
         return NextResponse.json({ success: false, message: 'Failed to create coupon.' }, { status: 500 });
     }
 }

@@ -113,10 +113,6 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
             variant: selectedVariant?.name,
             stock: product.stock,
         });
-        addNotification({
-            type: 'success',
-            message: `${product.name} added to cart`,
-        });
         setIsAdding(false);
         router.push('/cart');
     };
@@ -287,7 +283,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                                     <div className="space-y-4">
                                         <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Select Variant</h3>
                                         <div className="flex flex-wrap gap-2">
-                                            {product.variants.map((variant) => (
+                                            {product.variants.map((variant: any) => (
                                                 <button
                                                     key={variant.id}
                                                     onClick={() => setSelectedVariant(variant)}
@@ -338,7 +334,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                                             <Button
                                                 onClick={handleAddToCart}
                                                 disabled={isOutOfStock || isAdding}
-                                                className="flex-1 h-14 bg-luxury-gold text-luxury-black hover:bg-white rounded-xl text-[10px] font-black uppercase tracking-widest gap-2 transition-all shadow-lg shadow-luxury-gold/10"
+                                                className="flex-1 h-14 bg-luxury-gold text-luxury-black hover:bg-white hover:text-luxury-black rounded-xl text-[10px] font-black uppercase tracking-widest gap-2 transition-all shadow-lg shadow-luxury-gold/10"
                                             >
                                                 {isAdding ? (
                                                     <Loader2 className="h-4 w-4 animate-spin" />

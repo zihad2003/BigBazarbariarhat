@@ -56,10 +56,6 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
             quantity: 1,
             stock: product.stock,
         })
-        addNotification({
-            type: 'success',
-            message: `${product.name} added to cart`
-        })
         setIsAdding(false)
         router.push('/cart')
     }
@@ -136,7 +132,7 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
                 <div className="flex-1 flex flex-col py-2">
                     <div className="flex items-center justify-between mb-4">
                         <span className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.2em] bg-indigo-50 px-3 py-1 rounded-lg">
-                            {typeof product.category === 'object' ? product.category?.name : (product.category || 'Collection')}
+                            {typeof product.category === 'object' ? (product.category as any)?.name : (product.category || 'Collection')}
                         </span>
                         <div className="flex items-center gap-1.5 bg-amber-50 px-3 py-1 rounded-lg">
                             <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
@@ -277,7 +273,7 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
                     <Button
                         onClick={handleAddToCart}
                         disabled={isAdding || isOutOfStock}
-                        className="w-full h-12 bg-luxury-gold text-luxury-black hover:bg-white font-black uppercase tracking-[0.2em] text-[9px] rounded-xl shadow-xl shadow-luxury-gold/20 flex items-center justify-center gap-3 border border-white/10 transition-all duration-300"
+                        className="w-full h-12 bg-luxury-gold text-luxury-black hover:bg-white hover:text-luxury-black font-black uppercase tracking-[0.2em] text-[9px] rounded-xl shadow-xl shadow-luxury-gold/20 flex items-center justify-center gap-3 border border-white/10 transition-all duration-300"
                     >
                         <AnimatePresence mode="wait">
                             {isAdding ? (
@@ -322,7 +318,7 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
             <div className="mt-8 px-2 space-y-3">
                 <div className="flex items-center justify-between mb-2">
                     <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
-                        {typeof product.category === 'object' ? product.category?.name : (product.category || 'Big Bazar')}
+                        {typeof product.category === 'object' ? (product.category as any)?.name : (product.category || 'Big Bazar')}
                     </span>
                     <div className="flex items-center gap-1">
                         <Star className="h-3 w-3 fill-amber-400 text-amber-400" />

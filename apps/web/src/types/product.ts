@@ -23,7 +23,7 @@ export interface Product {
     basePrice: number;
     salePrice?: number;
     costPrice?: number; // For admin profit tracking
-    category: string;
+    category: string | { name: string; slug?: string };
     brand?: string;
     sku: string;
     stock: number;

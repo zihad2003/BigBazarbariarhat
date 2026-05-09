@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { MOCK_PRODUCTS } from '@/lib/mock-data/products';
 import { ProductGrid } from '@/components/shop/product-grid';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,7 +11,6 @@ import {
     FilterX,
     LayoutGrid,
     List,
-    Star
 } from 'lucide-react';
 import { 
     Sheet, 
@@ -31,11 +29,10 @@ import {
 import { cn } from '@/lib/utils';
 
 export default function NewArrivalsPage() {
-    const searchParams = useSearchParams();
-
     // UI State
     const [isLoading, setIsLoading] = useState(true);
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+    const [apiProducts, setApiProducts] = useState<any[]>([]);
 
     // Filter State
     const [searchQuery, setSearchQuery] = useState('');
@@ -46,28 +43,42 @@ export default function NewArrivalsPage() {
 
     const categories = ['All Categories', 'New Arrivals', 'Men', 'Women', 'Kids(Boys)', 'Kids(Girls)', 'Wedding Touch', 'Sale'];
 
-    // Initial load simulation
+    // Load actual products from Database
     useEffect(() => {
-        const timer = setTimeout(() => setIsLoading(false), 800);
-        return () => clearTimeout(timer);
+        setIsLoading(true);
+        fetch('/api/products?sort=newest&limit=100')
+            .then(res => res.json())
+            .then(data => {
+                if (data.success && data.data) {
+                    setApiProducts(data.data);
+                }
+                setIsLoading(false);
+            })
+            .catch(err => {
+                console.error('Failed to fetch new arrivals:', err);
+                setIsLoading(false);
+            });
     }, []);
 
     // Filtering Logic
     const filteredProducts = useMemo(() => {
-        let results = [...MOCK_PRODUCTS];
+        let results = [...apiProducts];
 
         // Search
         if (searchQuery) {
             const query = searchQuery.toLowerCase();
             results = results.filter(p => 
                 p.name.toLowerCase().includes(query) || 
-                p.description.toLowerCase().includes(query)
+                (p.description || '').toLowerCase().includes(query)
             );
         }
 
         // Category
         if (selectedCategory && selectedCategory !== 'All Categories') {
-            results = results.filter(p => p.category === selectedCategory);
+            results = results.filter(p => {
+                const catName = typeof p.category === 'object' ? p.category?.name : p.category;
+                return catName?.toLowerCase() === selectedCategory.toLowerCase();
+            });
         }
 
         // Sorting
@@ -85,7 +96,7 @@ export default function NewArrivalsPage() {
         });
 
         return results;
-    }, [searchQuery, selectedCategory, sortBy]);
+    }, [apiProducts, searchQuery, selectedCategory, sortBy]);
 
     // Pagination
     const paginatedProducts = useMemo(() => {
@@ -241,6 +252,25 @@ export default function NewArrivalsPage() {
                             isLoading={isLoading} 
                             viewMode={viewMode}
                         />
+
+                        {/* Empty State */}
+                        {!isLoading && filteredProducts.length === 0 && (
+                            <div className="text-center py-32 bg-gray-50/50 rounded-3xl border border-dashed border-gray-200">
+                                <div className="h-16 w-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                                    <Search className="h-7 w-7 text-gray-300" />
+                                </div>
+                                <h3 className="text-2xl font-bold text-gray-900 mb-3 font-playfair">No Products Found</h3>
+                                <p className="text-gray-400 font-medium mb-10 max-w-sm mx-auto">
+                                    We couldn't find any products matching your current filters. Try adjusting your search or resetting filters.
+                                </p>
+                                <Button
+                                    onClick={clearAllFilters}
+                                    className="bg-foreground text-white hover:bg-destructive h-12 px-10 rounded-xl font-bold uppercase tracking-wider text-xs"
+                                >
+                                    Reset All Filters
+                                </Button>
+                            </div>
+                        )}
 
                         {/* Pagination Module */}
                         {!isLoading && totalPages > 1 && (

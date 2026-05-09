@@ -26,17 +26,19 @@ enum Role {
 }
 
 model Category {
-  id          String    @id @default(cuid())
-  name        String
-  slug        String    @unique
-  description String?
-  image       String?
-  parentId    String?
-  parent      Category?  @relation("CategoryToCategory", fields: [parentId], references: [id])
-  children    Category[] @relation("CategoryToCategory")
-  products    Product[]
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  id           String    @id @default(cuid())
+  name         String
+  slug         String    @unique
+  description  String?
+  image        String?
+  displayOrder Int       @default(0)
+  isHidden     Boolean   @default(false)
+  parentId     String?
+  parent       Category?  @relation("CategoryToCategory", fields: [parentId], references: [id])
+  children     Category[] @relation("CategoryToCategory")
+  products     Product[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 }
 
 model Product {

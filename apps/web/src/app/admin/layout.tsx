@@ -21,7 +21,8 @@ import {
     LogOut,
     ExternalLink,
     ChevronDown,
-    User
+    User,
+    Image as ImageIcon
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -33,6 +34,7 @@ const navItems = [
     { label: 'Orders', icon: ShoppingBag, href: '/admin/orders' },
     { label: 'Customers', icon: Users, href: '/admin/customers' },
     { label: 'Categories', icon: Tags, href: '/admin/categories' },
+    { label: 'Banners', icon: ImageIcon, href: '/admin/banners' },
     { label: 'Coupons', icon: Ticket, href: '/admin/coupons' },
     { label: 'Promotions', icon: Megaphone, href: '/admin/promotions' },
     { label: 'Analytics', icon: BarChart3, href: '/admin/analytics' },

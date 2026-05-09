@@ -98,8 +98,7 @@ export default function OrderConfirmationPage() {
                             <div className="text-sm font-medium text-gray-900 leading-relaxed uppercase">
                                 {order.shipping.fullName}<br />
                                 {order.shipping.address}<br />
-                                {order.shipping.upazila}, {order.shipping.district}<br />
-                                {order.shipping.division}
+                                {order.shipping.upazila ? `${order.shipping.upazila}, ` : ''}{order.shipping.district}
                             </div>
                         </div>
                         

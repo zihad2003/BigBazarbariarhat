@@ -60,7 +60,7 @@ export const useCartStore = create<CartState>()(
                 if (existingItem) {
                     const updatedQuantity = existingItem.quantity + newItem.quantity;
                     if (updatedQuantity > existingItem.stock) {
-                        toast.error('Manifest capacity reached for this artifact.');
+                        toast.error('Maximum available stock reached for this product.');
                         return;
                     }
                     set({
@@ -71,17 +71,18 @@ export const useCartStore = create<CartState>()(
                     set({ items: [...items, { ...newItem, id }] });
                 }
 
-                toast.success('Artifact synchronized with curation.', {
+                toast.success(`${newItem.name.toUpperCase()} ADDED TO CART`, {
                     action: {
                         label: 'Undo',
-                        onClick: () => get().removeItem(existingItem?.id || `${newItem.productId}-${newItem.variant || 'base'}`)
+                        onClick: () => get().removeItem(existingItem?.id || `${newItem.productId}-${newItem.variant || 'base'}-${Date.now()}`)
                     }
                 });
             },
 
             removeItem: (id) => {
+                const item = get().items.find(i => i.id === id);
                 set({ items: get().items.filter(i => i.id !== id) });
-                toast.info('Artifact removed from curation matrix.');
+                toast.info(`${item ? item.name.toUpperCase() : 'Product'} removed from cart.`);
             },
 
             updateQuantity: (id, quantity) => {
@@ -89,7 +90,7 @@ export const useCartStore = create<CartState>()(
                 if (!item) return;
 
                 if (quantity > item.stock) {
-                    toast.error('Insufficient stock in the repository.');
+                    toast.error('Insufficient stock available.');
                     return;
                 }
 
@@ -111,11 +112,11 @@ export const useCartStore = create<CartState>()(
                 const discountValue = MOCK_COUPONS[code.toUpperCase()];
                 if (discountValue !== undefined) {
                     set({ couponCode: code.toUpperCase(), discount: discountValue });
-                    const message = 'Authorization code accepted. Credit applied.';
+                    const message = 'Promo code accepted! discount applied.';
                     toast.success(message);
                     return { success: true, message };
                 } else {
-                    const message = 'Invalid authorization code.';
+                    const message = 'Invalid promo code.';
                     toast.error(message);
                     return { success: false, message };
                 }
@@ -128,7 +129,7 @@ export const useCartStore = create<CartState>()(
                         items: get().items.filter(i => i.id !== id),
                         savedItems: [...get().savedItems, item]
                     });
-                    toast.success('Artifact archived for later synchronization.');
+                    toast.success('Product saved for later.');
                 }
             },
 
@@ -139,13 +140,13 @@ export const useCartStore = create<CartState>()(
                         savedItems: get().savedItems.filter(i => i.id !== id),
                         items: [...get().items, item]
                     });
-                    toast.success('Artifact restored to curation matrix.');
+                    toast.success('Product moved back to cart.');
                 }
             },
 
             removeSavedItem: (id) => {
                 set({ savedItems: get().savedItems.filter(i => i.id !== id) });
-                toast.info('Archived artifact purged.');
+                toast.info('Item removed from saved list.');
             },
 
             removeCoupon: () => {

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
-import { db } from '@/lib/db';
+import { prisma } from '@bigbazar/db';
 
 export async function GET(req: NextRequest) {
     const session = await auth();
@@ -9,14 +9,47 @@ export async function GET(req: NextRequest) {
     }
 
     const { searchParams } = new URL(req.url);
+    const status = searchParams.get('status');
+    const page = Number(searchParams.get('page')) || 1;
+    const limit = Number(searchParams.get('limit')) || 20;
+    const skip = (page - 1) * limit;
+
     try {
-        const result = await db.orders.findAll({
-            status: searchParams.get('status') ?? undefined,
-            page: Number(searchParams.get('page')) || 1,
-            limit: Number(searchParams.get('limit')) || 20,
+        const [orders, total] = await Promise.all([
+            prisma.order.findMany({
+                where: {
+                    ...(status ? { status: status as any } : {}),
+                },
+                include: {
+                    user: {
+                        select: { name: true, email: true }
+                    },
+                    items: {
+                        include: { product: true }
+                    }
+                },
+                orderBy: { createdAt: 'desc' },
+                skip,
+                take: limit,
+            }),
+            prisma.order.count({
+                where: {
+                    ...(status ? { status: status as any } : {}),
+                }
+            })
+        ]);
+
+        return NextResponse.json({
+            success: true,
+            data: {
+                orders,
+                total,
+                page,
+                totalPages: Math.ceil(total / limit)
+            }
         });
-        return NextResponse.json({ success: true, data: result });
-    } catch {
+    } catch (error) {
+        console.error('Admin Orders GET Error:', error);
         return NextResponse.json({ success: false, message: 'Failed to fetch orders.' }, { status: 500 });
     }
 }

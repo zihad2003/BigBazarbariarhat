@@ -30,6 +30,7 @@ import {
     Cell,
     Legend
 } from 'recharts';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { cn, formatPrice } from '@/lib/utils';
@@ -77,6 +78,12 @@ const topSelling = [
 ];
 
 export default function AdminDashboard() {
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
     return (
         <div className="space-y-12">
             
@@ -128,19 +135,21 @@ export default function AdminDashboard() {
                         </div>
                     </div>
                     <div className="h-[400px] w-full">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <LineChart data={revenueData}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                                <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#94a3b8' }} dy={10} />
-                                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#94a3b8' }} />
-                                <Tooltip 
-                                    contentStyle={{ backgroundColor: '#111827', borderRadius: '16px', border: 'none', padding: '12px' }}
-                                    itemStyle={{ color: '#fff', fontSize: '12px', fontWeight: 900 }}
-                                    labelStyle={{ color: '#6366f1', fontSize: '10px', fontWeight: 900, marginBottom: '4px', textTransform: 'uppercase' }}
-                                />
-                                <Line type="monotone" dataKey="amount" stroke="#6366f1" strokeWidth={4} dot={{ r: 6, fill: '#6366f1', strokeWidth: 3, stroke: '#fff' }} activeDot={{ r: 8, strokeWidth: 0 }} />
-                            </LineChart>
-                        </ResponsiveContainer>
+                        {isMounted && (
+                            <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={revenueData}>
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                                    <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#94a3b8' }} dy={10} />
+                                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#94a3b8' }} />
+                                    <Tooltip 
+                                        contentStyle={{ backgroundColor: '#111827', borderRadius: '16px', border: 'none', padding: '12px' }}
+                                        itemStyle={{ color: '#fff', fontSize: '12px', fontWeight: 900 }}
+                                        labelStyle={{ color: '#6366f1', fontSize: '10px', fontWeight: 900, marginBottom: '4px', textTransform: 'uppercase' }}
+                                    />
+                                    <Line type="monotone" dataKey="amount" stroke="#6366f1" strokeWidth={4} dot={{ r: 6, fill: '#6366f1', strokeWidth: 3, stroke: '#fff' }} activeDot={{ r: 8, strokeWidth: 0 }} />
+                                </LineChart>
+                            </ResponsiveContainer>
+                        )}
                     </div>
                 </div>
 
@@ -148,14 +157,16 @@ export default function AdminDashboard() {
                 <div className="lg:col-span-4 bg-white rounded-[3rem] p-10 border border-slate-200 shadow-sm">
                     <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight mb-10">Sector Distribution</h3>
                     <div className="h-[400px] w-full">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={categoryData} layout="vertical">
-                                <XAxis type="number" hide />
-                                <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 900, fill: '#1e293b' }} width={80} />
-                                <Tooltip cursor={{ fill: '#f8fafc' }} />
-                                <Bar dataKey="value" fill="#6366f1" radius={[0, 10, 10, 0]} barSize={24} />
-                            </BarChart>
-                        </ResponsiveContainer>
+                        {isMounted && (
+                            <ResponsiveContainer width="100%" height="100%">
+                                <BarChart data={categoryData} layout="vertical">
+                                    <XAxis type="number" hide />
+                                    <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 900, fill: '#1e293b' }} width={80} />
+                                    <Tooltip cursor={{ fill: '#f8fafc' }} />
+                                    <Bar dataKey="value" fill="#6366f1" radius={[0, 10, 10, 0]} barSize={24} />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        )}
                     </div>
                 </div>
             </div>

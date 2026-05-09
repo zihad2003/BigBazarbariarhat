@@ -28,7 +28,7 @@ import { AnnouncementBar } from './announcement-bar';
 import { MobileBottomNav } from './mobile-bottom-nav';
 import { MegaMenu } from './mega-menu';
 import { MobileMenu } from './mobile-menu';
-import { MOCK_PRODUCTS } from '@/lib/mock-data/products';
+
 
 const getNavCategories = (t: any): any[] => [
     {
@@ -115,6 +115,13 @@ export function Header() {
         setCategories(getNavCategories(t));
 
         // Fetch live DB categories to populate the dropdown menu dynamically!
+        const defaultImages: Record<string, string> = {
+            'Men': 'https://images.unsplash.com/photo-1516259762381-22954d7d3ad2?q=80&w=800&auto=format&fit=crop',
+            'Women': 'https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=800&auto=format&fit=crop',
+            'Kids(Boys)': 'https://images.unsplash.com/photo-1519234129322-2636a0d0d885?q=80&w=800&auto=format&fit=crop',
+            'Kids(Girls)': 'https://images.unsplash.com/photo-1514316454349-f50db90e2270?q=80&w=800&auto=format&fit=crop',
+            'Wedding Touch': 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=800&auto=format&fit=crop',
+        };
         const fetchNav = async () => {
             try {
                 const res = await fetch('/api/categories');
@@ -123,8 +130,9 @@ export function Header() {
                     const mapped = result.data.map((cat: any) => ({
                         name: cat.name,
                         href: `/products?category=${encodeURIComponent(cat.name)}`,
-                        featured: cat.image || 'https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=800&auto=format&fit=crop', // Live Category Cover Image
-                        subcategories: (cat.children || []).map((sub: any) => ({
+                        isHidden: cat.isHidden || false,
+                        featured: cat.image || defaultImages[cat.name] || 'https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=800&auto=format&fit=crop',
+                        subcategories: (cat.children || []).filter((sub: any) => !sub.isHidden).map((sub: any) => ({
                             name: sub.name,
                             href: `/products?category=${encodeURIComponent(cat.name)}&subcategory=${encodeURIComponent(sub.name)}`
                         }))
@@ -147,11 +155,16 @@ export function Header() {
             return;
         }
         const timer = setTimeout(() => {
-            const results = MOCK_PRODUCTS.filter(p => 
-                p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                p.category?.toLowerCase().includes(searchQuery.toLowerCase())
-            ).slice(0, 5);
-            setSearchResults(results);
+            fetch(`/api/products?search=${encodeURIComponent(searchQuery)}&limit=5`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success && data.data) {
+                        setSearchResults(data.data);
+                    }
+                })
+                .catch(err => {
+                    console.error('Header search error:', err);
+                });
         }, 300);
         return () => clearTimeout(timer);
     }, [searchQuery]);

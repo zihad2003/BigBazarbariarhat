@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
-import { db } from '@/lib/db';
-import type { OrderRecord } from '@/lib/db';
+import { prisma } from '@bigbazar/db';
 
 export async function PUT(
     req: NextRequest,
@@ -15,12 +14,22 @@ export async function PUT(
 
     try {
         const { status } = await req.json();
-        const updated = await db.orders.updateStatus(orderId, status as OrderRecord['status']);
-        if (!updated) {
-            return NextResponse.json({ success: false, message: 'Order not found.' }, { status: 404 });
+        
+        // Ensure status is valid
+        const validStatuses = ['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED'];
+        const upperStatus = status.toUpperCase();
+        if (!validStatuses.includes(upperStatus)) {
+            return NextResponse.json({ success: false, message: 'Invalid order status value.' }, { status: 400 });
         }
+
+        const updated = await prisma.order.update({
+            where: { id: orderId },
+            data: { status: upperStatus as any }
+        });
+
         return NextResponse.json({ success: true, data: updated });
-    } catch {
+    } catch (error) {
+        console.error('Order Status PUT Error:', error);
         return NextResponse.json({ success: false, message: 'Failed to update order status.' }, { status: 500 });
     }
 }

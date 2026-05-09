@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
-import { db } from '@/lib/db';
+import { prisma } from '@bigbazar/db';
 
 export async function POST(
     _req: NextRequest,
@@ -13,16 +13,26 @@ export async function POST(
     }
 
     try {
-        const order = await db.orders.findById(orderId);
+        const order = await prisma.order.findUnique({
+            where: { id: orderId }
+        });
+
         if (!order || order.userId !== session.user.id) {
             return NextResponse.json({ success: false, message: 'Order not found.' }, { status: 404 });
         }
-        if (order.status !== 'pending') {
+
+        if (order.status !== 'PENDING') {
             return NextResponse.json({ success: false, message: 'Only pending orders can be cancelled.' }, { status: 400 });
         }
-        const cancelled = await db.orders.cancel(orderId);
+
+        const cancelled = await prisma.order.update({
+            where: { id: orderId },
+            data: { status: 'CANCELLED' }
+        });
+
         return NextResponse.json({ success: true, data: cancelled });
-    } catch {
+    } catch (error) {
+        console.error('Order Cancel Error:', error);
         return NextResponse.json({ success: false, message: 'Failed to cancel order.' }, { status: 500 });
     }
 }
