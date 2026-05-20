@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
 import {
     DollarSign, ShoppingCart, Package, Users,
     TrendingUp, TrendingDown, AlertTriangle, ArrowUpRight,
@@ -53,29 +54,20 @@ function Stat({ label, value, change, trend, icon: Icon, accent }: {
 
 /* ──────────────────── Page ──────────────────── */
 
-/* ──────────────────── Page ──────────────────── */
-
 export default function DashboardPage() {
     const router = useRouter();
-    const [data, setData] = useState<any>(null);
-    const [loading, setLoading] = useState(true);
+    
+    const { data, isLoading } = useQuery({
+        queryKey: ['dashboard-stats'],
+        queryFn: async () => {
+            const res = await fetch('/api/dashboard/stats');
+            const json = await res.json();
+            if (!json.success) throw new Error('Failed to fetch dashboard stats');
+            return json.data;
+        }
+    });
 
-    useEffect(() => {
-        const fetchStats = async () => {
-            try {
-                const res = await fetch('/api/dashboard/stats');
-                const json = await res.json();
-                if (json.success) setData(json.data);
-            } catch (err) {
-                console.error('Dashboard Fetch Error:', err);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchStats();
-    }, []);
-
-    if (loading) {
+    if (isLoading) {
         return (
             <div className="h-[60vh] flex items-center justify-center">
                 <div className="flex flex-col items-center gap-3">

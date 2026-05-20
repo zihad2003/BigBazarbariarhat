@@ -26,9 +26,20 @@ export default function SignupPage() {
         setError('');
 
         try {
-            // Mock registration - in real app, call /api/auth/register
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            
+            // Register the user via API
+            const res = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, password }),
+            });
+            const data = await res.json();
+
+            if (!data.success) {
+                setError(data.message || 'Registration failed. Please try again.');
+                return;
+            }
+
+            // Auto sign-in after successful registration
             const result = await signIn('credentials', {
                 email,
                 password,
@@ -36,7 +47,8 @@ export default function SignupPage() {
             });
 
             if (result?.error) {
-                setError('Registration failed. Please try again.');
+                setError('Account created! Please log in.');
+                router.push('/login');
             } else {
                 router.push(callbackUrl);
                 router.refresh();

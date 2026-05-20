@@ -512,3 +512,10 @@ html {
     scroll-behavior: auto;
   }
 }
+
+/* Hide mobile bottom navigation bar when a drawer/sheet is open */
+body.drawer-open [data-mobile-bottom-nav] {
+  transform: translateY(100%);
+  opacity: 0;
+  pointer-events: none;
+}

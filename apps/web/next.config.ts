@@ -37,6 +37,34 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'images.weserv.nl',
       },
+      {
+        protocol: 'https',
+        hostname: '*.behance.net',
+      },
+      {
+        protocol: 'https',
+        hostname: 'mir-s3-cdn-cf.behance.net',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.fbcdn.net',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.pinimg.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.imgur.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.wixstatic.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.firebasestorage.googleapis.com',
+      },
     ],
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],

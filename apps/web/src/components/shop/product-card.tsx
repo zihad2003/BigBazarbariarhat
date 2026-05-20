@@ -12,7 +12,7 @@ import { useCartStore } from '@/store/cartStore'
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useUIStore } from '@/lib/stores/ui-store'
-import { useWishlistStore } from '@/lib/stores/wishlist-store'
+import { useWishlistStore } from '@/store/wishlistStore'
 import { DeliveryInfoModal } from './delivery-info-modal'
 import { useLanguageStore, useTranslation } from '@bigbazar/shared'
 
@@ -52,7 +52,7 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
             productId: product.id,
             name: product.name,
             price: product.salePrice ?? product.basePrice,
-            image: product.images?.[0]?.url ?? '',
+            image: typeof product.images?.[0] === 'string' ? product.images[0] : (product.images?.[0]?.url ?? '/placeholder.png'),
             quantity: 1,
             stock: product.stock,
         })
@@ -198,7 +198,7 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
             className="group relative"
         >
             {/* Visual Module */}
-            <div className="relative aspect-[3/4] overflow-hidden bg-gray-50 rounded-[2.5rem] border border-gray-100 transition-all duration-700 group-hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.15)] group-hover:border-transparent">
+            <div className="relative aspect-[3/4] overflow-hidden bg-gray-50 rounded-[1rem] md:rounded-[2.5rem] border border-gray-100 transition-all duration-700 group-hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.15)] group-hover:border-transparent">
                 <Link href={`/products/${product.slug || product.id}`} className="block w-full h-full relative">
                     {/* Primary Image */}
                     <Image
@@ -224,14 +224,14 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
                 </Link>
 
                 {/* Badges Overlay */}
-                <div className="absolute top-6 left-6 z-10 flex flex-col gap-3 pointer-events-none">
+                <div className="absolute top-2 left-2 md:top-6 md:left-6 z-10 flex flex-col gap-1 md:gap-3 pointer-events-none">
                     {discount > 0 && (
-                        <span className="bg-indigo-600 text-white text-[10px] font-black px-4 py-2 rounded-xl uppercase tracking-widest shadow-xl shadow-indigo-500/20">
+                        <span className="bg-indigo-600 text-white text-[7px] md:text-[10px] font-black px-2 py-0.5 md:px-4 md:py-2 rounded-md md:rounded-xl uppercase tracking-widest shadow-xl shadow-indigo-500/20">
                             -{discount}%
                         </span>
                     )}
                     {isOutOfStock && (
-                        <span className="bg-black text-white text-[10px] font-black px-4 py-2 rounded-xl uppercase tracking-widest shadow-xl">
+                        <span className="bg-black text-white text-[7px] md:text-[10px] font-black px-2 py-0.5 md:px-4 md:py-2 rounded-md md:rounded-xl uppercase tracking-widest shadow-xl">
                             Archived
                         </span>
                     )}
@@ -239,32 +239,37 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
 
                 {/* Out of stock overlay */}
                 {isOutOfStock && (
-                    <div className="absolute inset-0 bg-white/60 backdrop-blur-md z-[5] flex items-center justify-center p-8 pointer-events-none">
-                        <div className="bg-black text-white px-6 py-3 text-[10px] font-black uppercase tracking-[0.3em] border border-white/20 shadow-2xl">
+                    <div className="absolute inset-0 bg-white/60 backdrop-blur-md z-[5] flex items-center justify-center p-2 md:p-8 pointer-events-none">
+                        <div className="bg-black text-white px-2 py-1 text-[7px] md:px-6 md:py-3 md:text-[10px] font-black uppercase tracking-[0.3em] border border-white/20 shadow-2xl">
                             Out of Stock
                         </div>
                     </div>
                 )}
 
                 {/* Quick Access Actions */}
-                <div className="absolute top-6 right-6 flex flex-col gap-3 z-10 translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-500">
+                <div className={cn(
+                    "absolute top-2 right-2 md:top-6 md:right-6 flex flex-col gap-1 md:gap-3 z-10 transition-all duration-500",
+                    isInWishlist(product.id)
+                        ? "translate-x-0 opacity-100"
+                        : "translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100"
+                )}>
                     <button
                         onClick={handleToggleWishlist}
                         aria-label={isInWishlist(product.id) ? "Remove from wishlist" : "Add to wishlist"}
                         aria-pressed={isInWishlist(product.id)}
-                        className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300 shadow-xl ${isInWishlist(product.id)
+                        className={`w-7 h-7 md:w-12 md:h-12 rounded-lg md:rounded-2xl flex items-center justify-center transition-all duration-300 shadow-xl ${isInWishlist(product.id)
                             ? 'bg-rose-500 text-white shadow-rose-500/20'
                             : 'bg-white/90 backdrop-blur-md text-gray-400 hover:text-rose-500 hover:bg-white'
                             }`}
                     >
-                        <Heart className={`h-5 w-5 ${isInWishlist(product.id) ? 'fill-current' : ''}`} />
+                        <Heart className={`h-3.5 w-3.5 md:h-5 md:w-5 ${isInWishlist(product.id) ? 'fill-current' : ''}`} />
                     </button>
                     <ProductQuickView product={product} />
                 </div>
 
                 {/* Dynamic Action: Cart & Checkout */}
                 <div className={cn(
-                    "absolute inset-x-6 bottom-6 z-10 flex flex-col gap-2 transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]",
+                    "absolute inset-x-2 bottom-2 md:inset-x-6 md:bottom-6 z-10 flex flex-col gap-1 md:gap-2 transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]",
                     isHovered && !isOutOfStock 
                         ? "translate-y-0 opacity-100 scale-100" 
                         : "translate-y-8 opacity-0 scale-95 pointer-events-none"
@@ -273,17 +278,17 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
                     <Button
                         onClick={handleAddToCart}
                         disabled={isAdding || isOutOfStock}
-                        className="w-full h-12 bg-luxury-gold text-luxury-black hover:bg-white hover:text-luxury-black font-black uppercase tracking-[0.2em] text-[9px] rounded-xl shadow-xl shadow-luxury-gold/20 flex items-center justify-center gap-3 border border-white/10 transition-all duration-300"
+                        className="w-full h-7 md:h-12 bg-luxury-gold text-luxury-black hover:bg-white hover:text-luxury-black font-black uppercase tracking-[0.2em] text-[7px] md:text-[9px] rounded-lg md:rounded-xl shadow-xl shadow-luxury-gold/20 flex items-center justify-center gap-1 md:gap-3 border border-white/10 transition-all duration-300 px-1 md:px-3"
                     >
                         <AnimatePresence mode="wait">
                             {isAdding ? (
-                                <motion.div key="adding" initial={{ y: 5, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -5, opacity: 0 }} className="flex items-center gap-2">
-                                    <div className="h-3 w-3 border-2 border-luxury-black/30 border-t-luxury-black rounded-full animate-spin" />
-                                    <span>{language === 'bn' ? 'যোগ করা হচ্ছে...' : 'Adding...'}</span>
+                                <motion.div key="adding" initial={{ y: 5, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -5, opacity: 0 }} className="flex items-center gap-1 md:gap-2">
+                                    <div className="h-2 w-2 md:h-3 md:w-3 border-2 border-luxury-black/30 border-t-luxury-black rounded-full animate-spin" />
+                                    <span>{language === 'bn' ? 'যোগ...' : 'Adding...'}</span>
                                 </motion.div>
                             ) : (
-                                <motion.div key="idle" initial={{ y: 5, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -5, opacity: 0 }} className="flex items-center gap-2">
-                                    <ShoppingBag className="h-3.5 w-3.5" />
+                                <motion.div key="idle" initial={{ y: 5, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -5, opacity: 0 }} className="flex items-center gap-1 md:gap-2">
+                                    <ShoppingBag className="h-2.5 w-2.5 md:h-3.5 md:w-3.5" />
                                     <span>{t?.common?.addToCart || 'Add to Cart'}</span>
                                 </motion.div>
                             )}
@@ -299,45 +304,45 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
                                 productId: product.id,
                                 name: product.name,
                                 price: product.salePrice ?? product.basePrice,
-                                image: product.images?.[0]?.url ?? '',
+                                image: typeof product.images?.[0] === 'string' ? product.images[0] : (product.images?.[0]?.url ?? '/placeholder.png'),
                                 quantity: 1,
                                 stock: product.stock,
                             });
                             router.push('/checkout');
                         }}
                         disabled={isOutOfStock}
-                        className="w-full h-10 bg-black text-white hover:bg-gray-800 font-black uppercase tracking-[0.2em] text-[8px] rounded-xl shadow-lg border border-white/10 transition-all duration-300"
+                        className="w-full h-6 md:h-10 bg-black text-white hover:bg-gray-800 font-black uppercase tracking-[0.2em] text-[6px] md:text-[8px] rounded-lg md:rounded-xl shadow-lg border border-white/10 transition-all duration-300"
                     >
-                        <ArrowRight className="h-3 w-3 mr-2" />
+                        <ArrowRight className="h-2 w-2 md:h-3 md:w-3 mr-1 md:mr-2 inline" />
                         {t?.common?.orderNow || 'Order Now'}
                     </Button>
                 </div>
             </div>
 
             {/* Information Module */}
-            <div className="mt-8 px-2 space-y-3">
-                <div className="flex items-center justify-between mb-2">
-                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
+            <div className="mt-3 md:mt-8 px-1 md:px-2 space-y-1 md:space-y-3">
+                <div className="flex items-center justify-between">
+                    <span className="text-[7px] md:text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
                         {typeof product.category === 'object' ? (product.category as any)?.name : (product.category || 'Big Bazar')}
                     </span>
-                    <div className="flex items-center gap-1">
-                        <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                        <span className="text-[10px] font-black text-gray-900">{product.rating || '5.0'}</span>
+                    <div className="flex items-center gap-0.5 md:gap-1">
+                        <Star className="h-2 w-2 md:h-3 md:w-3 fill-amber-400 text-amber-400" />
+                        <span className="text-[7px] md:text-[10px] font-black text-gray-900">{product.rating || '5.0'}</span>
                     </div>
                 </div>
 
-                <h3 className="text-xl font-black text-gray-900 group-hover:text-indigo-600 transition-colors duration-500 line-clamp-2 leading-snug tracking-tight min-h-[3rem]">
+                <h3 className="text-[10px] md:text-xl font-black text-gray-900 group-hover:text-indigo-600 transition-colors duration-500 line-clamp-2 leading-tight md:leading-snug tracking-tight min-h-[2rem] md:min-h-[3rem]">
                     <Link href={`/products/${product.slug || product.id}`}>
                         {product.name}
                     </Link>
                 </h3>
 
-                <div className="flex items-center gap-4 pt-3">
-                    <p className="text-2xl font-black text-gray-900 font-mono tracking-tighter">
+                <div className="flex items-center gap-1.5 md:gap-4 pt-1 md:pt-3">
+                    <p className="text-[10px] md:text-2xl font-black text-gray-900 font-mono tracking-tighter">
                         {formatPrice(price, language)}
                     </p>
                     {product.salePrice && (
-                        <p className="text-sm font-bold text-gray-300 line-through font-mono">
+                        <p className="text-[8px] md:text-sm font-bold text-gray-300 line-through font-mono">
                             {formatPrice(product.basePrice, language)}
                         </p>
                     )}

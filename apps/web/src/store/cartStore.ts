@@ -1,5 +1,3 @@
-'use client';
-
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { toast } from 'sonner';
@@ -31,6 +29,17 @@ interface CartState {
     moveToCart: (id: string) => void;
     removeSavedItem: (id: string) => void;
     
+    // Accepts a full Product-shaped object (from API) and maps it to CartItem
+    addProduct: (product: {
+        id: string;
+        name: string;
+        basePrice: number;
+        salePrice?: number | null;
+        images?: Array<{ url: string } | string> | null;
+        stock?: number;
+        slug?: string;
+    }, quantity?: number, variantLabel?: string) => void;
+
     // Computed / Helper Methods
     getSubtotal: () => number;
     getTotal: () => number;
@@ -151,6 +160,20 @@ export const useCartStore = create<CartState>()(
 
             removeCoupon: () => {
                 set({ couponCode: null, discount: 0 });
+            },
+
+            addProduct: (product, quantity = 1, variantLabel) => {
+                const firstImage = product.images?.[0];
+                const image = typeof firstImage === 'string' ? firstImage : firstImage?.url ?? '';
+                get().addItem({
+                    productId: product.id,
+                    name: product.name,
+                    price: product.salePrice ?? product.basePrice,
+                    image,
+                    quantity,
+                    variant: variantLabel,
+                    stock: product.stock ?? 99,
+                });
             },
 
             getSubtotal: () => {

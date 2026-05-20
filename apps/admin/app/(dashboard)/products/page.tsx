@@ -148,7 +148,10 @@ export default function ProductsPage() {
                                         <div className="flex items-center gap-3">
                                             <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center overflow-hidden border border-border">
                                                 {product.images?.[0] ? (
-                                                    <img src={product.images[0].url} className="w-full h-full object-cover" />
+                                                    <img 
+                                                        src={typeof product.images[0] === 'string' ? product.images[0] : (product.images[0].url || '/placeholder.png')} 
+                                                        className="w-full h-full object-cover" 
+                                                    />
                                                 ) : <Package className="w-5 h-5 text-muted-foreground" />}
                                             </div>
                                             <div>

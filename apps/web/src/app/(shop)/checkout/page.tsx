@@ -91,6 +91,14 @@ export default function CheckoutPage() {
     const discount = getDiscountAmount();
     const shippingCost = selectedDistrict ? deliveryInfo.cost : 0;
     const finalTotal = Math.max(0, subtotal - discount + shippingCost);
+    const advanceAmount = useMemo(() => {
+        if (!selectedDistrict) return 0;
+        if (paymentMethod === 'bkash' || paymentMethod === 'nagad') {
+            return finalTotal;
+        }
+        return finalTotal >= 2000 ? 500 : shippingCost;
+    }, [selectedDistrict, paymentMethod, finalTotal, shippingCost]);
+    const remainingCOD = Math.max(0, finalTotal - advanceAmount);
 
     const onSubmit = async (data: CheckoutFormValues) => {
         setIsLoading(true);
@@ -201,7 +209,7 @@ export default function CheckoutPage() {
                                 Shipping Details
                             </h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                <div className="col-span-2 space-y-2">
+                                <div className="col-span-1 md:col-span-2 space-y-2">
                                     <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1">Full Name</label>
                                     <input 
                                         {...register('fullName')}
@@ -273,7 +281,7 @@ export default function CheckoutPage() {
                                     )}
                                 </div>
 
-                                <div className="col-span-2 space-y-2">
+                                <div className="col-span-1 md:col-span-2 space-y-2">
                                     <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1">Detailed Address</label>
                                     <textarea 
                                         {...register('address')}
@@ -284,7 +292,7 @@ export default function CheckoutPage() {
                                     {errors.address && <p className="text-[10px] text-rose-500 font-bold uppercase tracking-wider pl-1">{errors.address.message}</p>}
                                 </div>
 
-                                <div className="col-span-2 space-y-2">
+                                <div className="col-span-1 md:col-span-2 space-y-2">
                                     <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-1">Delivery Note (Optional)</label>
                                     <input 
                                         {...register('deliveryNote')}
@@ -382,51 +390,215 @@ export default function CheckoutPage() {
                                     { id: 'bkash', name: 'bKash Payment', icon: <img src="/payments/bkash.png" alt="bKash" className="h-6 w-auto object-contain" /> },
                                     { id: 'nagad', name: 'Nagad Payment', icon: <img src="/payments/nagad.png" alt="Nagad" className="h-6 w-auto object-contain" /> },
                                 ].map((method) => (
-                                    <label 
-                                        key={method.id}
-                                        className={cn(
-                                            "flex items-center p-6 border rounded-sm cursor-pointer transition-all",
-                                            paymentMethod === method.id ? "border-black bg-gray-50" : "border-gray-200 hover:border-gray-300"
-                                        )}
-                                    >
-                                        <input 
-                                            type="radio" 
-                                            name="payment" 
-                                            value={method.id} 
-                                            checked={paymentMethod === method.id}
-                                            onChange={() => setPaymentMethod(method.id as any)}
-                                            className="hidden"
-                                        />
-                                        <div className={cn(
-                                            "w-5 h-5 border-2 rounded-full flex items-center justify-center mr-4",
-                                            paymentMethod === method.id ? "border-black" : "border-gray-200"
-                                        )}>
-                                            {paymentMethod === method.id && <div className="w-2.5 h-2.5 bg-black rounded-full" />}
-                                        </div>
-                                        <div className="flex items-center gap-3">
-                                            {method.icon}
-                                            <span className="text-sm font-bold uppercase tracking-widest">{method.name}</span>
-                                        </div>
-                                    </label>
+                                    <div key={method.id} className="space-y-3">
+                                        <label 
+                                            className={cn(
+                                                "flex items-center p-6 border rounded-sm cursor-pointer transition-all w-full",
+                                                paymentMethod === method.id ? "border-black bg-gray-50" : "border-gray-200 hover:border-gray-300"
+                                            )}
+                                        >
+                                            <input 
+                                                type="radio" 
+                                                name="payment" 
+                                                value={method.id} 
+                                                checked={paymentMethod === method.id}
+                                                onChange={() => setPaymentMethod(method.id as any)}
+                                                className="hidden"
+                                            />
+                                            <div className={cn(
+                                                "w-5 h-5 border-2 rounded-full flex items-center justify-center mr-4",
+                                                paymentMethod === method.id ? "border-black" : "border-gray-200"
+                                            )}>
+                                                {paymentMethod === method.id && <div className="w-2.5 h-2.5 bg-black rounded-full" />}
+                                            </div>
+                                            <div className="flex items-center gap-3">
+                                                {method.icon}
+                                                <span className="text-sm font-bold uppercase tracking-widest">{method.name}</span>
+                                            </div>
+                                        </label>
+
+                                        <AnimatePresence>
+                                            {paymentMethod === method.id && (
+                                                <motion.div 
+                                                    initial={{ opacity: 0, height: 0 }}
+                                                    animate={{ opacity: 1, height: 'auto' }}
+                                                    exit={{ opacity: 0, height: 0 }}
+                                                    transition={{ duration: 0.2 }}
+                                                    className="overflow-hidden"
+                                                >
+                                                    {method.id === 'cod' ? (
+                                                        <div className="space-y-4">
+                                                            {!selectedDistrict ? (
+                                                                <div className="p-6 bg-slate-50 border border-slate-200 text-slate-950 rounded-xl space-y-4 shadow-sm">
+                                                                    <div className="flex items-center justify-between">
+                                                                        <div className="flex items-center gap-3">
+                                                                            <div className="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 flex items-center justify-center">
+                                                                                <MapPin className="h-4 w-4" />
+                                                                            </div>
+                                                                            <div>
+                                                                                <h4 className="text-xs font-black uppercase tracking-wider text-slate-800">Order Security Policy</h4>
+                                                                                <p className="text-[9px] text-slate-500 uppercase tracking-widest mt-0.5">District Pending</p>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="pt-2 border-t border-slate-200">
+                                                                        <p className="text-xs font-semibold text-slate-500 leading-relaxed">
+                                                                            Please select your delivery district under **Shipping Details** above to calculate delivery charges and view confirmation steps.
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            ) : advanceAmount > 0 ? (
+                                                                <div className="p-6 bg-slate-50 border border-slate-200 text-slate-900 rounded-xl space-y-4 shadow-sm">
+                                                                    <div className="flex items-center justify-between">
+                                                                        <div className="flex items-center gap-3">
+                                                                            <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center">
+                                                                                <Lock className="h-4 w-4 text-emerald-600" />
+                                                                            </div>
+                                                                            <div>
+                                                                                <h4 className="text-xs font-black uppercase tracking-wider text-slate-800">Order Security Policy</h4>
+                                                                                <p className="text-[9px] text-slate-400 uppercase tracking-widest mt-0.5">Confirmation Step</p>
+                                                                            </div>
+                                                                        </div>
+                                                                        <span className="text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded bg-slate-200/80 text-slate-700">
+                                                                            Required
+                                                                        </span>
+                                                                    </div>
+
+                                                                    <div className="pt-2 border-t border-slate-200 space-y-3">
+                                                                        {finalTotal >= 2000 ? (
+                                                                            <p className="text-xs font-semibold text-slate-500 leading-relaxed">
+                                                                                To secure and confirm your order, a secure advance payment of <span className="font-bold text-slate-900">৳500</span> is required. The remaining balance will be due on delivery.
+                                                                            </p>
+                                                                        ) : (
+                                                                            <p className="text-xs font-semibold text-slate-500 leading-relaxed">
+                                                                                To secure and confirm your order, please pay the delivery charge of <span className="font-bold text-slate-900">৳{shippingCost}</span> in advance. The product value will be due on delivery.
+                                                                            </p>
+                                                                        )}
+                                                                        <div className="grid grid-cols-2 gap-4 pt-1">
+                                                                            <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-3 shadow-xs">
+                                                                                <span className="block text-[8px] font-bold text-emerald-600 uppercase tracking-widest">Pay in Advance</span>
+                                                                                <span className="text-sm font-black text-emerald-700">৳{advanceAmount}</span>
+                                                                            </div>
+                                                                            <div className="bg-slate-100 border border-slate-200 rounded-xl p-3 shadow-xs">
+                                                                                <span className="block text-[8px] font-bold text-slate-500 uppercase tracking-widest">Due on Delivery</span>
+                                                                                <span className="text-sm font-black text-slate-800">৳{remainingCOD.toLocaleString()}</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div className="p-4 bg-emerald-50 border border-emerald-100 rounded-xl text-[10px] text-emerald-800 font-bold leading-relaxed space-y-3">
+                                                                        <div className="flex items-start gap-2">
+                                                                            <Info className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
+                                                                            <span>Please send the advance amount of <span className="text-emerald-950 font-black">৳{advanceAmount}</span> to bKash/Nagad: <span className="text-emerald-900 font-black underline">01857045449</span> (Personal) and enter your transaction/sender details below:</span>
+                                                                        </div>
+                                                                        <input 
+                                                                            type="text"
+                                                                            value={bkashNumber}
+                                                                            onChange={(e) => setBkashNumber(e.target.value)}
+                                                                            className="w-full px-4 py-3 bg-white border border-emerald-200 focus:border-emerald-500 rounded-lg focus:outline-none transition-all text-xs font-semibold text-emerald-950"
+                                                                            placeholder="Enter bKash/Nagad sender phone or TrxID"
+                                                                        />
+                                                                    </div>
+                                                                </div>
+                                                            ) : (
+                                                                <div className="p-6 bg-emerald-50 text-emerald-950 rounded-xl border border-emerald-100 space-y-4 shadow-sm">
+                                                                    <div className="flex items-center justify-between">
+                                                                        <div className="flex items-center gap-3">
+                                                                            <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center">
+                                                                                <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                                                                            </div>
+                                                                            <div>
+                                                                                <h4 className="text-xs font-black uppercase tracking-wider text-emerald-800">Free Delivery Active</h4>
+                                                                                <p className="text-[9px] text-emerald-600 uppercase tracking-widest mt-0.5">Confirmation Step</p>
+                                                                            </div>
+                                                                        </div>
+                                                                        <span className="text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded bg-emerald-100 text-emerald-800">
+                                                                            No Advance Needed
+                                                                        </span>
+                                                                    </div>
+                                                                    <div className="pt-2 border-t border-emerald-100 space-y-3">
+                                                                        <p className="text-xs font-medium text-emerald-900 leading-relaxed">
+                                                                            Congratulations! Your order is eligible for **Free Delivery**. Because your order total is <span className="font-bold">৳{finalTotal.toLocaleString()}</span> and shipping is free, **no advance payment is required to confirm your order**!
+                                                                        </p>
+                                                                        <div className="grid grid-cols-2 gap-4 pt-1">
+                                                                            <div className="bg-white/80 rounded-xl p-3 border border-emerald-100">
+                                                                                <span className="block text-[8px] font-bold text-emerald-600 uppercase tracking-widest">Pay in Advance</span>
+                                                                                <span className="text-sm font-black text-emerald-700">৳0</span>
+                                                                            </div>
+                                                                            <div className="bg-white/80 rounded-xl p-3 border border-emerald-100">
+                                                                                <span className="block text-[8px] font-bold text-emerald-600 uppercase tracking-widest">Due on Delivery</span>
+                                                                                <span className="text-sm font-black text-emerald-900">৳{finalTotal.toLocaleString()}</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="p-4 bg-emerald-100/50 border border-emerald-200 rounded-lg text-[10px] text-emerald-800 font-bold leading-relaxed flex items-start gap-2">
+                                                                        <Info className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
+                                                                        <span>You can pay the total amount of ৳{finalTotal.toLocaleString()} directly to the rider once you inspect your package!</span>
+                                                                    </div>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    ) : (
+                                                        <div className={cn(
+                                                            "p-6 rounded-xl border shadow-sm",
+                                                            method.id === 'bkash' 
+                                                                ? "bg-pink-50/50 border-pink-100 text-pink-900" 
+                                                                : "bg-orange-50/50 border-orange-100 text-orange-900"
+                                                        )}>
+                                                            <label className={cn(
+                                                                "text-[10px] font-black uppercase tracking-widest mb-2 block",
+                                                                method.id === 'bkash' ? "text-pink-600" : "text-orange-600"
+                                                            )}>
+                                                                {method.id === 'bkash' ? 'bKash Sender / Transaction Number' : 'Nagad Sender / Transaction Number'}
+                                                            </label>
+                                                            <p className={cn(
+                                                                "text-[10px] mb-4 uppercase tracking-widest font-semibold",
+                                                                method.id === 'bkash' ? "text-pink-400" : "text-orange-400"
+                                                            )}>
+                                                                Send money to: <span className="font-bold">01857045449</span>
+                                                            </p>
+                                                            <input 
+                                                                type="text"
+                                                                value={bkashNumber}
+                                                                onChange={(e) => setBkashNumber(e.target.value)}
+                                                                className={cn(
+                                                                    "w-full px-5 py-4 bg-white border rounded-xl focus:outline-none transition-all text-sm font-medium",
+                                                                    method.id === 'bkash' ? "border-pink-100 focus:border-pink-500" : "border-orange-100 focus:border-orange-500"
+                                                                )}
+                                                                placeholder={method.id === 'bkash' ? "Enter bkash sender phone or TrxID" : "Enter Nagad sender phone or TrxID"}
+                                                            />
+                                                        </div>
+                                                    )}
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+                                    </div>
                                 ))}
 
-                                <AnimatePresence>
-                                    {paymentMethod === 'bkash' && (
-                                        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="pt-2">
-                                            <div className="p-6 bg-pink-50/50 border border-pink-100 rounded-sm">
-                                                <label className="text-[10px] font-bold text-pink-600 uppercase tracking-widest mb-2 block">bKash Number</label>
-                                                <p className="text-[10px] text-pink-400 mb-4 uppercase tracking-widest">Send Money to: <span className="font-bold text-pink-700">01857045449</span></p>
-                                                <input 
-                                                    type="tel"
-                                                    value={bkashNumber}
-                                                    onChange={(e) => setBkashNumber(e.target.value)}
-                                                    className="w-full px-5 py-4 bg-white border border-pink-100 rounded-sm focus:outline-none focus:border-pink-500 transition-all text-sm font-medium"
-                                                    placeholder="Enter your bKash number"
-                                                />
+                                {/* Return & Inspection Policy Callout */}
+                                <div className="p-6 bg-amber-50 text-amber-950 rounded-2xl border border-amber-200 space-y-4 shadow-sm">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center">
+                                                <ShieldCheck className="h-4 w-4 text-amber-700" />
                                             </div>
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
+                                            <div>
+                                                <h4 className="text-xs font-black uppercase tracking-wider text-amber-800">Return & Inspection Policy</h4>
+                                                <p className="text-[9px] text-amber-600 uppercase tracking-widest mt-0.5">রিটার্ন পলিসি</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="pt-3 border-t border-amber-200/60 space-y-3.5 text-xs text-amber-900 leading-relaxed font-semibold">
+                                        <p className="flex items-start gap-2.5">
+                                            <span className="text-amber-700 font-bold uppercase tracking-widest shrink-0 mt-0.5">BN:</span>
+                                            <span>রাইডার পৌঁছানোর পর কাস্টমার পণ্য চেক করে তাৎক্ষণিকভাবে ফেরত দিতে পারবেন। এই ক্ষেত্রে কাস্টমারকে শুধুমাত্র ডেলিভারি চার্জটি পরিশোধ করতে হবে। পরবর্তীতে কোনো রিটার্ন গ্রহণযোগ্য নয়।</span>
+                                        </p>
+                                        <p className="flex items-start gap-2.5 border-t border-amber-200/40 pt-3">
+                                            <span className="text-amber-700 font-bold uppercase tracking-widest shrink-0 mt-0.5">EN:</span>
+                                            <span>You can inspect the product immediately when the rider arrives. If you decide to return it, you can return it on the spot with the rider by paying <span className="text-amber-900 font-black underline">ONLY the delivery fee</span>. Returns after the rider has left are not accepted.</span>
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
                         </section>
                     </div>
@@ -471,12 +643,23 @@ export default function CheckoutPage() {
                                         {!selectedDistrict ? '—' : shippingCost === 0 ? 'FREE' : formatPrice(shippingCost, language)}
                                     </span>
                                 </div>
+
+                                <div className="space-y-2 pt-4 border-t border-dashed border-gray-200 text-xs">
+                                    <div className="flex justify-between items-center text-amber-600 font-bold uppercase tracking-wider">
+                                        <span>Advance Confirmation Payment</span>
+                                        <span>{formatPrice(advanceAmount, language)}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center text-gray-500 font-medium">
+                                        <span>Due on Delivery</span>
+                                        <span>{formatPrice(remainingCOD, language)}</span>
+                                    </div>
+                                </div>
                                 
-                                <div className="flex justify-between items-end pt-8 border-t border-gray-200 mt-4">
+                                <div className="flex justify-between items-end pt-6 border-t border-gray-200 mt-4">
                                     <span className="text-base font-bold text-gray-900 uppercase tracking-tight">Total</span>
                                     <div className="text-right">
                                         <span className="text-2xl font-bold text-gray-900 tracking-tight">{formatPrice(finalTotal, language)}</span>
-                                        <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest">BDT (VAT Incl.)</span>
+                                        <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest">BDT</span>
                                     </div>
                                 </div>
 

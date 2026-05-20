@@ -14,10 +14,18 @@ import {
     ArrowRight,
     Edit3
 } from 'lucide-react';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { useToast } from '@/components/ui/use-toast';
 
 export default function BannersPage() {
+    const { toast } = useToast();
     const [banners, setBanners] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+
+    // Custom confirm dialog state
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [bannerToDelete, setBannerToDelete] = useState<string | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const fetchBanners = async () => {
         setLoading(true);
@@ -38,13 +46,40 @@ export default function BannersPage() {
         fetchBanners();
     }, []);
 
-    const deleteBanner = async (id: string) => {
-        if (!confirm('Are you sure you want to delete this banner?')) return;
+    const handleDeleteClick = (id: string) => {
+        setBannerToDelete(id);
+        setConfirmOpen(true);
+    };
+
+    const deleteBanner = async () => {
+        if (!bannerToDelete) return;
+        setIsDeleting(true);
         try {
-            const res = await fetch(`/api/marketing/banners/${id}`, { method: 'DELETE' });
-            if (res.ok) fetchBanners();
+            const res = await fetch(`/api/marketing/banners/${bannerToDelete}`, { method: 'DELETE' });
+            if (res.ok) {
+                toast({
+                    title: 'Banner deleted',
+                    description: 'The promotional banner was successfully deleted.',
+                });
+                fetchBanners();
+            } else {
+                toast({
+                    title: 'Error',
+                    description: 'Failed to delete banner.',
+                    variant: 'destructive',
+                });
+            }
         } catch (error) {
             console.error('Delete failed:', error);
+            toast({
+                title: 'Error',
+                description: 'An unexpected error occurred.',
+                variant: 'destructive',
+            });
+        } finally {
+            setIsDeleting(false);
+            setConfirmOpen(false);
+            setBannerToDelete(null);
         }
     };
 
@@ -67,7 +102,7 @@ export default function BannersPage() {
             <div className="flex items-center justify-between pb-6 border-b border-border">
                 <div>
                     <h1 className="text-xl font-semibold text-foreground">Banners</h1>
-                    <p className="text-[13px] text-muted-foreground mt-0.5">Manage your store's promotional banners and visuals.</p>
+                    <p className="text-[13px] text-muted-foreground mt-0.5">Manage your store&apos;s promotional banners and visuals.</p>
                 </div>
                 <Link href="/marketing/banners/new">
                     <button className="px-6 py-2 bg-primary text-primary-foreground rounded-lg text-[13px] font-semibold hover:bg-primary/90 transition flex items-center gap-2">
@@ -88,7 +123,7 @@ export default function BannersPage() {
                     <div className="bg-card border-2 border-dashed border-border rounded-2xl flex flex-col items-center justify-center py-20 text-center">
                         <ImageIcon className="w-12 h-12 text-muted-foreground/30 mb-4" />
                         <h3 className="text-[16px] font-bold text-foreground">No Banners Found</h3>
-                        <p className="text-[13px] text-muted-foreground mt-1 max-w-[280px]">You haven't added any promotional banners yet.</p>
+                        <p className="text-[13px] text-muted-foreground mt-1 max-w-[280px]">You haven&apos;t added any promotional banners yet.</p>
                         <Link href="/marketing/banners/new" className="mt-6">
                             <button className="px-6 py-2 bg-primary text-primary-foreground rounded-lg text-[13px] font-semibold hover:bg-primary/90 transition">
                                 Create Your First Banner
@@ -137,7 +172,7 @@ export default function BannersPage() {
                                                     </button>
                                                 </Link>
                                                 <button
-                                                    onClick={() => deleteBanner(banner.id)}
+                                                    onClick={() => handleDeleteClick(banner.id)}
                                                     className="p-2 bg-rose-50 text-rose-500 border border-rose-100 rounded-lg hover:bg-rose-500 hover:text-white transition-all"
                                                 >
                                                     <Trash2 className="w-5 h-5" />
@@ -176,6 +211,17 @@ export default function BannersPage() {
                     </div>
                 )}
             </div>
+
+            <ConfirmDialog
+                isOpen={confirmOpen}
+                onClose={() => setConfirmOpen(false)}
+                onConfirm={deleteBanner}
+                title="Delete Promotional Banner?"
+                description="Are you sure you want to delete this promotional banner? This visual element will instantly disappear from the storefront."
+                confirmText="Delete Banner"
+                isLoading={isDeleting}
+                variant="danger"
+            />
         </div>
     );
 }

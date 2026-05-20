@@ -18,6 +18,7 @@ import {
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 
 const couponSchema = z.object({
     code: z.string().min(3, 'Code must be at least 3 characters'),
@@ -38,6 +39,7 @@ export default function EditCouponPage() {
     const params = useParams();
     const [saving, setSaving] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [confirmOpen, setConfirmOpen] = useState(false);
 
     const {
         register,
@@ -112,8 +114,6 @@ export default function EditCouponPage() {
     };
 
     const handleDelete = async () => {
-        if (!confirm('Are you sure you want to delete this coupon? This action cannot be undone.')) return;
-
         try {
             const res = await fetch(`/api/marketing/coupons/${params.id}`, { method: 'DELETE' });
             if (res.ok) {
@@ -121,6 +121,8 @@ export default function EditCouponPage() {
             }
         } catch (error) {
             console.error('Delete failed:', error);
+        } finally {
+            setConfirmOpen(false);
         }
     };
 
@@ -148,7 +150,8 @@ export default function EditCouponPage() {
                 </div>
                 <div className="flex items-center gap-3">
                     <button
-                        onClick={handleDelete}
+                        type="button"
+                        onClick={() => setConfirmOpen(true)}
                         className="px-4 py-2 text-[13px] font-medium text-rose-500 hover:bg-rose-50 rounded-lg transition-colors flex items-center gap-2"
                     >
                         <Trash2 className="w-4 h-4" />
@@ -325,6 +328,16 @@ export default function EditCouponPage() {
                     </div>
                 </div>
             </form>
+
+            <ConfirmDialog
+                isOpen={confirmOpen}
+                onClose={() => setConfirmOpen(false)}
+                onConfirm={handleDelete}
+                title="Delete Discount Coupon?"
+                description="Are you sure you want to delete this coupon? This action cannot be undone, and customers will no longer be able to use this promo code at checkout."
+                confirmText="Delete Coupon"
+                variant="danger"
+            />
         </div>
     );
 }

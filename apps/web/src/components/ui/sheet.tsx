@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -77,8 +78,26 @@ function SheetContent({
     className?: string
 }) {
     const { open, setOpen } = useSheet()
+    const [mounted, setMounted] = React.useState(false)
+
+    React.useEffect(() => {
+        setMounted(true)
+    }, [])
+
+    React.useEffect(() => {
+        if (open) {
+            const originalStyle = window.getComputedStyle(document.body).overflow
+            document.body.style.overflow = 'hidden'
+            document.body.classList.add('drawer-open')
+            return () => {
+                document.body.style.overflow = originalStyle
+                document.body.classList.remove('drawer-open')
+            }
+        }
+    }, [open])
 
     if (!open) return null
+    if (!mounted) return null
 
     const sideClasses = {
         left: 'inset-y-0 left-0 w-80 animate-slide-in-left',
@@ -87,32 +106,35 @@ function SheetContent({
         bottom: 'inset-x-0 bottom-0 h-80 animate-slide-in-bottom',
     }
 
-    return (
-        <>
+    const content = (
+        <div className="fixed inset-0 z-[1000]">
             {/* Backdrop */}
             <div
-                className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
+                className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[1001]"
                 onClick={() => setOpen(false)}
             />
             {/* Sheet panel */}
             <div
                 className={cn(
-                    'fixed z-50 bg-white shadow-xl p-6 overflow-y-auto',
+                    'fixed bg-white shadow-xl p-6 overflow-y-auto',
                     sideClasses[side],
-                    className
+                    className,
+                    'z-[1002]'
                 )}
             >
                 <button
                     onClick={() => setOpen(false)}
-                    className="absolute top-4 right-4 rounded-sm opacity-70 hover:opacity-100 transition-opacity"
+                    className="absolute top-4 right-4 rounded-sm opacity-70 hover:opacity-100 transition-opacity z-[1003]"
                 >
                     <X className="h-4 w-4" />
                     <span className="sr-only">Close</span>
                 </button>
                 {children}
             </div>
-        </>
+        </div>
     )
+
+    return createPortal(content, document.body)
 }
 
 function SheetHeader({

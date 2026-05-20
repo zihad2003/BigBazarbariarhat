@@ -13,12 +13,44 @@ import {
     FolderOpen,
     Tag
 } from 'lucide-react';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { useToast } from '@/components/ui/use-toast';
+
+function CategoryImage({ src, alt, isParent = false }: { src?: string | null; alt: string; isParent?: boolean }) {
+    const [errored, setErrored] = useState(!src || src.trim() === '');
+
+    useEffect(() => {
+        setErrored(!src || src.trim() === '');
+    }, [src]);
+
+    if (errored) {
+        return isParent ? (
+            <FolderOpen className="w-7 h-7 text-primary/70 animate-pulse-subtle" />
+        ) : (
+            <Tag className="w-4 h-4 text-muted-foreground/60 animate-pulse-subtle" />
+        );
+    }
+
+    return (
+        <img
+            src={src!}
+            className="w-full h-full object-cover"
+            alt={alt}
+            onError={() => setErrored(true)}
+        />
+    );
+}
 
 export default function CategoriesPage() {
+    const { toast } = useToast();
     const [categories, setCategories] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [deletingId, setDeletingId] = useState<string | null>(null);
+
+    // Custom confirm dialog state
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null);
 
     const fetchCategories = async (showLoader = false) => {
         if (showLoader) setLoading(true);
@@ -39,20 +71,40 @@ export default function CategoriesPage() {
         fetchCategories(true);
     }, []);
 
-    const deleteCategory = async (id: string) => {
-        if (!confirm('Are you sure you want to delete this category? All its subcategory mappings will be orphaned.')) return;
-        setDeletingId(id);
+    const handleDeleteClick = (id: string) => {
+        setCategoryToDelete(id);
+        setConfirmOpen(true);
+    };
+
+    const deleteCategory = async () => {
+        if (!categoryToDelete) return;
+        setDeletingId(categoryToDelete);
+        setConfirmOpen(false);
         try {
-            const res = await fetch(`/api/categories/${id}`, { method: 'DELETE' });
+            const res = await fetch(`/api/categories/${categoryToDelete}`, { method: 'DELETE' });
             if (res.ok) {
+                toast({
+                    title: 'Category deleted',
+                    description: 'The category was successfully deleted.',
+                });
                 await fetchCategories();
             } else {
-                alert('Failed to delete category');
+                toast({
+                    title: 'Error',
+                    description: 'Failed to delete category.',
+                    variant: 'destructive',
+                });
             }
         } catch (error) {
             console.error('Delete failed:', error);
+            toast({
+                title: 'Error',
+                description: 'An unexpected error occurred.',
+                variant: 'destructive',
+            });
         } finally {
             setDeletingId(null);
+            setCategoryToDelete(null);
         }
     };
 
@@ -156,11 +208,7 @@ export default function CategoriesPage() {
                                         <div className="flex items-center gap-4">
                                             {/* Parent Image Cover */}
                                             <div className="w-16 h-16 rounded-xl bg-background border border-border overflow-hidden shrink-0 flex items-center justify-center relative">
-                                                {parent.image ? (
-                                                    <img src={parent.image} className="w-full h-full object-cover" alt={parent.name} />
-                                                ) : (
-                                                    <FolderOpen className="w-7 h-7 text-primary/70" />
-                                                )}
+                                                <CategoryImage src={parent.image} alt={parent.name} isParent />
                                             </div>
                                             <div>
                                                 <h2 className="text-[16px] font-bold text-foreground flex items-center gap-2">
@@ -180,7 +228,7 @@ export default function CategoriesPage() {
                                                 <Edit className="w-4 h-4" />
                                             </Link>
                                             <button
-                                                onClick={() => deleteCategory(parent.id)}
+                                                onClick={() => handleDeleteClick(parent.id)}
                                                 disabled={deletingId !== null}
                                                 className="p-2 hover:bg-destructive/10 rounded-md text-muted-foreground hover:text-destructive transition-colors disabled:opacity-50"
                                                 title="Delete Parent Section"
@@ -210,12 +258,8 @@ export default function CategoriesPage() {
                                             {subs.map((sub) => (
                                                 <div key={sub.id} className="p-4 flex items-center justify-between gap-4 bg-background/50 hover:bg-background transition-colors group/row">
                                                     <div className="flex items-center gap-3 min-w-0">
-                                                        <div className="w-8 h-8 rounded bg-muted flex items-center justify-center overflow-hidden border border-border">
-                                                            {sub.image ? (
-                                                                <img src={sub.image} className="w-full h-full object-cover" alt={sub.name} />
-                                                            ) : (
-                                                                <Tag className="w-4 h-4 text-muted-foreground/60" />
-                                                            )}
+                                                        <div className="w-8 h-8 rounded bg-muted flex items-center justify-center overflow-hidden border border-border shrink-0">
+                                                            <CategoryImage src={sub.image} alt={sub.name} />
                                                         </div>
                                                         <div className="min-w-0">
                                                             <h5 className="text-[13px] font-semibold text-foreground truncate">{sub.name}</h5>
@@ -232,7 +276,7 @@ export default function CategoriesPage() {
                                                                 <Edit className="w-3.5 h-3.5" />
                                                             </Link>
                                                             <button 
-                                                                onClick={() => deleteCategory(sub.id)} 
+                                                                onClick={() => handleDeleteClick(sub.id)} 
                                                                 disabled={deletingId !== null}
                                                                 className="p-1.5 hover:bg-destructive/10 rounded text-muted-foreground hover:text-destructive disabled:opacity-50"
                                                             >
@@ -265,6 +309,16 @@ export default function CategoriesPage() {
                     })}
                 </div>
             )}
+
+            <ConfirmDialog
+                isOpen={confirmOpen}
+                onClose={() => setConfirmOpen(false)}
+                onConfirm={deleteCategory}
+                title="Delete Category?"
+                description="Are you sure you want to delete this category? All of its subcategories will be disconnected."
+                confirmText="Delete Category"
+                variant="danger"
+            />
         </div>
     );
 }

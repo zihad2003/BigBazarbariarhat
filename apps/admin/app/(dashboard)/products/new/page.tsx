@@ -283,6 +283,25 @@ export default function NewProductPage() {
                             />
                             <p className="text-[10px] text-muted-foreground mt-1">Paste an Instagram reel URL to display the video on the product page.</p>
                         </div>
+
+                        {/* Storefront Image & Video Guidelines Card */}
+                        <div className="p-4 bg-muted/40 border border-border rounded-xl space-y-3">
+                            <h4 className="text-[11px] font-bold uppercase tracking-widest text-foreground flex items-center gap-1.5">
+                                <AlertCircle className="w-3.5 h-3.5 text-primary" />
+                                Image & Video Guidelines
+                            </h4>
+                            <div className="space-y-2 text-[11px] text-muted-foreground leading-relaxed">
+                                <p>
+                                    <strong className="text-foreground font-semibold">🔴 Instagram Reel Covers / CDNs:</strong> Direct CDN links from Instagram reels expire after a few hours due to security signatures. 
+                                </p>
+                                <p>
+                                    <strong className="text-foreground font-semibold">🟢 Recommended Action:</strong> For permanent, instant, and high-speed loading on the storefront, please <span className="text-foreground underline decoration-primary font-medium">download</span> the cover frame/image and physically upload it under the <strong className="text-foreground">Product Photo</strong> section above.
+                                </p>
+                                <p>
+                                    <strong className="text-foreground font-semibold">🎬 Product Video Previews:</strong> Make sure the pasted Reel URL is a public link. Our system automatically processes and embeds the player directly into the storefront product tabs.
+                                </p>
+                            </div>
+                        </div>
                     </div>
 
                     {/* Organization */}

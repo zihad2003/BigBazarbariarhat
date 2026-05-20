@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -50,6 +50,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const toggle = (label: string) =>
         setExpanded(p => (p.includes(label) ? p.filter(i => i !== label) : [...p, label]));
     const active = (href: string) => path === href || path.startsWith(href + '/');
+    
+    useEffect(() => {
+        if (open) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, [open]);
 
     return (
         <div className="flex min-h-screen bg-background">

@@ -6,7 +6,10 @@
   "types": "./index.ts",
   "scripts": {
     "db:generate": "prisma generate",
-    "db:push": "prisma db push"
+    "db:push": "prisma db push",
+    "db:seed:admin": "ts-node seed-admin.ts",
+    "db:seed:categories": "ts-node seed-categories.ts",
+    "db:import:products": "ts-node import-products.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.10.0"

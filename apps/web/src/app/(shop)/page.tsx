@@ -70,7 +70,7 @@ const fallbackCategoryImages: Record<string, string> = {
 
 const getTrustFeatures = (t: any) => [
     { icon: Truck, title: t?.features?.freeShipping || 'Free Shipping', desc: t?.features?.freeShippingDesc || 'On orders over ৳2000' },
-    { icon: RefreshCcw, title: t?.features?.easyReturns || 'Easy Returns', desc: t?.features?.easyReturnsDesc || '30-day return policy' },
+    { icon: RefreshCcw, title: t?.features?.easyReturns || 'Easy Returns', desc: t?.features?.easyReturnsDesc || 'On-the-spot returns' },
     { icon: ShieldCheck, title: t?.features?.securePayment || 'Secure Payment', desc: t?.features?.securePaymentDesc || '100% secure checkout' },
     { icon: Headphones, title: t?.features?.support || '24/7 Support', desc: t?.features?.supportDesc || 'Always here to help' },
 ];
@@ -82,9 +82,19 @@ const defaultPromoBanners = [
 ];
 
 // --- HERO SLIDER ---
-function HeroSlider() {
+function HeroSlider({ dbBanners }: { dbBanners?: any[] }) {
     const t = useTranslation();
-    const slides = getHeroSlides(t);
+    const slides = dbBanners && dbBanners.length > 0 
+        ? dbBanners.map((b) => ({
+            id: b.id,
+            image: b.imageDesktop,
+            title: b.title,
+            subtitle: b.subtitle || "",
+            cta: b.linkText || t?.common?.shopNow || 'Shop Now',
+            href: b.linkUrl || '/products',
+            badge: undefined,
+        }))
+        : getHeroSlides(t);
     const [current, setCurrent] = useState(0);
     const total = slides.length;
 
@@ -107,7 +117,7 @@ function HeroSlider() {
                             transition={{ duration: 0.8 }}
                         >
                             <Image
-                                src={slide.image}
+                                src={slide.image || '/placeholder.png'}
                                 alt={slide.title}
                                 fill
                                 className="object-cover object-top"
@@ -202,6 +212,13 @@ function ProductCard({ product, index }: { product: any; index: number }) {
     const { addNotification } = useUIStore();
     const router = useRouter();
 
+    const firstImage = product.images?.[0];
+    const resolvedImage = typeof firstImage === 'string' 
+        ? firstImage 
+        : (firstImage && typeof firstImage === 'object' && 'url' in firstImage 
+            ? (firstImage as any).url 
+            : (product.image || '/placeholder.png'));
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -215,7 +232,7 @@ function ProductCard({ product, index }: { product: any; index: number }) {
             <Link href={`/products/${product.slug || product.id}`}>
                 <div className="relative aspect-[3/4] overflow-hidden bg-gray-100 mb-3">
                     <Image
-                        src={product.image}
+                        src={resolvedImage}
                         alt={product.name}
                         fill
                         className={`object-cover transition-transform duration-700 ${isHovered ? 'scale-110' : 'scale-100'}`}
@@ -243,7 +260,7 @@ function ProductCard({ product, index }: { product: any; index: number }) {
                                     productId: product.id,
                                     name: product.name,
                                     price: product.salePrice ?? product.price,
-                                    image: product.image,
+                                    image: resolvedImage,
                                     quantity: 1,
                                     stock: 100,
                                 });
@@ -336,18 +353,18 @@ function FlashSaleSection({ products }: { products: any[] }) {
                     </div>
                 </div>
 
-                <div className="flex overflow-x-auto gap-8 pb-12 no-scrollbar px-2 snap-x">
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-2 md:gap-8 pb-12 px-2">
                     {products.map((p, i) => (
-                        <div key={p.id} className="min-w-[280px] snap-center">
+                        <div key={p.id} className="w-full">
                             <ProductCard product={p} index={i} />
-                            <div className="mt-4 bg-gray-100 h-1.5 rounded-full overflow-hidden">
+                            <div className="mt-2 bg-gray-100 h-1 md:h-1.5 rounded-full overflow-hidden">
                                 <motion.div 
                                     initial={{ width: 0 }}
                                     whileInView={{ width: '65%' }}
                                     className="bg-destructive h-full"
                                 />
                             </div>
-                            <p className="text-[9px] font-black uppercase tracking-widest mt-2 text-muted-foreground flex justify-between">
+                            <p className="text-[7px] md:text-[9px] font-black uppercase tracking-widest mt-1 text-muted-foreground flex justify-between">
                                 <span>65% Reserved</span>
                                 <span>12 Left</span>
                             </p>
@@ -365,6 +382,7 @@ export default function HomePage() {
     const trustFeatures = getTrustFeatures(t);
     const [mounted, setMounted] = useState(false);
     const [categories, setCategories] = useState<any[]>([]);
+    const [heroBanners, setHeroBanners] = useState<any[]>([]);
     const [promoBanners, setPromoBanners] = useState<any[]>(defaultPromoBanners);
     const [newArrivals, setNewArrivals] = useState<any[]>([]);
     const [flashProducts, setFlashProducts] = useState<any[]>([]);
@@ -374,11 +392,12 @@ export default function HomePage() {
         setMounted(true);
         const fetchData = async () => {
             try {
-                const [newRes, flashRes, catRes, bannerRes] = await Promise.all([
+                const [newRes, flashRes, catRes, heroRes, secondaryRes] = await Promise.all([
                     fetch('/api/products?limit=8&sort=newest').then(res => res.json()),
                     fetch('/api/products/featured?limit=5').then(res => res.json()),
                     fetch('/api/categories').then(res => res.json()),
-                    fetch('/api/banners?position=promo').then(res => res.json()).catch(() => ({ success: false })),
+                    fetch('/api/banners?position=HOME_HERO').then(res => res.json()).catch(() => ({ success: false })),
+                    fetch('/api/banners?position=HOME_SECONDARY').then(res => res.json()).catch(() => ({ success: false })),
                 ]);
                 if (newRes.success) setNewArrivals(newRes.data);
                 if (flashRes.success) setFlashProducts(flashRes.data);
@@ -395,9 +414,14 @@ export default function HomePage() {
                     setCategories(mapped);
                 }
 
+                // Map DB Hero banners
+                if (heroRes.success && heroRes.data && heroRes.data.length > 0) {
+                    setHeroBanners(heroRes.data);
+                }
+
                 // Map DB banners for promo section
-                if (bannerRes.success && bannerRes.data && bannerRes.data.length > 0) {
-                    setPromoBanners(bannerRes.data);
+                if (secondaryRes.success && secondaryRes.data && secondaryRes.data.length > 0) {
+                    setPromoBanners(secondaryRes.data);
                 }
             } catch (error) {
                 console.error('Failed to fetch homepage data:', error);
@@ -414,7 +438,7 @@ export default function HomePage() {
         <main className="min-h-screen bg-white text-foreground">
 
             {/* 1. HERO BANNER SLIDER */}
-            <HeroSlider />
+            <HeroSlider dbBanners={heroBanners} />
 
             {/* 2. CATEGORY STRIP — Aarong-style square image tiles */}
             <section className="max-w-7xl mx-auto px-4 py-10 md:py-14">
@@ -487,7 +511,7 @@ export default function HomePage() {
                     {promoBanners.map((banner, i) => (
                         <Link key={banner.id || i} href={banner.linkUrl || '/shop'} className="group block relative h-[250px] md:h-[320px] overflow-hidden">
                             <Image
-                                src={banner.imageDesktop}
+                                src={banner.imageDesktop || '/placeholder.png'}
                                 alt={banner.title}
                                 fill
                                 className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -510,7 +534,7 @@ export default function HomePage() {
             {/* 5. TRUST FEATURES BAR */}
             <section className="border-t border-b border-gray-100 bg-gray-50">
                 <div className="max-w-7xl mx-auto px-4 py-8">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
                         {trustFeatures.map((f, i) => (
                             <div key={i} className="flex items-center gap-4">
                                 <f.icon className="h-7 w-7 text-foreground flex-shrink-0" />

@@ -14,11 +14,16 @@ import {
 } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/components/ui/use-toast';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 
 export default function CouponsPage() {
     const [searchQuery, setSearchQuery] = useState('');
     const { toast } = useToast();
     const queryClient = useQueryClient();
+
+    // Custom confirm dialog state
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [couponToDelete, setCouponToDelete] = useState<string | null>(null);
 
     // Fetch Coupons
     const { data: coupons = [], isLoading, error } = useQuery({
@@ -47,12 +52,21 @@ export default function CouponsPage() {
         }
     });
 
-    const handleDelete = (e: React.MouseEvent, id: string) => {
+    const handleDeleteClick = (e: React.MouseEvent, id: string) => {
         e.preventDefault();
         e.stopPropagation();
-        if (confirm('Are you sure you want to delete this coupon?')) {
-            deleteMutation.mutate(id);
-        }
+        setCouponToDelete(id);
+        setConfirmOpen(true);
+    };
+
+    const handleDelete = () => {
+        if (!couponToDelete) return;
+        deleteMutation.mutate(couponToDelete, {
+            onSettled: () => {
+                setConfirmOpen(false);
+                setCouponToDelete(null);
+            }
+        });
     };
 
     return (
@@ -119,7 +133,7 @@ export default function CouponsPage() {
                                     {coupon.isActive ? 'Active' : 'Inactive'}
                                 </span>
                                 <button
-                                    onClick={(e) => handleDelete(e, coupon.id)}
+                                    onClick={(e) => handleDeleteClick(e, coupon.id)}
                                     disabled={deleteMutation.isPending}
                                     className="p-1.5 hover:bg-destructive/10 rounded-lg text-muted-foreground hover:text-destructive transition-colors relative z-20 disabled:opacity-50"
                                 >
@@ -159,6 +173,17 @@ export default function CouponsPage() {
                     </Link>
                 ))}
             </div>
+
+            <ConfirmDialog
+                isOpen={confirmOpen}
+                onClose={() => setConfirmOpen(false)}
+                onConfirm={handleDelete}
+                title="Delete Discount Coupon?"
+                description="Are you sure you want to delete this coupon? Customers will no longer be able to use this promo code at checkout."
+                confirmText="Delete Coupon"
+                isLoading={deleteMutation.isPending}
+                variant="danger"
+            />
         </div>
     );
 }

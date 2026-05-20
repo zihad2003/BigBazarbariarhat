@@ -32,25 +32,38 @@ export async function GET() {
         // 4. Chart Data (Last 7 Days Revenue)
         const last7Days = Array.from({ length: 7 }, (_, i) => subDays(new Date(), i)).reverse();
         
-        const chartData = await Promise.all(last7Days.map(async (date) => {
+        const startDate = startOfDay(last7Days[0]);
+        const endDate = new Date(startOfDay(last7Days[6]).getTime() + 24 * 60 * 60 * 1000);
+
+        const ordersInLast7Days = await prisma.order.findMany({
+            where: {
+                createdAt: { gte: startDate, lt: endDate },
+                status: 'DELIVERED'
+            },
+            select: {
+                createdAt: true,
+                totalAmount: true
+            }
+        });
+
+        const chartData = last7Days.map((date) => {
             const start = startOfDay(date);
             const end = new Date(start.getTime() + 24 * 60 * 60 * 1000);
             
-            const stats = await prisma.order.aggregate({
-                _sum: { totalAmount: true },
-                _count: { id: true },
-                where: {
-                    createdAt: { gte: start, lt: end },
-                    status: 'DELIVERED'
-                }
+            const daysOrders = ordersInLast7Days.filter((o) => {
+                const orderDate = new Date(o.createdAt);
+                return orderDate >= start && orderDate < end;
             });
+
+            const revenue = daysOrders.reduce((sum, o) => sum + Number(o.totalAmount || 0), 0);
+            const orders = daysOrders.length;
 
             return {
                 day: format(date, 'eee'),
-                revenue: Number(stats._sum.totalAmount || 0),
-                orders: stats._count.id || 0
+                revenue,
+                orders
             };
-        }));
+        });
 
         return NextResponse.json({
             success: true,

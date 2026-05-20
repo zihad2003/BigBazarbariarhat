@@ -100,7 +100,7 @@ export default function AddressesPage() {
             saveAddresses(updated);
         } else {
             const newAddress: Address = {
-                id: Math.random().toString(36).substr(2, 9),
+                id: crypto.randomUUID(),
                 ...data,
                 isDefault: addresses.length === 0
             };

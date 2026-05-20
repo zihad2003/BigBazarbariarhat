@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { Heart, Trash2, ArrowRight, Star, Plus, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { useWishlistStore } from '@/lib/stores/wishlist-store';
+import { useWishlistStore } from '@/store/wishlistStore';
 import { useCartStore } from '@/store/cartStore';
 import { formatPrice } from '@/lib/utils';
 import { useUIStore } from '@/lib/stores/ui-store';
@@ -24,13 +24,13 @@ export default function AccountWishlistPage() {
     const handleAddToCart = (item: any) => {
         addToCart({
             productId: item.productId,
-            name: item.product?.name ?? '',
-            price: item.product?.salePrice ?? item.product?.basePrice ?? 0,
-            image: item.product?.images?.[0]?.url ?? '',
+            name: item.name ?? '',
+            price: item.price ?? 0,
+            image: item.image ?? '',
             quantity: 1,
-            stock: item.product?.stockQuantity ?? 0,
+            stock: 99,
         });
-        addNotification({ type: 'success', message: `${item.product?.name ?? 'Item'} added to cart.` });
+        addNotification({ type: 'success', message: `${item.name ?? 'Item'} added to cart.` });
         openCart();
     };
 
@@ -82,8 +82,8 @@ export default function AccountWishlistPage() {
                                 {/* Image Container */}
                                 <div className="relative aspect-[3/4] bg-gray-50 overflow-hidden">
                                     <Image
-                                        src={item.product?.images?.[0]?.url || '/placeholder.jpg'}
-                                        alt={item.product?.name ?? 'Product'}
+                                        src={item.image || '/placeholder.jpg'}
+                                        alt={item.name ?? 'Product'}
                                         fill
                                         className="object-cover group-hover:scale-110 transition-transform duration-1000"
                                     />
@@ -109,22 +109,19 @@ export default function AccountWishlistPage() {
                                 <div className="p-6 space-y-4">
                                     <div className="flex justify-between items-start gap-4">
                                         <div>
-                                            <h3 className="font-black text-gray-900 uppercase tracking-tight group-hover:text-primary transition-colors line-clamp-1">{item.product?.name}</h3>
-                                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Ref: {item.product?.sku ?? 'N/A'}</p>
+                                            <h3 className="font-black text-gray-900 uppercase tracking-tight group-hover:text-primary transition-colors line-clamp-1">{item.name}</h3>
+                                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Ref: {item.id ? `REF-${item.id.slice(-6).toUpperCase()}` : 'N/A'}</p>
                                         </div>
                                     </div>
                                     <div className="flex items-end justify-between">
                                         <div className="flex flex-col">
                                             <span className="text-xl font-black text-gray-900 font-mono tracking-tighter">
-                                                {formatPrice(item.product?.salePrice ?? item.product?.basePrice ?? 0)}
+                                                {formatPrice(item.price ?? 0)}
                                             </span>
-                                            {item.product?.salePrice && (
-                                                <span className="text-[9px] text-gray-400 line-through font-mono">{formatPrice(item.product.basePrice)}</span>
-                                            )}
                                         </div>
                                         <div className="flex items-center gap-1 text-amber-400">
                                             <Star className="h-3 w-3 fill-current" />
-                                            <span className="text-[10px] font-black text-gray-900">{item.product?.averageRating ?? '4.8'}</span>
+                                            <span className="text-[10px] font-black text-gray-900">4.8</span>
                                         </div>
                                     </div>
                                 </div>

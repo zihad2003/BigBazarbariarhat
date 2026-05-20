@@ -205,10 +205,12 @@ export default function OrderDetailPage() {
                                 <span>Shipping</span>
                                 <span>৳{order.shippingCost.toLocaleString()}</span>
                             </div>
-                            <div className="flex justify-between text-sm font-bold text-gray-500">
-                                <span>Tax</span>
-                                <span>৳{order.taxAmount.toLocaleString()}</span>
-                            </div>
+                            {order.taxAmount > 0 && (
+                                <div className="flex justify-between text-sm font-bold text-gray-500">
+                                    <span>Tax</span>
+                                    <span>৳{order.taxAmount.toLocaleString()}</span>
+                                </div>
+                            )}
                             <div className="flex justify-between items-end pt-4 border-t border-gray-50 mt-4">
                                 <span className="text-base font-black text-gray-900 uppercase tracking-widest">Total Amount</span>
                                 <span className="text-2xl font-black text-gray-900 tracking-tighter">৳{order.totalAmount.toLocaleString()}</span>

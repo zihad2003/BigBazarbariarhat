@@ -18,8 +18,8 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { useCartStore } from '@bigbazar/shared';
-import { useWishlistStore } from '@/lib/stores/wishlist-store';
+import { useCartStore } from '@/store/cartStore';
+import { useWishlistStore } from '@/store/wishlistStore';
 import { useUIStore } from '@/lib/stores/ui-store';
 import { ProductCard } from '@/components/shop/product-card';
 import { ProductGrid } from '@/components/shop/product-grid';
@@ -52,7 +52,7 @@ export default function ShopPage({ params: paramsPromise }: { params: Promise<{ 
 
     const [pagination, setPagination] = useState({ page: 1, totalPages: 1, total: 0 });
 
-    const { addItem } = useCartStore();
+    const { addProduct } = useCartStore();
     const { toggleItem: toggleWishlist, isInWishlist } = useWishlistStore();
     const { openCart, addNotification } = useUIStore();
 
@@ -150,7 +150,7 @@ export default function ShopPage({ params: paramsPromise }: { params: Promise<{ 
     }, [filters]);
 
     const handleAddToCart = (product: Product) => {
-        addItem(product as any, 1);
+        addProduct(product as any, 1);
         addNotification({
             type: 'success',
             message: `${product.name} added to cart`,
@@ -342,7 +342,7 @@ export default function ShopPage({ params: paramsPromise }: { params: Promise<{ 
                                                     <Image src={product.images?.[0]?.url || '/placeholder.png'} alt={product.name} fill className="object-cover group-hover:scale-110 transition-transform duration-1000" />
                                                 </div>
                                                 <h4 className="font-black text-lg group-hover:text-indigo-600 transition-colors mb-2">{product.name}</h4>
-                                                <div className="font-black text-gray-400">৳{product.basePrice.toLocaleString()}</div>
+                                                <div className="font-black text-gray-400">৳{(product.basePrice || 0).toLocaleString()}</div>
                                             </Link>
                                         ))}
                                     </div>

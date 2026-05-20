@@ -214,10 +214,12 @@ export default function OrderDetailsPage({ params }: { params: Promise<{ orderNu
                                     <span className="text-sm font-bold uppercase tracking-widest">Secure Shipping</span>
                                     <span className="font-black text-lg text-gray-900">৳{order.shipping_cost?.toLocaleString()}</span>
                                 </div>
-                                <div className="flex justify-between items-center text-gray-400">
-                                    <span className="text-sm font-bold uppercase tracking-widest">Applied Tax</span>
-                                    <span className="font-black text-lg text-gray-900">৳{order.tax_amount?.toLocaleString()}</span>
-                                </div>
+                                {order.tax_amount > 0 && (
+                                    <div className="flex justify-between items-center text-gray-400">
+                                        <span className="text-sm font-bold uppercase tracking-widest">Applied Tax</span>
+                                        <span className="font-black text-lg text-gray-900">৳{order.tax_amount?.toLocaleString()}</span>
+                                    </div>
+                                )}
                                 <div className="flex justify-between items-end pt-8 border-t border-gray-50 mt-8">
                                     <div>
                                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Authenticated Total</p>

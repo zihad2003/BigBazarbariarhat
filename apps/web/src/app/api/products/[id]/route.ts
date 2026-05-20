@@ -36,7 +36,31 @@ export async function GET(
             include: { category: true }
         });
 
-        return NextResponse.json({ success: true, data: { ...product, related } });
+        const serialize = (p: any) => {
+            let productImages: any[] = [];
+            try {
+                productImages = typeof p.images === 'string'
+                    ? JSON.parse(p.images)
+                    : (Array.isArray(p.images) ? p.images : []);
+            } catch (e) {
+                productImages = [];
+            }
+            return {
+                ...p,
+                price: Number(p.price),
+                basePrice: Number(p.price),   // alias for frontend compatibility
+                salePrice: p.salePrice ? Number(p.salePrice) : null,
+                images: productImages,
+            };
+        };
+
+        return NextResponse.json({
+            success: true,
+            data: {
+                ...serialize(product),
+                related: related.map(serialize),
+            },
+        });
     } catch (error) {
         console.error('Product GET Error:', error);
         return NextResponse.json({ success: false, message: 'Failed to fetch product.' }, { status: 500 });

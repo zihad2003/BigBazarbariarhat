@@ -212,7 +212,7 @@ export function SearchOverlay() {
                                                                 </div>
                                                                 <div className="flex-1 min-w-0">
                                                                     <h4 className="font-black text-black group-hover:text-indigo-600 transition-colors truncate">{product.name}</h4>
-                                                                    <p className="text-sm font-bold text-gray-400 mt-1">৳{product.basePrice.toLocaleString()}</p>
+                                                                    <p className="text-sm font-bold text-gray-400 mt-1">৳{(product.salePrice || product.basePrice || product.price || 0).toLocaleString()}</p>
                                                                     <div className="mt-2 flex items-center gap-1 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity">
                                                                         <span className="text-[10px] font-black uppercase tracking-widest text-indigo-600">Explore</span>
                                                                         <ArrowRight className="w-3 h-3 text-indigo-600" />

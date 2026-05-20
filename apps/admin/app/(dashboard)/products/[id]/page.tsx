@@ -71,7 +71,10 @@ export default function EditProductPage() {
                     setDescription(p.description || '');
                     setInstagramReelUrl(p.instagramReelUrl || '');
                     setVariants(p.variants || []);
-                    if (p.images?.[0]) setImagePreview(p.images[0].url);
+                    if (p.images?.[0]) {
+                        const img = p.images[0];
+                        setImagePreview(typeof img === 'string' ? img : (img.url || ''));
+                    }
                     setFeatured(p.featured || false);
                     setIsSale(p.isSale || false);
                     setIsHot(p.isHot || false);
@@ -325,6 +328,25 @@ export default function EditProductPage() {
                             />
                             <p className="text-[10px] text-muted-foreground mt-1">Paste an Instagram reel URL to display the video on the product page.</p>
                         </div>
+
+                        {/* Storefront Image & Video Guidelines Card */}
+                        <div className="p-4 bg-muted/40 border border-border rounded-xl space-y-3">
+                            <h4 className="text-[11px] font-bold uppercase tracking-widest text-foreground flex items-center gap-1.5">
+                                <AlertCircle className="w-3.5 h-3.5 text-primary" />
+                                Image & Video Guidelines
+                            </h4>
+                            <div className="space-y-2 text-[11px] text-muted-foreground leading-relaxed">
+                                <p>
+                                    <strong className="text-foreground font-semibold">🔴 Instagram Reel Covers / CDNs:</strong> Direct CDN links from Instagram reels expire after a few hours due to security signatures. 
+                                </p>
+                                <p>
+                                    <strong className="text-foreground font-semibold">🟢 Recommended Action:</strong> For permanent, instant, and high-speed loading on the storefront, please <span className="text-foreground underline decoration-primary font-medium">download</span> the cover frame/image and physically upload it under the <strong className="text-foreground">Product Photo</strong> section above.
+                                </p>
+                                <p>
+                                    <strong className="text-foreground font-semibold">🎬 Product Video Previews:</strong> Make sure the pasted Reel URL is a public link. Our system automatically processes and embeds the player directly into the storefront product tabs.
+                                </p>
+                            </div>
+                        </div>
                     </div>
 
                     {/* Organization */}
@@ -342,7 +364,7 @@ export default function EditProductPage() {
                                     <option value="saree">Saree</option>
                                     <option value="salwar-kameez">Salwar Kameez</option>
                                     <option value="lungi">Lungi</option>
-                                    <option value="kids">Kid's Wear</option>
+                                    <option value="kids">Kid&apos;s Wear</option>
                                     <option value="accessories">Accessories</option>
                                     <option value="wedding">Wedding Touch</option>
                                 </select>

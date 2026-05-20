@@ -7,15 +7,29 @@ import { ChevronLeft, ChevronRight, Maximize2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface ProductGalleryProps {
-    images: { id: string; url: string; altText?: string | null }[]
+    images: any[]
     productName: string
     discount?: number
 }
 
-export function ProductGallery({ images, productName, discount = 0 }: ProductGalleryProps) {
+export function ProductGallery({ images: rawImages, productName, discount = 0 }: ProductGalleryProps) {
     const [activeImage, setActiveImage] = useState(0)
     const [isZoomed, setIsZoomed] = useState(false)
     const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
+
+    const images = (rawImages || []).map((img: any, index: number) => {
+        if (typeof img === 'string') {
+            return { id: index.toString(), url: img };
+        }
+        if (img && typeof img === 'object') {
+            return {
+                id: img.id || index.toString(),
+                url: img.url || '/placeholder.png',
+                altText: img.altText || null
+            };
+        }
+        return { id: index.toString(), url: '/placeholder.png' };
+    });
 
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
         if (!isZoomed) return
@@ -28,7 +42,7 @@ export function ProductGallery({ images, productName, discount = 0 }: ProductGal
     const nextImage = () => setActiveImage((prev) => (prev + 1) % images.length)
     const prevImage = () => setActiveImage((prev) => (prev - 1 + images.length) % images.length)
 
-    if (!images || images.length === 0) {
+    if (images.length === 0) {
         return (
             <div className="relative aspect-[4/5] bg-gray-50 rounded-[3rem] flex items-center justify-center text-gray-400 border border-dashed border-gray-200">
                 No Visual Record Available

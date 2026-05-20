@@ -13,11 +13,10 @@ export function ProductGrid({ products, isLoading, viewMode = 'grid' }: ProductG
     if (isLoading) {
         return (
             <div className={cn(
-                "grid gap-6 animate-pulse",
-                viewMode === 'grid' ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid-cols-1"
+                "grid gap-2 md:gap-6 animate-pulse",
+                viewMode === 'grid' ? "grid-cols-3 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4" : "grid-cols-1"
             )}>
-                {[...Array(8)].map((_, i) => (
-                    // We can adjust skeleton height/layout based on viewMode if needed
+                {[...Array(15)].map((_, i) => (
                     <ProductCardSkeleton key={i} />
                 ))}
             </div>
@@ -34,8 +33,8 @@ export function ProductGrid({ products, isLoading, viewMode = 'grid' }: ProductG
 
     return (
         <div className={cn(
-            "grid gap-6 animate-in fade-in slide-in-from-bottom-4 duration-700",
-            viewMode === 'grid' ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid-cols-1"
+            "grid gap-2 md:gap-6 animate-in fade-in slide-in-from-bottom-4 duration-700",
+            viewMode === 'grid' ? "grid-cols-3 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4" : "grid-cols-1"
         )}>
             {products.map((product) => (
                 <ProductCard

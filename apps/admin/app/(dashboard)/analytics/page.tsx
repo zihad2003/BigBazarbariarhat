@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import {
     TrendingUp,
     DollarSign,
@@ -20,30 +21,19 @@ import {
 } from 'recharts';
 
 export default function AnalyticsPage() {
-    const [data, setData] = useState<any>(null);
-    const [loading, setLoading] = useState(true);
     const [range, setRange] = useState('7d');
 
-    useEffect(() => {
-        const fetchAnalytics = async () => {
-            setLoading(true);
-            try {
-                const res = await fetch(`/api/analytics?range=${range}`);
-                const result = await res.json();
-                if (result.success) {
-                    setData(result.data);
-                }
-            } catch (error) {
-                console.error('Failed to fetch analytics:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
+    const { data, isLoading } = useQuery({
+        queryKey: ['analytics', range],
+        queryFn: async () => {
+            const res = await fetch(`/api/analytics?range=${range}`);
+            const result = await res.json();
+            if (!result.success) throw new Error('Failed to fetch analytics');
+            return result.data;
+        }
+    });
 
-        fetchAnalytics();
-    }, [range]);
-
-    if (loading) {
+    if (isLoading) {
         return (
             <div className="h-[60vh] flex items-center justify-center">
                 <div className="flex flex-col items-center gap-3">

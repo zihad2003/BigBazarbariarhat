@@ -77,10 +77,7 @@ export function MobileMenu() {
         setOpen(false);
     };
 
-    const handleSearchClick = () => {
-        setOpen(false);
-        openSearch();
-    };
+
 
     useEffect(() => {
         // Initialize with default translated menu lists
@@ -119,7 +116,7 @@ export function MobileMenu() {
                     <Menu className="h-6 w-6" />
                 </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-[300px] sm:w-[350px] bg-background border-r border-border p-0 flex flex-col z-[60]">
+            <SheetContent side="right" className="w-[300px] sm:w-[350px] bg-background border-l border-border p-0 flex flex-col">
                 <SheetHeader className="p-6 border-b border-border">
                     <SheetTitle className="text-left">
                         <Link href="/" className="flex items-center gap-2" onClick={handleLinkClick}>
@@ -131,15 +128,7 @@ export function MobileMenu() {
                 </SheetHeader>
 
                 <div className="flex-1 overflow-y-auto py-6 px-4 scrollbar-hide">
-                    {/* Search */}
-                    <Button
-                        variant="ghost"
-                        className="w-full justify-start text-muted-foreground hover:text-foreground hover:bg-muted mb-6 gap-3"
-                        onClick={handleSearchClick}
-                    >
-                        <Search className="h-5 w-5" />
-                        <span className="uppercase tracking-widest text-xs font-bold">{t.common.search}</span>
-                    </Button>
+
 
                     <nav className="space-y-1">
                         {navigation.filter(item => !item.isHidden).map((item) => (

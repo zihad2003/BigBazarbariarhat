@@ -24,6 +24,7 @@ import { formatPrice, cn } from '@/lib/utils'
 import { useCartStore } from '@/store/cartStore'
 import { useLanguageStore, useTranslation } from '@bigbazar/shared'
 import { Breadcrumbs } from '@/components/shop/breadcrumbs'
+import { useThrottle } from '@/hooks/use-throttle'
 
 export default function CartPage() {
     const { language } = useLanguageStore()
@@ -51,6 +52,9 @@ export default function CartPage() {
     const [couponInput, setCouponInput] = useState(couponCode || '')
     const [couponMessage, setCouponMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
     const [itemToRemove, setItemToRemove] = useState<string | null>(null)
+
+    const throttledUpdateQuantity = useThrottle(updateQuantity, 300)
+    const throttledRemoveItem = useThrottle(removeItem, 300)
 
     useEffect(() => {
         setIsMounted(true)
@@ -156,7 +160,7 @@ export default function CartPage() {
                                             <div className="flex items-center gap-4">
                                                 <div className="flex items-center border border-gray-200 rounded-sm overflow-hidden bg-white">
                                                     <button
-                                                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                                        onClick={() => throttledUpdateQuantity(item.id, item.quantity - 1)}
                                                         className="w-8 h-8 flex items-center justify-center hover:bg-gray-50 text-gray-400 transition-colors"
                                                         disabled={item.quantity <= 1}
                                                     >
@@ -166,14 +170,14 @@ export default function CartPage() {
                                                         {item.quantity}
                                                     </span>
                                                     <button
-                                                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                                        onClick={() => throttledUpdateQuantity(item.id, item.quantity + 1)}
                                                         className="w-8 h-8 flex items-center justify-center hover:bg-gray-50 text-gray-400 transition-colors"
                                                     >
                                                         <Plus className="h-3 w-3" />
                                                     </button>
                                                 </div>
                                                 <button
-                                                    onClick={() => removeItem(item.id)}
+                                                    onClick={() => throttledRemoveItem(item.id)}
                                                     className="p-2 text-gray-300 hover:text-rose-500 transition-colors"
                                                 >
                                                     <Trash2 className="h-4 w-4" />
@@ -233,7 +237,7 @@ export default function CartPage() {
 
                             <Button
                                 onClick={() => router.push('/checkout')}
-                                className="w-full h-20 bg-black text-white hover:bg-gray-800 rounded-sm text-xs font-black uppercase tracking-[0.3em] shadow-2xl shadow-black/20 transition-all flex items-center justify-center gap-4"
+                                className="w-full h-20 bg-slate-900 text-white hover:bg-primary rounded-xl text-xs font-black uppercase tracking-[0.3em] shadow-2xl shadow-black/10 transition-all duration-300 flex items-center justify-center gap-4"
                             >
                                 Checkout <ArrowRight className="h-5 w-5" />
                             </Button>

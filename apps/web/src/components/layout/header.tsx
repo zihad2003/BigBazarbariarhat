@@ -21,7 +21,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { useLanguageStore, useTranslation } from '@bigbazar/shared';
 import { useCartStore } from '@/store/cartStore';
-import { useWishlistStore } from '@/lib/stores/wishlist-store';
+import { useWishlistStore } from '@/store/wishlistStore';
 import { useUIStore } from '@/lib/stores/ui-store';
 import { cn, formatPrice } from '@/lib/utils';
 import { AnnouncementBar } from './announcement-bar';
@@ -100,7 +100,7 @@ export function Header() {
     const router = useRouter();
     const cartCount = useCartStore(state => state.getItemCount());
     const wishlistCount = useWishlistStore(state => state.getItemCount());
-    const { openCart } = useUIStore();
+    const { openCart, openSearch } = useUIStore();
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
@@ -196,11 +196,10 @@ export function Header() {
                         
                         {/* Left & Center: Logo + Navigation */}
                         <div className="flex items-center gap-8 2xl:gap-12">
-                            <MobileMenu />
                             {/* Logo */}
                             <Link href="/" className="group shrink-0">
                                 <div className="flex items-center">
-                                    <h1 className="text-2xl font-bold tracking-tighter uppercase hidden sm:block font-playfair">
+                                    <h1 className="text-lg sm:text-2xl font-bold tracking-tighter uppercase block font-playfair">
                                         <span className="text-[#E11D48]">BIG</span> <span className="text-[#0F172A]">BAZAR</span>
                                     </h1>
                                 </div>
@@ -358,7 +357,7 @@ export function Header() {
                             {/* Actions */}
                             <div className="flex items-center gap-3">
                                 <button 
-                                    onClick={() => setIsSearchFocused(true)}
+                                    onClick={() => openSearch()}
                                     className="lg:hidden p-3 bg-slate-50 hover:bg-slate-100 rounded-2xl transition-all" 
                                     aria-label="Search"
                                 >
@@ -366,88 +365,27 @@ export function Header() {
                                 </button>
                                 <Link href="/wishlist" className="hidden sm:block p-3 bg-slate-50 hover:bg-red-50 hover:text-destructive rounded-2xl transition-all relative">
                                     <Heart className="h-5 w-5" />
-                                    {mounted && wishlistCount > 0 && <span className="absolute -top-1 -right-1 w-5 h-5 bg-destructive text-white text-[9px] font-black rounded-full flex items-center justify-center border-2 border-white">{wishlistCount}</span>}
+                                    {mounted && wishlistCount > 0 && <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 text-white text-[9px] font-black rounded-full flex items-center justify-center border-2 border-white shadow-sm">{wishlistCount}</span>}
                                 </Link>
                                 <Link 
                                     href="/cart"
-                                    className="p-3 bg-slate-900 text-white hover:bg-indigo-600 rounded-2xl transition-all relative shadow-xl shadow-black/10"
+                                    className="p-3 bg-slate-50 text-slate-900 hover:bg-primary/10 hover:text-primary rounded-2xl transition-all relative duration-300"
                                 >
                                     <ShoppingBag className="h-5 w-5" />
-                                    {mounted && cartCount > 0 && <span className="absolute -top-1 -right-1 w-5 h-5 bg-white text-black text-[9px] font-black rounded-full flex items-center justify-center border-2 border-black">{cartCount}</span>}
+                                    {mounted && cartCount > 0 && <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 text-white text-[9px] font-black rounded-full flex items-center justify-center border-2 border-white shadow-sm">{cartCount}</span>}
                                 </Link>
-                                <Link href="/account/profile" className="hidden sm:block p-1 bg-slate-100 rounded-2xl hover:ring-4 hover:ring-indigo-600/10 transition-all">
+                                <Link href="/account/profile" className="hidden sm:block p-1 bg-slate-100 rounded-2xl hover:ring-4 hover:ring-primary/10 transition-all duration-300">
                                     <div className="w-10 h-10 bg-white rounded-[0.9rem] flex items-center justify-center text-slate-900 font-black text-xs uppercase tracking-tighter">
                                         <User className="h-5 w-5" />
                                     </div>
                                 </Link>
+                                <MobileMenu />
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Mobile Search Overlay */}
-                <AnimatePresence>
-                    {isSearchFocused && (
-                        <motion.div 
-                            initial={{ opacity: 0, y: -20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            className="md:hidden fixed inset-0 z-[100] bg-white p-6"
-                        >
-                            <div className="flex items-center gap-4 mb-8">
-                                <form onSubmit={handleSearch} className="flex-1 relative">
-                                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                                    <input
-                                        autoFocus
-                                        type="text"
-                                        placeholder={t.common.search}
-                                        value={searchQuery}
-                                        onChange={(e) => setSearchQuery(e.target.value)}
-                                        className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl text-[11px] font-black uppercase tracking-widest focus:outline-none"
-                                    />
-                                </form>
-                                <button onClick={() => setIsSearchFocused(false)} className="p-3 bg-slate-50 rounded-2xl">
-                                    <X className="h-5 w-5 text-slate-400" />
-                                </button>
-                            </div>
 
-                            {/* Mobile Search Content */}
-                            <div className="space-y-10">
-                                {searchResults.length > 0 && (
-                                    <div className="space-y-4">
-                                        <h3 className="text-[9px] font-black text-primary uppercase tracking-[0.3em]">Suggestions</h3>
-                                        <div className="space-y-4">
-                                            {searchResults.map((p) => (
-                                                <Link 
-                                                    key={p.id} 
-                                                    href={`/products/${p.slug}`}
-                                                    onClick={() => setIsSearchFocused(false)}
-                                                    className="flex items-center gap-4"
-                                                >
-                                                    <div className="w-12 h-16 bg-slate-50 rounded-xl overflow-hidden relative shrink-0">
-                                                        <Image src={p.images?.[0]?.url || '/placeholder.jpg'} alt={p.name} fill className="object-cover" />
-                                                    </div>
-                                                    <div>
-                                                        <p className="text-[11px] font-black text-slate-900 uppercase tracking-tight line-clamp-1">{p.name}</p>
-                                                        <p className="text-[10px] font-black text-slate-400 font-mono mt-1">{formatPrice(p.salePrice || p.basePrice)}</p>
-                                                    </div>
-                                                </Link>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-                                <div>
-                                    <h3 className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em] mb-4">Recent</h3>
-                                    <div className="flex flex-wrap gap-2">
-                                        {recentSearches.map(s => (
-                                            <button key={s} onClick={() => handleSearch(undefined, s)} className="px-4 py-2 bg-slate-50 rounded-xl text-[10px] font-black uppercase tracking-widest">{s}</button>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
             </header>
 
             <MobileBottomNav />

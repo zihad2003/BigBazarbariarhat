@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import Link from 'next/link';
-import { AlertCircle, RotateCcw, Home, ShieldAlert } from 'lucide-react';
+import { RotateCcw, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function Error({
@@ -13,38 +13,40 @@ export default function Error({
     reset: () => void;
 }) {
     useEffect(() => {
-        // Log the error to an analytics service
         console.error('System Exception:', error);
     }, [error]);
 
     return (
-        <div className="h-screen w-full flex flex-col items-center justify-center bg-gray-50 px-6 text-center">
-            <div className="w-24 h-24 bg-rose-50 rounded-[2.5rem] flex items-center justify-center text-rose-500 mb-10 border border-rose-100 shadow-xl shadow-rose-500/5">
-                <ShieldAlert className="h-10 w-10" />
+        <div className="h-screen w-full flex flex-col items-center justify-center bg-white px-6 text-center select-none">
+            <div className="space-y-4 max-w-md mx-auto">
+                <h1 className="text-3xl md:text-4xl font-playfair font-semibold text-foreground tracking-tight">
+                    Something went wrong
+                </h1>
+                <p className="text-muted-foreground text-sm font-medium leading-relaxed max-w-sm mx-auto">
+                    We had a problem loading this page. Please try again or return to the shop.
+                </p>
             </div>
-            
-            <h1 className="text-4xl font-black text-gray-900 tracking-tighter uppercase mb-4">Something went wrong</h1>
-            <p className="text-gray-400 text-sm font-black uppercase tracking-widest max-w-md mx-auto leading-relaxed mb-12">
-                We encountered an unexpected error while processing your request. Please try again.
-            </p>
 
-            <div className="flex flex-col sm:flex-row items-center gap-6">
+            <div className="flex flex-col sm:flex-row items-center gap-4 mt-10">
                 <Button 
                     onClick={() => reset()}
-                    className="h-16 px-10 bg-black text-white hover:bg-gray-800 rounded-2xl text-[11px] font-black uppercase tracking-widest gap-3 shadow-2xl shadow-black/20"
+                    className="h-12 px-8 bg-black text-white hover:bg-gray-900 rounded-none text-xs uppercase tracking-widest font-semibold transition-all duration-300 flex items-center gap-2"
                 >
-                    <RotateCcw className="h-4 w-4" /> Try Again
+                    <RotateCcw className="h-3.5 w-3.5" /> Try again
                 </Button>
                 <Link href="/">
-                    <Button variant="outline" className="h-16 px-10 border-gray-200 hover:bg-white rounded-2xl text-[11px] font-black uppercase tracking-widest gap-3">
-                        <Home className="h-4 w-4" /> Go Home
+                    <Button 
+                        variant="outline" 
+                        className="h-12 px-8 border-black text-black hover:bg-black hover:text-white rounded-none text-xs uppercase tracking-widest font-semibold transition-all duration-300 flex items-center gap-2"
+                    >
+                        Return to shop <ArrowRight className="h-3.5 w-3.5" />
                     </Button>
                 </Link>
             </div>
 
-            <div className="mt-20 pt-10 border-t border-gray-200/50 w-full max-w-xs">
-                <p className="text-[9px] font-black text-gray-300 uppercase tracking-widest">
-                    Error ID: {error.digest || 'BB-ERROR-001'}
+            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-center">
+                <p className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">
+                    Code: {error.digest || 'BB-001'}
                 </p>
             </div>
         </div>

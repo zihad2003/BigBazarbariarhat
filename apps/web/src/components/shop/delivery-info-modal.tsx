@@ -129,7 +129,7 @@ export function DeliveryInfoModal({ isOpen, onClose, productName }: DeliveryInfo
                                 <AlertCircle className="h-4 w-4" />
                                 গুরুত্বপূর্ণ নোট (Important Notes)
                             </h3>
-                            <div className="p-6 bg-rose-50 rounded-[2rem] border border-rose-100 space-y-6">
+                             <div className="p-6 bg-rose-50 rounded-[2rem] border border-rose-100 space-y-6">
                                 <ul className="space-y-4">
                                     <li className="flex items-start gap-4">
                                         <div className="h-2 w-2 rounded-full bg-rose-500 mt-2 shrink-0 shadow-lg shadow-rose-500/50" />
@@ -143,11 +143,17 @@ export function DeliveryInfoModal({ isOpen, onClose, productName }: DeliveryInfo
                                         <div className="h-2 w-2 rounded-full bg-rose-500 mt-2 shrink-0" />
                                         <p className="text-sm text-rose-700 leading-relaxed font-bold">অনুগ্রহ করে Send Money অপশন ব্যবহার করে পেমেন্ট করবেন।</p>
                                     </li>
+                                    <li className="flex items-start gap-4">
+                                        <div className="h-2 w-2 rounded-full bg-rose-500 mt-2 shrink-0" />
+                                        <p className="text-sm text-rose-900 leading-relaxed font-bold">
+                                            <span className="text-rose-600">রিটার্ন পলিসি:</span> রাইডার পৌঁছানোর পর পণ্য চেক করে তাৎক্ষণিকভাবে ফেরত দিতে পারবেন। এই ক্ষেত্রে কাস্টমারকে শুধুমাত্র ডেলিভারি চার্জটি পরিশোধ করতে হবে। পরবর্তীতে কোনো রিটার্ন গ্রহণযোগ্য নয়।
+                                        </p>
+                                    </li>
                                 </ul>
 
                                 <div className="pt-4 border-t border-rose-200">
-                                    <p className="text-[10px] font-black text-rose-600 uppercase tracking-[0.2em]">⚠️ সতর্কবার্তা:</p>
-                                    <p className="text-xs text-rose-800 mt-1 italic font-medium">ভুল করে Recharge করলে সেই টাকা ফেরত দেওয়া সম্ভব নয়। পণ্যের ওজন অনুযায়ী চার্জ বাড়তে পারে।</p>
+                                    <p className="text-[10px] font-black text-rose-600 uppercase tracking-[0.2em]">⚠️ সতর্কবার্তা ও রিটার্ন:</p>
+                                    <p className="text-xs text-rose-800 mt-1 italic font-medium leading-relaxed">ভুল করে Recharge করলে সেই টাকা ফেরত দেওয়া সম্ভব নয়। রাইডার চলে যাওয়ার পর কোনো রিটার্ন গ্রহণযোগ্য নয়।</p>
                                 </div>
                             </div>
                         </div>

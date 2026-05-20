@@ -42,7 +42,7 @@ export function Footer() {
 
     const features = [
         { icon: Truck, title: t?.features?.freeShipping || 'Free Shipping', description: t?.features?.freeShippingDesc || 'On orders over ৳2000' },
-        { icon: RotateCcw, title: t?.features?.easyReturns || 'Easy Returns', description: t?.features?.easyReturnsDesc || '30-day return policy' },
+        { icon: RotateCcw, title: t?.features?.easyReturns || 'Easy Returns', description: t?.features?.easyReturnsDesc || 'On-the-spot returns' },
         { icon: Shield, title: t?.features?.securePayment || 'Secure Payment', description: t?.features?.securePaymentDesc || '100% secure checkout' },
         { icon: CreditCard, title: 'Mobile Banking', description: 'bKash & Nagad' },
     ];

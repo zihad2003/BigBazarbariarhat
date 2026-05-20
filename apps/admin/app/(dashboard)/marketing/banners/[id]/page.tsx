@@ -19,6 +19,7 @@ import {
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 
 const bannerSchema = z.object({
     title: z.string().min(3, 'Title is required'),
@@ -39,6 +40,7 @@ export default function EditBannerPage() {
     const params = useParams();
     const [saving, setSaving] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [confirmOpen, setConfirmOpen] = useState(false);
 
     const {
         register,
@@ -104,8 +106,6 @@ export default function EditBannerPage() {
     };
 
     const handleDelete = async () => {
-        if (!confirm('Are you sure you want to delete this banner? This action cannot be undone.')) return;
-
         try {
             const res = await fetch(`/api/marketing/banners/${params.id}`, { method: 'DELETE' });
             if (res.ok) {
@@ -113,6 +113,8 @@ export default function EditBannerPage() {
             }
         } catch (error) {
             console.error('Delete failed:', error);
+        } finally {
+            setConfirmOpen(false);
         }
     };
 
@@ -140,7 +142,8 @@ export default function EditBannerPage() {
                 </div>
                 <div className="flex items-center gap-3">
                     <button
-                        onClick={handleDelete}
+                        type="button"
+                        onClick={() => setConfirmOpen(true)}
                         className="px-4 py-2 text-[13px] font-medium text-rose-500 hover:bg-rose-50 rounded-lg transition-colors flex items-center gap-2"
                     >
                         <Trash2 className="w-4 h-4" />
@@ -300,6 +303,16 @@ export default function EditBannerPage() {
                     </div>
                 </div>
             </form>
+
+            <ConfirmDialog
+                isOpen={confirmOpen}
+                onClose={() => setConfirmOpen(false)}
+                onConfirm={handleDelete}
+                title="Delete Promotional Banner?"
+                description="Are you sure you want to delete this promotional banner? This action cannot be undone, and the banner will instantly disappear from the storefront."
+                confirmText="Delete Banner"
+                variant="danger"
+            />
         </div>
     );
 }

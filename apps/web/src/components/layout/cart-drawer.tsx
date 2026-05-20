@@ -1,22 +1,39 @@
 'use client';
 
+import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ShoppingBag, Trash2, Plus, Minus, ArrowRight, Truck } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useCartStore } from '@/store/cartStore';
-import { useUIStore } from '@/store/uiStore';
+import { useUIStore } from '@/lib/stores/ui-store';
 import { Button } from '@/components/ui/button';
 import { formatPrice } from '@/lib/utils';
 import { useLanguageStore } from '@bigbazar/shared';
+import { useThrottle } from '@/hooks/use-throttle';
 
 export function CartDrawer() {
     const { language } = useLanguageStore();
-    const { isCartOpen, setCartOpen } = useUIStore();
+    const { isCartOpen, closeCart } = useUIStore();
     const { items, removeItem, updateQuantity, getSubtotal, getTotal, getItemCount } = useCartStore();
     const subtotal = getSubtotal();
     const total = getTotal();
     const itemCount = getItemCount();
+    
+    const throttledUpdateQuantity = useThrottle(updateQuantity, 300);
+    const throttledRemoveItem = useThrottle(removeItem, 300);
+
+    useEffect(() => {
+        if (isCartOpen) {
+            const originalStyle = window.getComputedStyle(document.body).overflow;
+            document.body.style.overflow = 'hidden';
+            document.body.classList.add('drawer-open');
+            return () => {
+                document.body.style.overflow = originalStyle;
+                document.body.classList.remove('drawer-open');
+            };
+        }
+    }, [isCartOpen]);
 
     return (
         <AnimatePresence>
@@ -27,7 +44,7 @@ export function CartDrawer() {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        onClick={() => setCartOpen(false)}
+                        onClick={closeCart}
                         className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] cursor-zoom-out"
                     />
 
@@ -40,7 +57,7 @@ export function CartDrawer() {
                         className="fixed top-0 right-0 bottom-0 w-full max-w-md bg-white z-[101] shadow-2xl flex flex-col"
                     >
                         {/* Header */}
-                        <div className="p-8 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                        <div className="p-6 md:p-8 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
                             <div className="flex items-center gap-4">
                                 <div className="w-12 h-12 bg-black rounded-2xl flex items-center justify-center text-white shadow-lg">
                                     <ShoppingBag className="h-5 w-5" />
@@ -51,7 +68,7 @@ export function CartDrawer() {
                                 </div>
                             </div>
                             <button 
-                                onClick={() => setCartOpen(false)}
+                                onClick={closeCart}
                                 className="p-3 hover:bg-white rounded-2xl transition-all border border-transparent hover:border-slate-100 shadow-sm"
                             >
                                 <X className="h-5 w-5 text-slate-400" />
@@ -59,7 +76,7 @@ export function CartDrawer() {
                         </div>
 
                         {/* Items List */}
-                        <div className="flex-1 overflow-y-auto p-8 space-y-8">
+                        <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6 md:space-y-8">
                             {items.length > 0 ? (
                                 items.map((item) => (
                                     <div key={item.id} className="flex gap-6 group">
@@ -71,7 +88,7 @@ export function CartDrawer() {
                                                 <div className="flex justify-between items-start gap-4">
                                                     <h3 className="text-sm font-black text-slate-900 uppercase tracking-tight truncate group-hover:text-indigo-600 transition-colors">{item.name}</h3>
                                                     <button 
-                                                        onClick={() => removeItem(item.id)}
+                                                        onClick={() => throttledRemoveItem(item.id)}
                                                         className="p-1 text-slate-300 hover:text-red-500 transition-colors"
                                                     >
                                                         <Trash2 className="h-4 w-4" />
@@ -83,14 +100,14 @@ export function CartDrawer() {
                                             <div className="flex items-end justify-between mt-4">
                                                 <div className="flex items-center bg-slate-50 rounded-xl border border-slate-100 p-1">
                                                     <button 
-                                                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                                        onClick={() => throttledUpdateQuantity(item.id, item.quantity - 1)}
                                                         className="w-8 h-8 flex items-center justify-center hover:bg-white rounded-lg transition-all"
                                                     >
                                                         <Minus className="h-3 w-3" />
                                                     </button>
                                                     <span className="w-8 text-center text-xs font-black font-mono">{item.quantity}</span>
                                                     <button 
-                                                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                                        onClick={() => throttledUpdateQuantity(item.id, item.quantity + 1)}
                                                         className="w-8 h-8 flex items-center justify-center hover:bg-white rounded-lg transition-all"
                                                     >
                                                         <Plus className="h-3 w-3" />
@@ -159,13 +176,13 @@ export function CartDrawer() {
                                 </div>
                                 
                                 <div className="grid grid-cols-2 gap-4">
-                                    <Link href="/cart" onClick={() => setCartOpen(false)}>
-                                        <Button variant="outline" className="w-full h-16 rounded-2xl border-slate-200 text-[11px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all">
+                                    <Link href="/cart" onClick={closeCart}>
+                                        <Button variant="outline" className="w-full h-16 rounded-2xl border-slate-200 text-[11px] font-black uppercase tracking-widest hover:bg-slate-50 hover:text-black transition-all duration-300">
                                             View Cart
                                         </Button>
                                     </Link>
-                                    <Link href="/checkout" onClick={() => setCartOpen(false)}>
-                                        <Button className="w-full h-16 rounded-2xl bg-black text-white text-[11px] font-black uppercase tracking-widest hover:bg-indigo-600 transition-all shadow-xl shadow-black/10 flex items-center gap-3">
+                                    <Link href="/checkout" onClick={closeCart}>
+                                        <Button className="w-full h-16 rounded-2xl bg-slate-900 text-white text-[11px] font-black uppercase tracking-widest hover:bg-primary transition-all duration-300 shadow-xl shadow-black/10 flex items-center gap-3">
                                             Checkout <ArrowRight className="h-4 w-4" />
                                         </Button>
                                     </Link>

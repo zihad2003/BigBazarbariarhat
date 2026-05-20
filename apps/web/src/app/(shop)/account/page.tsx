@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useQuery } from '@tanstack/react-query';
-import { useWishlistStore } from '@/lib/stores/wishlist-store';
+import { useWishlistStore } from '@/store/wishlistStore';
 import { useSession } from 'next-auth/react';
 import { MOCK_ORDERS } from '@/lib/mock-data/orders';
 import { formatPrice, cn } from '@/lib/utils';

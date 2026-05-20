@@ -19,12 +19,20 @@ import {
     Trash2,
     User
 } from 'lucide-react';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { useToast } from '@/components/ui/use-toast';
 
 export default function CustomersPage() {
+    const { toast } = useToast();
     const [customers, setCustomers] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [pagination, setPagination] = useState({ page: 1, totalPages: 1, totalItems: 0 });
+
+    // Custom confirm dialog state
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [customerToDelete, setCustomerToDelete] = useState<string | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const fetchCustomers = async (page = 1) => {
         setLoading(true);
@@ -46,16 +54,41 @@ export default function CustomersPage() {
         }
     };
 
-    const handleDelete = async (id: string) => {
-        if (!confirm('Are you sure you want to delete this customer?')) return;
+    const handleDeleteClick = (id: string) => {
+        setCustomerToDelete(id);
+        setConfirmOpen(true);
+    };
+
+    const handleDelete = async () => {
+        if (!customerToDelete) return;
+        setIsDeleting(true);
         try {
-            const res = await fetch(`/api/customers/${id}`, { method: 'DELETE' });
+            const res = await fetch(`/api/customers/${customerToDelete}`, { method: 'DELETE' });
             const result = await res.json();
             if (result.success) {
-                setCustomers(prev => prev.filter(c => c.id !== id));
+                setCustomers(prev => prev.filter(c => c.id !== customerToDelete));
+                toast({
+                    title: 'Customer deleted',
+                    description: 'The customer was successfully deleted.',
+                });
+            } else {
+                toast({
+                    title: 'Error',
+                    description: 'Failed to delete customer.',
+                    variant: 'destructive',
+                });
             }
         } catch (error) {
             console.error('Delete failed:', error);
+            toast({
+                title: 'Error',
+                description: 'An unexpected error occurred.',
+                variant: 'destructive',
+            });
+        } finally {
+            setIsDeleting(false);
+            setConfirmOpen(false);
+            setCustomerToDelete(null);
         }
     };
 
@@ -179,7 +212,7 @@ export default function CustomersPage() {
                                                 </button>
                                             </Link>
                                             <button
-                                                onClick={() => handleDelete(customer.id)}
+                                                onClick={() => handleDeleteClick(customer.id)}
                                                 className="p-2 hover:bg-destructive/10 rounded-lg transition-colors text-muted-foreground hover:text-destructive"
                                             >
                                                 <Trash2 className="w-4 h-4" />
@@ -226,6 +259,17 @@ export default function CustomersPage() {
                     </div>
                 </div>
             </div>
+
+            <ConfirmDialog
+                isOpen={confirmOpen}
+                onClose={() => setConfirmOpen(false)}
+                onConfirm={handleDelete}
+                title="Delete Customer Account?"
+                description="Are you sure you want to delete this customer? This action cannot be undone."
+                confirmText="Delete Account"
+                isLoading={isDeleting}
+                variant="danger"
+            />
         </div>
     );
 }
