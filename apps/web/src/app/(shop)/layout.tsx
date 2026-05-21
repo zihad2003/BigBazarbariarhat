@@ -1,7 +1,6 @@
 import { Header, Footer } from '@/components/layout'
-import { SearchModal } from '@/components/shop/search-modal'
-import { CartDrawer } from '@/components/shop/cart-drawer'
 import { Toaster } from '@/components/ui/toaster'
+import { ClientOverlays } from '@/components/shop/client-overlays'
 
 export default function ShopLayout({
     children,
@@ -11,8 +10,7 @@ export default function ShopLayout({
     return (
         <>
             <Header />
-            <SearchModal />
-            <CartDrawer />
+            <ClientOverlays />
             <Toaster />
             <main className="min-h-screen pb-24 md:pb-0">
                 {children}

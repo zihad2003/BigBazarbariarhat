@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
     ArrowLeft,
@@ -11,7 +11,7 @@ import {
     Check
 } from 'lucide-react';
 
-export default function NewCategoryPage() {
+function NewCategoryPageContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const queryParentId = searchParams.get('parentId');
@@ -220,5 +220,20 @@ export default function NewCategoryPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function NewCategoryPage() {
+    return (
+        <Suspense fallback={
+            <div className="h-[60vh] flex items-center justify-center">
+                <div className="flex flex-col items-center gap-3">
+                    <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+                    <p className="text-[13px] font-medium text-muted-foreground animate-pulse">Loading category form...</p>
+                </div>
+            </div>
+        }>
+            <NewCategoryPageContent />
+        </Suspense>
     );
 }
