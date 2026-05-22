@@ -30,6 +30,14 @@ export default function SettingsPage() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
 
+    // Modal state for adding a shipping zone
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [newZoneName, setNewZoneName] = useState('');
+    const [newZoneCities, setNewZoneCities] = useState('');
+    const [newZoneRates, setNewZoneRates] = useState<any[]>([
+        { name: 'Standard Shipping', baseRate: 60, estimatedDays: '2-3 days' }
+    ]);
+
     useEffect(() => {
         const fetchAll = async () => {
             setLoading(true);
@@ -71,6 +79,58 @@ export default function SettingsPage() {
             console.error('Save failed:', error);
         } finally {
             setSaving(false);
+        }
+    };
+
+    const handleCreateZone = async () => {
+        if (!newZoneName.trim()) return;
+        try {
+            const citiesArray = newZoneCities
+                .split(',')
+                .map(c => c.trim())
+                .filter(Boolean);
+
+            const res = await fetch('/api/settings/shipping', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: newZoneName,
+                    cities: citiesArray,
+                    rates: newZoneRates,
+                    isActive: true
+                })
+            });
+
+            if (res.ok) {
+                const result = await res.json();
+                if (result.success) {
+                    setShippingZones([result.data, ...shippingZones]);
+                    setIsModalOpen(false);
+                    // Reset fields
+                    setNewZoneName('');
+                    setNewZoneCities('');
+                    setNewZoneRates([{ name: 'Standard Shipping', baseRate: 60, estimatedDays: '2-3 days' }]);
+                }
+            }
+        } catch (error) {
+            console.error('Failed to create zone:', error);
+        }
+    };
+
+    const handleDeleteZone = async (id: string) => {
+        if (!confirm('Are you sure you want to delete this shipping zone?')) return;
+        try {
+            const res = await fetch(`/api/settings/shipping/${id}`, {
+                method: 'DELETE'
+            });
+            if (res.ok) {
+                const result = await res.json();
+                if (result.success) {
+                    setShippingZones(shippingZones.filter(zone => zone.id !== id));
+                }
+            }
+        } catch (error) {
+            console.error('Failed to delete zone:', error);
         }
     };
 
@@ -195,7 +255,10 @@ export default function SettingsPage() {
                                     <h2 className="text-sm font-semibold">Shipping Zones</h2>
                                     <p className="text-[12px] text-muted-foreground mt-0.5">Manage where you ship and how much you charge.</p>
                                 </div>
-                                <button className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-[12px] font-bold hover:bg-primary/90 transition flex items-center gap-2">
+                                <button 
+                                    onClick={() => setIsModalOpen(true)}
+                                    className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-[12px] font-bold hover:bg-primary/90 transition flex items-center gap-2"
+                                >
                                     <Plus className="w-3.5 h-3.5" />
                                     Add Zone
                                 </button>
@@ -209,26 +272,48 @@ export default function SettingsPage() {
                                     </div>
                                 ) : (
                                     shippingZones.map((zone) => (
-                                        <div key={zone.id} className="bg-card border border-border rounded-xl p-5 hover:border-primary/30 transition-all group">
-                                            <div className="flex justify-between items-start mb-4">
-                                                <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary">
-                                                    <Truck className="w-5 h-5" />
-                                                </div>
-                                                <span className="px-2 py-0.5 bg-emerald-50 text-emerald-600 rounded text-[10px] font-bold border border-emerald-100">
-                                                    Active
-                                                </span>
-                                            </div>
-                                            <h4 className="text-[15px] font-bold text-foreground">{zone.name}</h4>
-                                            <div className="flex flex-wrap gap-1.5 mt-3">
-                                                {zone.cities.map((city: string, i: number) => (
-                                                    <span key={i} className="px-2 py-0.5 bg-muted rounded text-[10px] text-muted-foreground font-medium">
-                                                        {city}
+                                        <div key={zone.id} className="bg-card border border-border rounded-xl p-5 hover:border-primary/30 transition-all group flex flex-col justify-between">
+                                            <div>
+                                                <div className="flex justify-between items-start mb-4">
+                                                    <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary">
+                                                        <Truck className="w-5 h-5" />
+                                                    </div>
+                                                    <span className="px-2 py-0.5 bg-emerald-50 text-emerald-600 rounded text-[10px] font-bold border border-emerald-100">
+                                                        Active
                                                     </span>
-                                                ))}
+                                                </div>
+                                                <h4 className="text-[15px] font-bold text-foreground">{zone.name}</h4>
+                                                
+                                                <div className="space-y-1 mt-3">
+                                                    <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider block">Cities</span>
+                                                    <div className="flex flex-wrap gap-1.5 mt-1">
+                                                        {zone.cities.map((city: string, i: number) => (
+                                                            <span key={i} className="px-2 py-0.5 bg-muted rounded text-[10px] text-muted-foreground font-medium">
+                                                                {city}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                </div>
+
+                                                {zone.rates && Array.isArray(zone.rates) && zone.rates.length > 0 && (
+                                                    <div className="mt-4 pt-4 border-t border-border/50 space-y-1.5">
+                                                        <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider block">Rates</span>
+                                                        {zone.rates.map((rate: any, i: number) => (
+                                                            <div key={i} className="flex justify-between items-center text-[12px] text-muted-foreground">
+                                                                <span>{rate.name} {rate.estimatedDays ? `(${rate.estimatedDays})` : ''}</span>
+                                                                <span className="font-semibold text-foreground">{rate.baseRate} BDT</span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
                                             </div>
+                                            
                                             <div className="pt-4 mt-6 border-t border-border flex justify-between items-center">
-                                                <span className="text-[11px] text-muted-foreground">{zone.rates.length} Rates</span>
-                                                <button className="p-2 text-muted-foreground hover:text-destructive transition-colors">
+                                                <span className="text-[11px] text-muted-foreground">{(zone.rates || []).length} Rates</span>
+                                                <button 
+                                                    onClick={() => handleDeleteZone(zone.id)}
+                                                    className="p-2 text-muted-foreground hover:text-destructive transition-colors"
+                                                >
                                                     <Trash2 className="w-4 h-4" />
                                                 </button>
                                             </div>
@@ -236,6 +321,131 @@ export default function SettingsPage() {
                                     ))
                                 )}
                             </div>
+
+                            {/* Add Shipping Zone Modal */}
+                            {isModalOpen && (
+                                <div className="fixed inset-0 bg-black/55 backdrop-blur-[2px] flex items-center justify-center z-50 animate-in fade-in duration-200">
+                                    <div className="bg-card border border-border w-full max-w-lg rounded-xl shadow-xl overflow-hidden animate-in zoom-in-95 duration-200">
+                                        <div className="p-6 border-b border-border flex justify-between items-center">
+                                            <h3 className="text-[15px] font-bold text-foreground">Add Shipping Zone</h3>
+                                            <button 
+                                                onClick={() => setIsModalOpen(false)} 
+                                                className="text-muted-foreground hover:text-foreground text-sm font-semibold transition"
+                                            >
+                                                ✕
+                                            </button>
+                                        </div>
+                                        
+                                        <div className="p-6 space-y-4 max-h-[60vh] overflow-y-auto">
+                                            <div className="space-y-1.5">
+                                                <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Zone Name</label>
+                                                <input
+                                                    className="w-full h-11 px-4 bg-background border border-input rounded-lg text-[13px] outline-none focus:ring-2 focus:ring-ring transition"
+                                                    placeholder="e.g. Inside Dhaka"
+                                                    value={newZoneName}
+                                                    onChange={e => setNewZoneName(e.target.value)}
+                                                />
+                                            </div>
+                                            
+                                            <div className="space-y-1.5">
+                                                <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Cities (Comma separated)</label>
+                                                <input
+                                                    className="w-full h-11 px-4 bg-background border border-input rounded-lg text-[13px] outline-none focus:ring-2 focus:ring-ring transition"
+                                                    placeholder="e.g. Dhaka, Savar, Uttara"
+                                                    value={newZoneCities}
+                                                    onChange={e => setNewZoneCities(e.target.value)}
+                                                />
+                                            </div>
+                                            
+                                            <div className="space-y-3 pt-2">
+                                                <div className="flex justify-between items-center border-b border-border/50 pb-2">
+                                                    <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Shipping Rates</label>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setNewZoneRates([...newZoneRates, { name: '', baseRate: 0, estimatedDays: '' }])}
+                                                        className="text-xs text-primary font-bold hover:underline flex items-center gap-1"
+                                                    >
+                                                        <Plus className="w-3.5 h-3.5" /> Add Rate
+                                                    </button>
+                                                </div>
+                                                
+                                                {newZoneRates.map((rate, index) => (
+                                                    <div key={index} className="p-4 bg-muted/20 border border-border rounded-lg space-y-3 relative">
+                                                        {newZoneRates.length > 1 && (
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setNewZoneRates(newZoneRates.filter((_, i) => i !== index))}
+                                                                className="absolute top-2 right-2 text-muted-foreground hover:text-destructive text-xs transition"
+                                                            >
+                                                                <Trash2 className="w-3.5 h-3.5" />
+                                                            </button>
+                                                        )}
+                                                        <div className="grid grid-cols-2 gap-3">
+                                                            <div className="space-y-1">
+                                                                <span className="text-[10px] text-muted-foreground font-semibold uppercase">Rate Name</span>
+                                                                <input
+                                                                    className="w-full h-9 px-3 bg-background border border-input rounded text-[12px] outline-none"
+                                                                    placeholder="e.g. Standard Delivery"
+                                                                    value={rate.name}
+                                                                    onChange={e => {
+                                                                        const updated = [...newZoneRates];
+                                                                        updated[index].name = e.target.value;
+                                                                        setNewZoneRates(updated);
+                                                                    }}
+                                                                />
+                                                            </div>
+                                                            <div className="space-y-1">
+                                                                <span className="text-[10px] text-muted-foreground font-semibold uppercase">Cost (BDT)</span>
+                                                                <input
+                                                                    type="number"
+                                                                    className="w-full h-9 px-3 bg-background border border-input rounded text-[12px] outline-none"
+                                                                    placeholder="e.g. 60"
+                                                                    value={rate.baseRate || ''}
+                                                                    onChange={e => {
+                                                                        const updated = [...newZoneRates];
+                                                                        updated[index].baseRate = parseFloat(e.target.value) || 0;
+                                                                        setNewZoneRates(updated);
+                                                                    }}
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                        <div className="grid grid-cols-2 gap-3">
+                                                            <div className="space-y-1 col-span-2">
+                                                                <span className="text-[10px] text-muted-foreground font-semibold uppercase">Est. Delivery Time</span>
+                                                                <input
+                                                                    className="w-full h-9 px-3 bg-background border border-input rounded text-[12px] outline-none"
+                                                                    placeholder="e.g. 2-3 days"
+                                                                    value={rate.estimatedDays}
+                                                                    onChange={e => {
+                                                                        const updated = [...newZoneRates];
+                                                                        updated[index].estimatedDays = e.target.value;
+                                                                        setNewZoneRates(updated);
+                                                                    }}
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="p-6 border-t border-border flex justify-end gap-3 bg-muted/10">
+                                            <button
+                                                onClick={() => setIsModalOpen(false)}
+                                                className="px-4 py-2 bg-background border border-input rounded-lg text-[12px] font-bold text-muted-foreground hover:bg-muted/60 transition"
+                                            >
+                                                Cancel
+                                            </button>
+                                            <button
+                                                onClick={handleCreateZone}
+                                                className="px-5 py-2 bg-primary text-primary-foreground rounded-lg text-[12px] font-bold hover:bg-primary/90 transition"
+                                            >
+                                                Save Zone
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     )}
 

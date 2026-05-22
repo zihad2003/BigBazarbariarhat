@@ -50,11 +50,29 @@ export default function EditProductPage() {
     const [instagramReelUrl, setInstagramReelUrl] = useState('');
     const [variants, setVariants] = useState<Variant[]>([]);
 
+    const [isActive, setIsActive] = useState(true);
+    const [categories, setCategories] = useState<any[]>([]);
+
     // Flags
     const [featured, setFeatured] = useState(false);
     const [isSale, setIsSale] = useState(false);
     const [isHot, setIsHot] = useState(false);
     const [isNew, setIsNew] = useState(false);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const res = await fetch('/api/categories');
+                const result = await res.json();
+                if (result.success) {
+                    setCategories(result.data);
+                }
+            } catch (error) {
+                console.error('Failed to load categories:', error);
+            }
+        };
+        fetchCategories();
+    }, []);
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -79,6 +97,7 @@ export default function EditProductPage() {
                     setIsSale(p.isSale || false);
                     setIsHot(p.isHot || false);
                     setIsNew(p.isNew || false);
+                    setIsActive(p.isActive || false);
                 }
             } catch (error) {
                 console.error('Failed to load product:', error);
@@ -90,10 +109,82 @@ export default function EditProductPage() {
     }, [params.id]);
 
     const handleSave = async () => {
-        setSaving(true);
-        // Mock save
+        if (!name || !price || !category) {
+            alert('Please fill in the product name, price, and category.');
+            return;
+        }
 
-        router.push('/products');
+        setSaving(true);
+        try {
+            const payload = {
+                name,
+                description,
+                price,
+                salePrice: salePrice || null,
+                stock,
+                categoryId: category,
+                instagramReelUrl,
+                variants,
+                featured,
+                isSale,
+                isHot,
+                isNew,
+                isActive,
+                images: imagePreview ? [imagePreview] : []
+            };
+
+            const res = await fetch(`/api/products/${params.id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const result = await res.json();
+            if (result.success) {
+                router.push('/products');
+            } else {
+                alert(result.message || 'Failed to update product');
+            }
+        } catch (error) {
+            console.error('Failed to update product:', error);
+            alert('An error occurred while updating the product.');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const handleDelete = async () => {
+        if (!window.confirm('Are you sure you want to delete this product?')) {
+            return;
+        }
+
+        setSaving(true);
+        try {
+            const res = await fetch(`/api/products/${params.id}`, {
+                method: 'DELETE'
+            });
+
+            const result = await res.json();
+            if (result.success) {
+                alert(result.message || 'Product deleted successfully.');
+                router.push('/products');
+            } else {
+                alert(result.message || 'Failed to delete product');
+            }
+        } catch (error) {
+            console.error('Failed to delete product:', error);
+            alert('An error occurred while deleting the product.');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const updateVariant = (id: string, key: keyof Variant, value: any) => {
+        setVariants(variants.map(v => 
+            v.id === id 
+                ? { ...v, [key]: key === 'stock' || key === 'price' ? parseFloat(value) || 0 : value } 
+                : v
+        ));
     };
 
     const addVariant = () => {
@@ -131,6 +222,14 @@ export default function EditProductPage() {
                     </div>
                 </div>
                 <div className="flex items-center gap-3">
+                    <button
+                        onClick={handleDelete}
+                        disabled={saving}
+                        className="px-4 py-2 border border-destructive/30 text-destructive hover:bg-destructive/10 rounded-lg text-[13px] font-semibold transition flex items-center gap-2"
+                    >
+                        <Trash2 className="w-4 h-4" />
+                        Delete Product
+                    </button>
                     <button onClick={() => router.back()} className="px-4 py-2 text-[13px] font-medium text-muted-foreground hover:text-foreground transition-colors">
                         Cancel
                     </button>
@@ -242,30 +341,35 @@ export default function EditProductPage() {
                                     <div key={v.id} className="grid grid-cols-5 gap-3 p-3 bg-muted/30 rounded-lg group relative">
                                         <input
                                             placeholder="Size"
-                                            defaultValue={v.size}
+                                            value={v.size}
+                                            onChange={e => updateVariant(v.id, 'size', e.target.value)}
                                             className="h-9 px-3 bg-background border border-input rounded-md text-[12px]"
                                         />
                                         <input
                                             placeholder="Color"
-                                            defaultValue={v.color}
+                                            value={v.color}
+                                            onChange={e => updateVariant(v.id, 'color', e.target.value)}
                                             className="h-9 px-3 bg-background border border-input rounded-md text-[12px]"
                                         />
                                         <input
                                             placeholder="SKU"
-                                            defaultValue={v.sku}
+                                            value={v.sku}
+                                            onChange={e => updateVariant(v.id, 'sku', e.target.value)}
                                             className="h-9 px-3 bg-background border border-input rounded-md text-[12px]"
                                         />
                                         <input
                                             type="number"
                                             placeholder="Stock"
-                                            defaultValue={v.stock}
+                                            value={v.stock === 0 ? '' : v.stock}
+                                            onChange={e => updateVariant(v.id, 'stock', e.target.value)}
                                             className="h-9 px-3 bg-background border border-input rounded-md text-[12px]"
                                         />
                                         <div className="flex items-center gap-2">
                                             <input
                                                 type="number"
                                                 placeholder="Price"
-                                                defaultValue={v.price}
+                                                value={v.price === 0 ? '' : v.price}
+                                                onChange={e => updateVariant(v.id, 'price', e.target.value)}
                                                 className="flex-1 h-9 px-3 bg-background border border-input rounded-md text-[12px]"
                                             />
                                             <button
@@ -308,7 +412,11 @@ export default function EditProductPage() {
                                     accept="image/*"
                                     onChange={e => {
                                         const file = e.target.files?.[0];
-                                        if (file) setImagePreview(URL.createObjectURL(file));
+                                        if (file) {
+                                            const reader = new FileReader();
+                                            reader.onloadend = () => setImagePreview(reader.result as string);
+                                            reader.readAsDataURL(file);
+                                        }
                                     }}
                                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                                 />
@@ -358,22 +466,26 @@ export default function EditProductPage() {
                         <div className="space-y-4">
                             <div className="space-y-1.5">
                                 <label className="text-[12px] font-medium text-muted-foreground">Category</label>
-                                <select value={category} onChange={e => setCategory(e.target.value)} className="w-full h-10 px-3 bg-background border border-input rounded-lg text-[13px] outline-none">
+                                <select 
+                                    value={category} 
+                                    onChange={e => setCategory(e.target.value)} 
+                                    className="w-full h-10 px-3 bg-background border border-input rounded-lg text-[13px] outline-none"
+                                >
                                     <option value="">Select Category</option>
-                                    <option value="panjabi">Panjabi</option>
-                                    <option value="saree">Saree</option>
-                                    <option value="salwar-kameez">Salwar Kameez</option>
-                                    <option value="lungi">Lungi</option>
-                                    <option value="kids">Kid&apos;s Wear</option>
-                                    <option value="accessories">Accessories</option>
-                                    <option value="wedding">Wedding Touch</option>
+                                    {categories.map(cat => (
+                                        <option key={cat.id} value={cat.id}>{cat.name}</option>
+                                    ))}
                                 </select>
                             </div>
                             <div className="space-y-1.5">
                                 <label className="text-[12px] font-medium text-muted-foreground">Status</label>
-                                <select className="w-full h-10 px-3 bg-background border border-input rounded-lg text-[13px] outline-none font-semibold text-emerald-600">
-                                    <option value="active">Active (Visible)</option>
-                                    <option value="draft">Draft (Hidden)</option>
+                                <select 
+                                    value={isActive ? "active" : "draft"} 
+                                    onChange={e => setIsActive(e.target.value === "active")} 
+                                    className={`w-full h-10 px-3 bg-background border border-input rounded-lg text-[13px] outline-none font-semibold ${isActive ? "text-emerald-600" : "text-amber-600"}`}
+                                >
+                                    <option value="active" className="text-emerald-600">Active (Visible)</option>
+                                    <option value="draft" className="text-amber-600">Draft (Hidden)</option>
                                 </select>
                             </div>
                         </div>

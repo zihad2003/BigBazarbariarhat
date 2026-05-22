@@ -1,0 +1,57 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@bigbazar/db';
+import { auth } from '@/auth';
+
+export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+    try {
+        const session = await auth();
+        if (!session) {
+            return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+        }
+
+        const { id } = params;
+        const body = await req.json();
+        const { name, cities, rates, isActive } = body;
+
+        const zone = await prisma.shippingZone.update({
+            where: { id },
+            data: {
+                name,
+                cities,
+                rates,
+                isActive
+            }
+        });
+
+        return NextResponse.json({
+            success: true,
+            data: zone
+        });
+    } catch (error) {
+        console.error('Shipping PATCH Error:', error);
+        return NextResponse.json({ success: false, message: 'Failed to update shipping zone' }, { status: 500 });
+    }
+}
+
+export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+    try {
+        const session = await auth();
+        if (!session) {
+            return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+        }
+
+        const { id } = params;
+
+        await prisma.shippingZone.delete({
+            where: { id }
+        });
+
+        return NextResponse.json({
+            success: true,
+            message: 'Shipping zone deleted successfully'
+        });
+    } catch (error) {
+        console.error('Shipping DELETE Error:', error);
+        return NextResponse.json({ success: false, message: 'Failed to delete shipping zone' }, { status: 500 });
+    }
+}
