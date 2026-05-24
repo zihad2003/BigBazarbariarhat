@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Plus, Heart, ShoppingBag, Star, ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { ProductQuickView } from './product-quick-view'
+import dynamic from 'next/dynamic'
 import { formatPrice, cn } from '@/lib/utils'
 import type { Product } from '@/types/product'
 import { useCartStore } from '@/store/cartStore'
@@ -15,6 +15,10 @@ import { useUIStore } from '@/lib/stores/ui-store'
 import { useWishlistStore } from '@/store/wishlistStore'
 import { DeliveryInfoModal } from './delivery-info-modal'
 import { useLanguageStore, useTranslation } from '@bigbazar/shared'
+
+const ProductQuickView = dynamic(() => import('./product-quick-view').then(mod => mod.ProductQuickView), {
+    ssr: false
+})
 
 interface ProductCardProps {
     product: Product
@@ -30,6 +34,7 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
     const router = useRouter()
     const [isHovered, setIsHovered] = useState(false)
     const [isAdding, setIsAdding] = useState(false)
+    const [isQuickViewOpen, setIsQuickViewOpen] = useState(false)
 
     const isOutOfStock = product.stock <= 0
     const secondImage = product.images?.[1]
@@ -124,7 +129,24 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
                         >
                             <Heart className={cn("h-5 w-5", isInWishlist(product.id) && 'fill-current')} />
                         </button>
-                        <ProductQuickView product={product} />
+                        <button
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setIsQuickViewOpen(true);
+                            }}
+                            className="w-12 h-12 rounded-2xl flex items-center justify-center bg-white/90 backdrop-blur-md text-gray-400 hover:text-black hover:bg-white transition-all duration-300 shadow-xl"
+                            aria-label="Quick view"
+                        >
+                            <Plus className="h-5 w-5" />
+                        </button>
+                        {isQuickViewOpen && (
+                            <ProductQuickView
+                                product={product}
+                                isOpen={isQuickViewOpen}
+                                onClose={() => setIsQuickViewOpen(false)}
+                            />
+                        )}
                     </div>
                 </div>
 
@@ -264,7 +286,17 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
                     >
                         <Heart className={`h-3.5 w-3.5 md:h-5 md:w-5 ${isInWishlist(product.id) ? 'fill-current' : ''}`} />
                     </button>
-                    <ProductQuickView product={product} />
+                    <button
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setIsQuickViewOpen(true);
+                        }}
+                        aria-label="Quick view"
+                        className="w-7 h-7 md:w-12 md:h-12 rounded-lg md:rounded-2xl flex items-center justify-center bg-white/90 backdrop-blur-md text-gray-400 hover:text-black hover:bg-white transition-all duration-300 shadow-xl"
+                    >
+                        <Plus className="h-3.5 w-3.5 md:h-5 md:w-5" />
+                    </button>
                 </div>
 
                 {/* Dynamic Action: Cart & Checkout */}
@@ -348,6 +380,13 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
                     )}
                 </div>
             </div>
+            {isQuickViewOpen && (
+                <ProductQuickView
+                    product={product}
+                    isOpen={isQuickViewOpen}
+                    onClose={() => setIsQuickViewOpen(false)}
+                />
+            )}
         </motion.div>
     )
 }

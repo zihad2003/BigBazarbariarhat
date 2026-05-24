@@ -24,16 +24,17 @@ import { useLanguageStore, useTranslation } from '@bigbazar/shared';
 
 interface ProductQuickViewProps {
     product: Product;
+    isOpen: boolean;
+    onClose: () => void;
 }
 
-export function ProductQuickView({ product }: ProductQuickViewProps) {
+export function ProductQuickView({ product, isOpen, onClose }: ProductQuickViewProps) {
     const { language } = useLanguageStore();
     const t = useTranslation();
     const [quantity, setQuantity] = useState(1);
     const { addItem } = useCartStore();
     const { addNotification } = useUIStore();
     const router = useRouter();
-    const [isOpen, setIsOpen] = useState(false);
     const [isAdding, setIsAdding] = useState(false);
 
     const price = product.salePrice || product.basePrice;
@@ -56,26 +57,12 @@ export function ProductQuickView({ product }: ProductQuickViewProps) {
             stock: product.stock,
         });
         setIsAdding(false);
-        setIsOpen(false);
+        onClose();
         router.push('/cart');
     };
 
     return (
-        <Sheet open={isOpen} onOpenChange={setIsOpen}>
-            <SheetTrigger asChild>
-                <Button
-                    size="icon"
-                    className="opacity-0 translate-x-4 transition-all duration-500 group-hover:opacity-100 group-hover:translate-x-0 bg-white text-black hover:bg-black hover:text-white rounded-2xl shadow-2xl shadow-black/5"
-                    onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        setIsOpen(true);
-                    }}
-                    aria-label="Quick view"
-                >
-                    <Plus className="h-5 w-5" />
-                </Button>
-            </SheetTrigger>
+        <Sheet open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
             <SheetContent side="right" className="w-full sm:max-w-xl p-0 overflow-y-auto bg-white border-l border-gray-50 flex flex-col">
                 <div className="flex-1">
                     {/* Visual Section */}
