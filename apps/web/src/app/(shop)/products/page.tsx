@@ -258,35 +258,23 @@ export default function ProductsPage() {
                     <main className="flex-1">
                         
                         {/* Toolbar Module */}
-                        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-6 mb-6 sm:mb-12 bg-gray-50/50 p-2 sm:p-4 rounded-2xl sm:rounded-[2.5rem] border border-gray-100">
-                            <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto">
-                                {/* Mobile Filter Trigger */}
-                                <Sheet>
-                                    <SheetTrigger asChild>
-                                        <Button variant="outline" className="lg:hidden h-12 w-12 rounded-2xl p-0 border-gray-200 hover:bg-white hover:shadow-xl transition-all">
-                                            <SlidersHorizontal className="h-5 w-5" />
-                                        </Button>
-                                    </SheetTrigger>
-                                    <SheetContent side="left" className="w-full sm:max-w-md overflow-y-auto">
-                                        <SheetHeader className="mb-8">
-                                            <SheetTitle className="text-2xl font-black tracking-tighter">Filters</SheetTitle>
-                                        </SheetHeader>
-                                        <FilterContent />
-                                    </SheetContent>
-                                </Sheet>
+                        <div className="flex items-center justify-between gap-2 sm:gap-4 mb-6 sm:mb-12 bg-gray-50/50 p-2 sm:p-4 rounded-2xl sm:rounded-[2.5rem] border border-gray-100">
+                            {/* Mobile Filter Trigger */}
+                            <Sheet>
+                                <SheetTrigger asChild>
+                                    <Button variant="outline" className="lg:hidden h-10 sm:h-12 w-10 sm:w-12 rounded-xl sm:rounded-2xl p-0 border-gray-200 hover:bg-white hover:shadow-xl transition-all">
+                                        <SlidersHorizontal className="h-4 sm:h-5 w-4 sm:w-5" />
+                                    </Button>
+                                </SheetTrigger>
+                                <SheetContent side="left" className="w-full sm:max-w-md overflow-y-auto">
+                                    <SheetHeader className="mb-8">
+                                        <SheetTitle className="text-2xl font-black tracking-tighter">Filters</SheetTitle>
+                                    </SheetHeader>
+                                    <FilterContent />
+                                </SheetContent>
+                            </Sheet>
 
-                                <div className="relative flex-1 sm:w-80">
-                                    <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                                    <Input
-                                        placeholder={t?.common?.search || "Search products..."}
-                                        value={searchQuery}
-                                        onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
-                                        className="h-10 sm:h-12 pl-10 sm:pl-12 pr-3 sm:pr-4 bg-white border-gray-200 rounded-xl sm:rounded-2xl focus:ring-2 focus:ring-black/5 transition-all font-medium text-sm"
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto justify-between sm:justify-end">
+                            <div className="flex items-center gap-2 sm:gap-4">
                                 <div className="hidden sm:flex items-center bg-white border border-gray-100 rounded-2xl p-1 shadow-sm">
                                     <button 
                                         onClick={() => setViewMode('grid')}
