@@ -255,24 +255,6 @@ export default function WishlistPage() {
                     )}
                 </AnimatePresence>
 
-                {/* Boutique Logistics Info Bar */}
-                <div className="mt-20 grid grid-cols-1 sm:grid-cols-3 gap-6">
-                    {[
-                        { icon: Info, label: 'Bespoke Support', desc: 'Direct access to boutique stylists' },
-                        { icon: LayoutGrid, label: 'Custom List', desc: 'Curated grouping & fashion organization' },
-                        { icon: Sparkles, label: 'Exclusive Access', desc: 'VIP notifications on high-demand stock' }
-                    ].map((feature, i) => (
-                        <div key={i} className="flex flex-col gap-4 p-6 bg-white rounded-xl border border-gray-100 hover:border-gray-200 transition-all hover:bg-gray-50/30">
-                            <div className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center text-gray-400 border border-gray-100">
-                                <feature.icon className="h-4 w-4" />
-                            </div>
-                            <div>
-                                <h4 className="text-[10px] font-black uppercase tracking-widest text-gray-900 mb-1">{feature.label}</h4>
-                                <p className="text-[9px] font-black uppercase tracking-widest text-gray-400 leading-relaxed opacity-65">{feature.desc}</p>
-                            </div>
-                        </div>
-                    ))}
-                </div>
             </div>
         </div>
     );
