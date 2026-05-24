@@ -214,42 +214,6 @@ export default function ProductsPage() {
                     ))}
                 </div>
             </div>
-
-
-
-            {/* Ratings */}
-            <div>
-                <h3 className="text-xs font-black text-gray-900 uppercase tracking-[0.2em] mb-6">Minimum Rating</h3>
-                <div className="space-y-2">
-                    {[5, 4, 3, 2, 1].map((rating) => (
-                        <button
-                            key={rating}
-                            onClick={() => { setMinRating(minRating === rating ? null : rating); setCurrentPage(1); }}
-                            className={cn(
-                                "flex items-center gap-3 w-full px-4 py-2 rounded-xl transition-all",
-                                minRating === rating ? "bg-amber-50 text-amber-600" : "hover:bg-gray-100 text-gray-400"
-                            )}
-                        >
-                            <div className="flex items-center gap-1">
-                                {[...Array(5)].map((_, i) => (
-                                    <Star key={i} className={cn("h-3 w-3", i < rating ? "fill-current" : "text-gray-200")} />
-                                ))}
-                            </div>
-                            <span className="text-xs font-black">& Up</span>
-                        </button>
-                    ))}
-                </div>
-            </div>
-
-            {/* Clear All */}
-            <Button 
-                variant="outline" 
-                className="w-full h-12 rounded-2xl border-dashed border-2 font-black uppercase tracking-widest text-[10px] hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 transition-all"
-                onClick={clearAllFilters}
-            >
-                <FilterX className="h-4 w-4 mr-2" />
-                Reset Filters
-            </Button>
         </div>
     );
 
