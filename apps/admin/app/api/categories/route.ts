@@ -1,9 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@bigbazar/db';
 import { auth } from '@/auth';
+import { getCache, setCache, invalidateCachePattern } from '@/lib/cache';
 
 export async function GET() {
     try {
+        const cacheKey = 'categories-list';
+        const cachedData = getCache<any>(cacheKey);
+        if (cachedData) {
+            return NextResponse.json({ success: true, data: cachedData });
+        }
+
         const categories = await prisma.category.findMany({
             include: {
                 parent: { select: { name: true } },
@@ -11,6 +18,9 @@ export async function GET() {
             },
             orderBy: { name: 'asc' }
         });
+
+        setCache(cacheKey, categories, 30 * 1000); // Cache for 30 seconds
+
         return NextResponse.json({ success: true, data: categories });
     } catch (error) {
         console.error('Categories GET Error:', error);
@@ -35,6 +45,10 @@ export async function POST(req: NextRequest) {
                 parentId: body.parentId || null,
             }
         });
+
+        // Invalidate categories and products related caches
+        invalidateCachePattern('categories-');
+        invalidateCachePattern('products-');
 
         return NextResponse.json({ success: true, data: category });
     } catch (error) {

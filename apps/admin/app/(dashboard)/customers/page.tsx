@@ -21,83 +21,81 @@ import {
 } from 'lucide-react';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { useToast } from '@/components/ui/use-toast';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 export default function CustomersPage() {
     const { toast } = useToast();
-    const [customers, setCustomers] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
+    const queryClient = useQueryClient();
     const [searchQuery, setSearchQuery] = useState('');
-    const [pagination, setPagination] = useState({ page: 1, totalPages: 1, totalItems: 0 });
+    const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
+    const [page, setPage] = useState(1);
 
     // Custom confirm dialog state
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [customerToDelete, setCustomerToDelete] = useState<string | null>(null);
-    const [isDeleting, setIsDeleting] = useState(false);
 
-    const fetchCustomers = async (page = 1) => {
-        setLoading(true);
-        try {
-            const res = await fetch(`/api/customers?page=${page}&limit=10&q=${searchQuery}`);
+    // Debounce search query
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearchQuery(searchQuery);
+            setPage(1);
+        }, 300);
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
+
+    // Fetch Customers
+    const { data, isLoading } = useQuery({
+        queryKey: ['customers', debouncedSearchQuery, page],
+        queryFn: async () => {
+            const res = await fetch(`/api/customers?page=${page}&limit=10&q=${debouncedSearchQuery}`);
             const result = await res.json();
-            if (result.success) {
-                setCustomers(result.data);
-                setPagination({
-                    page: result.pagination.page,
-                    totalPages: result.pagination.totalPages,
-                    totalItems: result.pagination.total
-                });
-            }
-        } catch (error) {
-            console.error('Failed to fetch customers:', error);
-        } finally {
-            setLoading(false);
+            if (!result.success) throw new Error(result.error || 'Failed to fetch customers');
+            return result;
         }
-    };
+    });
+
+    const customers = data?.data || [];
+    const pagination = data?.pagination || { page: 1, totalPages: 1, total: 0 };
+    const loading = isLoading;
+
+    // Delete Mutation
+    const deleteMutation = useMutation({
+        mutationFn: async (id: string) => {
+            const res = await fetch(`/api/customers/${id}`, { method: 'DELETE' });
+            const result = await res.json();
+            if (!result.success) throw new Error(result.error || 'Failed to delete customer');
+            return id;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['customers'] });
+            toast({
+                title: 'Customer deleted',
+                description: 'The customer was successfully deleted.',
+            });
+        },
+        onError: (err: any) => {
+            toast({
+                title: 'Error',
+                description: err.message || 'Failed to delete customer.',
+                variant: 'destructive',
+            });
+        }
+    });
 
     const handleDeleteClick = (id: string) => {
         setCustomerToDelete(id);
         setConfirmOpen(true);
     };
 
-    const handleDelete = async () => {
+    const handleDelete = () => {
         if (!customerToDelete) return;
-        setIsDeleting(true);
-        try {
-            const res = await fetch(`/api/customers/${customerToDelete}`, { method: 'DELETE' });
-            const result = await res.json();
-            if (result.success) {
-                setCustomers(prev => prev.filter(c => c.id !== customerToDelete));
-                toast({
-                    title: 'Customer deleted',
-                    description: 'The customer was successfully deleted.',
-                });
-            } else {
-                toast({
-                    title: 'Error',
-                    description: 'Failed to delete customer.',
-                    variant: 'destructive',
-                });
+        deleteMutation.mutate(customerToDelete, {
+            onSettled: () => {
+                setConfirmOpen(false);
+                setCustomerToDelete(null);
             }
-        } catch (error) {
-            console.error('Delete failed:', error);
-            toast({
-                title: 'Error',
-                description: 'An unexpected error occurred.',
-                variant: 'destructive',
-            });
-        } finally {
-            setIsDeleting(false);
-            setConfirmOpen(false);
-            setCustomerToDelete(null);
-        }
+        });
     };
-
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            fetchCustomers(1);
-        }, 300);
-        return () => clearTimeout(timer);
-    }, [searchQuery]);
 
     return (
         <div className="space-y-6">
@@ -161,7 +159,7 @@ export default function CustomersPage() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-border">
-                            {loading && customers.length === 0 ? (
+                            {loading ? (
                                 [...Array(5)].map((_, i) => (
                                     <tr key={i} className="animate-pulse">
                                         <td colSpan={5} className="px-6 py-6 h-20 bg-muted/5"></td>
@@ -174,7 +172,7 @@ export default function CustomersPage() {
                                         <p className="text-[13px] text-muted-foreground">No customers found.</p>
                                     </td>
                                 </tr>
-                            ) : customers.map((customer) => (
+                            ) : customers.map((customer: any) => (
                                 <tr key={customer.id} className="hover:bg-muted/10 transition-colors group">
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">
@@ -228,12 +226,12 @@ export default function CustomersPage() {
                 {/* Pagination */}
                 <div className="px-6 py-4 border-t border-border bg-muted/10 flex items-center justify-between">
                     <p className="text-[12px] text-muted-foreground">
-                        Showing <span className="font-bold text-foreground">{customers.length}</span> of <span className="font-bold text-foreground">{pagination.totalItems}</span> customers
+                        Showing <span className="font-bold text-foreground">{customers.length}</span> of <span className="font-bold text-foreground">{pagination.total}</span> customers
                     </p>
                     <div className="flex items-center gap-2">
                         <button
-                            onClick={() => fetchCustomers(pagination.page - 1)}
-                            disabled={pagination.page === 1}
+                            onClick={() => setPage(p => Math.max(p - 1, 1))}
+                            disabled={page === 1}
                             className="p-2 border border-border rounded-lg hover:bg-muted transition-colors disabled:opacity-50"
                         >
                             <ChevronLeft className="w-4 h-4" />
@@ -242,16 +240,16 @@ export default function CustomersPage() {
                             {[...Array(pagination.totalPages)].map((_, i) => (
                                 <button
                                     key={i}
-                                    onClick={() => fetchCustomers(i + 1)}
-                                    className={`w-8 h-8 rounded-lg text-[12px] font-bold transition-all ${pagination.page === i + 1 ? 'bg-primary text-primary-foreground' : 'hover:bg-muted text-muted-foreground'}`}
+                                    onClick={() => setPage(i + 1)}
+                                    className={`w-8 h-8 rounded-lg text-[12px] font-bold transition-all ${page === i + 1 ? 'bg-primary text-primary-foreground' : 'hover:bg-muted text-muted-foreground'}`}
                                 >
                                     {i + 1}
                                 </button>
                             ))}
                         </div>
                         <button
-                            onClick={() => fetchCustomers(pagination.page + 1)}
-                            disabled={pagination.page === pagination.totalPages}
+                            onClick={() => setPage(p => Math.min(p + 1, pagination.totalPages))}
+                            disabled={page === pagination.totalPages}
                             className="p-2 border border-border rounded-lg hover:bg-muted transition-colors disabled:opacity-50"
                         >
                             <ChevronRight className="w-4 h-4" />
@@ -267,7 +265,7 @@ export default function CustomersPage() {
                 title="Delete Customer Account?"
                 description="Are you sure you want to delete this customer? This action cannot be undone."
                 confirmText="Delete Account"
-                isLoading={isDeleting}
+                isLoading={deleteMutation.isPending}
                 variant="danger"
             />
         </div>

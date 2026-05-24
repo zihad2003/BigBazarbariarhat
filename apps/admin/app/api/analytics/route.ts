@@ -1,12 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@bigbazar/db';
 import { startOfDay, subDays, format } from 'date-fns';
+import { getCache, setCache } from '@/lib/cache';
 
 export async function GET(req: NextRequest) {
     try {
         const { searchParams } = new URL(req.url);
         const range = searchParams.get('range') || '7d';
         
+        const cacheKey = `analytics-${range}`;
+        const cachedData = getCache<any>(cacheKey);
+        if (cachedData) {
+            return NextResponse.json({
+                success: true,
+                data: cachedData
+            });
+        }
+
         const days = parseInt(range.replace('d', ''), 10) || 7;
         const lastDays = Array.from({ length: days }, (_, i) => subDays(new Date(), i)).reverse();
         
@@ -43,15 +53,19 @@ export async function GET(req: NextRequest) {
             };
         });
 
+        const responseData = {
+            chartData,
+            overview: {
+                totalRevenue: chartData.reduce((acc, curr) => acc + curr.revenue, 0),
+                totalOrders: chartData.reduce((acc, curr) => acc + curr.orders, 0)
+            }
+        };
+
+        setCache(cacheKey, responseData, 60 * 1000); // Cache for 60 seconds
+
         return NextResponse.json({
             success: true,
-            data: {
-                chartData,
-                overview: {
-                    totalRevenue: chartData.reduce((acc, curr) => acc + curr.revenue, 0),
-                    totalOrders: chartData.reduce((acc, curr) => acc + curr.orders, 0)
-                }
-            }
+            data: responseData
         });
     } catch (error) {
         return NextResponse.json({ success: false, message: 'Failed to fetch analytics' }, { status: 500 });

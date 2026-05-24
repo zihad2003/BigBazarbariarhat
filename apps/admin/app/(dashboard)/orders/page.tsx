@@ -17,41 +17,35 @@ import {
     XCircle,
     Package
 } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 
 export default function OrdersPage() {
-    const [orders, setOrders] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
-    const [pagination, setPagination] = useState({ page: 1, totalPages: 1, totalItems: 0 });
+    const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
+    const [page, setPage] = useState(1);
 
-    const fetchOrders = async (page = 1) => {
-        setLoading(true);
-        try {
-            const res = await fetch(`/api/orders?page=${page}&limit=10&q=${searchQuery}`);
-            const result = await res.json();
-            if (result.success) {
-                setOrders(result.data || []);
-                if (result.pagination) {
-                    setPagination({
-                        page: result.pagination.page,
-                        totalPages: result.pagination.totalPages,
-                        totalItems: result.pagination.total
-                    });
-                }
-            }
-        } catch (error) {
-            console.error('Failed to fetch orders:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
+    // Debounce search query
     useEffect(() => {
         const timer = setTimeout(() => {
-            fetchOrders(1);
+            setDebouncedSearchQuery(searchQuery);
+            setPage(1);
         }, 300);
         return () => clearTimeout(timer);
     }, [searchQuery]);
+
+    const { data, isLoading } = useQuery({
+        queryKey: ['orders', debouncedSearchQuery, page],
+        queryFn: async () => {
+            const res = await fetch(`/api/orders?page=${page}&limit=10&q=${debouncedSearchQuery}`);
+            const result = await res.json();
+            if (!result.success) throw new Error('Failed to fetch orders');
+            return result;
+        }
+    });
+
+    const orders = data?.data || [];
+    const pagination = data?.pagination || { page: 1, totalPages: 1, total: 0 };
+    const loading = isLoading;
 
     const getStatusStyle = (status: string) => {
         switch (status) {
@@ -111,7 +105,7 @@ export default function OrdersPage() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-border">
-                            {loading && orders.length === 0 ? (
+                            {loading ? (
                                 [...Array(5)].map((_, i) => (
                                     <tr key={i} className="animate-pulse">
                                         <td colSpan={6} className="px-6 py-6 h-20 bg-muted/5"></td>
@@ -124,7 +118,7 @@ export default function OrdersPage() {
                                         <p className="text-[13px] text-muted-foreground">No orders found.</p>
                                     </td>
                                 </tr>
-                            ) : orders.map(order => (
+                            ) : orders.map((order: any) => (
                                 <tr key={order.id} className="hover:bg-muted/10 transition-colors group">
                                     <td className="px-6 py-4 text-[14px] font-bold text-foreground">#{order.orderNumber}</td>
                                     <td className="px-6 py-4">
@@ -158,12 +152,12 @@ export default function OrdersPage() {
                 {/* Pagination */}
                 <div className="px-6 py-4 border-t border-border bg-muted/10 flex items-center justify-between">
                     <p className="text-[12px] text-muted-foreground">
-                        Showing <span className="font-bold text-foreground">{orders.length}</span> of <span className="font-bold text-foreground">{pagination.totalItems}</span> orders
+                        Showing <span className="font-bold text-foreground">{orders.length}</span> of <span className="font-bold text-foreground">{pagination.total}</span> orders
                     </p>
                     <div className="flex items-center gap-2">
                         <button
-                            onClick={() => fetchOrders(pagination.page - 1)}
-                            disabled={pagination.page === 1}
+                            onClick={() => setPage(p => Math.max(p - 1, 1))}
+                            disabled={page === 1}
                             className="p-2 border border-border rounded-lg hover:bg-muted transition-colors disabled:opacity-50"
                         >
                             <ChevronLeft className="w-4 h-4" />
@@ -172,16 +166,16 @@ export default function OrdersPage() {
                             {[...Array(pagination.totalPages)].map((_, i) => (
                                 <button
                                     key={i}
-                                    onClick={() => fetchOrders(i + 1)}
-                                    className={`w-8 h-8 rounded-lg text-[12px] font-bold transition-all ${pagination.page === i + 1 ? 'bg-primary text-primary-foreground' : 'hover:bg-muted text-muted-foreground'}`}
+                                    onClick={() => setPage(i + 1)}
+                                    className={`w-8 h-8 rounded-lg text-[12px] font-bold transition-all ${page === i + 1 ? 'bg-primary text-primary-foreground' : 'hover:bg-muted text-muted-foreground'}`}
                                 >
                                     {i + 1}
                                 </button>
                             ))}
                         </div>
                         <button
-                            onClick={() => fetchOrders(pagination.page + 1)}
-                            disabled={pagination.page === pagination.totalPages}
+                            onClick={() => setPage(p => Math.min(p + 1, pagination.totalPages))}
+                            disabled={page === pagination.totalPages}
                             className="p-2 border border-border rounded-lg hover:bg-muted transition-colors disabled:opacity-50"
                         >
                             <ChevronRight className="w-4 h-4" />
@@ -192,4 +186,3 @@ export default function OrdersPage() {
         </div>
     );
 }
-

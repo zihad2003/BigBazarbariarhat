@@ -24,11 +24,7 @@ export function ProductGrid({ products, isLoading, viewMode = 'grid' }: ProductG
     }
 
     if (!products.length) {
-        return (
-            <div className="text-center py-20 bg-gray-50 rounded-[3rem]">
-                <p className="text-gray-500 text-lg font-medium">No products match your refined criteria.</p>
-            </div>
-        )
+        return null
     }
 
     return (

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@bigbazar/db';
 import { auth } from '@/auth';
+import { getCache, setCache, invalidateCachePattern } from '@/lib/cache';
 
 export async function GET(req: NextRequest) {
     try {
@@ -10,6 +11,12 @@ export async function GET(req: NextRequest) {
         const q = searchParams.get('q') || '';
         const categorySlug = searchParams.get('category') || '';
         const skip = (page - 1) * limit;
+
+        const cacheKey = `products-list-${page}-${limit}-${q}-${categorySlug}`;
+        const cachedData = getCache<any>(cacheKey);
+        if (cachedData) {
+            return NextResponse.json({ success: true, ...cachedData });
+        }
 
         // Build conditional where clause for text search and category filter
         const whereClause: any = {
@@ -69,8 +76,7 @@ export async function GET(req: NextRequest) {
 
         const totalPages = Math.ceil(total / limit);
 
-        return NextResponse.json({ 
-            success: true, 
+        const responseData = {
             data: mappedProducts,
             pagination: {
                 page,
@@ -78,6 +84,13 @@ export async function GET(req: NextRequest) {
                 total,
                 totalPages
             }
+        };
+
+        setCache(cacheKey, responseData, 10 * 1000); // Cache for 10 seconds
+
+        return NextResponse.json({ 
+            success: true, 
+            ...responseData
         });
     } catch (error) {
         console.error('Fetch Products Error:', error);
@@ -142,6 +155,11 @@ export async function POST(req: NextRequest) {
                 variants: variants || []
             }
         });
+
+        // Invalidate product-related caches
+        invalidateCachePattern('products-');
+        invalidateCachePattern('inventory-');
+        invalidateCachePattern('dashboard-stats');
 
         return NextResponse.json({ success: true, data: product });
     } catch (error) {

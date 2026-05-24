@@ -397,28 +397,7 @@ export default function ProductsPage() {
                             viewMode={viewMode}
                         />
 
-                        {/* Empty State */}
-                        {!isLoading && filteredProducts.length === 0 && (
-                            <div className="text-center py-32 bg-gray-50/50 rounded-3xl border border-dashed border-gray-200">
-                                <div className="h-16 w-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                                    <Search className="h-7 w-7 text-gray-300" />
-                                </div>
-                                <h3 className="text-2xl font-bold text-gray-900 mb-3 font-playfair">
-                                    {language === 'bn' ? 'কোন পণ্য পাওয়া যায়নি' : 'No Products Found'}
-                                </h3>
-                                <p className="text-gray-400 font-medium mb-10 max-w-sm mx-auto">
-                                    {language === 'bn' 
-                                        ? 'আপনার ফিল্টারের সাথে মিলে এমন কোনো পণ্য খুঁজে পাওয়া যায়নি। অনুগ্রহ করে অন্য কিছু চেষ্টা করুন।' 
-                                        : "We couldn't find any products matching your current filters. Try adjusting your search or resetting filters."}
-                                </p>
-                                <Button
-                                    onClick={clearAllFilters}
-                                    className="bg-foreground text-white hover:bg-destructive h-12 px-10 rounded-xl font-bold uppercase tracking-wider text-xs"
-                                >
-                                    {language === 'bn' ? 'ফিল্টার রিসেট করুন' : 'Reset All Filters'}
-                                </Button>
-                            </div>
-                        )}
+
 
                         {/* Pagination Module */}
                         {!isLoading && totalPages > 1 && (

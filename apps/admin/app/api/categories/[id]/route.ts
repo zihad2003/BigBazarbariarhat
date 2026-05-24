@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@bigbazar/db';
 import { auth } from '@/auth';
+import { getCache, setCache, invalidateCachePattern } from '@/lib/cache';
 
 export async function GET(
     req: NextRequest,
@@ -8,11 +9,20 @@ export async function GET(
 ) {
     try {
         const { id } = await params;
+        const cacheKey = `categories-detail-${id}`;
+        const cachedData = getCache<any>(cacheKey);
+        if (cachedData) {
+            return NextResponse.json({ success: true, data: cachedData });
+        }
+
         const category = await prisma.category.findUnique({
             where: { id },
             include: { children: true }
         });
         if (!category) return NextResponse.json({ success: false, message: 'Category not found' }, { status: 404 });
+
+        setCache(cacheKey, category, 30 * 1000); // Cache for 30 seconds
+
         return NextResponse.json({ success: true, data: category });
     } catch (error) {
         return NextResponse.json({ success: false, message: 'Failed to fetch category' }, { status: 500 });
@@ -46,6 +56,10 @@ export async function PATCH(
             where: { id },
             data
         });
+
+        // Invalidate categories and products related caches
+        invalidateCachePattern('categories-');
+        invalidateCachePattern('products-');
 
         return NextResponse.json({ success: true, data: category });
     } catch (error: any) {
@@ -106,6 +120,10 @@ export async function DELETE(
         await prisma.category.delete({
             where: { id }
         });
+
+        // Invalidate categories and products related caches
+        invalidateCachePattern('categories-');
+        invalidateCachePattern('products-');
 
         return NextResponse.json({ success: true, message: 'Category deleted successfully' });
     } catch (error: any) {

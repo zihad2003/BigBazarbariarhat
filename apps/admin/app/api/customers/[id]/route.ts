@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@bigbazar/db';
+import { getCache, setCache, invalidateCachePattern } from '@/lib/cache';
 
 export async function GET(
     req: Request,
@@ -7,6 +8,11 @@ export async function GET(
 ) {
     try {
         const { id } = await params;
+        const cacheKey = `customers-detail-${id}`;
+        const cachedData = getCache<any>(cacheKey);
+        if (cachedData) {
+            return NextResponse.json({ success: true, data: cachedData });
+        }
 
         const user = await prisma.user.findUnique({
             where: { id },
@@ -39,18 +45,22 @@ export async function GET(
         const orderCount = allOrders.length;
         const averageOrderValue = orderCount > 0 ? totalSpent / orderCount : 0;
 
+        const responseData = {
+            ...user,
+            stats: {
+                totalSpent,
+                orderCount,
+                averageOrderValue
+            },
+            // For UI compatibility, providing empty addresses as placeholder if not in schema
+            addresses: [] 
+        };
+
+        setCache(cacheKey, responseData, 10 * 1000); // Cache for 10 seconds
+
         return NextResponse.json({
             success: true,
-            data: {
-                ...user,
-                stats: {
-                    totalSpent,
-                    orderCount,
-                    averageOrderValue
-                },
-                // For UI compatibility, providing empty addresses as placeholder if not in schema
-                addresses: [] 
-            }
+            data: responseData
         });
     } catch (error) {
         console.error('API Error:', error);
@@ -73,6 +83,10 @@ export async function PATCH(
                 email: body.email,
             }
         });
+
+        // Invalidate customer-related caches
+        invalidateCachePattern('customers-');
+        invalidateCachePattern('dashboard-stats');
 
         return NextResponse.json({ success: true, data: updatedUser });
     } catch (error) {

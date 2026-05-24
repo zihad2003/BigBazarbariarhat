@@ -1,9 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@bigbazar/db';
 import { auth } from '@/auth';
+import { getCache, setCache, invalidateCachePattern } from '@/lib/cache';
 
 export async function GET() {
     try {
+        const cacheKey = 'settings-store';
+        const cachedData = getCache<any>(cacheKey);
+        if (cachedData) {
+            return NextResponse.json({ success: true, data: cachedData });
+        }
+
         let setting = await prisma.storeSetting.findFirst();
         
         if (!setting) {
@@ -20,18 +27,22 @@ export async function GET() {
             });
         }
 
+        const responseData = {
+            id: setting.id,
+            store_name: setting.storeName,
+            store_description: setting.storeDescription,
+            support_email: setting.supportEmail,
+            currency: setting.currency,
+            default_language: setting.defaultLanguage,
+            announcement_text: setting.announcementText,
+            show_announcement: setting.showAnnouncement
+        };
+
+        setCache(cacheKey, responseData, 30 * 1000); // Cache for 30 seconds
+
         return NextResponse.json({
             success: true,
-            data: {
-                id: setting.id,
-                store_name: setting.storeName,
-                store_description: setting.storeDescription,
-                support_email: setting.supportEmail,
-                currency: setting.currency,
-                default_language: setting.defaultLanguage,
-                announcement_text: setting.announcementText,
-                show_announcement: setting.showAnnouncement
-            }
+            data: responseData
         });
     } catch (error) {
         console.error('Settings GET Error:', error);
@@ -72,18 +83,24 @@ export async function POST(req: NextRequest) {
             }
         });
 
+        // Invalidate settings caches
+        invalidateCachePattern('settings-');
+        invalidateCachePattern('dashboard-stats');
+
+        const responseData = {
+            id: setting.id,
+            store_name: setting.storeName,
+            store_description: setting.storeDescription,
+            support_email: setting.supportEmail,
+            currency: setting.currency,
+            default_language: setting.defaultLanguage,
+            announcement_text: setting.announcementText,
+            show_announcement: setting.showAnnouncement
+        };
+
         return NextResponse.json({
             success: true,
-            data: {
-                id: setting.id,
-                store_name: setting.storeName,
-                store_description: setting.storeDescription,
-                support_email: setting.supportEmail,
-                currency: setting.currency,
-                default_language: setting.defaultLanguage,
-                announcement_text: setting.announcementText,
-                show_announcement: setting.showAnnouncement
-            }
+            data: responseData
         });
     } catch (error) {
         console.error('Settings POST Error:', error);

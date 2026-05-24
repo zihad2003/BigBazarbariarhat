@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@bigbazar/db';
+import { getCache, setCache, invalidateCachePattern } from '@/lib/cache';
 
 export async function GET(
     req: NextRequest,
@@ -7,6 +8,11 @@ export async function GET(
 ) {
     try {
         const { id } = await params;
+        const cacheKey = `orders-detail-${id}`;
+        const cachedData = getCache<any>(cacheKey);
+        if (cachedData) {
+            return NextResponse.json({ success: true, data: cachedData });
+        }
 
         const order = await prisma.order.findUnique({
             where: { id },
@@ -71,6 +77,8 @@ export async function GET(
             guestAddress: guestAddress,
             shippingAddress: null // Trigger guestAddress rendering in UI
         };
+
+        setCache(cacheKey, mappedOrder, 10 * 1000); // Cache for 10 seconds
 
         return NextResponse.json({ success: true, data: mappedOrder });
     } catch (error) {
@@ -151,6 +159,11 @@ export async function PATCH(
             guestAddress: guestAddress,
             shippingAddress: null
         };
+
+        // Invalidate order related caches, analytics, and dashboard-stats
+        invalidateCachePattern('orders-');
+        invalidateCachePattern('analytics-');
+        invalidateCachePattern('dashboard-stats');
 
         return NextResponse.json({ success: true, data: mappedOrder });
     } catch (error) {

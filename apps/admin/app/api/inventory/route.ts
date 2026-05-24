@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@bigbazar/db';
 import { auth } from '@/auth';
+import { getCache, setCache, invalidateCachePattern } from '@/lib/cache';
 
 export async function GET(req: NextRequest) {
     try {
@@ -10,6 +11,12 @@ export async function GET(req: NextRequest) {
         const { searchParams } = new URL(req.url);
         const q = searchParams.get('q') || '';
         const status = searchParams.get('status') || 'ALL';
+
+        const cacheKey = `inventory-list-${q}-${status}`;
+        const cachedData = getCache<any>(cacheKey);
+        if (cachedData) {
+            return NextResponse.json({ success: true, data: cachedData });
+        }
 
         let where: any = {};
         if (q) {
@@ -43,6 +50,8 @@ export async function GET(req: NextRequest) {
             }
         }));
 
+        setCache(cacheKey, mappedData, 10 * 1000); // Cache for 10 seconds
+
         return NextResponse.json({ success: true, data: mappedData });
     } catch (error) {
         return NextResponse.json({ success: false, message: 'Failed to fetch inventory' }, { status: 500 });
@@ -62,6 +71,11 @@ export async function PATCH(req: NextRequest) {
             data: { stock: parseInt(stockQuantity, 10) }
         });
         
+        // Invalidate caches
+        invalidateCachePattern('inventory-');
+        invalidateCachePattern('products-');
+        invalidateCachePattern('dashboard-stats');
+
         return NextResponse.json({ success: true, data: updated });
     } catch (error) {
         return NextResponse.json({ success: false, message: 'Failed to update stock' }, { status: 500 });

@@ -17,45 +17,47 @@ import {
     Loader2,
     Package
 } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 
 export default function ProductsPage() {
-    const [products, setProducts] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
-    const [pagination, setPagination] = useState({ page: 1, totalPages: 1, totalItems: 0 });
-
+    const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('');
+    const [page, setPage] = useState(1);
 
-    const fetchProducts = async (page = 1) => {
-        setLoading(true);
-        try {
+    // Debounce search query
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearchQuery(searchQuery);
+            setPage(1);
+        }, 300);
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
+
+    // Reset page on category change
+    useEffect(() => {
+        setPage(1);
+    }, [selectedCategory]);
+
+    const { data, isLoading } = useQuery({
+        queryKey: ['products', debouncedSearchQuery, selectedCategory, page],
+        queryFn: async () => {
             const queryParams = new URLSearchParams({
                 page: page.toString(),
                 limit: '10',
-                q: searchQuery,
+                q: debouncedSearchQuery,
                 category: selectedCategory
             });
             const res = await fetch(`/api/products?${queryParams.toString()}`);
             const result = await res.json();
-            if (result.success) {
-                setProducts(result.data);
-                setPagination({
-                    page: result.pagination.page,
-                    totalPages: result.pagination.totalPages,
-                    totalItems: result.pagination.total
-                });
-            }
-        } catch (error) {
-            console.error('Failed to fetch products:', error);
-        } finally {
-            setLoading(false);
+            if (!result.success) throw new Error('Failed to fetch products');
+            return result;
         }
-    };
+    });
 
-    useEffect(() => {
-        const timer = setTimeout(() => fetchProducts(1), 300);
-        return () => clearTimeout(timer);
-    }, [searchQuery, selectedCategory]);
+    const products = data?.data || [];
+    const pagination = data?.pagination || { page: 1, totalPages: 1, total: 0 };
+    const loading = isLoading;
 
     return (
         <div className="space-y-6">
@@ -142,7 +144,7 @@ export default function ProductsPage() {
                                         <p className="text-[13px] text-muted-foreground">No products found.</p>
                                     </td>
                                 </tr>
-                            ) : products.map(product => (
+                            ) : products.map((product: any) => (
                                 <tr key={product.id} className="hover:bg-muted/30 transition-colors group">
                                     <td className="px-4 py-4">
                                         <div className="flex items-center gap-3">
@@ -190,19 +192,19 @@ export default function ProductsPage() {
                 {/* Footer / Pagination */}
                 <div className="px-4 py-3 border-t border-border flex items-center justify-between bg-muted/10">
                     <p className="text-[11px] text-muted-foreground">
-                        Showing {(pagination.page - 1) * 10 + 1} to {Math.min(pagination.page * 10, pagination.totalItems)} of {pagination.totalItems} products
+                        Showing {products.length > 0 ? (page - 1) * 10 + 1 : 0} to {Math.min(page * 10, pagination.total)} of {pagination.total} products
                     </p>
                     <div className="flex items-center gap-1">
                         <button
-                            onClick={() => fetchProducts(pagination.page - 1)}
-                            disabled={pagination.page === 1}
+                            onClick={() => setPage(p => Math.max(p - 1, 1))}
+                            disabled={page === 1}
                             className="p-1.5 border border-border rounded-md disabled:opacity-50 hover:bg-card"
                         >
                             <ChevronLeft className="w-4 h-4" />
                         </button>
                         <button
-                            onClick={() => fetchProducts(pagination.page + 1)}
-                            disabled={pagination.page === pagination.totalPages}
+                            onClick={() => setPage(p => Math.min(p + 1, pagination.totalPages))}
+                            disabled={page === pagination.totalPages}
                             className="p-1.5 border border-border rounded-md disabled:opacity-50 hover:bg-card"
                         >
                             <ChevronRight className="w-4 h-4" />

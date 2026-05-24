@@ -16,57 +16,55 @@ import {
     TrendingDown,
     Layers
 } from 'lucide-react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 export default function InventoryPage() {
-    const [variants, setVariants] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
+    const queryClient = useQueryClient();
     const [searchQuery, setSearchQuery] = useState('');
+    const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState('ALL');
     const [editingId, setEditingId] = useState<string | null>(null);
     const [newStock, setNewStock] = useState<string>('');
-    const [updating, setUpdating] = useState(false);
 
-    const fetchInventory = async () => {
-        setLoading(true);
-        try {
-            const res = await fetch(`/api/inventory?q=${searchQuery}&status=${statusFilter}`);
-            const result = await res.json();
-            if (result.success) {
-                setVariants(result.data);
-            }
-        } catch (error) {
-            console.error('Failed to fetch inventory:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
+    // Debounce search query
     useEffect(() => {
         const timer = setTimeout(() => {
-            fetchInventory();
+            setDebouncedSearchQuery(searchQuery);
         }, 300);
         return () => clearTimeout(timer);
-    }, [searchQuery, statusFilter]);
+    }, [searchQuery]);
 
-    const handleUpdateStock = async (id: string, quantity: string) => {
-        if (!quantity || isNaN(Number(quantity))) return;
+    // Fetch Inventory
+    const { data: variants = [], isLoading, refetch } = useQuery({
+        queryKey: ['inventory', debouncedSearchQuery, statusFilter],
+        queryFn: async () => {
+            const res = await fetch(`/api/inventory?q=${debouncedSearchQuery}&status=${statusFilter}`);
+            const result = await res.json();
+            if (!result.success) throw new Error('Failed to fetch inventory');
+            return result.data || [];
+        }
+    });
 
-        setUpdating(true);
-        try {
+    // Update Stock Mutation
+    const updateStockMutation = useMutation({
+        mutationFn: async ({ id, quantity }: { id: string; quantity: string }) => {
             const res = await fetch('/api/inventory', {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id, stockQuantity: quantity }),
             });
-            if (res.ok) {
-                setEditingId(null);
-                fetchInventory();
-            }
-        } catch (error) {
-            console.error('Stock update failed:', error);
-        } finally {
-            setUpdating(false);
+            if (!res.ok) throw new Error('Stock update failed');
+            return res.json();
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['inventory'] });
+            setEditingId(null);
         }
+    });
+
+    const handleUpdateStock = async (id: string, quantity: string) => {
+        if (!quantity || isNaN(Number(quantity))) return;
+        updateStockMutation.mutate({ id, quantity });
     };
 
     const getStockStatus = (quantity: number) => {
@@ -77,9 +75,12 @@ export default function InventoryPage() {
 
     const counts = {
         total: variants.length,
-        low: variants.filter(v => v.stockQuantity > 0 && v.stockQuantity <= 10).length,
-        out: variants.filter(v => v.stockQuantity <= 0).length
+        low: variants.filter((v: any) => v.stockQuantity > 0 && v.stockQuantity <= 10).length,
+        out: variants.filter((v: any) => v.stockQuantity <= 0).length
     };
+
+    const loading = isLoading;
+    const updating = updateStockMutation.isPending;
 
     return (
         <div className="space-y-6">
@@ -90,7 +91,7 @@ export default function InventoryPage() {
                     <p className="text-[13px] text-muted-foreground mt-0.5">Manage your product stock levels and availability.</p>
                 </div>
                 <button
-                    onClick={() => fetchInventory()}
+                    onClick={() => refetch()}
                     className="px-4 py-2 border border-border rounded-lg text-[13px] font-medium hover:bg-muted/60 transition flex items-center gap-2"
                 >
                     <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
@@ -168,7 +169,7 @@ export default function InventoryPage() {
                                         <p className="text-[13px] text-muted-foreground">No inventory items found.</p>
                                     </td>
                                 </tr>
-                            ) : variants.map((v) => {
+                            ) : variants.map((v: any) => {
                                 const status = getStockStatus(v.stockQuantity);
                                 const Icon = status.icon;
                                 return (

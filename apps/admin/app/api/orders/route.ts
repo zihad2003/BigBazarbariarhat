@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@bigbazar/db';
+import { getCache, setCache } from '@/lib/cache';
 
 export async function GET(req: NextRequest) {
     try {
@@ -8,6 +9,12 @@ export async function GET(req: NextRequest) {
         const limit = parseInt(searchParams.get('limit') || '10');
         const q = searchParams.get('q') || '';
         const skip = (page - 1) * limit;
+
+        const cacheKey = `orders-list-${page}-${limit}-${q}`;
+        const cachedData = getCache<any>(cacheKey);
+        if (cachedData) {
+            return NextResponse.json({ success: true, ...cachedData });
+        }
 
         const whereClause: any = {};
         if (q) {
@@ -49,8 +56,7 @@ export async function GET(req: NextRequest) {
 
         const totalPages = Math.ceil(total / limit);
 
-        return NextResponse.json({ 
-            success: true, 
+        const responseData = {
             data: mappedOrders,
             pagination: {
                 page,
@@ -58,6 +64,13 @@ export async function GET(req: NextRequest) {
                 total,
                 totalPages
             }
+        };
+
+        setCache(cacheKey, responseData, 10 * 1000); // Cache for 10 seconds
+
+        return NextResponse.json({ 
+            success: true, 
+            ...responseData
         });
     } catch (error) {
         console.error('Fetch Orders Error:', error);

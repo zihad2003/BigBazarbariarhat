@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@bigbazar/db';
+import { getCache, setCache } from '@/lib/cache';
 
 export async function GET(req: Request) {
     try {
@@ -8,6 +9,12 @@ export async function GET(req: Request) {
         const limit = parseInt(searchParams.get('limit') || '10');
         const query = searchParams.get('q') || '';
         const skip = (page - 1) * limit;
+
+        const cacheKey = `customers-list-${page}-${limit}-${query}`;
+        const cachedData = getCache<any>(cacheKey);
+        if (cachedData) {
+            return NextResponse.json({ success: true, ...cachedData });
+        }
 
         // Fetch users with order stats
         const users = await prisma.user.findMany({
@@ -54,14 +61,20 @@ export async function GET(req: Request) {
             },
         });
 
-        return NextResponse.json({
-            success: true,
+        const responseData = {
             data: formattedUsers,
             pagination: {
                 total,
                 page,
                 totalPages: Math.ceil(total / limit),
             }
+        };
+
+        setCache(cacheKey, responseData, 10 * 1000); // Cache for 10 seconds
+
+        return NextResponse.json({
+            success: true,
+            ...responseData
         });
     } catch (error) {
         console.error('API Error:', error);

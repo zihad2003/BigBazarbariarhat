@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@bigbazar/db';
 import { auth } from '@/auth';
+import { getCache, setCache, invalidateCachePattern } from '@/lib/cache';
 
 export async function GET(
     req: NextRequest,
@@ -8,6 +9,12 @@ export async function GET(
 ) {
     try {
         const { id } = params;
+        const cacheKey = `products-detail-${id}`;
+        const cachedData = getCache<any>(cacheKey);
+        if (cachedData) {
+            return NextResponse.json({ success: true, data: cachedData });
+        }
+
         const product = await prisma.product.findUnique({
             where: { id },
             include: { category: true }
@@ -46,6 +53,8 @@ export async function GET(
             createdAt: product.createdAt,
             updatedAt: product.updatedAt
         };
+
+        setCache(cacheKey, mappedProduct, 10 * 1000); // Cache for 10 seconds
 
         return NextResponse.json({ success: true, data: mappedProduct });
     } catch (error) {
@@ -118,6 +127,11 @@ export async function PATCH(
             data: updateData
         });
 
+        // Invalidate product-related caches
+        invalidateCachePattern('products-');
+        invalidateCachePattern('inventory-');
+        invalidateCachePattern('dashboard-stats');
+
         return NextResponse.json({ success: true, data: updatedProduct });
     } catch (error) {
         console.error('Update Product Error:', error);
@@ -148,6 +162,12 @@ export async function DELETE(
                 where: { id },
                 data: { isActive: false }
             });
+            
+            // Invalidate product-related caches
+            invalidateCachePattern('products-');
+            invalidateCachePattern('inventory-');
+            invalidateCachePattern('dashboard-stats');
+            
             return NextResponse.json({ 
                 success: true, 
                 message: 'Product is associated with existing orders. It has been deactivated instead of deleted.' 
@@ -157,6 +177,11 @@ export async function DELETE(
         await prisma.product.delete({
             where: { id }
         });
+
+        // Invalidate product-related caches
+        invalidateCachePattern('products-');
+        invalidateCachePattern('inventory-');
+        invalidateCachePattern('dashboard-stats');
 
         return NextResponse.json({ success: true, message: 'Product deleted successfully' });
     } catch (error) {

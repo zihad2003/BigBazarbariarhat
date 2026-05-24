@@ -1,9 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@bigbazar/db';
 import { startOfDay, subDays, format } from 'date-fns';
+import { getCache, setCache } from '@/lib/cache';
 
 export async function GET() {
     try {
+        const cacheKey = 'dashboard-stats';
+        const cachedData = getCache<any>(cacheKey);
+        if (cachedData) {
+            return NextResponse.json({
+                success: true,
+                data: cachedData
+            });
+        }
+
         // 1. Core KPIs
         const [totalSales, totalOrders, totalProducts, totalCustomers] = await Promise.all([
             prisma.order.aggregate({
@@ -65,29 +75,33 @@ export async function GET() {
             };
         });
 
+        const responseData = {
+            stats: {
+                sales: totalSales._sum.totalAmount || 0,
+                orders: totalOrders,
+                products: totalProducts,
+                customers: totalCustomers
+            },
+            recentOrders: recentOrders.map(o => ({
+                id: o.id.slice(-4),
+                customer: o.user?.name || 'Guest',
+                amount: o.totalAmount,
+                status: o.status,
+                date: format(new Date(o.createdAt), 'MMM d')
+            })),
+            lowStock: lowStock.map(p => ({
+                name: p.name,
+                sku: p.sku || 'N/A',
+                qty: p.stock
+            })),
+            chartData
+        };
+
+        setCache(cacheKey, responseData, 30 * 1000); // Cache for 30 seconds
+
         return NextResponse.json({
             success: true,
-            data: {
-                stats: {
-                    sales: totalSales._sum.totalAmount || 0,
-                    orders: totalOrders,
-                    products: totalProducts,
-                    customers: totalCustomers
-                },
-                recentOrders: recentOrders.map(o => ({
-                    id: o.id.slice(-4),
-                    customer: o.user?.name || 'Guest',
-                    amount: o.totalAmount,
-                    status: o.status,
-                    date: format(new Date(o.createdAt), 'MMM d')
-                })),
-                lowStock: lowStock.map(p => ({
-                    name: p.name,
-                    sku: p.sku || 'N/A',
-                    qty: p.stock
-                })),
-                chartData
-            }
+            data: responseData
         });
     } catch (error) {
         console.error('Dashboard Stats Error:', error);
