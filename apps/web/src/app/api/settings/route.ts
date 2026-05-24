@@ -1,18 +1,41 @@
 import { NextResponse } from 'next/server';
+import { prisma } from '@bigbazar/db';
 
 export async function GET() {
-    return NextResponse.json({
-        success: true,
-        data: {
-            id: '1',
-            store_name: 'Big Bazar',
-            store_description: 'Premium Fashion & Essentials',
-            support_email: 'infobigbazar01@gmail.com',
-            currency: 'BDT',
-            default_language: 'EN',
-            footer_text: '© 2024 BIG BAZAR. All rights reserved.'
+    try {
+        let setting = await prisma.storeSetting.findFirst();
+        
+        if (!setting) {
+            setting = await prisma.storeSetting.create({
+                data: {
+                    id: '1',
+                    storeName: 'Big Bazar',
+                    storeDescription: 'Premium Fashion & Essentials',
+                    supportEmail: 'infobigbazar01@gmail.com',
+                    currency: 'BDT',
+                    defaultLanguage: 'en'
+                }
+            });
         }
-    });
+
+        return NextResponse.json({
+            success: true,
+            data: {
+                id: setting.id,
+                store_name: setting.storeName,
+                store_description: setting.storeDescription,
+                support_email: setting.supportEmail,
+                currency: setting.currency,
+                default_language: setting.defaultLanguage,
+                announcement_text: setting.announcementText,
+                show_announcement: setting.showAnnouncement,
+                footer_text: `© ${new Date().getFullYear()} ${setting.storeName}. All rights reserved.`
+            }
+        });
+    } catch (error) {
+        console.error('Settings GET error:', error);
+        return NextResponse.json({ success: false, message: 'Failed to fetch settings' }, { status: 500 });
+    }
 }
 
 export async function POST() {

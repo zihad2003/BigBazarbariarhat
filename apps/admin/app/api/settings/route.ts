@@ -28,7 +28,9 @@ export async function GET() {
                 store_description: setting.storeDescription,
                 support_email: setting.supportEmail,
                 currency: setting.currency,
-                default_language: setting.defaultLanguage
+                default_language: setting.defaultLanguage,
+                announcement_text: setting.announcementText,
+                show_announcement: setting.showAnnouncement
             }
         });
     } catch (error) {
@@ -45,7 +47,7 @@ export async function POST(req: NextRequest) {
         }
 
         const body = await req.json();
-        const { store_name, store_description, support_email, currency, default_language } = body;
+        const { store_name, store_description, support_email, currency, default_language, announcement_text, show_announcement } = body;
 
         const setting = await prisma.storeSetting.upsert({
             where: { id: '1' },
@@ -54,7 +56,9 @@ export async function POST(req: NextRequest) {
                 storeDescription: store_description,
                 supportEmail: support_email,
                 currency,
-                defaultLanguage: default_language
+                defaultLanguage: default_language,
+                announcementText: announcement_text,
+                showAnnouncement: show_announcement
             },
             create: {
                 id: '1',
@@ -62,7 +66,9 @@ export async function POST(req: NextRequest) {
                 storeDescription: store_description || '',
                 supportEmail: support_email || 'admin@bigbazar.com',
                 currency: currency || 'BDT',
-                defaultLanguage: default_language || 'en'
+                defaultLanguage: default_language || 'en',
+                announcementText: announcement_text || '',
+                showAnnouncement: show_announcement !== undefined ? show_announcement : true
             }
         });
 
@@ -74,7 +80,9 @@ export async function POST(req: NextRequest) {
                 store_description: setting.storeDescription,
                 support_email: setting.supportEmail,
                 currency: setting.currency,
-                default_language: setting.defaultLanguage
+                default_language: setting.defaultLanguage,
+                announcement_text: setting.announcementText,
+                show_announcement: setting.showAnnouncement
             }
         });
     } catch (error) {

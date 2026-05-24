@@ -172,6 +172,8 @@ model StoreSetting {
   supportEmail     String   @default("admin@bigbazar.com")
   currency         String   @default("BDT")
   defaultLanguage  String   @default("en")
+  announcementText String?  @default("Free delivery on orders above Tk 1000 | Use code BIGBAZAR10 for 10% off | Exclusive Member Rewards Now Active")
+  showAnnouncement Boolean  @default(true)
   updatedAt        DateTime @updatedAt
 }
 

@@ -230,6 +230,37 @@ export default function SettingsPage() {
 
                             <div className="bg-card border border-border rounded-xl p-6">
                                 <h2 className="text-sm font-semibold mb-6 flex items-center gap-2">
+                                    <Bell className="w-4 h-4 text-primary" />
+                                    Announcement Bar
+                                </h2>
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between p-4 bg-muted/20 border border-border rounded-xl">
+                                        <div>
+                                            <h4 className="text-[13px] font-bold text-foreground">Enable Announcement Bar</h4>
+                                            <p className="text-[11px] text-muted-foreground">Show or hide the announcement bar at the top of the storefront.</p>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => setSettings({ ...settings, show_announcement: settings.show_announcement !== false ? false : true })}
+                                            className={`w-12 h-6 rounded-full relative transition-colors duration-200 focus:outline-none ${settings.show_announcement !== false ? 'bg-primary' : 'bg-muted-foreground/30'}`}
+                                        >
+                                            <span className={`absolute top-1 left-1 bg-white w-4 h-4 rounded-full transition-transform duration-200 ${settings.show_announcement !== false ? 'translate-x-6' : 'translate-x-0'}`} />
+                                        </button>
+                                    </div>
+                                    <div className="space-y-1.5">
+                                        <label className="text-[12px] font-medium text-muted-foreground">Announcement Text</label>
+                                        <input
+                                            className="w-full h-11 px-4 bg-background border border-input rounded-lg text-[13px] outline-none focus:ring-2 focus:ring-ring transition"
+                                            value={settings.announcement_text || ''}
+                                            onChange={e => setSettings({ ...settings, announcement_text: e.target.value })}
+                                            placeholder="Use code BIGBAZAR10 for 10% off..."
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="bg-card border border-border rounded-xl p-6">
+                                <h2 className="text-sm font-semibold mb-6 flex items-center gap-2">
                                     <CreditCard className="w-4 h-4 text-primary" />
                                     Store Currency
                                 </h2>

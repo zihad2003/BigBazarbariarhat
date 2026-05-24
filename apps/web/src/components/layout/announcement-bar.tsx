@@ -1,15 +1,35 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, ArrowRight } from 'lucide-react';
+import { X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export function AnnouncementBar() {
+    const [text, setText] = useState<string>("");
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
         const closed = localStorage.getItem('announcement-closed');
-        if (!closed) setIsVisible(true);
+        const fetchSettings = async () => {
+            try {
+                const res = await fetch('/api/settings');
+                if (res.ok) {
+                    const result = await res.json();
+                    if (result.success && result.data) {
+                        const announcementText = result.data.announcement_text || "Free delivery on orders above Tk 1000 | Use code BIGBAZAR10 for 10% off | Exclusive Member Rewards Now Active";
+                        const showAnnouncement = result.data.show_announcement !== false;
+                        
+                        setText(announcementText);
+                        if (!closed && showAnnouncement) {
+                            setIsVisible(true);
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to load announcement bar settings:", err);
+            }
+        };
+        fetchSettings();
     }, []);
 
     const handleClose = () => {
@@ -17,7 +37,37 @@ export function AnnouncementBar() {
         localStorage.setItem('announcement-closed', 'true');
     };
 
-    if (!isVisible) return null;
+    if (!isVisible || !text) return null;
+
+    const renderContent = () => {
+        const parts = text.split('|').map(p => p.trim()).filter(Boolean);
+        return parts.map((part, index) => {
+            // Highlight coupon codes or codes like BIGBAZAR10 if present
+            const isCouponPart = part.toLowerCase().includes('code');
+            if (isCouponPart) {
+                const subParts = part.split(/(BIGBAZAR10)/i);
+                return (
+                    <span key={index} className="flex items-center gap-4">
+                        <span>
+                            {subParts.map((sub, sIdx) => 
+                                sub.toUpperCase() === 'BIGBAZAR10' 
+                                    ? <span key={sIdx} className="text-indigo-400 font-bold">{sub}</span>
+                                    : sub
+                            )}
+                        </span>
+                        {index < parts.length - 1 && <span className="w-1 h-1 bg-white/30 rounded-full" />}
+                    </span>
+                );
+            }
+
+            return (
+                <span key={index} className="flex items-center gap-4">
+                    <span>{part}</span>
+                    {index < parts.length - 1 && <span className="w-1 h-1 bg-white/30 rounded-full" />}
+                </span>
+            );
+        });
+    };
 
     return (
         <AnimatePresence>
@@ -31,14 +81,10 @@ export function AnnouncementBar() {
                     <div className="flex items-center justify-center py-3 px-12 group cursor-pointer">
                         <div className="flex items-center gap-8 animate-marquee whitespace-nowrap">
                             <p className="text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-4">
-                                Free delivery on orders above ৳1000 <span className="w-1 h-1 bg-white/30 rounded-full" /> 
-                                Use code <span className="text-indigo-400">BIGBAZAR10</span> for 10% off <span className="w-1 h-1 bg-white/30 rounded-full" />
-                                Exclusive Member Rewards Now Active
+                                {renderContent()}
                             </p>
                             <p className="text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-4" aria-hidden="true">
-                                Free delivery on orders above ৳1000 <span className="w-1 h-1 bg-white/30 rounded-full" /> 
-                                Use code <span className="text-indigo-400">BIGBAZAR10</span> for 10% off <span className="w-1 h-1 bg-white/30 rounded-full" />
-                                Exclusive Member Rewards Now Active
+                                {renderContent()}
                             </p>
                         </div>
                     </div>
