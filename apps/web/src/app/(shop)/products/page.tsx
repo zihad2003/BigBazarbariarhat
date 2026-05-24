@@ -255,7 +255,7 @@ export default function ProductsPage() {
 
     return (
         <div className="min-h-screen bg-white">
-            <div className="max-w-7xl mx-auto px-6 lg:px-8 py-10">
+            <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-10">
                 <Breadcrumbs 
                     items={[
                         { label: t?.common?.products || 'Products', active: true }
@@ -263,28 +263,25 @@ export default function ProductsPage() {
                 />
 
                 {/* Header Module */}
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
-                    <div className="space-y-4">
-                        <div className="flex items-center gap-3">
+                <div className="flex flex-row items-end justify-between gap-4 mb-6 sm:mb-16">
+                    <div className="space-y-2 sm:space-y-4">
+                        <div className="hidden sm:flex items-center gap-3">
                             <div className="h-px w-8 bg-destructive" />
                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400">{t?.newArrivals?.subtitle || 'All Collections'}</span>
                         </div>
-                        <h1 className="text-4xl lg:text-5xl font-playfair font-bold tracking-tight text-gray-900 leading-tight">
+                        <h1 className="text-2xl sm:text-4xl lg:text-5xl font-playfair font-bold tracking-tight text-gray-900 leading-tight">
                             Shop <span className="text-destructive">Our Products</span>
                         </h1>
-                        <p className="text-gray-500 font-medium max-w-md">
-                            Browse our full range of premium clothing and accessories for the whole family.
-                        </p>
                     </div>
-                    <div className="flex items-center gap-4">
-                        <div className="bg-gray-50 px-6 py-3 rounded-2xl border border-gray-100">
-                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-1">Results</span>
-                            <span className="text-xl font-black text-gray-900">{filteredProducts.length} <span className="text-sm font-medium text-gray-400">products</span></span>
+                    <div className="flex items-center gap-4 shrink-0">
+                        <div className="bg-gray-50 px-3 sm:px-6 py-2 sm:py-3 rounded-xl sm:rounded-2xl border border-gray-100">
+                            <span className="text-[8px] sm:text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-0.5 sm:mb-1">Results</span>
+                            <span className="text-base sm:text-xl font-black text-gray-900">{filteredProducts.length} <span className="text-xs sm:text-sm font-medium text-gray-400">products</span></span>
                         </div>
                     </div>
                 </div>
 
-                <div className="flex flex-col lg:flex-row gap-16">
+                <div className="flex flex-col lg:flex-row gap-4 lg:gap-16">
                     
                     {/* Desktop Sidebar Module */}
                     <aside className="hidden lg:block w-72 shrink-0">
@@ -297,8 +294,8 @@ export default function ProductsPage() {
                     <main className="flex-1">
                         
                         {/* Toolbar Module */}
-                        <div className="flex flex-col sm:flex-row items-center justify-between gap-6 mb-12 bg-gray-50/50 p-4 rounded-[2.5rem] border border-gray-100">
-                            <div className="flex items-center gap-4 w-full sm:w-auto">
+                        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-6 mb-6 sm:mb-12 bg-gray-50/50 p-2 sm:p-4 rounded-2xl sm:rounded-[2.5rem] border border-gray-100">
+                            <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto">
                                 {/* Mobile Filter Trigger */}
                                 <Sheet>
                                     <SheetTrigger asChild>
@@ -315,17 +312,17 @@ export default function ProductsPage() {
                                 </Sheet>
 
                                 <div className="relative flex-1 sm:w-80">
-                                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                    <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                                     <Input
                                         placeholder={t?.common?.search || "Search products..."}
                                         value={searchQuery}
                                         onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
-                                        className="h-12 pl-12 pr-4 bg-white border-gray-200 rounded-2xl focus:ring-2 focus:ring-black/5 transition-all font-medium"
+                                        className="h-10 sm:h-12 pl-10 sm:pl-12 pr-3 sm:pr-4 bg-white border-gray-200 rounded-xl sm:rounded-2xl focus:ring-2 focus:ring-black/5 transition-all font-medium text-sm"
                                     />
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
+                            <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto justify-between sm:justify-end">
                                 <div className="hidden sm:flex items-center bg-white border border-gray-100 rounded-2xl p-1 shadow-sm">
                                     <button 
                                         onClick={() => setViewMode('grid')}
@@ -348,7 +345,7 @@ export default function ProductsPage() {
                                 </div>
 
                                 <Select value={sortBy} onValueChange={(val) => setSortBy(val)}>
-                                    <SelectTrigger className="w-[180px] h-12 rounded-2xl border-gray-200 bg-white font-bold text-xs uppercase tracking-widest focus:ring-black/5 transition-all">
+                                    <SelectTrigger className="w-[140px] sm:w-[180px] h-10 sm:h-12 rounded-xl sm:rounded-2xl border-gray-200 bg-white font-bold text-[10px] sm:text-xs uppercase tracking-widest focus:ring-black/5 transition-all">
                                         <SelectValue placeholder="Sort By" />
                                     </SelectTrigger>
                                     <SelectContent className="rounded-2xl border-gray-100 shadow-2xl">
@@ -362,11 +359,11 @@ export default function ProductsPage() {
                         </div>
 
                         {/* Category Pills Module */}
-                        <div className="flex items-center gap-2 mb-12 overflow-x-auto pb-4 no-scrollbar">
+                        <div className="flex items-center gap-1.5 sm:gap-2 mb-6 sm:mb-12 overflow-x-auto pb-3 sm:pb-4 no-scrollbar">
                             <button
                                 onClick={() => { setSelectedCategory(null); setCurrentPage(1); }}
                                 className={cn(
-                                    "px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all whitespace-nowrap shrink-0 border",
+                                    "px-3 sm:px-6 py-2 sm:py-3 rounded-full text-[8px] sm:text-[10px] font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] transition-all whitespace-nowrap shrink-0 border",
                                     selectedCategory === null
                                         ? "bg-foreground text-white border-foreground shadow-xl shadow-black/10"
                                         : "bg-white text-gray-400 border-gray-100 hover:border-gray-300"
@@ -379,7 +376,7 @@ export default function ProductsPage() {
                                     key={cat.key}
                                     onClick={() => { setSelectedCategory(cat.key); setCurrentPage(1); }}
                                     className={cn(
-                                        "px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all whitespace-nowrap shrink-0 border",
+                                        "px-3 sm:px-6 py-2 sm:py-3 rounded-full text-[8px] sm:text-[10px] font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] transition-all whitespace-nowrap shrink-0 border",
                                         selectedCategory === cat.key
                                             ? "bg-destructive text-white border-destructive shadow-xl shadow-destructive/20"
                                             : "bg-white text-gray-400 border-gray-100 hover:border-gray-300"
