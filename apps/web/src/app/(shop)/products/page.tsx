@@ -358,34 +358,6 @@ export default function ProductsPage() {
                             </div>
                         </div>
 
-                        {/* Category Pills Module */}
-                        <div className="flex items-center gap-1.5 sm:gap-2 mb-6 sm:mb-12 overflow-x-auto pb-3 sm:pb-4 no-scrollbar">
-                            <button
-                                onClick={() => { setSelectedCategory(null); setCurrentPage(1); }}
-                                className={cn(
-                                    "px-3 sm:px-6 py-2 sm:py-3 rounded-full text-[8px] sm:text-[10px] font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] transition-all whitespace-nowrap shrink-0 border",
-                                    selectedCategory === null
-                                        ? "bg-foreground text-white border-foreground shadow-xl shadow-black/10"
-                                        : "bg-white text-gray-400 border-gray-100 hover:border-gray-300"
-                                )}
-                            >
-                                {t?.common?.viewAll || 'All Categories'}
-                            </button>
-                            {categoryOptions.map(cat => (
-                                <button
-                                    key={cat.key}
-                                    onClick={() => { setSelectedCategory(cat.key); setCurrentPage(1); }}
-                                    className={cn(
-                                        "px-3 sm:px-6 py-2 sm:py-3 rounded-full text-[8px] sm:text-[10px] font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] transition-all whitespace-nowrap shrink-0 border",
-                                        selectedCategory === cat.key
-                                            ? "bg-destructive text-white border-destructive shadow-xl shadow-destructive/20"
-                                            : "bg-white text-gray-400 border-gray-100 hover:border-gray-300"
-                                    )}
-                                >
-                                    {cat.label}
-                                </button>
-                            ))}
-                        </div>
 
                         {/* Grid Module */}
                         <ProductGrid 
