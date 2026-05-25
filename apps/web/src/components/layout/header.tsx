@@ -255,10 +255,10 @@ export function Header() {
                         </div>
 
                         {/* Search & Actions */}
-                        <div className="flex items-center gap-6 flex-1 justify-end max-w-xl">
+                        <div className="flex items-center gap-6 flex-1 justify-end max-w-2xl">
                             
                             {/* Search Bar - Desktop */}
-                            <div ref={searchRef} className="hidden lg:block relative flex-1 max-w-md">
+                            <div ref={searchRef} className="hidden lg:block relative flex-1 max-w-lg">
                                 <form onSubmit={handleSearch} className="relative group">
                                     <Search className={cn(
                                         "absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 transition-colors",
@@ -355,7 +355,7 @@ export function Header() {
                             </div>
 
                             {/* Actions */}
-                            <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-4">
                                 <button 
                                     onClick={() => openSearch()}
                                     className="lg:hidden p-3 bg-slate-50 hover:bg-slate-100 rounded-2xl transition-all" 

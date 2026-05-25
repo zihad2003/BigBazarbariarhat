@@ -44,7 +44,7 @@ export const translations = {
         },
         features: {
             freeShipping: 'Free Shipping',
-            freeShippingDesc: 'On orders over ৳2000',
+            freeShippingDesc: 'For Mirsharai',
             easyReturns: 'Easy Returns',
             easyReturnsDesc: '30-day return policy',
             securePayment: 'Secure Payment',
@@ -115,8 +115,8 @@ export const translations = {
             slide3Subtitle: '৫০% পর্যন্ত ছাড় — সীমিত সময়ের জন্য',
         },
         features: {
-            freeShipping: 'ফ্রি শিপing',
-            freeShippingDesc: '৳২০০০ এর উপরে অর্ডারে',
+            freeShipping: 'ফ্রি শিপিং',
+            freeShippingDesc: 'মিরসরাইয়ের জন্য',
             easyReturns: 'সহজ রিটার্ন',
             easyReturnsDesc: '৩০ দিনের রিটার্ন পলিসি',
             securePayment: 'নিরাপদ পেমেন্ট',

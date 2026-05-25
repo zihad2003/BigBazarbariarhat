@@ -25,18 +25,19 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { title, subtitle, imageDesktop, imageMobile, linkUrl, linkText, position, displayOrder, isActive } = body;
+    const { title, subtitle, imageDesktop, imageMobile, videoUrl, linkUrl, linkText, position, displayOrder, isActive } = body;
 
-    if (!title || !imageDesktop || !position) {
-      return NextResponse.json({ success: false, error: 'Title, image, and position are required.' }, { status: 400 });
+    if (!title || (!imageDesktop && !videoUrl) || !position) {
+      return NextResponse.json({ success: false, error: 'Title, image or video, and position are required.' }, { status: 400 });
     }
 
     const banner = await prisma.banner.create({
       data: {
         title,
         subtitle: subtitle || null,
-        imageDesktop,
+        imageDesktop: imageDesktop || '',
         imageMobile: imageMobile || null,
+        videoUrl: videoUrl || null,
         linkUrl: linkUrl || null,
         linkText: linkText || null,
         position,

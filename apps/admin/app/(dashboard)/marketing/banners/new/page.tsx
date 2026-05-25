@@ -13,7 +13,8 @@ import {
     Link as LinkIcon,
     Type,
     CheckCircle2,
-    Layers
+    Layers,
+    Video
 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -22,8 +23,9 @@ import * as z from 'zod';
 const bannerSchema = z.object({
     title: z.string().min(3, 'Title is required'),
     subtitle: z.string().optional(),
-    imageDesktop: z.string().url('Invalid URL').min(1, 'Desktop image is required'),
+    imageDesktop: z.string().url('Invalid URL').optional().or(z.literal('')),
     imageMobile: z.string().url('Invalid URL').optional().or(z.literal('')),
+    videoUrl: z.string().url('Invalid video URL').optional().or(z.literal('')),
     linkUrl: z.string().optional(),
     linkText: z.string().optional(),
     position: z.enum(['HOME_HERO', 'HOME_SECONDARY', 'CATEGORY_TOP', 'PRODUCT_SIDEBAR', 'CHECKOUT_TOP']),
@@ -169,6 +171,19 @@ export default function NewBannerPage() {
                                     className="w-full h-11 px-4 bg-muted/20 border border-border rounded-lg text-[13px] font-medium text-primary outline-none focus:ring-2 focus:ring-primary/20 transition"
                                     placeholder="https://example.com/banner-mobile.jpg"
                                 />
+                            </div>
+
+                            <div className="space-y-2 border-t border-border pt-6">
+                                <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                                    <Video className="w-3.5 h-3.5 text-primary" /> Video URL (Optional — overrides image for Hero slides)
+                                </label>
+                                <input
+                                    {...register('videoUrl')}
+                                    className="w-full h-11 px-4 bg-muted/20 border border-border rounded-lg text-[13px] font-medium text-primary outline-none focus:ring-2 focus:ring-primary/20 transition"
+                                    placeholder="https://example.com/hero-video.mp4"
+                                />
+                                {errors.videoUrl && <p className="text-destructive text-[11px] font-medium">{errors.videoUrl.message}</p>}
+                                <p className="text-[11px] text-muted-foreground">When a video URL is set, the hero slide will play the video and advance only after it ends.</p>
                             </div>
                         </div>
                     </div>

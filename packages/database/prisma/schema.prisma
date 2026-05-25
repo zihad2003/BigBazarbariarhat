@@ -32,7 +32,7 @@ model Category {
   name         String
   slug         String    @unique
   description  String?
-  image        String?
+  image        String?   @db.LongText
   displayOrder Int       @default(0)
   isHidden     Boolean   @default(false)
   parentId     String?
@@ -156,6 +156,7 @@ model Banner {
   subtitle     String?
   imageDesktop String
   imageMobile  String?
+  videoUrl     String?
   linkUrl      String?
   linkText     String?
   position     String

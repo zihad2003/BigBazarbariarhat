@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Facebook, Instagram, MapPin, Phone, Mail, CreditCard, Truck, Shield, RotateCcw } from 'lucide-react';
+import { Facebook, Instagram, MapPin, Phone, Mail, CreditCard, Truck, Shield } from 'lucide-react';
 import { useLanguageStore, useTranslation } from '@bigbazar/shared';
 
 export function Footer() {
@@ -41,8 +41,7 @@ export function Footer() {
     };
 
     const features = [
-        { icon: Truck, title: t?.features?.freeShipping || 'Free Shipping', description: t?.features?.freeShippingDesc || 'On orders over ৳2000' },
-        { icon: RotateCcw, title: t?.features?.easyReturns || 'Easy Returns', description: t?.features?.easyReturnsDesc || 'On-the-spot returns' },
+        { icon: Truck, title: t?.features?.freeShipping || 'Free Shipping', description: t?.features?.freeShippingDesc || 'For Mirsharai' },
         { icon: Shield, title: t?.features?.securePayment || 'Secure Payment', description: t?.features?.securePaymentDesc || '100% secure checkout' },
         { icon: CreditCard, title: 'Mobile Banking', description: 'bKash & Nagad' },
     ];
@@ -59,7 +58,7 @@ export function Footer() {
             <div className="border-b border-border bg-gradient-to-r from-background via-card to-background relative overflow-hidden">
                 <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
                 <div className="max-w-7xl mx-auto px-6 lg:px-8 py-10 relative z-10">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                         {features.map((feature) => (
                             <div key={feature.title} className="flex items-center gap-5 group p-4 rounded-2xl hover:bg-card/50 transition-colors duration-300 border border-transparent hover:border-border/50">
                                 <div className="flex-shrink-0 w-14 h-14 bg-background rounded-full flex items-center justify-center border border-border shadow-sm group-hover:border-destructive group-hover:shadow-md group-hover:shadow-destructive/10 group-hover:scale-110 transition-all duration-300">

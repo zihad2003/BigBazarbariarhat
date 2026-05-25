@@ -41,6 +41,11 @@ export default function NewArrivalsPage() {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 12;
 
+    // Scroll to top when page changes
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, [currentPage]);
+
     const categories = ['All Categories', 'New Arrivals', 'Men', 'Women', 'Kids(Boys)', 'Kids(Girls)', 'Wedding Touch', 'Sale'];
 
     // Load actual products from Database

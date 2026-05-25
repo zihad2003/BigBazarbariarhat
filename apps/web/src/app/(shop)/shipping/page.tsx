@@ -25,7 +25,7 @@ export default function ShippingPage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-12">
           {[
-            { icon: Truck, label: 'Free Shipping', desc: 'On orders over ৳2000' },
+            { icon: Truck, label: 'Free Shipping', desc: 'For Mirsharai' },
             { icon: Clock, label: '2–7 Days', desc: 'Delivery timeframe' },
             { icon: Package, label: 'Order Cut-off', desc: '2 PM daily' },
           ].map(({ icon: Icon, label, desc }, i) => (

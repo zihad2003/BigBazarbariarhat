@@ -82,6 +82,11 @@ export default function ProductsPage() {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 12;
 
+    // Scroll to top when page changes
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, [currentPage]);
+
     // Derived Data
     const categoryOptions = [
         { key: 'New Arrivals', label: t?.newArrivals?.title || 'New Arrivals' },
@@ -226,29 +231,17 @@ export default function ProductsPage() {
                     ]} 
                 />
 
-                {/* Header Module */}
-                <div className="flex flex-row items-end justify-between gap-4 mb-6 sm:mb-16">
-                    <div className="space-y-2 sm:space-y-4">
-                        <div className="hidden sm:flex items-center gap-3">
-                            <div className="h-px w-8 bg-destructive" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400">{t?.newArrivals?.subtitle || 'All Collections'}</span>
-                        </div>
-                        <h1 className="text-2xl sm:text-4xl lg:text-5xl font-playfair font-bold tracking-tight text-gray-900 leading-tight">
-                            Shop <span className="text-destructive">Our Products</span>
-                        </h1>
-                    </div>
-                    <div className="flex items-center gap-4 shrink-0">
-                        <div className="bg-gray-50 px-3 sm:px-6 py-2 sm:py-3 rounded-xl sm:rounded-2xl border border-gray-100">
-                            <span className="text-[8px] sm:text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-0.5 sm:mb-1">Results</span>
-                            <span className="text-base sm:text-xl font-black text-gray-900">{filteredProducts.length} <span className="text-xs sm:text-sm font-medium text-gray-400">products</span></span>
-                        </div>
-                    </div>
+                {/* Header */}
+                <div className="mb-4 sm:mb-8">
+                    <h1 className="text-xl sm:text-3xl lg:text-4xl font-playfair font-bold tracking-tight text-gray-900">
+                        Shop <span className="text-destructive">Our Products</span>
+                    </h1>
                 </div>
 
-                <div className="flex flex-col lg:flex-row gap-4 lg:gap-16">
+                <div className="flex flex-col lg:flex-row gap-4 lg:gap-12">
                     
                     {/* Desktop Sidebar Module */}
-                    <aside className="hidden lg:block w-72 shrink-0">
+                    <aside className="hidden lg:block w-60 shrink-0">
                         <div className="sticky top-32">
                             <FilterContent />
                         </div>
@@ -257,54 +250,58 @@ export default function ProductsPage() {
                     {/* Main Content Module */}
                     <main className="flex-1">
                         
-                        {/* Toolbar Module */}
-                        <div className="flex items-center justify-between gap-2 sm:gap-4 mb-6 sm:mb-12 bg-gray-50/50 p-2 sm:p-4 rounded-2xl sm:rounded-[2.5rem] border border-gray-100">
-                            {/* Mobile Filter Trigger */}
-                            <Sheet>
-                                <SheetTrigger asChild>
-                                    <Button variant="outline" className="lg:hidden h-10 sm:h-12 w-10 sm:w-12 rounded-xl sm:rounded-2xl p-0 border-gray-200 hover:bg-white hover:shadow-xl transition-all">
-                                        <SlidersHorizontal className="h-4 sm:h-5 w-4 sm:w-5" />
-                                    </Button>
-                                </SheetTrigger>
-                                <SheetContent side="left" className="w-full sm:max-w-md overflow-y-auto">
-                                    <SheetHeader className="mb-8">
-                                        <SheetTitle className="text-2xl font-black tracking-tighter">Filters</SheetTitle>
-                                    </SheetHeader>
-                                    <FilterContent />
-                                </SheetContent>
-                            </Sheet>
+                        {/* Toolbar — minimal row */}
+                        <div className="flex items-center justify-between mb-4 sm:mb-8">
+                            <div className="flex items-center gap-2">
+                                {/* Mobile Filter Trigger */}
+                                <Sheet>
+                                    <SheetTrigger asChild>
+                                        <Button variant="outline" className="lg:hidden h-8 w-8 rounded-lg p-0 border-gray-200">
+                                            <SlidersHorizontal className="h-3.5 w-3.5" />
+                                        </Button>
+                                    </SheetTrigger>
+                                    <SheetContent side="left" className="w-full sm:max-w-md overflow-y-auto">
+                                        <SheetHeader className="mb-8">
+                                            <SheetTitle className="text-2xl font-black tracking-tighter">Filters</SheetTitle>
+                                        </SheetHeader>
+                                        <FilterContent />
+                                    </SheetContent>
+                                </Sheet>
 
-                            <div className="flex items-center gap-2 sm:gap-4">
-                                <div className="hidden sm:flex items-center bg-white border border-gray-100 rounded-2xl p-1 shadow-sm">
+                                <span className="text-xs text-gray-400 font-medium">{filteredProducts.length} products</span>
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                                <div className="hidden sm:flex items-center border border-gray-100 rounded-lg p-0.5">
                                     <button 
                                         onClick={() => setViewMode('grid')}
                                         className={cn(
-                                            "h-10 w-10 flex items-center justify-center rounded-xl transition-all",
-                                            viewMode === 'grid' ? "bg-black text-white shadow-xl" : "text-gray-400 hover:text-black"
+                                            "h-7 w-7 flex items-center justify-center rounded-md transition-all",
+                                            viewMode === 'grid' ? "bg-gray-900 text-white" : "text-gray-400 hover:text-black"
                                         )}
                                     >
-                                        <LayoutGrid className="h-4 w-4" />
+                                        <LayoutGrid className="h-3.5 w-3.5" />
                                     </button>
                                     <button 
                                         onClick={() => setViewMode('list')}
                                         className={cn(
-                                            "h-10 w-10 flex items-center justify-center rounded-xl transition-all",
-                                            viewMode === 'list' ? "bg-black text-white shadow-xl" : "text-gray-400 hover:text-black"
+                                            "h-7 w-7 flex items-center justify-center rounded-md transition-all",
+                                            viewMode === 'list' ? "bg-gray-900 text-white" : "text-gray-400 hover:text-black"
                                         )}
                                     >
-                                        <List className="h-4 w-4" />
+                                        <List className="h-3.5 w-3.5" />
                                     </button>
                                 </div>
 
                                 <Select value={sortBy} onValueChange={(val) => setSortBy(val)}>
-                                    <SelectTrigger className="w-[140px] sm:w-[180px] h-10 sm:h-12 rounded-xl sm:rounded-2xl border-gray-200 bg-white font-bold text-[10px] sm:text-xs uppercase tracking-widest focus:ring-black/5 transition-all">
-                                        <SelectValue placeholder="Sort By" />
+                                    <SelectTrigger className="w-[120px] sm:w-[150px] h-8 rounded-lg border-gray-200 bg-white text-[10px] sm:text-xs font-medium focus:ring-black/5">
+                                        <SelectValue placeholder="Sort" />
                                     </SelectTrigger>
-                                    <SelectContent className="rounded-2xl border-gray-100 shadow-2xl">
-                                        <SelectItem value="newest" className="font-bold text-xs uppercase tracking-widest py-3">Newest</SelectItem>
-                                        <SelectItem value="price_low" className="font-bold text-xs uppercase tracking-widest py-3">Price: Low to High</SelectItem>
-                                        <SelectItem value="price_high" className="font-bold text-xs uppercase tracking-widest py-3">Price: High to Low</SelectItem>
-                                        <SelectItem value="rating" className="font-bold text-xs uppercase tracking-widest py-3">Best Rating</SelectItem>
+                                    <SelectContent className="rounded-xl border-gray-100 shadow-xl">
+                                        <SelectItem value="newest" className="text-xs py-2">Newest</SelectItem>
+                                        <SelectItem value="price_low" className="text-xs py-2">Price: Low to High</SelectItem>
+                                        <SelectItem value="price_high" className="text-xs py-2">Price: High to Low</SelectItem>
+                                        <SelectItem value="rating" className="text-xs py-2">Best Rating</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>

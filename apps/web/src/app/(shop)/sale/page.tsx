@@ -82,8 +82,13 @@ export default function SalePage() {
         router.push(`/sale?${params.toString()}`, { scroll: false });
     }, [filters, router]);
 
+    // Scroll to top when page changes
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, [filters.page]);
+
     const handleFilterChange = (key: keyof ProductFilter, value: any) => {
-        setFilters(prev => ({ ...prev, [key]: value, page: 1 }));
+        setFilters(prev => ({ ...prev, [key]: value, page: key === 'page' ? value : 1 }));
     };
 
     const clearFilters = () => {

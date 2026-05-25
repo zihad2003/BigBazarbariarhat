@@ -52,6 +52,11 @@ export default function ShopPage({ params: paramsPromise }: { params: Promise<{ 
 
     const [pagination, setPagination] = useState({ page: 1, totalPages: 1, total: 0 });
 
+    // Scroll to top when page changes
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, [filters.page]);
+
     const { addProduct } = useCartStore();
     const { toggleItem: toggleWishlist, isInWishlist } = useWishlistStore();
     const { openCart, addNotification } = useUIStore();

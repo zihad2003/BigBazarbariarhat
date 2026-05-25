@@ -39,6 +39,7 @@ const getHeroSlides = (t: any) => [
         subtitle: t?.hero?.slide1Subtitle || "Women's Fashion 2026",
         cta: t?.common?.shopNow || 'Shop Now',
         href: '/women',
+        videoUrl: null,
     },
     {
         id: 2,
@@ -47,6 +48,7 @@ const getHeroSlides = (t: any) => [
         subtitle: t?.hero?.slide2Subtitle || 'Crafted for the Modern Man',
         cta: t?.common?.explore || 'Explore',
         href: '/men',
+        videoUrl: null,
     },
     {
         id: 3,
@@ -56,21 +58,21 @@ const getHeroSlides = (t: any) => [
         cta: t?.common?.shopNow || 'Shop Now',
         href: '/sale',
         badge: '50% OFF',
+        videoUrl: null,
     },
 ];
 
 // Fallback category images — overridden by DB values
 const fallbackCategoryImages: Record<string, string> = {
-    'Women': 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=500&auto=format&fit=crop',
-    'Men': 'https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?q=80&w=500&auto=format&fit=crop',
-    'Kids(Boys)': 'https://images.unsplash.com/photo-1519234129322-2636a0d0d885?q=80&w=500&auto=format&fit=crop',
-    'Kids(Girls)': 'https://images.unsplash.com/photo-1514316454349-f50db90e2270?q=80&w=500&auto=format&fit=crop',
-    'Wedding Touch': 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=500&auto=format&fit=crop',
+    'Women': 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=500&auto=format&fit=crop',
+    'Men': 'https://images.unsplash.com/photo-1488161628813-04466f872be2?q=80&w=500&auto=format&fit=crop',
+    'Kids(Boys)': 'https://images.unsplash.com/photo-1503919545889-aef636e10ad4?q=80&w=500&auto=format&fit=crop',
+    'Kids(Girls)': 'https://images.unsplash.com/photo-1518837695005-2083093ee35b?q=80&w=500&auto=format&fit=crop',
+    'Wedding Touch': 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?q=80&w=500&auto=format&fit=crop',
 };
 
 const getTrustFeatures = (t: any) => [
-    { icon: Truck, title: t?.features?.freeShipping || 'Free Shipping', desc: t?.features?.freeShippingDesc || 'On orders over ৳2000' },
-    { icon: RefreshCcw, title: t?.features?.easyReturns || 'Easy Returns', desc: t?.features?.easyReturnsDesc || 'On-the-spot returns' },
+    { icon: Truck, title: t?.features?.freeShipping || 'Free Shipping', desc: t?.features?.freeShippingDesc || 'For Mirsharai' },
     { icon: ShieldCheck, title: t?.features?.securePayment || 'Secure Payment', desc: t?.features?.securePaymentDesc || '100% secure checkout' },
     { icon: Headphones, title: t?.features?.support || '24/7 Support', desc: t?.features?.supportDesc || 'Always here to help' },
 ];
@@ -84,10 +86,11 @@ const defaultPromoBanners = [
 // --- HERO SLIDER ---
 function HeroSlider({ dbBanners }: { dbBanners?: any[] }) {
     const t = useTranslation();
-    const slides = dbBanners && dbBanners.length > 0 
+    const slides = dbBanners && dbBanners.length > 0
         ? dbBanners.map((b) => ({
             id: b.id,
             image: b.imageDesktop,
+            videoUrl: b.videoUrl || null,
             title: b.title,
             subtitle: b.subtitle || "",
             cta: b.linkText || t?.common?.shopNow || 'Shop Now',
@@ -97,11 +100,26 @@ function HeroSlider({ dbBanners }: { dbBanners?: any[] }) {
         : getHeroSlides(t);
     const [current, setCurrent] = useState(0);
     const total = slides.length;
+    const videoRef = useRef<HTMLVideoElement>(null);
+    const isVideo = !!slides[current]?.videoUrl;
 
+    // Auto-advance only for photo slides
     useEffect(() => {
+        if (isVideo) return; // video slides advance via onEnded
         const timer = setInterval(() => setCurrent(c => (c + 1) % total), 5000);
         return () => clearInterval(timer);
-    }, [total]);
+    }, [total, current, isVideo]);
+
+    // Play video from start whenever we land on a video slide
+    useEffect(() => {
+        if (isVideo && videoRef.current) {
+            videoRef.current.currentTime = 0;
+            videoRef.current.play().catch(() => {});
+        }
+    }, [current, isVideo]);
+
+    const goNext = () => setCurrent(c => (c + 1) % total);
+    const goPrev = () => setCurrent(c => (c - 1 + total) % total);
 
     return (
         <div className="relative w-full h-[60vh] md:h-[80vh] overflow-hidden bg-gray-100">
@@ -116,14 +134,35 @@ function HeroSlider({ dbBanners }: { dbBanners?: any[] }) {
                             exit={{ opacity: 0 }}
                             transition={{ duration: 0.8 }}
                         >
-                            <Image
-                                src={slide.image || '/placeholder.png'}
-                                alt={slide.title}
-                                fill
-                                className="object-cover object-top"
-                                quality={95}
-                                priority
-                            />
+                            {slide.videoUrl ? (
+                                /* --- VIDEO SLIDE --- */
+                                <>
+                                    <video
+                                        ref={videoRef}
+                                        src={slide.videoUrl}
+                                        className="absolute inset-0 w-full h-full object-cover object-center"
+                                        autoPlay
+                                        muted
+                                        playsInline
+                                        onEnded={goNext}
+                                    />
+                                    {/* Video indicator badge */}
+                                    <div className="absolute top-4 right-16 flex items-center gap-1.5 bg-black/40 backdrop-blur-sm text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                                        Video
+                                    </div>
+                                </>
+                            ) : (
+                                /* --- IMAGE SLIDE --- */
+                                <Image
+                                    src={slide.image || '/placeholder.png'}
+                                    alt={slide.title}
+                                    fill
+                                    className="object-cover object-top"
+                                    quality={95}
+                                    priority
+                                />
+                            )}
                             <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent" />
                             <div className="absolute inset-0 flex flex-col justify-center px-8 md:px-20">
                                 {slide.badge && (
@@ -174,14 +213,14 @@ function HeroSlider({ dbBanners }: { dbBanners?: any[] }) {
 
             {/* Arrow Buttons */}
             <button
-                onClick={() => setCurrent(c => (c - 1 + total) % total)}
+                onClick={goPrev}
                 className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/30 hover:bg-white text-white hover:text-foreground backdrop-blur-sm flex items-center justify-center transition-all duration-200"
                 aria-label="Previous"
             >
                 <ChevronLeft className="h-5 w-5" />
             </button>
             <button
-                onClick={() => setCurrent(c => (c + 1) % total)}
+                onClick={goNext}
                 className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/30 hover:bg-white text-white hover:text-foreground backdrop-blur-sm flex items-center justify-center transition-all duration-200"
                 aria-label="Next"
             >
@@ -190,7 +229,7 @@ function HeroSlider({ dbBanners }: { dbBanners?: any[] }) {
 
             {/* Dots */}
             <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex gap-2">
-                {slides.map((_, i) => (
+                {slides.map((slide, i) => (
                     <button
                         key={i}
                         onClick={() => setCurrent(i)}
@@ -221,16 +260,16 @@ function ProductCard({ product, index }: { product: any; index: number }) {
 
     return (
         <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: index * 0.05 }}
+            transition={{ delay: index * 0.05, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             className="group"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
             <Link href={`/products/${product.slug || product.id}`}>
-                <div className="relative aspect-[3/4] overflow-hidden bg-gray-100 mb-3">
+                <div className="relative aspect-[3/4] overflow-hidden rounded-[1.5rem] md:rounded-[2rem] bg-gray-100 mb-3 border border-gray-100/50">
                     <Image
                         src={resolvedImage}
                         alt={product.name}
@@ -307,6 +346,9 @@ function ProductCard({ product, index }: { product: any; index: number }) {
 function FlashSaleSection({ products }: { products: any[] }) {
     const t = useTranslation();
     const [timeLeft, setTimeLeft] = useState({ h: 12, m: 45, s: 0 });
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
+    const [isPaused, setIsPaused] = useState(false);
+    const touchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -320,11 +362,58 @@ function FlashSaleSection({ products }: { products: any[] }) {
         return () => clearInterval(timer);
     }, []);
 
+    // Smooth continuous auto-scrolling marquee logic
+    useEffect(() => {
+        if (!products.length) return;
+
+        let animationFrameId: number;
+
+        const animate = () => {
+            if (scrollContainerRef.current && !isPaused) {
+                const container = scrollContainerRef.current;
+                
+                // Increment scroll position smoothly (0.75px per frame at 60Hz)
+                container.scrollLeft += 0.75;
+
+                // Loop back when reaching the end
+                if (container.scrollLeft + container.clientWidth >= container.scrollWidth - 10) {
+                    container.scrollLeft = 0;
+                }
+            }
+            animationFrameId = requestAnimationFrame(animate);
+        };
+
+        animationFrameId = requestAnimationFrame(animate);
+
+        return () => {
+            cancelAnimationFrame(animationFrameId);
+            if (touchTimeoutRef.current) clearTimeout(touchTimeoutRef.current);
+        };
+    }, [products, isPaused]);
+
+    const handleTouchStart = () => {
+        setIsPaused(true);
+        if (touchTimeoutRef.current) clearTimeout(touchTimeoutRef.current);
+    };
+
+    const handleTouchEnd = () => {
+        if (touchTimeoutRef.current) clearTimeout(touchTimeoutRef.current);
+        touchTimeoutRef.current = setTimeout(() => {
+            setIsPaused(false);
+        }, 3000); // Resume auto-scrolling after 3 seconds of inactivity
+    };
+
+
+
     if (!products.length) return null;
 
     return (
-        <section className="bg-destructive/5 py-16 overflow-hidden">
-            <div className="max-w-7xl mx-auto px-4">
+        <section className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 my-8 md:my-16">
+            <div 
+                className="bg-destructive/5 py-12 px-4 md:py-16 md:px-12 rounded-[2.5rem] overflow-hidden relative border border-destructive/10"
+                onMouseEnter={() => setIsPaused(true)}
+                onMouseLeave={() => setIsPaused(false)}
+            >
                 <div className="flex flex-col md:flex-row items-center justify-between mb-12 gap-8">
                     <div className="flex items-center gap-6">
                         <div className="bg-destructive text-white p-4 rounded-3xl shadow-xl shadow-destructive/20 animate-pulse">
@@ -336,40 +425,60 @@ function FlashSaleSection({ products }: { products: any[] }) {
                         </div>
                     </div>
                     
-                    {/* Timer */}
-                    <div className="flex gap-4">
-                        {[
-                            { val: timeLeft.h, label: 'Hours' },
-                            { val: timeLeft.m, label: 'Min' },
-                            { val: timeLeft.s, label: 'Sec' }
-                        ].map((t, i) => (
-                            <div key={i} className="flex flex-col items-center">
-                                <div className="w-16 h-16 bg-white border-2 border-destructive/20 rounded-2xl flex items-center justify-center text-2xl font-black text-destructive shadow-sm">
-                                    {t.val.toString().padStart(2, '0')}
+                    {/* Timer and Controls */}
+                    <div className="flex items-center gap-8">
+                        <div className="flex gap-4">
+                            {[
+                                { val: timeLeft.h, label: 'Hours' },
+                                { val: timeLeft.m, label: 'Min' },
+                                { val: timeLeft.s, label: 'Sec' }
+                            ].map((t, i) => (
+                                <div key={i} className="flex flex-col items-center">
+                                    <div className="w-16 h-16 bg-white border-2 border-destructive/20 rounded-2xl flex items-center justify-center text-2xl font-black text-destructive shadow-sm">
+                                        {t.val.toString().padStart(2, '0')}
+                                    </div>
+                                    <span className="text-[9px] font-black uppercase tracking-widest mt-2 text-destructive/60">{t.label}</span>
                                 </div>
-                                <span className="text-[9px] font-black uppercase tracking-widest mt-2 text-destructive/60">{t.label}</span>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
+
+
                     </div>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-2 md:gap-8 pb-12 px-2">
+                {/* Horizontal Sliding Container with smooth native swiping */}
+                <div 
+                    ref={scrollContainerRef}
+                    className="flex overflow-x-auto gap-4 md:gap-8 pb-12 px-2 snap-x snap-mandatory scrollbar-none scroll-smooth [&::-webkit-scrollbar]:hidden"
+                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                    onTouchStart={handleTouchStart}
+                    onTouchEnd={handleTouchEnd}
+                >
                     {products.map((p, i) => (
-                        <div key={p.id} className="w-full">
+                        <div 
+                            key={p.id} 
+                            className="min-w-[75%] sm:min-w-[45%] md:min-w-[22%] snap-start flex-shrink-0"
+                        >
                             <ProductCard product={p} index={i} />
-                            <div className="mt-2 bg-gray-100 h-1 md:h-1.5 rounded-full overflow-hidden">
+                            <div className="mt-4 bg-gray-100 h-1 md:h-1.5 rounded-full overflow-hidden">
                                 <motion.div 
                                     initial={{ width: 0 }}
                                     whileInView={{ width: '65%' }}
                                     className="bg-destructive h-full"
+                                    transition={{ duration: 1, ease: 'easeOut' }}
                                 />
                             </div>
-                            <p className="text-[7px] md:text-[9px] font-black uppercase tracking-widest mt-1 text-muted-foreground flex justify-between">
+                            <p className="text-[7px] md:text-[9px] font-black uppercase tracking-widest mt-1.5 text-muted-foreground flex justify-between">
                                 <span>65% Reserved</span>
                                 <span>12 Left</span>
                             </p>
                         </div>
                     ))}
+                </div>
+
+                {/* Mobile Drag/Swipe Indicator */}
+                <div className="flex md:hidden justify-center items-center gap-1.5 mt-2">
+                    <span className="text-[9px] font-black text-destructive/40 uppercase tracking-widest animate-pulse">Swipe Left/Right to explore</span>
                 </div>
             </div>
         </section>
@@ -379,7 +488,6 @@ function FlashSaleSection({ products }: { products: any[] }) {
 // --- MAIN PAGE ---
 export default function HomePage() {
     const t = useTranslation();
-    const trustFeatures = getTrustFeatures(t);
     const [mounted, setMounted] = useState(false);
     const [categories, setCategories] = useState<any[]>([]);
     const [heroBanners, setHeroBanners] = useState<any[]>([]);
@@ -408,8 +516,9 @@ export default function HomePage() {
                         key: cat.slug,
                         name: cat.name,
                         href: `/products?category=${encodeURIComponent(cat.name)}`,
-                        image: cat.image || fallbackCategoryImages[cat.name] || 'https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=500&auto=format&fit=crop',
+                        image: cat.image || fallbackCategoryImages[cat.name] || 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=500&auto=format&fit=crop',
                         comingSoon: false,
+                        count: cat._count?.products || 0,
                     }));
                     setCategories(mapped);
                 }
@@ -440,39 +549,66 @@ export default function HomePage() {
             {/* 1. HERO BANNER SLIDER */}
             <HeroSlider dbBanners={heroBanners} />
 
-            {/* 2. CATEGORY STRIP — Aarong-style square image tiles */}
-            <section className="max-w-7xl mx-auto px-4 py-10 md:py-14">
-                <h2 className="text-2xl md:text-3xl font-playfair font-bold text-center text-foreground mb-8 uppercase tracking-wider">
-                    {t.categories.title}
-                </h2>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-6">
+            {/* 2. CATEGORY STRIP — Cynx-inspired Premium Rounded Cards with Overlay & Hover Animation */}
+            <section className="max-w-7xl mx-auto px-4 py-12 md:py-20">
+                <div className="text-center max-w-2xl mx-auto mb-12">
+                    <h2 className="text-3xl md:text-5xl font-playfair font-black text-foreground uppercase tracking-tight mb-3">
+                        {t.categories.title}
+                    </h2>
+                    <div className="w-16 h-1 bg-destructive mx-auto mb-4" />
+                    <p className="text-xs md:text-sm text-muted-foreground uppercase tracking-[0.2em]">
+                        Explore our curated collections crafted with excellence
+                    </p>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-8">
                     {categories.map((cat, i) => (
                         <motion.div
                             key={cat.key}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: i * 0.1 }}
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: i * 0.08, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
                         >
-                            <Link href={cat.href} className="group block text-center">
-                                <div className="relative aspect-square overflow-hidden mb-3 bg-gray-100">
-                                    <Image
-                                        src={cat.image}
-                                        alt={cat.name}
-                                        fill
-                                        className="object-cover transition-transform duration-700 group-hover:scale-110"
-                                        quality={85}
-                                    />
-                                    {cat.comingSoon && (
-                                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                                            <span className="bg-yellow-400 text-yellow-900 text-[9px] font-black uppercase tracking-widest px-2 py-1">
-                                                Coming Soon
-                                            </span>
-                                        </div>
-                                    )}
+                            <Link href={cat.href} className="group block relative aspect-[3/4] overflow-hidden rounded-[2rem] bg-gray-100 border border-gray-100/50 shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
+                                <Image
+                                    src={cat.image}
+                                    alt={cat.name}
+                                    fill
+                                    className="object-cover transition-transform duration-1000 ease-out group-hover:scale-110"
+                                    quality={85}
+                                />
+                                {/* Elegant gradient overlay */}
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-transparent opacity-90 group-hover:opacity-100 transition-opacity duration-300" />
+                                
+                                {/* Hover interactive ring/border */}
+                                <div className="absolute inset-4 rounded-[1.5rem] border border-white/0 group-hover:border-white/20 transition-all duration-500 scale-95 group-hover:scale-100" />
+
+                                {/* Category Information */}
+                                <div className="absolute bottom-6 left-6 right-6 text-white flex flex-col z-10">
+                                    <span className="text-lg md:text-xl font-bold font-playfair uppercase tracking-wide group-hover:text-yellow-400 transition-colors duration-300">
+                                        {cat.name}
+                                    </span>
+                                    <div className="h-0 group-hover:h-5 overflow-hidden transition-all duration-300 opacity-0 group-hover:opacity-100 mt-1 flex items-center justify-between">
+                                        <span className="text-[10px] text-white/70 font-black uppercase tracking-widest">
+                                            {cat.count === 1 ? '1 Item' : `${cat.count || 0} Items`}
+                                        </span>
+                                        <span className="text-[10px] text-yellow-400 font-bold uppercase tracking-widest flex items-center gap-1">
+                                            Explore
+                                            <ArrowRight className="h-3 w-3" />
+                                        </span>
+                                    </div>
+                                    <span className="text-[10px] text-white/50 font-medium uppercase tracking-widest mt-1.5 group-hover:opacity-0 transition-opacity duration-300">
+                                        {cat.count === 1 ? '1 Item' : `${cat.count || 0} Items`}
+                                    </span>
                                 </div>
-                                <span className={`text-xs md:text-sm font-semibold uppercase tracking-widest transition-colors ${cat.comingSoon ? 'text-muted-foreground' : 'text-foreground group-hover:text-destructive'}`}>
-                                    {cat.name}
-                                </span>
+
+                                {cat.comingSoon && (
+                                    <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex items-center justify-center z-20">
+                                        <span className="bg-yellow-400 text-yellow-900 text-[10px] font-black uppercase tracking-[0.2em] px-4 py-2 rounded-none shadow-lg">
+                                            Coming Soon
+                                        </span>
+                                    </div>
+                                )}
                             </Link>
                         </motion.div>
                     ))}
@@ -531,22 +667,7 @@ export default function HomePage() {
                 </div>
             </section>
 
-            {/* 5. TRUST FEATURES BAR */}
-            <section className="border-t border-b border-gray-100 bg-gray-50">
-                <div className="max-w-7xl mx-auto px-4 py-8">
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-                        {trustFeatures.map((f, i) => (
-                            <div key={i} className="flex items-center gap-4">
-                                <f.icon className="h-7 w-7 text-foreground flex-shrink-0" />
-                                <div>
-                                    <p className="text-sm font-bold text-foreground uppercase tracking-wide">{f.title}</p>
-                                    <p className="text-xs text-muted-foreground">{f.desc}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
+
 
             {/* 6. FLASH SALE SECTION */}
             <FlashSaleSection products={flashProducts} />

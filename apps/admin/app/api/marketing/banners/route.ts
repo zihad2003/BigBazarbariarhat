@@ -26,8 +26,9 @@ export async function POST(req: NextRequest) {
             data: {
                 title: body.title,
                 subtitle: body.subtitle,
-                imageDesktop: body.imageDesktop,
+                imageDesktop: body.imageDesktop || '',
                 imageMobile: body.imageMobile,
+                videoUrl: body.videoUrl || null,
                 linkUrl: body.linkUrl,
                 linkText: body.linkText,
                 position: body.position || 'HERO_MAIN',

@@ -247,10 +247,6 @@ export default function CartPage() {
                                     <ShieldCheck className="h-4 w-4" />
                                     <span className="text-[10px] font-bold uppercase tracking-widest">Secure Payment</span>
                                 </div>
-                                <div className="flex items-center gap-3 text-gray-400">
-                                    <RotateCcw className="h-4 w-4" />
-                                    <span className="text-[10px] font-bold uppercase tracking-widest">30-Day Returns</span>
-                                </div>
                             </div>
                         </div>
                     </div>
