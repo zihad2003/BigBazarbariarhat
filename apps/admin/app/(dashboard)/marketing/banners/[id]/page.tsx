@@ -25,9 +25,9 @@ import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 const bannerSchema = z.object({
     title: z.string().min(3, 'Title is required'),
     subtitle: z.string().optional(),
-    imageDesktop: z.string().url('Invalid URL').optional().or(z.literal('')),
-    imageMobile: z.string().url('Invalid URL').optional().or(z.literal('')),
-    videoUrl: z.string().url('Invalid video URL').optional().or(z.literal('')),
+    imageDesktop: z.string().optional().or(z.literal('')),
+    imageMobile: z.string().optional().or(z.literal('')),
+    videoUrl: z.string().optional().or(z.literal('')),
     linkUrl: z.string().optional(),
     linkText: z.string().optional(),
     position: z.enum(['HOME_HERO', 'HOME_SECONDARY', 'CATEGORY_TOP', 'PRODUCT_SIDEBAR', 'CHECKOUT_TOP']),
@@ -48,10 +48,16 @@ export default function EditBannerPage() {
         register,
         handleSubmit,
         reset,
+        watch,
+        setValue,
         formState: { errors }
     } = useForm<BannerFormValues>({
         resolver: zodResolver(bannerSchema)
     });
+
+    const imageDesktopValue = watch('imageDesktop');
+    const imageMobileValue = watch('imageMobile');
+    const videoUrlValue = watch('videoUrl');
 
     useEffect(() => {
         const fetchBanner = async () => {
@@ -200,41 +206,155 @@ export default function EditBannerPage() {
                     <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
                         <h2 className="text-sm font-semibold mb-6 flex items-center gap-2">
                             <ImageIcon className="w-4 h-4 text-primary" />
-                            Images
+                            Images & Video
                         </h2>
                         <div className="space-y-6">
+                            {/* Desktop Image */}
                             <div className="space-y-2">
                                 <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-                                    <Monitor className="w-3.5 h-3.5" /> Desktop Image URL
+                                    <Monitor className="w-3.5 h-3.5" /> Desktop Image
                                 </label>
-                                <input
-                                    {...register('imageDesktop')}
-                                    className="w-full h-11 px-4 bg-muted/20 border border-border rounded-lg text-[13px] font-medium text-primary outline-none focus:ring-2 focus:ring-primary/20 transition"
-                                    placeholder="https://example.com/banner-desktop.jpg"
-                                />
+                                <div className="space-y-3">
+                                    {imageDesktopValue ? (
+                                        <div className="relative w-full h-48 rounded-lg overflow-hidden border border-border bg-muted/20 group">
+                                            <img src={imageDesktopValue} className="w-full h-full object-cover" alt="Desktop Preview" />
+                                            <button
+                                                type="button"
+                                                onClick={() => setValue('imageDesktop', '')}
+                                                className="absolute top-2 right-2 px-3 py-1.5 bg-rose-600 text-white rounded-lg text-xs font-semibold hover:bg-rose-700 transition"
+                                            >
+                                                Remove Image
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <div className="border-2 border-dashed border-border rounded-xl p-6 text-center hover:bg-muted/5 transition cursor-pointer relative">
+                                            <ImageIcon className="w-8 h-8 text-muted-foreground/60 mx-auto mb-2" />
+                                            <p className="text-[13px] font-medium text-foreground">Upload Desktop Image</p>
+                                            <p className="text-[11px] text-muted-foreground mt-0.5">PNG, JPG, WEBP up to 5MB</p>
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={e => {
+                                                    const file = e.target.files?.[0];
+                                                    if (file) {
+                                                        const reader = new FileReader();
+                                                        reader.onloadend = () => setValue('imageDesktop', reader.result as string);
+                                                        reader.readAsDataURL(file);
+                                                    }
+                                                }}
+                                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                            />
+                                        </div>
+                                    )}
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-[10px] text-muted-foreground font-bold uppercase shrink-0">Or paste URL</span>
+                                        <input
+                                            value={imageDesktopValue || ''}
+                                            onChange={e => setValue('imageDesktop', e.target.value)}
+                                            className="w-full h-9 px-3 bg-muted/10 border border-border rounded-lg text-[12px] outline-none"
+                                            placeholder="https://example.com/banner.jpg"
+                                        />
+                                    </div>
+                                </div>
                                 {errors.imageDesktop && <p className="text-destructive text-[11px] font-medium">{errors.imageDesktop.message}</p>}
                             </div>
 
+                            {/* Mobile Image */}
                             <div className="space-y-2">
                                 <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-                                    <Smartphone className="w-3.5 h-3.5" /> Mobile Image URL (Optional)
+                                    <Smartphone className="w-3.5 h-3.5" /> Mobile Image (Optional)
                                 </label>
-                                <input
-                                    {...register('imageMobile')}
-                                    className="w-full h-11 px-4 bg-muted/20 border border-border rounded-lg text-[13px] font-medium text-primary outline-none focus:ring-2 focus:ring-primary/20 transition"
-                                    placeholder="https://example.com/banner-mobile.jpg"
-                                />
+                                <div className="space-y-3">
+                                    {imageMobileValue ? (
+                                        <div className="relative w-full h-48 rounded-lg overflow-hidden border border-border bg-muted/20 group">
+                                            <img src={imageMobileValue} className="w-full h-full object-cover" alt="Mobile Preview" />
+                                            <button
+                                                type="button"
+                                                onClick={() => setValue('imageMobile', '')}
+                                                className="absolute top-2 right-2 px-3 py-1.5 bg-rose-600 text-white rounded-lg text-xs font-semibold hover:bg-rose-700 transition"
+                                            >
+                                                Remove Image
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <div className="border-2 border-dashed border-border rounded-xl p-6 text-center hover:bg-muted/5 transition cursor-pointer relative">
+                                            <ImageIcon className="w-8 h-8 text-muted-foreground/60 mx-auto mb-2" />
+                                            <p className="text-[13px] font-medium text-foreground">Upload Mobile Image</p>
+                                            <p className="text-[11px] text-muted-foreground mt-0.5">PNG, JPG, WEBP up to 5MB</p>
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={e => {
+                                                    const file = e.target.files?.[0];
+                                                    if (file) {
+                                                        const reader = new FileReader();
+                                                        reader.onloadend = () => setValue('imageMobile', reader.result as string);
+                                                        reader.readAsDataURL(file);
+                                                    }
+                                                }}
+                                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                            />
+                                        </div>
+                                    )}
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-[10px] text-muted-foreground font-bold uppercase shrink-0">Or paste URL</span>
+                                        <input
+                                            value={imageMobileValue || ''}
+                                            onChange={e => setValue('imageMobile', e.target.value)}
+                                            className="w-full h-9 px-3 bg-muted/10 border border-border rounded-lg text-[12px] outline-none"
+                                            placeholder="https://example.com/banner-mobile.jpg"
+                                        />
+                                    </div>
+                                </div>
                             </div>
 
+                            {/* Video */}
                             <div className="space-y-2 border-t border-border pt-6">
                                 <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-                                    <Video className="w-3.5 h-3.5 text-primary" /> Video URL (Optional — overrides image for Hero slides)
+                                    <Video className="w-3.5 h-3.5 text-primary" /> Video (Optional — overrides image for Hero slides)
                                 </label>
-                                <input
-                                    {...register('videoUrl')}
-                                    className="w-full h-11 px-4 bg-muted/20 border border-border rounded-lg text-[13px] font-medium text-primary outline-none focus:ring-2 focus:ring-primary/20 transition"
-                                    placeholder="https://example.com/hero-video.mp4"
-                                />
+                                <div className="space-y-3">
+                                    {videoUrlValue ? (
+                                        <div className="relative w-full h-48 rounded-lg overflow-hidden border border-border bg-muted/20 group">
+                                            <video src={videoUrlValue} className="w-full h-full object-cover" controls />
+                                            <button
+                                                type="button"
+                                                onClick={() => setValue('videoUrl', '')}
+                                                className="absolute top-2 right-2 px-3 py-1.5 bg-rose-600 text-white rounded-lg text-xs font-semibold hover:bg-rose-700 transition z-10"
+                                            >
+                                                Remove Video
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <div className="border-2 border-dashed border-border rounded-xl p-6 text-center hover:bg-muted/5 transition cursor-pointer relative">
+                                            <Video className="w-8 h-8 text-muted-foreground/60 mx-auto mb-2" />
+                                            <p className="text-[13px] font-medium text-foreground">Upload Video File</p>
+                                            <p className="text-[11px] text-muted-foreground mt-0.5">MP4, WEBM up to 25MB</p>
+                                            <input
+                                                type="file"
+                                                accept="video/*"
+                                                onChange={e => {
+                                                    const file = e.target.files?.[0];
+                                                    if (file) {
+                                                        const reader = new FileReader();
+                                                        reader.onloadend = () => setValue('videoUrl', reader.result as string);
+                                                        reader.readAsDataURL(file);
+                                                    }
+                                                }}
+                                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                            />
+                                        </div>
+                                    )}
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-[10px] text-muted-foreground font-bold uppercase shrink-0">Or paste URL</span>
+                                        <input
+                                            value={videoUrlValue || ''}
+                                            onChange={e => setValue('videoUrl', e.target.value)}
+                                            className="w-full h-9 px-3 bg-muted/10 border border-border rounded-lg text-[12px] outline-none"
+                                            placeholder="https://example.com/hero-video.mp4"
+                                        />
+                                    </div>
+                                </div>
                                 {errors.videoUrl && <p className="text-destructive text-[11px] font-medium">{errors.videoUrl.message}</p>}
                                 <p className="text-[11px] text-muted-foreground">When a video URL is set, the hero slide will play the video and advance only after it ends.</p>
                             </div>

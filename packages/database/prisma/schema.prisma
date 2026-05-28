@@ -154,9 +154,9 @@ model Banner {
   id           String   @id @default(cuid())
   title        String
   subtitle     String?
-  imageDesktop String
-  imageMobile  String?
-  videoUrl     String?
+  imageDesktop String   @db.LongText
+  imageMobile  String?  @db.LongText
+  videoUrl     String?  @db.LongText
   linkUrl      String?
   linkText     String?
   position     String
