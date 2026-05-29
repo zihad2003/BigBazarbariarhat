@@ -659,17 +659,19 @@ export default function HomePage() {
                 if (newRes.success) setNewArrivals(newRes.data);
                 if (flashRes.success) setFlashProducts(flashRes.data);
                 
-                // Map DB categories to homepage category tiles
+                // Map DB categories to homepage category tiles (filter out Wedding Touch)
                 if (catRes.success && catRes.data && catRes.data.length > 0) {
-                    const mapped = catRes.data.map((cat: any) => ({
-                        key: cat.slug,
-                        name: cat.name,
-                        href: `/products?category=${encodeURIComponent(cat.slug)}`,
-                        image: cat.image || fallbackCategoryImages[cat.name] || 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=500&auto=format&fit=crop',
-                        comingSoon: false,
-                        count: cat._count?.products || 0,
-                    }));
-                    setCategories(mapped);
+                    const filtered = catRes.data
+                        .filter((cat: any) => cat.name.toLowerCase() !== 'wedding touch')
+                        .map((cat: any) => ({
+                            key: cat.slug,
+                            name: cat.name,
+                            href: `/products?category=${encodeURIComponent(cat.slug)}`,
+                            image: cat.image || fallbackCategoryImages[cat.name] || 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=500&auto=format&fit=crop',
+                            comingSoon: false,
+                            count: cat._count?.products || 0,
+                        }));
+                    setCategories(filtered);
                 }
 
                 // Map DB Hero banners
@@ -709,113 +711,114 @@ export default function HomePage() {
                         Explore our curated collections crafted with excellence
                     </p>
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-8">
-                    {categories.map((cat, i) => {
-                        const isWedding = cat.name.toLowerCase() === 'wedding touch';
-                        return (
-                            <motion.div
-                                key={cat.key}
-                                initial={{ opacity: 0, y: 30 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: i * 0.08, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                            >
-                                <Link 
-                                    href={cat.href} 
-                                    className={cn(
-                                        "group block relative aspect-[3/4] overflow-hidden rounded-[2rem] bg-gray-100 shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-2",
-                                        isWedding 
-                                            ? "border border-[#bf953f]/40 hover:border-[#bf953f]/80 shadow-[0_4px_20px_rgba(191,149,63,0.15)] bg-[#1c0c12]" 
-                                            : "border border-gray-100/50"
-                                    )}
-                                >
-                                    <Image
-                                        src={cat.image}
-                                        alt={cat.name}
-                                        fill
-                                        className="object-cover transition-transform duration-1000 ease-out group-hover:scale-110"
-                                        quality={85}
-                                    />
-                                    {/* Elegant gradient overlay */}
-                                    <div 
-                                        className={cn(
-                                            "absolute inset-0 transition-opacity duration-300",
-                                            isWedding
-                                                ? "bg-gradient-to-t from-[#1b0811]/95 via-[#0d0205]/50 to-transparent opacity-95 group-hover:opacity-100"
-                                                : "bg-gradient-to-t from-black/85 via-black/45 to-transparent opacity-90 group-hover:opacity-100"
-                                        )}
-                                    />
-                                    
-                                    {/* Hover interactive ring/border */}
-                                    <div 
-                                        className={cn(
-                                            "absolute inset-4 rounded-[1.5rem] scale-95 group-hover:scale-100 transition-all duration-500",
-                                            isWedding 
-                                                ? "border border-[#bf953f]/25 group-hover:border-[#bf953f]/50" 
-                                                : "border border-white/0 group-hover:border-white/20"
-                                        )}
-                                    />
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
+                    {categories.map((cat, i) => (
+                        <motion.div
+                            key={cat.key}
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: i * 0.08, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                        >
+                            <Link href={cat.href} className="group block relative aspect-[3/4] overflow-hidden rounded-[2rem] bg-gray-100 border border-gray-100/50 shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
+                                <Image
+                                    src={cat.image}
+                                    alt={cat.name}
+                                    fill
+                                    className="object-cover transition-transform duration-1000 ease-out group-hover:scale-110"
+                                    quality={85}
+                                />
+                                {/* Elegant gradient overlay */}
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-transparent opacity-90 group-hover:opacity-100 transition-opacity duration-300" />
+                                
+                                {/* Hover interactive ring/border */}
+                                <div className="absolute inset-4 rounded-[1.5rem] border border-white/0 group-hover:border-white/20 transition-all duration-500 scale-95 group-hover:scale-100" />
 
-                                    {isWedding && (
-                                        <div className="absolute top-5 left-5 bg-gradient-to-r from-[#bf953f] via-[#fcf6ba] to-[#b38728] text-black text-[9px] font-black uppercase tracking-[0.2em] px-2.5 py-1 rounded-sm shadow-md z-20 flex items-center gap-1">
-                                            <Sparkles className="h-2.5 w-2.5 animate-pulse" />
-                                            Luxury
-                                        </div>
-                                    )}
-
-                                    {/* Category Information */}
-                                    <div className="absolute bottom-6 left-6 right-6 text-white flex flex-col z-10">
-                                        <span 
-                                            className={cn(
-                                                "text-lg md:text-xl font-bold font-playfair uppercase tracking-wide transition-colors duration-300",
-                                                isWedding
-                                                    ? "text-transparent bg-clip-text bg-gradient-to-r from-[#bf953f] via-[#fcf6ba] to-[#b38728] group-hover:brightness-110"
-                                                    : "text-white group-hover:text-yellow-400"
-                                            )}
-                                        >
-                                            {cat.name}
-                                        </span>
-                                        <div className="h-0 group-hover:h-5 overflow-hidden transition-all duration-300 opacity-0 group-hover:opacity-100 mt-1 flex items-center justify-between">
-                                            <span 
-                                                className={cn(
-                                                    "text-[10px] font-black uppercase tracking-widest",
-                                                    isWedding ? "text-[#eadeca]/80" : "text-white/70"
-                                                )}
-                                            >
-                                                {cat.count === 1 ? '1 Item' : `${cat.count || 0} Items`}
-                                            </span>
-                                            <span 
-                                                className={cn(
-                                                    "text-[10px] font-bold uppercase tracking-widest flex items-center gap-1",
-                                                    isWedding ? "text-[#bf953f]" : "text-yellow-400"
-                                                )}
-                                            >
-                                                Explore
-                                                <ArrowRight className="h-3 w-3" />
-                                            </span>
-                                        </div>
-                                        <span 
-                                            className={cn(
-                                                "text-[10px] font-medium uppercase tracking-widest mt-1.5 group-hover:opacity-0 transition-opacity duration-300",
-                                                isWedding ? "text-[#eadeca]/50" : "text-white/50"
-                                            )}
-                                        >
+                                {/* Category Information */}
+                                <div className="absolute bottom-6 left-6 right-6 text-white flex flex-col z-10">
+                                    <span className="text-lg md:text-xl font-bold font-playfair uppercase tracking-wide group-hover:text-yellow-400 transition-colors duration-300">
+                                        {cat.name}
+                                    </span>
+                                    <div className="h-0 group-hover:h-5 overflow-hidden transition-all duration-300 opacity-0 group-hover:opacity-100 mt-1 flex items-center justify-between">
+                                        <span className="text-[10px] text-white/70 font-black uppercase tracking-widest">
                                             {cat.count === 1 ? '1 Item' : `${cat.count || 0} Items`}
                                         </span>
+                                        <span className="text-[10px] text-yellow-400 font-bold uppercase tracking-widest flex items-center gap-1">
+                                            Explore
+                                            <ArrowRight className="h-3 w-3" />
+                                        </span>
                                     </div>
+                                    <span className="text-[10px] text-white/50 font-medium uppercase tracking-widest mt-1.5 group-hover:opacity-0 transition-opacity duration-300">
+                                        {cat.count === 1 ? '1 Item' : `${cat.count || 0} Items`}
+                                    </span>
+                                </div>
 
-                                    {cat.comingSoon && (
-                                        <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex items-center justify-center z-20">
-                                            <span className="bg-yellow-400 text-yellow-900 text-[10px] font-black uppercase tracking-[0.2em] px-4 py-2 rounded-none shadow-lg">
-                                                Coming Soon
-                                            </span>
-                                        </div>
-                                    )}
-                                </Link>
-                            </motion.div>
-                        );
-                    })}
+                                {cat.comingSoon && (
+                                    <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex items-center justify-center z-20">
+                                        <span className="bg-yellow-400 text-yellow-900 text-[10px] font-black uppercase tracking-[0.2em] px-4 py-2 rounded-none shadow-lg">
+                                            Coming Soon
+                                        </span>
+                                    </div>
+                                )}
+                            </Link>
+                        </motion.div>
+                    ))}
                 </div>
+
+                {/* Wedding Touch Banner below the 4 columns */}
+                <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.2, duration: 0.8 }}
+                    className="mt-6 md:mt-8 relative w-full h-[220px] md:h-[300px] overflow-hidden rounded-[2rem] border border-[#bf953f]/30 shadow-lg hover:shadow-2xl transition-all duration-500 bg-[#120509] group"
+                >
+                    <Link href="/products?category=wedding-touch" className="block w-full h-full relative">
+                        <Image
+                            src={fallbackCategoryImages['Wedding Touch'] || 'https://images.unsplash.com/photo-1607190074257-dd4b7af0309f?q=80&w=1200&auto=format&fit=crop'}
+                            alt="Wedding Touch Collection"
+                            fill
+                            className="object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
+                            quality={90}
+                        />
+                        {/* Premium burgundy-gold overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#1b0811]/90 via-[#0d0205]/60 to-transparent opacity-95 group-hover:opacity-100 transition-opacity duration-300" />
+                        
+                        {/* Gold double-borders decorative frame inside the banner */}
+                        <div className="absolute inset-4 sm:inset-6 border border-[#bf953f]/20 rounded-[1.5rem] pointer-events-none" />
+                        <div className="absolute inset-5 sm:inset-7 border-[0.5px] border-[#bf953f]/30 rounded-[1.2rem] pointer-events-none" />
+
+                        {/* Gold corner ornaments */}
+                        <div className="absolute top-6 left-6 sm:top-8 sm:left-8 w-6 h-6 border-t-[1.5px] border-l-[1.5px] border-[#bf953f] pointer-events-none" />
+                        <div className="absolute top-6 right-6 sm:top-8 sm:right-8 w-6 h-6 border-t-[1.5px] border-r-[1.5px] border-[#bf953f] pointer-events-none" />
+                        <div className="absolute bottom-6 left-6 sm:bottom-8 sm:left-8 w-6 h-6 border-b-[1.5px] border-l-[1.5px] border-[#bf953f] pointer-events-none" />
+                        <div className="absolute bottom-6 right-6 sm:bottom-8 sm:right-8 w-6 h-6 border-b-[1.5px] border-r-[1.5px] border-[#bf953f] pointer-events-none" />
+
+                        {/* Banner Content */}
+                        <div className="absolute inset-y-0 left-8 sm:left-14 flex flex-col justify-center max-w-lg z-10 text-white space-y-3 sm:space-y-4">
+                            <div className="flex items-center gap-1.5">
+                                <span className="text-[#bf953f] text-[9px] sm:text-[10px] font-black uppercase tracking-[0.4em] block">
+                                    Royal Heritage Edit
+                                </span>
+                                <Sparkles className="h-3 w-3 text-[#bf953f] animate-pulse" />
+                            </div>
+
+                            <h3 className="text-2xl sm:text-4xl md:text-5xl font-playfair font-normal uppercase tracking-wider leading-none">
+                                Wedding <br className="hidden sm:inline" />
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#bf953f] via-[#fcf6ba] to-[#b38728] font-serif italic capitalize">Touch</span>
+                            </h3>
+
+                            <p className="text-xs sm:text-sm text-white/70 font-serif leading-relaxed line-clamp-2 max-w-sm font-light">
+                                Handcrafted bridal sarees, royal sherwanis, and festive wear designed for your unforgettable moments.
+                            </p>
+
+                            <div className="pt-2 flex items-center gap-2 text-xs uppercase tracking-widest font-black text-[#bf953f] group-hover:text-white transition-colors duration-300">
+                                <span>Explore The Edit</span>
+                                <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                            </div>
+                        </div>
+                    </Link>
+                </motion.div>
             </section>
 
             {/* DIVIDER */}
