@@ -11,7 +11,7 @@
     "dev:admin": "npm run dev -w apps/admin",
     "db:generate": "npm run db:generate -w packages/database",
     "build": "npm run db:generate && npm run build:web",
-    "build:web": "npm run build -w apps/web",
+    "build:web": "npm run build:pages -w apps/web",
     "build:all": "turbo build",
     "lint": "npm run lint -w apps/web",
     "lint:fix": "npm run lint:fix -w apps/web",
@@ -23,6 +23,7 @@
     "type-check": "npm run type-check -w apps/web"
   },
   "devDependencies": {
+    "@cloudflare/next-on-pages": "^1.13.16",
     "@prisma/client": "^5.10.0",
     "eslint-import-resolver-typescript": "3.8.7",
     "prettier": "^3.0.0",
