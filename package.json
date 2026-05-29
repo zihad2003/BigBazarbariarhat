@@ -9,7 +9,8 @@
   "scripts": {
     "dev:web": "npm run dev -w apps/web",
     "dev:admin": "npm run dev -w apps/admin",
-    "build": "npm run build:web",
+    "db:generate": "npm run db:generate -w packages/database",
+    "build": "npm run db:generate && npm run build:web",
     "build:web": "npm run build -w apps/web",
     "build:all": "turbo build",
     "lint": "npm run lint -w apps/web",
