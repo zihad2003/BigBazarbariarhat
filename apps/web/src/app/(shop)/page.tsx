@@ -485,6 +485,154 @@ function FlashSaleSection({ products }: { products: any[] }) {
     );
 }
 
+// --- WEDDING TOUCH SHOWCASE SECTION ---
+function WeddingTouchSection({ products }: { products: any[] }) {
+    const t = useTranslation();
+    const { language } = useLanguageStore();
+
+    return (
+        <section className="relative w-full overflow-hidden bg-gradient-to-br from-[#120509] via-[#1a0a10] to-[#0d0205] py-20 md:py-28 border-y border-[#bf953f]/30">
+            {/* Luxury backdrop glows */}
+            <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] bg-[#bf953f]/8 rounded-full blur-[100px] pointer-events-none" />
+            <div className="absolute bottom-1/4 right-1/4 translate-x-1/2 translate-y-1/2 w-[350px] h-[350px] bg-[#bf953f]/5 rounded-full blur-[120px] pointer-events-none" />
+            
+            {/* Decorative pattern borders */}
+            <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-[#bf953f]/40 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 h-[1px] bg-gradient-to-r from-transparent via-[#bf953f]/40 to-transparent" />
+
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+                    
+                    {/* Left Column: Premium Editorial Banner */}
+                    <div className="lg:col-span-5 relative">
+                        {/* Gold double-borders decorative frame */}
+                        <div className="absolute -inset-4 border border-[#bf953f]/20 rounded-2xl pointer-events-none hidden sm:block" />
+                        <div className="absolute -inset-2 border-[0.5px] border-[#bf953f]/30 rounded-xl pointer-events-none hidden sm:block" />
+                        
+                        {/* Gold corner ornaments */}
+                        <div className="absolute top-0 left-0 w-8 h-8 border-t-[1.5px] border-l-[1.5px] border-[#bf953f] pointer-events-none hidden sm:block" />
+                        <div className="absolute top-0 right-0 w-8 h-8 border-t-[1.5px] border-r-[1.5px] border-[#bf953f] pointer-events-none hidden sm:block" />
+                        <div className="absolute bottom-0 left-0 w-8 h-8 border-b-[1.5px] border-l-[1.5px] border-[#bf953f] pointer-events-none hidden sm:block" />
+                        <div className="absolute bottom-0 right-0 w-8 h-8 border-b-[1.5px] border-r-[1.5px] border-[#bf953f] pointer-events-none hidden sm:block" />
+
+                        <div className="space-y-6 md:space-y-8 p-4 sm:p-8 rounded-2xl bg-black/40 backdrop-blur-md border border-white/5 shadow-2xl">
+                            <div className="space-y-3">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-[#bf953f] text-[10px] font-black uppercase tracking-[0.4em] block">
+                                        Royal Heritage Edit
+                                    </span>
+                                    <Sparkles className="h-3 w-3 text-[#bf953f] animate-pulse" />
+                                </div>
+                                
+                                <h2 className="text-4xl md:text-5xl lg:text-6xl font-playfair font-normal text-white uppercase tracking-wider leading-none">
+                                    Wedding <br />
+                                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#bf953f] via-[#fcf6ba] to-[#b38728] font-serif italic capitalize">Touch</span>
+                                </h2>
+                                
+                                <div className="flex items-center gap-4 pt-2">
+                                    <div className="h-[1px] w-12 bg-gradient-to-r from-transparent to-[#bf953f]" />
+                                    <span className="text-[#bf953f] text-xs font-serif italic font-light">Timeless Luxury</span>
+                                    <div className="h-[1px] w-12 bg-gradient-to-l from-transparent to-[#bf953f]" />
+                                </div>
+                            </div>
+                            
+                            <p className="text-sm md:text-base text-white/80 leading-relaxed font-serif font-light">
+                                Indulge in our exquisite collection of premium bridal sarees, royal sherwanis, and festive ensembles handcrafted to perfection. Every stitch preserves heritage, weaving royal luxury into your unforgettable celebrations.
+                            </p>
+
+                            <div className="pt-4">
+                                <Link href="/products?category=wedding-touch">
+                                    <Button className="group relative w-full sm:w-auto bg-gradient-to-r from-[#bf953f] via-[#fcf6ba] to-[#b38728] text-black font-black uppercase tracking-widest text-xs px-10 py-4 rounded-none transition-all duration-500 overflow-hidden shadow-[0_0_15px_rgba(191,149,63,0.3)] hover:shadow-[0_0_25px_rgba(191,149,63,0.6)] hover:scale-[1.02] border-none">
+                                        <span className="absolute inset-0 w-full h-full bg-white/25 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out" />
+                                        Explore the Collection
+                                        <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                                    </Button>
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Right Column: Premium Showcase Grid */}
+                    <div className="lg:col-span-7">
+                        <div className="grid grid-cols-2 gap-4 sm:gap-6">
+                            {products && products.length > 0 ? (
+                                products.slice(0, 4).map((product, i) => {
+                                    const firstImage = product.images?.[0];
+                                    const resolvedImage = typeof firstImage === 'string' 
+                                        ? firstImage 
+                                        : (firstImage && typeof firstImage === 'object' && 'url' in firstImage 
+                                            ? (firstImage as any).url 
+                                            : (product.image || '/placeholder.png'));
+                                    
+                                    return (
+                                        <motion.div
+                                            key={product.id}
+                                            initial={{ opacity: 0, y: 30 }}
+                                            whileInView={{ opacity: 1, y: 0 }}
+                                            viewport={{ once: true }}
+                                            transition={{ delay: i * 0.1, duration: 0.8 }}
+                                            className="group relative bg-[#1c0c12] border border-[#bf953f]/20 rounded-[2rem] p-3 sm:p-4 shadow-2xl hover:border-[#bf953f]/60 transition-all duration-500 hover:-translate-y-2"
+                                        >
+                                            <Link href={`/products/${product.slug || product.id}`}>
+                                                <div className="relative aspect-[3/4] overflow-hidden rounded-[1.5rem] bg-[#120509] mb-3.5 border border-white/5">
+                                                    <Image
+                                                        src={resolvedImage}
+                                                        alt={product.name}
+                                                        fill
+                                                        className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                                                        quality={85}
+                                                    />
+                                                    
+                                                    {/* Shimmer overlay */}
+                                                    <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-[#bf953f]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+
+                                                    <span className="absolute top-3 left-3 bg-gradient-to-r from-[#bf953f] via-[#fcf6ba] to-[#b38728] text-black text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-sm shadow-md">
+                                                        Heritage Elite
+                                                    </span>
+                                                </div>
+                                                
+                                                <div className="space-y-2 text-center">
+                                                    <span className="text-[#bf953f] text-[9px] font-black uppercase tracking-widest block">
+                                                        Wedding Touch
+                                                    </span>
+                                                    <h3 className="text-xs sm:text-sm font-medium text-white line-clamp-1 group-hover:text-[#bf953f] transition-colors duration-300">
+                                                        {product.name}
+                                                    </h3>
+                                                    <div className="flex justify-center items-center gap-2 pt-0.5">
+                                                        {product.salePrice ? (
+                                                            <>
+                                                                <span className="font-bold text-[#eadeca] text-xs sm:text-sm">{formatPrice(product.salePrice, language)}</span>
+                                                                <span className="text-[10px] sm:text-xs text-white/40 line-through">{formatPrice(product.price, language)}</span>
+                                                            </>
+                                                        ) : (
+                                                            <span className="font-bold text-[#eadeca] text-xs sm:text-sm">{formatPrice(product.price, language)}</span>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </Link>
+                                        </motion.div>
+                                    );
+                                })
+                            ) : (
+                                /* Fallback / Loading Skeletons */
+                                [...Array(4)].map((_, i) => (
+                                    <div 
+                                        key={i} 
+                                        className="aspect-[3/4] bg-[#1c0c12]/40 rounded-[2rem] border border-[#bf953f]/10 flex flex-col items-center justify-center relative overflow-hidden animate-pulse"
+                                    >
+                                        <div className="w-10 h-10 rounded-full border-2 border-t-[#bf953f] border-[#bf953f]/10 animate-spin" />
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    );
+}
+
 // --- MAIN PAGE ---
 export default function HomePage() {
     const t = useTranslation();
@@ -494,6 +642,7 @@ export default function HomePage() {
     const [promoBanners, setPromoBanners] = useState<any[]>(defaultPromoBanners);
     const [newArrivals, setNewArrivals] = useState<any[]>([]);
     const [flashProducts, setFlashProducts] = useState<any[]>([]);
+    const [weddingProducts, setWeddingProducts] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -510,17 +659,31 @@ export default function HomePage() {
                 if (newRes.success) setNewArrivals(newRes.data);
                 if (flashRes.success) setFlashProducts(flashRes.data);
                 
-                // Map DB categories to homepage category tiles
+                // Map DB categories to homepage category tiles (filter out Wedding Touch)
                 if (catRes.success && catRes.data && catRes.data.length > 0) {
-                    const mapped = catRes.data.map((cat: any) => ({
-                        key: cat.slug,
-                        name: cat.name,
-                        href: `/products?category=${encodeURIComponent(cat.name)}`,
-                        image: cat.image || fallbackCategoryImages[cat.name] || 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=500&auto=format&fit=crop',
-                        comingSoon: false,
-                        count: cat._count?.products || 0,
-                    }));
-                    setCategories(mapped);
+                    const weddingCat = catRes.data.find((c: any) => c.name.toLowerCase() === 'wedding touch');
+                    const filtered = catRes.data
+                        .filter((cat: any) => cat.name.toLowerCase() !== 'wedding touch')
+                        .map((cat: any) => ({
+                            key: cat.slug,
+                            name: cat.name,
+                            href: `/products?category=${encodeURIComponent(cat.slug)}`,
+                            image: cat.image || fallbackCategoryImages[cat.name] || 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=500&auto=format&fit=crop',
+                            comingSoon: false,
+                            count: cat._count?.products || 0,
+                        }));
+                    setCategories(filtered);
+
+                    if (weddingCat) {
+                        fetch(`/api/products?category=${weddingCat.slug}&limit=4`)
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.success) {
+                                    setWeddingProducts(data.data);
+                                }
+                            })
+                            .catch(err => console.error('Failed to fetch wedding products:', err));
+                    }
                 }
 
                 // Map DB Hero banners
@@ -560,7 +723,7 @@ export default function HomePage() {
                         Explore our curated collections crafted with excellence
                     </p>
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-8">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
                     {categories.map((cat, i) => (
                         <motion.div
                             key={cat.key}
@@ -614,6 +777,9 @@ export default function HomePage() {
                     ))}
                 </div>
             </section>
+
+            {/* WEDDING TOUCH SHOWCASE SECTION */}
+            <WeddingTouchSection products={weddingProducts} />
 
             {/* DIVIDER */}
             <div className="max-w-7xl mx-auto px-4"><div className="border-t border-gray-100" /></div>
