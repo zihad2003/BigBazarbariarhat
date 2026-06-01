@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@bigbazar/db';
-import { randomUUID } from 'crypto';
 
 export async function GET(req: NextRequest) {
   const session = await auth();
@@ -49,7 +48,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Generate a unique order number
-    const orderNumber = `ORD-${Date.now()}-${randomUUID().slice(0, 6).toUpperCase()}`;
+    const orderNumber = `ORD-${Date.now()}-${globalThis.crypto.randomUUID().slice(0, 6).toUpperCase()}`;
 
     // Guest orders: store contact info in shippingAddress JSON
     // The Order model's userId is nullable — if not, we need to handle guest differently.
@@ -57,12 +56,13 @@ export async function POST(req: NextRequest) {
     let finalUserId = userId;
     if (!finalUserId) {
       // Use guest email from shipping address if provided, otherwise use a per-session guest
-      const guestEmail = shippingAddress.email || `guest-${randomUUID().slice(0, 8)}@bigbazar.com`;
+      const guestEmail = shippingAddress.email || `guest-${globalThis.crypto.randomUUID().slice(0, 8)}@bigbazar.com`;
       let guestUser = await prisma.user.findUnique({ where: { email: guestEmail } });
       if (!guestUser) {
         // Create a guest user with a random secure password (they can't log in without resetting)
-        const { randomBytes } = await import('crypto');
-        const randomPassword = randomBytes(32).toString('hex');
+        const array = new Uint8Array(32);
+        globalThis.crypto.getRandomValues(array);
+        const randomPassword = Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
         const bcrypt = await import('bcryptjs');
         const hashedPassword = await bcrypt.hash(randomPassword, 10);
         guestUser = await prisma.user.create({

@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
+import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@bigbazar/db";
 
 if (!process.env.NEXTAUTH_SECRET) {
@@ -8,6 +9,7 @@ if (!process.env.NEXTAUTH_SECRET) {
 }
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
+  adapter: PrismaAdapter(prisma),
   providers: [
     Credentials({
       name: "Credentials",

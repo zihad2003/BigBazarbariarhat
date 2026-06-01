@@ -8,74 +8,13 @@ const withBundleAnalyzer =
 const nextConfig: NextConfig = {
   // ─── Image Optimization ──────────────────────────────────────
   images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'images.unsplash.com',
-      },
-      {
-        protocol: 'https',
-        hostname: '*.supabase.co',
-      },
-      {
-        protocol: 'https',
-        hostname: '*.supabase.in',
-      },
-      {
-        protocol: 'https',
-        hostname: 'img.clerk.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'www.instagram.com',
-      },
-      {
-        protocol: 'https',
-        hostname: '*.cdninstagram.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'images.weserv.nl',
-      },
-      {
-        protocol: 'https',
-        hostname: '*.behance.net',
-      },
-      {
-        protocol: 'https',
-        hostname: 'mir-s3-cdn-cf.behance.net',
-      },
-      {
-        protocol: 'https',
-        hostname: '*.fbcdn.net',
-      },
-      {
-        protocol: 'https',
-        hostname: '*.pinimg.com',
-      },
-      {
-        protocol: 'https',
-        hostname: '*.imgur.com',
-      },
-      {
-        protocol: 'https',
-        hostname: '*.wixstatic.com',
-      },
-      {
-        protocol: 'https',
-        hostname: '*.firebasestorage.googleapis.com',
-      },
-    ],
-    formats: ['image/avif', 'image/webp'],
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],
-    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days
+    loader: 'custom',
+    loaderFile: './src/lib/cloudinary-loader.ts',
   },
 
   // ─── Performance ──────────────────────────────────────────────
   reactStrictMode: true,
   poweredByHeader: false, // Security: remove X-Powered-By header
-  output: 'standalone',
 
   // ─── Caching Headers ──────────────────────────────────────────
   async headers() {

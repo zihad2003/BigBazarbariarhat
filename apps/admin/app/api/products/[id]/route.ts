@@ -5,10 +5,10 @@ import { getCache, setCache, invalidateCachePattern } from '@/lib/cache';
 
 export async function GET(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const { id } = params;
+        const { id } = await params;
         const cacheKey = `products-detail-${id}`;
         const cachedData = getCache<any>(cacheKey);
         if (cachedData) {
@@ -65,7 +65,7 @@ export async function GET(
 
 export async function PATCH(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const session = await auth();
@@ -73,7 +73,7 @@ export async function PATCH(
             return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
         }
 
-        const { id } = params;
+        const { id } = await params;
         const body = await req.json();
         const {
             name,
@@ -141,7 +141,7 @@ export async function PATCH(
 
 export async function DELETE(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const session = await auth();
@@ -149,7 +149,7 @@ export async function DELETE(
             return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
         }
 
-        const { id } = params;
+        const { id } = await params;
         
         // Check if product is referenced in orders (soft delete or check before delete)
         const orderCount = await prisma.orderItem.count({

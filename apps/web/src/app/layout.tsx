@@ -25,43 +25,16 @@ const lato = Lato({
 
 export const metadata: Metadata = {
   title: {
-    default: 'Big Bazar | Premium Essentials for the Sport of Life',
-    template: '%s | Big Bazar Bariarhat',
+    default: "Big Bazar Bariarhat — Your Local Online Shop",
+    template: "%s | Big Bazar Bariarhat",
   },
-  description:
-    'Premium quality basics designed for the boardroom, the beach, and everywhere in between. Shop clothing, home décor, and accessories at Big Bazar Bariarhat.',
-  keywords: [
-    'big bazar',
-    'bariarhat',
-    'e-commerce',
-    'clothing',
-    'fashion',
-    'premium',
-    'essentials',
-  ],
-  authors: [{ name: 'Big Bazar Bariarhat' }],
+  description: "Shop online from Big Bazar Bariarhat. Best prices on groceries, electronics, clothing and more delivered to your door in Bariarhat.",
+  metadataBase: new URL("https://bigbazarbariarhat.pages.dev"),
   openGraph: {
-    type: 'website',
-    locale: 'en_US',
-    siteName: 'Big Bazar Bariarhat',
-    title: 'Big Bazar | Premium Essentials for the Sport of Life',
-    description: 'Premium quality basics designed for the boardroom, the beach, and everywhere in between.',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Big Bazar | Premium Essentials',
-    description: 'Premium quality basics for the sport of life.',
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
+    type: "website",
+    locale: "bn_BD",
+    url: "https://bigbazarbariarhat.pages.dev",
+    siteName: "Big Bazar Bariarhat",
   },
 };
 

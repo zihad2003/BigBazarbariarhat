@@ -137,8 +137,6 @@ export async function POST(req: NextRequest) {
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/(^-|-$)/g, '');
 
-    const { randomUUID } = await import('crypto');
-
     const newProduct = await prisma.product.create({
       data: {
         name: name.trim(),
@@ -146,7 +144,7 @@ export async function POST(req: NextRequest) {
         description: fullDescription || shortDescription || '',
         price: Number(regularPrice),
         salePrice: salePrice ? Number(salePrice) : null,
-        sku: sku || `SKU-${randomUUID().slice(0, 8).toUpperCase()}`,
+        sku: sku || `SKU-${globalThis.crypto.randomUUID().slice(0, 8).toUpperCase()}`,
         stock: Number(stock) || 0,
         images: images || [],
         instagramReelUrl: instagramReelUrl || null,
