@@ -1,6 +1,6 @@
 # Big Bazar Bariarhat
 
-Full-stack e-commerce platform for a Bangladeshi retail store. Built as a Turborepo monorepo with a Next.js storefront, a standalone admin dashboard, and a React Native mobile app.
+Full-stack e-commerce platform for a Bangladeshi retail store. Built as a Turborepo monorepo with a Next.js storefront and a standalone admin dashboard.
 
 ---
 
@@ -10,8 +10,7 @@ Full-stack e-commerce platform for a Bangladeshi retail store. Built as a Turbor
 BigBazarbariarhat/
 ├── apps/
 │   ├── web/          # Customer storefront + REST API  (Next.js 16, port 3000)
-│   ├── admin/        # Admin dashboard                 (Next.js 15, port 3005)
-│   └── mobile/       # Mobile app                     (Expo / React Native)
+│   └── admin/        # Admin dashboard                 (Next.js 15, port 3005)
 ├── packages/
 │   ├── database/     # Prisma schema & client
 │   ├── shared/       # Shared stores, hooks, constants
@@ -32,7 +31,6 @@ BigBazarbariarhat/
 |---|---|
 | Storefront | Next.js 16 (App Router, Turbopack) |
 | Admin | Next.js 15 (App Router, Turbopack) |
-| Mobile | Expo 51 / React Native 0.74 |
 | Styling | Tailwind CSS v4 (web), Tailwind CSS v3 (admin) |
 | Auth | NextAuth.js v5 (beta) |
 | Database | MySQL via Prisma ORM |
@@ -85,9 +83,6 @@ npm run dev:web
 
 # Admin dashboard (http://localhost:3005)
 npm run dev:admin
-
-# Mobile app
-npm run dev:mobile
 ```
 
 ---
@@ -139,7 +134,6 @@ Run from the monorepo root:
 |---|---|
 | `npm run dev:web` | Start storefront dev server |
 | `npm run dev:admin` | Start admin dev server |
-| `npm run dev:mobile` | Start Expo mobile dev server |
 | `npm run build:web` | Build storefront |
 | `npm run build:all` | Build all apps via Turborepo |
 | `npm run lint` | Lint storefront |
@@ -163,10 +157,8 @@ Run from the monorepo root:
 | `CLOUDINARY_API_SECRET` | ✅ | Cloudinary API secret |
 | `RESEND_API_KEY` | ✅ | Resend API key for transactional email |
 | `NEXT_PUBLIC_APP_URL` | ✅ | Public base URL |
-| `BKASH_USERNAME` | optional | bKash merchant credentials |
-| `BKASH_PASSWORD` | optional | bKash merchant credentials |
-| `BKASH_API_KEY` | optional | bKash app key |
-| `BKASH_SECRET_KEY` | optional | bKash app secret |
-| `NAGAD_MERCHANT_NUMBER` | optional | Nagad merchant number |
+| `BKASH_NUMBER` | ✅ | shop bKash personal/merchant number for Send Money |
+| `NAGAD_NUMBER` | optional | shop Nagad personal/merchant number |
+| `COD_ENABLED` | ✅ | toggle Cash on Delivery ('true' or 'false') |
 
 See `.env.example` and `apps/web/.env.example` for the full list.

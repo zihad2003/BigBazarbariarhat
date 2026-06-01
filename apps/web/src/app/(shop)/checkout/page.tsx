@@ -53,10 +53,39 @@ export default function CheckoutPage() {
     const { items, getSubtotal, clearCart, getDiscountAmount } = useCartStore();
     const { addNotification } = useUIStore();
 
+    const bkashNumberConfig = process.env.NEXT_PUBLIC_BKASH_NUMBER || '01857045449';
+    const nagadNumberConfig = process.env.NEXT_PUBLIC_NAGAD_NUMBER || '01819134889';
+    const codEnabledConfig = process.env.NEXT_PUBLIC_COD_ENABLED !== 'false';
+
+    const initialMethod = useMemo(() => {
+        if (codEnabledConfig) return 'cod';
+        if (bkashNumberConfig && bkashNumberConfig !== 'SKIP') return 'bkash';
+        if (nagadNumberConfig && nagadNumberConfig !== 'SKIP') return 'nagad';
+        return 'cod';
+    }, [codEnabledConfig, bkashNumberConfig, nagadNumberConfig]);
+
+    const paymentMethods = useMemo(() => {
+        const methods = [];
+        if (codEnabledConfig) {
+            methods.push({ id: 'cod', name: 'Cash on Delivery', icon: <Truck className="h-5 w-5" /> });
+        }
+        if (bkashNumberConfig && bkashNumberConfig !== 'SKIP') {
+            methods.push({ id: 'bkash', name: 'bKash Payment', icon: <img src="/payments/bkash.png" alt="bKash" className="h-6 w-auto object-contain" /> });
+        }
+        if (nagadNumberConfig && nagadNumberConfig !== 'SKIP') {
+            methods.push({ id: 'nagad', name: 'Nagad Payment', icon: <img src="/payments/nagad.png" alt="Nagad" className="h-6 w-auto object-contain" /> });
+        }
+        return methods;
+    }, [codEnabledConfig, bkashNumberConfig, nagadNumberConfig]);
+
     // State
     const [isLoading, setIsLoading] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState<'cod' | 'bkash' | 'nagad'>('cod');
     const [bkashNumber, setBkashNumber] = useState('');
+
+    useEffect(() => {
+        setPaymentMethod(initialMethod as any);
+    }, [initialMethod]);
 
     const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<CheckoutFormValues>({
         resolver: zodResolver(checkoutSchema),
@@ -120,7 +149,8 @@ export default function CheckoutPage() {
                     deliveryArea: deliveryInfo.zone
                 },
                 totalAmount: finalTotal,
-                paymentMethod: paymentMethod
+                paymentMethod: paymentMethod === 'cod' ? 'COD' : (paymentMethod === 'bkash' ? 'BKASH_MANUAL' : 'NAGAD_MANUAL'),
+                paymentTransactionId: paymentMethod === 'cod' ? null : bkashNumber
             };
 
             const res = await fetch('/api/orders', {
@@ -385,11 +415,7 @@ export default function CheckoutPage() {
                                 Payment Method
                             </h2>
                             <div className="space-y-4">
-                                {[
-                                    { id: 'cod', name: 'Cash on Delivery', icon: <Truck className="h-5 w-5" /> },
-                                    { id: 'bkash', name: 'bKash Payment', icon: <img src="/payments/bkash.png" alt="bKash" className="h-6 w-auto object-contain" /> },
-                                    { id: 'nagad', name: 'Nagad Payment', icon: <img src="/payments/nagad.png" alt="Nagad" className="h-6 w-auto object-contain" /> },
-                                ].map((method) => (
+                                {paymentMethods.map((method) => (
                                     <div key={method.id} className="space-y-3">
                                         <label 
                                             className={cn(
@@ -489,7 +515,15 @@ export default function CheckoutPage() {
                                                                     <div className="p-4 bg-emerald-50 border border-emerald-100 rounded-xl text-[10px] text-emerald-800 font-bold leading-relaxed space-y-3">
                                                                         <div className="flex items-start gap-2">
                                                                             <Info className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
-                                                                            <span>Please send the advance amount of <span className="text-emerald-950 font-black">৳{advanceAmount}</span> to bKash/Nagad: <span className="text-emerald-900 font-black underline">01857045449</span> (Personal) and enter your transaction/sender details below:</span>
+                                                                            <span>
+                                                                                Please send the advance amount of <span className="text-emerald-950 font-black">৳{advanceAmount}</span> to{' '}
+                                                                                {bkashNumberConfig !== 'SKIP' && `bKash: `}
+                                                                                {bkashNumberConfig !== 'SKIP' && <span className="text-emerald-900 font-black underline">{bkashNumberConfig}</span>}
+                                                                                {bkashNumberConfig !== 'SKIP' && nagadNumberConfig !== 'SKIP' && ` or `}
+                                                                                {nagadNumberConfig !== 'SKIP' && `Nagad: `}
+                                                                                {nagadNumberConfig !== 'SKIP' && <span className="text-emerald-900 font-black underline">{nagadNumberConfig}</span>}
+                                                                                {' '}(Personal) and enter your transaction/sender details below:
+                                                                            </span>
                                                                         </div>
                                                                         <input 
                                                                             type="text"
@@ -555,7 +589,7 @@ export default function CheckoutPage() {
                                                                 "text-[10px] mb-4 uppercase tracking-widest font-semibold",
                                                                 method.id === 'bkash' ? "text-pink-400" : "text-orange-400"
                                                             )}>
-                                                                Send money to: <span className="font-bold">01857045449</span>
+                                                                Send money to: <span className="font-bold">{method.id === 'bkash' ? bkashNumberConfig : nagadNumberConfig}</span>
                                                             </p>
                                                             <input 
                                                                 type="text"

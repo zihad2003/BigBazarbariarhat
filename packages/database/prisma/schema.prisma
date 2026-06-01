@@ -85,6 +85,8 @@ model Order {
   items           OrderItem[]
   paymentStatus   PaymentStatus @default(PENDING)
   paymentMethod   String?
+  paymentTransactionId String?
+  paymentScreenshot    String?
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
 

@@ -287,6 +287,34 @@ export default function OrderDetailPage() {
                         </div>
                     </div>
 
+                    {/* Payment Details */}
+                    <div className="bg-card border border-border rounded-xl p-6">
+                        <h2 className="text-sm font-semibold mb-4 flex items-center gap-2">
+                            <CreditCard className="w-4 h-4 text-primary" />
+                            Payment Details
+                        </h2>
+                        <div className="space-y-3">
+                            <div className="flex justify-between text-[13px]">
+                                <span className="text-muted-foreground">Method</span>
+                                <span className="font-semibold text-foreground uppercase">{order.paymentMethod || 'COD'}</span>
+                            </div>
+                            {order.paymentTransactionId && (
+                                <div className="flex justify-between text-[13px] border-t border-border pt-2">
+                                    <span className="text-muted-foreground">Transaction ID</span>
+                                    <span className="font-mono font-bold text-foreground">{order.paymentTransactionId}</span>
+                                </div>
+                            )}
+                            {order.paymentScreenshot && (
+                                <div className="space-y-2 border-t border-border pt-2">
+                                    <span className="text-[13px] text-muted-foreground block">Screenshot</span>
+                                    <a href={order.paymentScreenshot} target="_blank" rel="noopener noreferrer" className="block w-full border border-border rounded-lg overflow-hidden hover:opacity-90 transition">
+                                        <img src={order.paymentScreenshot} alt="Payment Receipt" className="w-full h-auto object-contain max-h-40" />
+                                    </a>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
                     {/* Shipping Address */}
                     <div className="bg-card border border-border rounded-xl p-6">
                         <h2 className="text-sm font-semibold mb-4 flex items-center gap-2">

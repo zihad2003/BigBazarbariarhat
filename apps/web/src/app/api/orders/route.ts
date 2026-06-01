@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
   try {
     const session = await auth();
     const body = await req.json();
-    const { items, shippingAddress, totalAmount, paymentMethod } = body;
+    const { items, shippingAddress, totalAmount, paymentMethod, paymentTransactionId } = body;
 
     // Validate required fields
     if (!items || !Array.isArray(items) || items.length === 0) {
@@ -112,6 +112,7 @@ export async function POST(req: NextRequest) {
           totalAmount: Number(totalAmount),
           shippingAddress,
           paymentMethod: paymentMethod ?? 'CASH_ON_DELIVERY',
+          paymentTransactionId: paymentTransactionId || null,
           status: 'PENDING',
           items: {
             create: items.map((item: { productId: string; quantity: number; price: number }) => ({
