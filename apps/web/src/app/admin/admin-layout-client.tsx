@@ -71,14 +71,14 @@ export default function AdminLayoutClient({ children }: { children: React.ReactN
             >
                 {/* Logo */}
                 <div className="h-20 flex items-center px-6 border-b border-slate-800 shrink-0">
-                    <div className="flex items-center gap-3">
+                    <Link href="/" className="flex items-center gap-3 hover:opacity-85 transition-opacity">
                         <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shrink-0 shadow-lg shadow-indigo-600/20">
                             <ShoppingBag className="h-6 w-6" />
                         </div>
                         {isSidebarOpen && (
                             <span className="text-xl font-black text-white tracking-tight">ADMIN<span className="text-indigo-500">.</span></span>
                         )}
-                    </div>
+                    </Link>
                 </div>
 
                 {/* Navigation */}
@@ -201,7 +201,9 @@ export default function AdminLayoutClient({ children }: { children: React.ReactN
                             className="fixed inset-y-0 left-0 w-[280px] bg-[#111827] z-[70] lg:hidden flex flex-col"
                         >
                             <div className="h-20 flex items-center justify-between px-6 border-b border-slate-800">
-                                <span className="text-xl font-black text-white tracking-tight">ADMIN<span className="text-indigo-500">.</span></span>
+                                <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="text-xl font-black text-white tracking-tight hover:opacity-85 transition-opacity">
+                                    ADMIN<span className="text-indigo-500">.</span>
+                                </Link>
                                 <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 text-slate-400 hover:text-white">
                                     <ChevronLeft className="h-6 w-6" />
                                 </button>
