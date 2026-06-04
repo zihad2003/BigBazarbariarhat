@@ -90,11 +90,11 @@ export default function ProductsPage() {
     // Derived Data
     const categoryOptions = [
         { key: 'New Arrivals', label: t?.newArrivals?.title || 'New Arrivals' },
-        { key: 'Men', label: t?.categories?.men || 'Men' },
-        { key: 'Women', label: t?.categories?.women || 'Women' },
-        { key: 'Kids(Boys)', label: t?.categories?.kidsBoys || 'Kids(Boys)' },
-        { key: 'Kids(Girls)', label: t?.categories?.kidsGirls || 'Kids(Girls)' },
-        { key: 'Wedding-Touch', label: t?.categories?.weddingTouch || 'Wedding Touch' },
+        { key: 'men', label: t?.categories?.men || 'Men' },
+        { key: 'women', label: t?.categories?.women || 'Women' },
+        { key: 'kids-boys', label: t?.categories?.kidsBoys || 'Kids(Boys)' },
+        { key: 'kids-girls', label: t?.categories?.kidsGirls || 'Kids(Girls)' },
+        { key: 'wedding-touch', label: t?.categories?.weddingTouch || 'Wedding Touch' },
         { key: 'Sale', label: 'Sale' },
     ];
 
@@ -119,13 +119,14 @@ export default function ProductsPage() {
 
         // Category
         if (selectedCategory) {
+            const targetSlug = selectedCategory.toLowerCase();
             results = results.filter(p => {
                 const catName = typeof p.category === 'object' ? p.category?.name : p.category;
                 const catSlug = typeof p.category === 'object' ? p.category?.slug : null;
                 
                 return (
-                    (catName && catName.toLowerCase() === selectedCategory.toLowerCase()) ||
-                    (catSlug && catSlug.toLowerCase() === selectedCategory.toLowerCase()) ||
+                    (catName && catName.toLowerCase() === targetSlug) ||
+                    (catSlug && (catSlug.toLowerCase() === targetSlug || catSlug.toLowerCase().startsWith(`${targetSlug}-`))) ||
                     (selectedCategory === 'New Arrivals' && p.isNew)
                 );
             });
@@ -211,7 +212,7 @@ export default function ProductsPage() {
                             onClick={() => { setSelectedCategory(cat.key); setCurrentPage(1); }}
                             className={cn(
                                 "w-full text-left px-4 py-2 rounded-xl text-sm transition-all uppercase tracking-widest text-[10px] font-bold",
-                                selectedCategory === cat.key ? "bg-destructive text-white shadow-lg" : "text-gray-500 hover:bg-gray-100"
+                                selectedCategory?.toLowerCase() === cat.key.toLowerCase() ? "bg-destructive text-white shadow-lg" : "text-gray-500 hover:bg-gray-100"
                             )}
                         >
                             {cat.label}

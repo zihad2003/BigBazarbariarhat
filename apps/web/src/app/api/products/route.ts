@@ -27,7 +27,10 @@ export async function GET(req: NextRequest) {
     }
 
     if (categorySlug) {
-      where.category = { slug: categorySlug };
+      where.OR = [
+        { category: { slug: categorySlug } },
+        { category: { parent: { slug: categorySlug } } }
+      ];
     }
 
     if (minPrice !== undefined || maxPrice !== undefined) {

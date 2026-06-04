@@ -12,7 +12,10 @@ export default async function ShopPage({ params: paramsPromise }: { params: Prom
     };
 
     if (slug) {
-        where.category = { slug };
+        where.OR = [
+            { category: { slug } },
+            { category: { parent: { slug } } }
+        ];
     }
 
     // Query initial storefront products and category metadata on the server
