@@ -11,10 +11,10 @@ export function Footer() {
 
     const footerLinks = {
         shop: [
-            { name: t?.categories?.men || 'Men', href: '/products?category=Men' },
-            { name: t?.categories?.women || 'Women', href: '/products?category=Women' },
-            { name: t?.categories?.kidsBoys || 'Kids(Boys)', href: '/products?category=Kids(Boys)' },
-            { name: t?.categories?.kidsGirls || 'Kids(Girls)', href: '/products?category=Kids(Girls)' },
+            { name: t?.categories?.men || 'Men', href: '/products?category=men' },
+            { name: t?.categories?.women || 'Women', href: '/products?category=women' },
+            { name: t?.categories?.kidsBoys || 'Kids(Boys)', href: '/products?category=kids-boys' },
+            { name: t?.categories?.kidsGirls || 'Kids(Girls)', href: '/products?category=kids-girls' },
             { name: t?.newArrivals?.title || 'New Arrivals', href: '/products?sort=newest' },
             { name: 'Sale', href: '/sale' },
         ],

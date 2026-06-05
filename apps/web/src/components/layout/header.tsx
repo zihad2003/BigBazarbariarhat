@@ -33,54 +33,54 @@ import { MobileMenu } from './mobile-menu';
 const getNavCategories = (t: any): any[] => [
     {
         name: t?.categories?.men || 'Men',
-        href: '/products?category=Men',
+        href: '/products?category=men',
         featured: 'https://images.unsplash.com/photo-1516259762381-22954d7d3ad2?q=80&w=800&auto=format&fit=crop',
         subcategories: [
-            { name: 'T-Shirts', href: '/products?category=Men&subcategory=T-Shirts' },
-            { name: 'Denim', href: '/products?category=Men&subcategory=Denim' },
-            { name: 'Knitwear', href: '/products?category=Men&subcategory=Knitwear' },
-            { name: 'Outerwear', href: '/products?category=Men&subcategory=Outerwear' },
+            { name: 'T-Shirts', href: '/products?category=men&subcategory=men-t-shirts' },
+            { name: 'Denim', href: '/products?category=men&subcategory=men-denim' },
+            { name: 'Knitwear', href: '/products?category=men&subcategory=men-knitwear' },
+            { name: 'Outerwear', href: '/products?category=men&subcategory=men-outerwear' },
         ]
     },
     {
         name: t?.categories?.women || 'Women',
-        href: '/products?category=Women',
+        href: '/products?category=women',
         featured: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=800&auto=format&fit=crop',
         subcategories: [
-            { name: 'Dresses', href: '/products?category=Women&subcategory=Dresses' },
-            { name: 'Blouses', href: '/products?category=Women&subcategory=Blouses' },
-            { name: 'Trousers', href: '/products?category=Women&subcategory=Trousers' },
-            { name: 'Skirts', href: '/products?category=Women&subcategory=Skirts' },
+            { name: 'Dresses', href: '/products?category=women&subcategory=women-dresses' },
+            { name: 'Blouses', href: '/products?category=women&subcategory=women-blouses' },
+            { name: 'Trousers', href: '/products?category=women&subcategory=women-trousers' },
+            { name: 'Skirts', href: '/products?category=women&subcategory=women-skirts' },
         ]
     },
     {
         name: t?.categories?.kidsBoys || 'Kids(Boys)',
-        href: '/products?category=Kids(Boys)',
+        href: '/products?category=kids-boys',
         featured: 'https://images.unsplash.com/photo-1519234129322-2636a0d0d885?q=80&w=800&auto=format&fit=crop',
         subcategories: [
-            { name: 'T-Shirts', href: '/products?category=Kids(Boys)&subcategory=T-Shirts' },
-            { name: 'Pants', href: '/products?category=Kids(Boys)&subcategory=Pants' },
-            { name: 'Outerwear', href: '/products?category=Kids(Boys)&subcategory=Outerwear' },
+            { name: 'T-Shirts', href: '/products?category=kids-boys&subcategory=kids-boys-t-shirts' },
+            { name: 'Pants', href: '/products?category=kids-boys&subcategory=kids-boys-pants' },
+            { name: 'Outerwear', href: '/products?category=kids-boys&subcategory=kids-boys-outerwear' },
         ]
     },
     {
         name: t?.categories?.kidsGirls || 'Kids(Girls)',
-        href: '/products?category=Kids(Girls)',
+        href: '/products?category=kids-girls',
         featured: 'https://images.unsplash.com/photo-1514316454349-f50db90e2270?q=80&w=800&auto=format&fit=crop',
         subcategories: [
-            { name: 'Dresses', href: '/products?category=Kids(Girls)&subcategory=Dresses' },
-            { name: 'Tops', href: '/products?category=Kids(Girls)&subcategory=Tops' },
-            { name: 'Skirts', href: '/products?category=Kids(Girls)&subcategory=Skirts' },
+            { name: 'Dresses', href: '/products?category=kids-girls&subcategory=kids-girls-dresses' },
+            { name: 'Tops', href: '/products?category=kids-girls&subcategory=kids-girls-tops' },
+            { name: 'Skirts', href: '/products?category=kids-girls&subcategory=kids-girls-skirts' },
         ]
     },
     {
         name: t?.categories?.weddingTouch || 'Wedding Touch',
-        href: '/products?category=Wedding-Touch',
+        href: '/products?category=wedding-touch',
         featured: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=800&auto=format&fit=crop',
         subcategories: [
-            { name: 'Panjabi', href: '/products?category=Wedding-Touch&subcategory=Panjabi' },
-            { name: 'Sherwani', href: '/products?category=Wedding-Touch&subcategory=Sherwani' },
-            { name: 'Saree', href: '/products?category=Wedding-Touch&subcategory=Saree' },
+            { name: 'Panjabi', href: '/products?category=wedding-touch&subcategory=wedding-touch-panjabi' },
+            { name: 'Sherwani', href: '/products?category=wedding-touch&subcategory=wedding-touch-sherwani' },
+            { name: 'Saree', href: '/products?category=wedding-touch&subcategory=wedding-touch-saree' },
         ]
     }
 ];
@@ -129,12 +129,12 @@ export function Header() {
                 if (result.success && result.data && result.data.length > 0) {
                     const mapped = result.data.map((cat: any) => ({
                         name: cat.name,
-                        href: `/products?category=${encodeURIComponent(cat.name)}`,
+                        href: `/products?category=${encodeURIComponent(cat.slug)}`,
                         isHidden: cat.isHidden || false,
                         featured: cat.image || defaultImages[cat.name] || 'https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=800&auto=format&fit=crop',
                         subcategories: (cat.children || []).filter((sub: any) => !sub.isHidden).map((sub: any) => ({
                             name: sub.name,
-                            href: `/products?category=${encodeURIComponent(cat.name)}&subcategory=${encodeURIComponent(sub.name)}`
+                            href: `/products?category=${encodeURIComponent(cat.slug)}&subcategory=${encodeURIComponent(sub.slug)}`
                         }))
                     }));
                     setCategories(mapped);

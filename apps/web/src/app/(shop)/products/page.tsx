@@ -66,7 +66,7 @@ export default function ProductsPage() {
     // Sync state with URL parameters dynamically
     useEffect(() => {
         const query = searchParams.get('search') || '';
-        const cat = searchParams.get('category') || null;
+        const cat = searchParams.get('subcategory') || searchParams.get('category') || null;
         setSearchQuery(query);
         setSelectedCategory(cat);
         setCurrentPage(1);
@@ -74,7 +74,7 @@ export default function ProductsPage() {
 
     // Filter State
     const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
-    const [selectedCategory, setSelectedCategory] = useState<string | null>(searchParams.get('category') || null);
+    const [selectedCategory, setSelectedCategory] = useState<string | null>(searchParams.get('subcategory') || searchParams.get('category') || null);
     const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
     const [priceRange, setPriceRange] = useState<[number, number]>([0, 150000]);
     const [minRating, setMinRating] = useState<number | null>(null);
@@ -212,7 +212,7 @@ export default function ProductsPage() {
                             onClick={() => { setSelectedCategory(cat.key); setCurrentPage(1); }}
                             className={cn(
                                 "w-full text-left px-4 py-2 rounded-xl text-sm transition-all uppercase tracking-widest text-[10px] font-bold",
-                                selectedCategory?.toLowerCase() === cat.key.toLowerCase() ? "bg-destructive text-white shadow-lg" : "text-gray-500 hover:bg-gray-100"
+                                (selectedCategory?.toLowerCase() === cat.key.toLowerCase() || selectedCategory?.toLowerCase().startsWith(cat.key.toLowerCase() + '-')) ? "bg-destructive text-white shadow-lg" : "text-gray-500 hover:bg-gray-100"
                             )}
                         >
                             {cat.label}

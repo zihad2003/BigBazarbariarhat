@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
     const query = searchParams.get('q') || searchParams.get('search') || '';
     const sort = searchParams.get('sort') || searchParams.get('sortBy') || 'newest';
     const page = Math.max(1, Number(searchParams.get('page')) || 1);
-    const limit = Math.min(100, Math.max(1, Number(searchParams.get('limit')) || 12));
+    const limit = Math.min(1000, Math.max(1, Number(searchParams.get('limit')) || 12));
     const skip = (page - 1) * limit;
 
     // Build Prisma filters with proper types

@@ -33,7 +33,7 @@ const getHeroSlides = (t: any) => [
         title: t?.hero?.slide1Title || 'New Season Collection',
         subtitle: t?.hero?.slide1Subtitle || "Women's Fashion 2026",
         cta: t?.common?.shopNow || 'Shop Now',
-        href: '/women',
+        href: '/products?category=women',
         videoUrl: null,
     },
     {
@@ -42,7 +42,7 @@ const getHeroSlides = (t: any) => [
         title: t?.hero?.slide2Title || 'Premium Menswear',
         subtitle: t?.hero?.slide2Subtitle || 'Crafted for the Modern Man',
         cta: t?.common?.explore || 'Explore',
-        href: '/men',
+        href: '/products?category=men',
         videoUrl: null,
     },
     {
