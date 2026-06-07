@@ -2,9 +2,15 @@
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useState } from 'react';
+import dynamic from 'next/dynamic';
 
 import { useEffect } from 'react';
 import { useLanguageStore, SettingsService } from '@bigbazar/shared';
+
+const Agentation = dynamic(
+    () => import('agentation').then((mod) => mod.Agentation),
+    { ssr: false }
+);
 
 function LanguageInitializer({ children }: { children: React.ReactNode }) {
     const { setLanguage } = useLanguageStore();
@@ -33,6 +39,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
         <QueryClientProvider client={queryClient}>
             <LanguageInitializer>
                 {children}
+                {process.env.NODE_ENV === 'development' && <Agentation endpoint="http://localhost:4747" />}
             </LanguageInitializer>
         </QueryClientProvider>
     );
