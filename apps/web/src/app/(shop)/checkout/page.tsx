@@ -569,12 +569,12 @@ export default function CheckoutPage() {
                                         )}>
                                             <div className="flex items-center gap-4">
                                                 <div className={cn(
-                                                    "w-12 h-12 rounded-sm flex items-center justify-center text-xl",
+                                                    "w-12 h-12 rounded-sm flex items-center justify-center",
                                                     deliveryInfo.zone === 'mirsharai'
-                                                        ? "bg-emerald-100"
-                                                        : "bg-white border border-gray-100"
+                                                        ? "bg-emerald-100 text-emerald-600"
+                                                        : "bg-white border border-gray-100 text-gray-400"
                                                 )}>
-                                                    {deliveryInfo.zone === 'mirsharai' ? '🎁' : deliveryInfo.zone === 'chittagong' ? '📦' : '📮'}
+                                                    <Package className="h-6 w-6" />
                                                 </div>
                                                 <div>
                                                     <p className="font-bold text-gray-900 text-sm">
@@ -719,9 +719,6 @@ export default function CheckoutPage() {
                                                                                 {ct.pleaseSendAdvance}<span className="text-emerald-950 font-black">৳{advanceAmount}</span> to{' '}
                                                                                 {bkashNumberConfig !== 'SKIP' && `bKash: `}
                                                                                 {bkashNumberConfig !== 'SKIP' && <span className="text-emerald-900 font-black underline">{bkashNumberConfig}</span>}
-                                                                                {bkashNumberConfig !== 'SKIP' && nagadNumberConfig !== 'SKIP' && ` or `}
-                                                                                {nagadNumberConfig !== 'SKIP' && `Nagad: `}
-                                                                                {nagadNumberConfig !== 'SKIP' && <span className="text-emerald-900 font-black underline">{nagadNumberConfig}</span>}
                                                                                 {ct.toPersonalAndEnter}
                                                                             </span>
                                                                         </div>
