@@ -258,7 +258,7 @@ export function Header() {
                         <div className="flex items-center gap-6 flex-1 justify-end max-w-2xl">
                             
                             {/* Search Bar - Desktop */}
-                            <div ref={searchRef} className="hidden lg:block relative flex-1 max-w-lg">
+                            <div ref={searchRef} className="hidden lg:block relative flex-1 max-w-xs">
                                 <form onSubmit={handleSearch} className="relative group">
                                     <Search className={cn(
                                         "absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 transition-colors",

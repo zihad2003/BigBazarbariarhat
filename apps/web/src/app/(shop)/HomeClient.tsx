@@ -531,9 +531,6 @@ export default function HomeClient({
                         {t?.categories?.title || 'Shop By Category'}
                     </h2>
                     <div className="w-16 h-1 bg-destructive mx-auto mb-4" />
-                    <p className="text-xs md:text-sm text-muted-foreground uppercase tracking-[0.2em]">
-                        Explore our curated collections crafted with excellence
-                    </p>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
                     {categories.map((cat, i) => (
@@ -613,7 +610,7 @@ export default function HomeClient({
                         <div className="absolute inset-y-0 left-8 sm:left-14 flex flex-col justify-center max-w-lg z-10 text-white space-y-3 sm:space-y-4">
                             <div className="flex items-center gap-1.5">
                                 <span className="text-[#bf953f] text-[9px] sm:text-[10px] font-black uppercase tracking-[0.4em] block">
-                                    Royal Heritage Edit
+                                    Wedding Collection
                                 </span>
                                 <Sparkles className="h-3 w-3 text-[#bf953f] animate-pulse" />
                             </div>
@@ -624,11 +621,11 @@ export default function HomeClient({
                             </h3>
 
                             <p className="text-xs sm:text-sm text-white/70 font-serif leading-relaxed line-clamp-2 max-w-sm font-light">
-                                Handcrafted bridal sarees, royal sherwanis, and festive wear designed for your unforgettable moments.
+                                Exclusive sarees, sherwanis, and festive wear for your special day.
                             </p>
 
                             <div className="pt-2 flex items-center gap-2 text-xs uppercase tracking-widest font-black text-[#bf953f] group-hover:text-white transition-colors duration-300">
-                                <span>Explore The Edit</span>
+                                <span>Explore Collection</span>
                                 <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
                             </div>
                         </div>

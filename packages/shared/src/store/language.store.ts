@@ -72,7 +72,7 @@ export const translations = {
         },
         newArrivals: {
             title: 'New Arrivals',
-            subtitle: 'This Week\'s Selection',
+            subtitle: 'Shop our latest designs',
             viewAll: 'View All Collections',
         }
     },
