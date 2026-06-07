@@ -17,7 +17,9 @@ import {
     Package,
     CheckCircle2,
     MapPin,
-    Info
+    Info,
+    Copy,
+    Check
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCartStore } from '@/store/cartStore';
@@ -77,7 +79,7 @@ const localTranslations: Record<string, any> = {
         emptyBag: 'Your bag is empty',
         emptyBagDesc: 'Add items to your cart before proceeding to checkout.',
         backToShop: 'Back to Shop',
-        shippingDetails: 'Shipping Details',
+        shippingDetails: '1. Shipping Address (Where to deliver)',
         fullName: 'Full Name',
         fullNamePlaceholder: 'Enter your full name',
         phoneNumber: 'Phone Number',
@@ -93,7 +95,7 @@ const localTranslations: Record<string, any> = {
         addressPlaceholder: 'House number, street name, area details',
         deliveryNoteOptional: 'Delivery Note (Optional)',
         deliveryNotePlaceholder: 'Any special instructions for delivery',
-        delivery: 'Delivery',
+        delivery: '2. Delivery Area & Cost',
         selectDistrictToSeeCost: 'Select your district above to see delivery charges',
         weightNotice: 'Delivery charges may be higher depending on package weight and size. We will contact you if additional charges apply before shipping.',
         paymentMethod: 'Payment Method',
@@ -139,7 +141,7 @@ const localTranslations: Record<string, any> = {
         emptyBag: 'আপনার শপিং ব্যাগ খালি',
         emptyBagDesc: 'চেকআউট করার আগে আপনার কার্টে পণ্য যোগ করুন।',
         backToShop: 'শপে ফিরে যান',
-        shippingDetails: 'শিপিং তথ্য (ডেলিভারির ঠিকানা)',
+        shippingDetails: '১. ডেলিভারির ঠিকানা (পণ্য যেখানে পাঠানো হবে)',
         fullName: 'পূর্ণ নাম',
         fullNamePlaceholder: 'আপনার পূর্ণ নাম লিখুন',
         phoneNumber: 'মোবাইল নাম্বার',
@@ -155,10 +157,10 @@ const localTranslations: Record<string, any> = {
         addressPlaceholder: 'বাসা নাম্বার, রাস্তার নাম, এলাকা ইত্যাদি',
         deliveryNoteOptional: 'ডেলিভারি নোট (ঐচ্ছিক)',
         deliveryNotePlaceholder: 'ডেলিভারির জন্য কোনো বিশেষ নির্দেশনা (যদি থাকে)',
-        delivery: 'ডেলিভারি',
+        delivery: '২. ডেলিভারি এলাকা ও খরচ',
         selectDistrictToSeeCost: 'ডেলিভারি চার্জ দেখতে উপরে আপনার জেলা নির্বাচন করুন',
         weightNotice: 'প্যাকেজের ওজন এবং আকারের উপর ভিত্তি করে ডেলিভারি চার্জ কম-বেশি হতে পারে। শিপিং করার আগে অতিরিক্ত চার্জ প্রযোজ্য হলে আমরা আপনার সাথে যোগাযোগ করব।',
-        paymentMethod: 'পেমেন্ট পদ্ধতি',
+        paymentMethod: '৩. পেমেন্ট পদ্ধতি (টাকা পরিশোধের মাধ্যম)',
         orderSecurityPolicy: 'অর্ডার সিকিউরিটি পলিসি',
         districtPending: 'জেলা নির্বাচন করা হয়নি',
         pleaseSelectDistrictPolicy: 'ডেলিভারি চার্জ হিসাব করতে এবং পরবর্তী ধাপগুলো দেখতে দয়া করে উপরে **শিপিং তথ্য**-এর নিচে আপনার জেলা নির্বাচন করুন।',
@@ -218,6 +220,15 @@ export default function CheckoutPage() {
     const router = useRouter();
     const { items, getSubtotal, clearCart, getDiscountAmount } = useCartStore();
     const { addNotification } = useUIStore();
+
+    const [copiedText, setCopiedText] = useState<string | null>(null);
+
+    const handleCopy = (text: string) => {
+        navigator.clipboard.writeText(text);
+        setCopiedText(text);
+        addNotification({ type: 'success', message: language === 'bn' ? 'নাম্বারটি কপি করা হয়েছে!' : 'Number copied to clipboard!' });
+        setTimeout(() => setCopiedText(null), 2000);
+    };
 
     // Default checkout page to Bangla language
     useEffect(() => {
@@ -715,10 +726,22 @@ export default function CheckoutPage() {
                                                                     <div className="p-4 bg-emerald-50 border border-emerald-100 rounded-xl text-[10px] text-emerald-800 font-bold leading-relaxed space-y-3">
                                                                         <div className="flex items-start gap-2">
                                                                             <Info className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
-                                                                            <span>
+                                                                            <span className="flex items-center flex-wrap gap-1.5">
                                                                                 {ct.pleaseSendAdvance}<span className="text-emerald-950 font-black">৳{advanceAmount}</span> to{' '}
                                                                                 {bkashNumberConfig !== 'SKIP' && `bKash: `}
-                                                                                {bkashNumberConfig !== 'SKIP' && <span className="text-emerald-900 font-black underline">{bkashNumberConfig}</span>}
+                                                                                {bkashNumberConfig !== 'SKIP' && (
+                                                                                    <span className="inline-flex items-center gap-1 bg-white border border-emerald-200 px-2 py-0.5 rounded text-emerald-950 font-black tracking-wide font-mono shadow-xs select-all">
+                                                                                        {bkashNumberConfig}
+                                                                                        <button 
+                                                                                            type="button"
+                                                                                            onClick={() => handleCopy(bkashNumberConfig)}
+                                                                                            className="hover:text-emerald-600 focus:outline-none transition-colors cursor-pointer"
+                                                                                            title="Copy Number"
+                                                                                        >
+                                                                                            {copiedText === bkashNumberConfig ? <Check className="h-3 w-3 text-emerald-600" /> : <Copy className="h-3 w-3" />}
+                                                                                        </button>
+                                                                                    </span>
+                                                                                )}
                                                                                 {ct.toPersonalAndEnter}
                                                                             </span>
                                                                         </div>
@@ -782,12 +805,44 @@ export default function CheckoutPage() {
                                                             )}>
                                                                 {method.id === 'bkash' ? 'bKash Sender / Transaction Number' : 'Nagad Sender / Transaction Number'}
                                                             </label>
-                                                            <p className={cn(
-                                                                "text-[10px] mb-4 uppercase tracking-widest font-semibold",
-                                                                method.id === 'bkash' ? "text-pink-400" : "text-orange-400"
+                                                            <div className={cn(
+                                                                "flex items-center justify-between bg-white border rounded-xl p-4 mb-4 shadow-sm w-full",
+                                                                method.id === 'bkash' ? "border-pink-100" : "border-orange-100"
                                                             )}>
-                                                                {language === 'bn' ? 'টাকা পাঠান এই নাম্বারে' : 'Send money to'}: <span className="font-bold">{method.id === 'bkash' ? bkashNumberConfig : nagadNumberConfig}</span>
-                                                            </p>
+                                                                <div>
+                                                                    <span className={cn(
+                                                                        "block text-[8px] font-black uppercase tracking-widest mb-1",
+                                                                        method.id === 'bkash' ? "text-pink-500" : "text-orange-500"
+                                                                    )}>
+                                                                        {language === 'bn' ? 'টাকা পাঠান এই নাম্বারে (সেন্ড মানি)' : 'Send Money to (Personal)'}
+                                                                    </span>
+                                                                    <span className="text-base font-black text-gray-900 tracking-wider font-mono select-all">
+                                                                        {method.id === 'bkash' ? bkashNumberConfig : nagadNumberConfig}
+                                                                    </span>
+                                                                </div>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => handleCopy(method.id === 'bkash' ? bkashNumberConfig : nagadNumberConfig)}
+                                                                    className={cn(
+                                                                        "border transition-all px-4 py-2.5 rounded-lg text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 shadow-2xs cursor-pointer",
+                                                                        method.id === 'bkash' 
+                                                                            ? "bg-pink-50 border-pink-100 hover:bg-pink-100 text-pink-700" 
+                                                                            : "bg-orange-50 border-orange-100 hover:bg-orange-100 text-orange-700"
+                                                                    )}
+                                                                >
+                                                                    {copiedText === (method.id === 'bkash' ? bkashNumberConfig : nagadNumberConfig) ? (
+                                                                        <>
+                                                                            <Check className="h-3.5 w-3.5" />
+                                                                            {language === 'bn' ? 'কপি হয়েছে' : 'Copied'}
+                                                                        </>
+                                                                    ) : (
+                                                                        <>
+                                                                            <Copy className="h-3.5 w-3.5" />
+                                                                            {language === 'bn' ? 'কপি করুন' : 'Copy'}
+                                                                        </>
+                                                                    )}
+                                                                </button>
+                                                            </div>
                                                             <input 
                                                                 type="text"
                                                                 value={bkashNumber}
