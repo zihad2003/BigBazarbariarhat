@@ -26,9 +26,54 @@ import { useLanguageStore, useTranslation } from '@bigbazar/shared'
 import { Breadcrumbs } from '@/components/shop/breadcrumbs'
 import { useThrottle } from '@/hooks/use-throttle'
 
+// --- Local Translations ---
+const localTranslations: Record<string, any> = {
+    en: {
+        emptyCart: 'Your Cart is Empty',
+        emptyCartDesc: "You haven't added anything to your cart yet. Browse our collection and find something you love.",
+        startShopping: 'Start Shopping',
+        yourCart: 'Your Cart',
+        items: 'Items',
+        item: 'Item',
+        continueShopping: 'Continue Shopping',
+        orderSummary: 'Order Summary',
+        subtotal: 'Subtotal',
+        shipping: 'Shipping',
+        discount: 'Discount',
+        total: 'Total',
+        checkout: 'Checkout',
+        securePayment: 'Secure Payment',
+        savedForLater: 'Saved for Later',
+        moveToCart: 'Move to Cart',
+        remove: 'Remove',
+        standard: 'Standard',
+    },
+    bn: {
+        emptyCart: 'আপনার শপিং ব্যাগ খালি',
+        emptyCartDesc: 'আপনি এখনও কার্টে কোনো পণ্য যোগ করেননি। আমাদের নতুন কালেকশনগুলো দেখুন এবং আপনার পছন্দের পণ্যটি বেছে নিন।',
+        startShopping: 'কেনাকাটা শুরু করুন',
+        yourCart: 'আপনার ব্যাগ (কার্ট)',
+        items: 'টি পণ্য',
+        item: 'টি পণ্য',
+        continueShopping: 'কেনাকাটা অব্যাহত রাখুন',
+        orderSummary: 'অর্ডার সারসংক্ষেপ',
+        subtotal: 'সাবটোটাল',
+        shipping: 'ডেলিভারি চার্জ',
+        discount: 'ছাড়',
+        total: 'মোট',
+        checkout: 'চেকআউট করুন',
+        securePayment: 'নিরাপদ পেমেন্ট',
+        savedForLater: 'পরবর্তীতে কেনার জন্য সংরক্ষিত',
+        moveToCart: 'কার্টে যোগ করুন',
+        remove: 'মুছে ফেলুন',
+        standard: 'স্ট্যান্ডার্ড',
+    }
+};
+
 export default function CartPage() {
-    const { language } = useLanguageStore()
+    const { language, setLanguage } = useLanguageStore()
     const t = useTranslation()
+    const ct = localTranslations[language] || localTranslations.en
     const router = useRouter()
     const {
         items,
@@ -38,9 +83,6 @@ export default function CartPage() {
         saveForLater,
         moveToCart,
         removeSavedItem,
-        applyCoupon,
-        removeCoupon,
-        couponCode,
         getSubtotal,
         getDiscountAmount,
         getShippingCost,
@@ -49,20 +91,19 @@ export default function CartPage() {
     } = useCartStore()
 
     const [isMounted, setIsMounted] = useState(false)
-    const [couponInput, setCouponInput] = useState(couponCode || '')
-    const [couponMessage, setCouponMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
     const [itemToRemove, setItemToRemove] = useState<string | null>(null)
 
     const throttledUpdateQuantity = useThrottle(updateQuantity, 300)
     const throttledRemoveItem = useThrottle(removeItem, 300)
 
+    // Default cart page to Bangla language
+    useEffect(() => {
+        setLanguage('bn')
+    }, [setLanguage])
+
     useEffect(() => {
         setIsMounted(true)
     }, [])
-
-    useEffect(() => {
-        setCouponInput(couponCode || '')
-    }, [couponCode])
 
     if (!isMounted) return null
 
@@ -71,14 +112,6 @@ export default function CartPage() {
     const shipping = getShippingCost()
     const total = getTotal()
     const itemCount = getItemCount()
-
-    const handleApplyCoupon = () => {
-        const result = applyCoupon(couponInput)
-        setCouponMessage({
-            type: result.success ? 'success' : 'error',
-            text: result.message
-        })
-    }
 
     if (items.length === 0 && savedItems.length === 0) {
         return (
@@ -90,13 +123,13 @@ export default function CartPage() {
                 >
                     <ShoppingBag className="h-12 w-12 text-gray-200" />
                 </motion.div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-3 font-playfair">Your Cart is Empty</h1>
+                <h1 className="text-3xl font-bold text-gray-900 mb-3 font-playfair">{ct.emptyCart}</h1>
                 <p className="text-gray-400 mb-10 max-w-sm leading-relaxed">
-                    You haven't added anything to your cart yet. Browse our collection and find something you love.
+                    {ct.emptyCartDesc}
                 </p>
                 <Link href="/products">
                     <Button className="rounded-xl px-10 h-14 bg-foreground text-white hover:bg-primary transition-all font-bold text-sm uppercase tracking-wider group">
-                        Start Shopping <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                        {ct.startShopping} <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                     </Button>
                 </Link>
             </div>
@@ -108,14 +141,16 @@ export default function CartPage() {
             <div className="max-w-7xl mx-auto px-6 py-10">
                 <Breadcrumbs 
                     items={[
-                        { label: t?.common?.cart || 'Cart', active: true }
+                        { label: language === 'bn' ? 'কার্ট' : 'Cart', active: true }
                     ]} 
                 />
                 
                 {/* Header Section */}
                 <div className="flex justify-between items-baseline border-b border-gray-100 pb-8 mb-10">
-                    <h1 className="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight">Your Cart</h1>
-                    <span className="text-sm font-bold text-gray-400 uppercase tracking-widest">{itemCount} Item{itemCount !== 1 ? 's' : ''}</span>
+                    <h1 className="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight">{ct.yourCart}</h1>
+                    <span className="text-sm font-bold text-gray-400 uppercase tracking-widest">
+                        {itemCount} {itemCount === 1 ? ct.item : ct.items}
+                    </span>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
@@ -199,7 +234,7 @@ export default function CartPage() {
                         <div className="mt-12">
                             <Link href="/products" className="group flex items-center gap-2 text-xs font-black uppercase tracking-widest text-gray-400 hover:text-black transition-all">
                                 <ChevronLeft className="h-4 w-4" />
-                                Continue Shopping
+                                {ct.continueShopping}
                             </Link>
                         </div>
                     </div>
@@ -207,20 +242,20 @@ export default function CartPage() {
                     {/* Right: Summary Sidebar */}
                     <div className="lg:col-span-4">
                         <div className="sticky top-32 bg-gray-50 rounded-2xl p-8 border border-gray-100">
-                            <h2 className="text-lg font-bold text-gray-900 mb-8 uppercase tracking-tight">Order Summary</h2>
+                            <h2 className="text-lg font-bold text-gray-900 mb-8 uppercase tracking-tight">{ct.orderSummary}</h2>
                             
                             <div className="space-y-4 mb-8">
                                 <div className="flex justify-between text-sm text-gray-500 font-bold uppercase tracking-widest">
-                                    <span>Subtotal</span>
+                                    <span>{ct.subtotal}</span>
                                     <span className="text-gray-900">{formatPrice(subtotal, language)}</span>
                                 </div>
                                 <div className="flex justify-between text-sm text-gray-500 font-bold uppercase tracking-widest">
-                                    <span>Shipping</span>
+                                    <span>{ct.shipping}</span>
                                     <span className="text-emerald-600 font-bold">{formatPrice(shipping, language)}</span>
                                 </div>
                                 {discount > 0 && (
                                     <div className="flex justify-between text-sm text-rose-600 font-bold uppercase tracking-widest">
-                                        <span>Discount</span>
+                                        <span>{ct.discount}</span>
                                         <span>-{formatPrice(discount, language)}</span>
                                     </div>
                                 )}
@@ -228,7 +263,7 @@ export default function CartPage() {
 
                             <div className="pt-6 border-t border-gray-200 mb-8">
                                 <div className="flex justify-between items-baseline">
-                                    <span className="text-lg font-bold text-gray-900 uppercase tracking-tight">Total</span>
+                                    <span className="text-lg font-bold text-gray-900 uppercase tracking-tight">{ct.total}</span>
                                     <div className="text-right">
                                         <span className="text-3xl font-black text-gray-900 tracking-tighter">{formatPrice(total, language)}</span>
                                     </div>
@@ -239,13 +274,13 @@ export default function CartPage() {
                                 onClick={() => router.push('/checkout')}
                                 className="w-full h-20 bg-slate-900 text-white hover:bg-primary rounded-xl text-xs font-black uppercase tracking-[0.3em] shadow-2xl shadow-black/10 transition-all duration-300 flex items-center justify-center gap-4"
                             >
-                                Checkout <ArrowRight className="h-5 w-5" />
+                                {ct.checkout} <ArrowRight className="h-5 w-5" />
                             </Button>
 
                             <div className="mt-8 flex flex-col gap-4">
                                 <div className="flex items-center gap-3 text-gray-400">
                                     <ShieldCheck className="h-4 w-4" />
-                                    <span className="text-[10px] font-bold uppercase tracking-widest">Secure Payment</span>
+                                    <span className="text-[10px] font-bold uppercase tracking-widest">{ct.securePayment}</span>
                                 </div>
                             </div>
                         </div>
@@ -255,7 +290,7 @@ export default function CartPage() {
                 {/* Saved Items Section */}
                 {savedItems.length > 0 && (
                     <div className="mt-32 pt-20 border-t border-gray-50">
-                        <h2 className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.3em] mb-12">Saved for Later</h2>
+                        <h2 className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.3em] mb-12">{ct.savedForLater}</h2>
                         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8">
                             {savedItems.map((item) => (
                                 <div key={item.id} className="group relative">
@@ -264,8 +299,8 @@ export default function CartPage() {
                                     </div>
                                     <h3 className="text-xs font-bold text-gray-900 truncate mb-2">{item.name}</h3>
                                     <div className="flex gap-4">
-                                        <button onClick={() => moveToCart(item.id)} className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-black">Move to Cart</button>
-                                        <button onClick={() => removeSavedItem(item.id)} className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-rose-500">Remove</button>
+                                        <button onClick={() => moveToCart(item.id)} className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-black">{ct.moveToCart}</button>
+                                        <button onClick={() => removeSavedItem(item.id)} className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-rose-500">{ct.remove}</button>
                                     </div>
                                 </div>
                             ))}
