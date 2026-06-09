@@ -556,16 +556,9 @@ export default function HomeClient({
                                     <span className="text-lg md:text-xl font-bold font-playfair uppercase tracking-wide group-hover:text-yellow-400 transition-colors duration-300">
                                         {cat.name}
                                     </span>
-                                    <div className="relative h-5 mt-1.5 overflow-hidden">
-                                        {/* Items count (slides up and fades out on hover) */}
-                                        <span className="absolute inset-0 text-[10px] text-white/50 font-medium uppercase tracking-widest transition-all duration-300 transform translate-y-0 opacity-100 group-hover:-translate-y-5 group-hover:opacity-0">
-                                            {cat.count === 1 ? '1 Item' : `${cat.count || 0} Items`}
-                                        </span>
-                                        {/* Explore link (slides up and fades in on hover) */}
-                                        <span className="absolute inset-0 text-[10px] text-yellow-400 font-bold uppercase tracking-widest flex items-center gap-1 transition-all duration-300 transform translate-y-5 opacity-0 group-hover:translate-y-0 group-hover:opacity-100">
-                                            Explore
-                                            <ArrowRight className="h-3 w-3" />
-                                        </span>
+                                    <div className="flex items-center gap-1 mt-1.5 text-[10px] text-yellow-400 font-bold uppercase tracking-widest">
+                                        <span>Explore</span>
+                                        <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
                                     </div>
                                 </div>
 
