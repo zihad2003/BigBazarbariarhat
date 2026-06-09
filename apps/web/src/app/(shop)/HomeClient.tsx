@@ -607,7 +607,7 @@ export default function HomeClient({
                         <div className="absolute bottom-6 left-6 sm:bottom-8 sm:left-8 w-6 h-6 border-b-[1.5px] border-l-[1.5px] border-[#bf953f] pointer-events-none" />
                         <div className="absolute bottom-6 right-6 sm:bottom-8 sm:right-8 w-6 h-6 border-b-[1.5px] border-r-[1.5px] border-[#bf953f] pointer-events-none" />
 
-                        <div className="absolute inset-y-0 left-8 sm:left-14 flex flex-col justify-center max-w-lg z-10 text-white space-y-3 sm:space-y-4">
+                        <div className="absolute inset-y-0 left-14 sm:left-24 right-14 sm:right-24 flex flex-col justify-center max-w-xs sm:max-w-md md:max-w-lg z-10 text-white space-y-3 sm:space-y-4">
                             <div className="flex items-center gap-1.5">
                                 <span className="text-[#bf953f] text-[9px] sm:text-[10px] font-black uppercase tracking-[0.4em] block">
                                     Wedding Collection
