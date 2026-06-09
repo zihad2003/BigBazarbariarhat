@@ -261,8 +261,8 @@ export function Header() {
                             <div ref={searchRef} className="hidden lg:block relative flex-1 max-w-xs">
                                 <form onSubmit={handleSearch} className="relative group">
                                     <Search className={cn(
-                                        "absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 transition-colors",
-                                        isSearchFocused ? "text-primary" : "text-slate-400"
+                                        "absolute left-0 top-1/2 -translate-y-1/2 h-3.5 w-3.5 transition-colors duration-300",
+                                        isSearchFocused ? "text-slate-900" : "text-slate-400 group-hover:text-slate-700"
                                     )} />
                                     <input
                                         type="text"
@@ -271,19 +271,19 @@ export function Header() {
                                         onChange={(e) => setSearchQuery(e.target.value)}
                                         onFocus={() => setIsSearchFocused(true)}
                                         className={cn(
-                                            "w-full pl-12 pr-6 py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all border",
+                                            "w-full bg-transparent border-0 border-b pl-7 pr-6 py-2 rounded-none text-[11px] font-black uppercase tracking-widest transition-all duration-300 focus:outline-none focus:ring-0 focus:border-slate-900 placeholder:text-slate-400/70",
                                             isSearchFocused
-                                                ? "bg-white border-primary ring-4 ring-primary/5 shadow-2xl"
-                                                : "bg-slate-50 border-transparent hover:bg-slate-100"
+                                                ? "border-slate-900 text-slate-900"
+                                                : "border-slate-200 text-slate-700 hover:border-slate-400"
                                         )}
                                     />
                                     {searchQuery && (
                                         <button 
                                             type="button" 
                                             onClick={() => setSearchQuery('')}
-                                            className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-slate-100 rounded-full"
+                                            className="absolute right-0 top-1/2 -translate-y-1/2 p-1 hover:bg-slate-50 rounded-full"
                                         >
-                                            <X className="h-3 w-3 text-slate-400" />
+                                            <X className="h-3 w-3 text-slate-400 hover:text-slate-900 transition-colors" />
                                         </button>
                                     )}
                                 </form>
@@ -295,7 +295,7 @@ export function Header() {
                                             initial={{ opacity: 0, y: 10 }}
                                             animate={{ opacity: 1, y: 0 }}
                                             exit={{ opacity: 0, y: 10 }}
-                                            className="absolute top-full left-0 right-0 mt-4 bg-white rounded-[2.5rem] shadow-2xl border border-slate-100 p-8 z-50 overflow-hidden"
+                                            className="absolute top-full left-0 right-0 mt-4 bg-white rounded-2xl shadow-2xl border border-slate-100 p-6 z-50 overflow-hidden"
                                         >
                                             <div className="space-y-10">
                                                 {/* Suggestions */}
