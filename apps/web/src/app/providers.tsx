@@ -18,9 +18,22 @@ function LanguageInitializer({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         const initLanguage = async () => {
             try {
+                // If the user initially loads /cart or /checkout, force 'bn' (Bangla)
+                const initialPath = window.location.pathname;
+                if (initialPath === '/cart' || initialPath === '/checkout') {
+                    setLanguage('bn');
+                    return;
+                }
+
                 const result = await SettingsService.getSettings();
                 if (result.success && result.data?.default_language) {
-                    setLanguage(result.data.default_language as any);
+                    // Check current path again in case they navigated to cart/checkout during fetch
+                    const currentPath = window.location.pathname;
+                    if (currentPath === '/cart' || currentPath === '/checkout') {
+                        setLanguage('bn');
+                    } else {
+                        setLanguage(result.data.default_language as any);
+                    }
                 }
             } catch (error) {
                 console.error('Failed to initialize language from admin settings:', error);
