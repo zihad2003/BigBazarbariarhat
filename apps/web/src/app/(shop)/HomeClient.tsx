@@ -556,18 +556,17 @@ export default function HomeClient({
                                     <span className="text-lg md:text-xl font-bold font-playfair uppercase tracking-wide group-hover:text-yellow-400 transition-colors duration-300">
                                         {cat.name}
                                     </span>
-                                    <div className="h-0 group-hover:h-5 overflow-hidden transition-all duration-300 opacity-0 group-hover:opacity-100 mt-1 flex items-center justify-between">
-                                        <span className="text-[10px] text-white/70 font-black uppercase tracking-widest">
+                                    <div className="relative h-5 mt-1.5 overflow-hidden">
+                                        {/* Items count (slides up and fades out on hover) */}
+                                        <span className="absolute inset-0 text-[10px] text-white/50 font-medium uppercase tracking-widest transition-all duration-300 transform translate-y-0 opacity-100 group-hover:-translate-y-5 group-hover:opacity-0">
                                             {cat.count === 1 ? '1 Item' : `${cat.count || 0} Items`}
                                         </span>
-                                        <span className="text-[10px] text-yellow-400 font-bold uppercase tracking-widest flex items-center gap-1">
+                                        {/* Explore link (slides up and fades in on hover) */}
+                                        <span className="absolute inset-0 text-[10px] text-yellow-400 font-bold uppercase tracking-widest flex items-center gap-1 transition-all duration-300 transform translate-y-5 opacity-0 group-hover:translate-y-0 group-hover:opacity-100">
                                             Explore
                                             <ArrowRight className="h-3 w-3" />
                                         </span>
                                     </div>
-                                    <span className="text-[10px] text-white/50 font-medium uppercase tracking-widest mt-1.5 group-hover:opacity-0 transition-opacity duration-300">
-                                        {cat.count === 1 ? '1 Item' : `${cat.count || 0} Items`}
-                                    </span>
                                 </div>
 
                                 {cat.comingSoon && (
