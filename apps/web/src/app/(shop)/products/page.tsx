@@ -47,21 +47,17 @@ export default function ProductsPage() {
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
     const [apiProducts, setApiProducts] = useState<any[]>([]);
 
-    useEffect(() => {
-        setIsLoading(true);
-        fetch('/api/products?limit=1000') // fetch all for client-side filtering for now
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    setApiProducts(data.data);
-                }
-                setIsLoading(false);
-            })
-            .catch(err => {
-                console.error(err);
-                setIsLoading(false);
-            });
-    }, []);
+    // Filter State
+    const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
+    const [selectedCategory, setSelectedCategory] = useState<string | null>(searchParams.get('subcategory') || searchParams.get('category') || null);
+    const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+    const [priceRange, setPriceRange] = useState<[number, number]>([0, 150000]);
+    const [minRating, setMinRating] = useState<number | null>(null);
+    const [sortBy, setSortBy] = useState<string>(searchParams.get('sort') || 'newest');
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalProducts, setTotalProducts] = useState(0);
+    const [totalPages, setTotalPages] = useState(1);
+    const itemsPerPage = 12;
 
     // Sync state with URL parameters dynamically
     useEffect(() => {
@@ -72,15 +68,32 @@ export default function ProductsPage() {
         setCurrentPage(1);
     }, [searchParams]);
 
-    // Filter State
-    const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
-    const [selectedCategory, setSelectedCategory] = useState<string | null>(searchParams.get('subcategory') || searchParams.get('category') || null);
-    const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
-    const [priceRange, setPriceRange] = useState<[number, number]>([0, 150000]);
-    const [minRating, setMinRating] = useState<number | null>(null);
-    const [sortBy, setSortBy] = useState<string>(searchParams.get('sort') || 'newest');
-    const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 12;
+    useEffect(() => {
+        setIsLoading(true);
+        const queryParams = new URLSearchParams({
+            page: currentPage.toString(),
+            limit: itemsPerPage.toString(),
+            search: searchQuery,
+            category: selectedCategory || '',
+            sort: sortBy,
+            minPrice: priceRange[0].toString(),
+            maxPrice: priceRange[1].toString()
+        });
+        fetch(`/api/products?${queryParams.toString()}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    setApiProducts(data.data);
+                    setTotalProducts(data.pagination.total);
+                    setTotalPages(data.pagination.totalPages);
+                }
+                setIsLoading(false);
+            })
+            .catch(err => {
+                console.error(err);
+                setIsLoading(false);
+            });
+    }, [currentPage, searchQuery, selectedCategory, sortBy, priceRange]);
 
     // Scroll to top when page changes
     useEffect(() => {
@@ -104,74 +117,8 @@ export default function ProductsPage() {
     }, [apiProducts]);
 
     // Filtering Logic
-    const filteredProducts = useMemo(() => {
-        let results = [...apiProducts];
-
-        // Search
-        if (searchQuery) {
-            const query = searchQuery.toLowerCase();
-            results = results.filter(p => 
-                p.name.toLowerCase().includes(query) || 
-                (p.description || '').toLowerCase().includes(query) ||
-                (typeof p.category === 'object' ? p.category?.name : p.category || '').toLowerCase().includes(query)
-            );
-        }
-
-        // Category
-        if (selectedCategory) {
-            const targetSlug = selectedCategory.toLowerCase();
-            results = results.filter(p => {
-                const catName = typeof p.category === 'object' ? p.category?.name : p.category;
-                const catSlug = typeof p.category === 'object' ? p.category?.slug : null;
-                
-                return (
-                    (catName && catName.toLowerCase() === targetSlug) ||
-                    (catSlug && (catSlug.toLowerCase() === targetSlug || catSlug.toLowerCase().startsWith(`${targetSlug}-`))) ||
-                    (selectedCategory === 'New Arrivals' && p.isNew)
-                );
-            });
-        }
-
-        // Brands
-        if (selectedBrands.length > 0) {
-            results = results.filter(p => p.brand && selectedBrands.includes(p.brand));
-        }
-
-        // Price
-        results = results.filter(p => {
-            const price = p.salePrice || p.basePrice;
-            return price >= priceRange[0] && price <= priceRange[1];
-        });
-
-        // Rating
-        if (minRating) {
-            results = results.filter(p => (p.rating || 0) >= minRating);
-        }
-
-        // Sorting
-        results.sort((a, b) => {
-            const priceA = a.salePrice || a.basePrice;
-            const priceB = b.salePrice || b.basePrice;
-
-            switch (sortBy) {
-                case 'price_low': return priceA - priceB;
-                case 'price_high': return priceB - priceA;
-                case 'rating': return (b.rating || 0) - (a.rating || 0);
-                case 'newest':
-                default: return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-            }
-        });
-
-        return results;
-    }, [searchQuery, selectedCategory, selectedBrands, priceRange, minRating, sortBy]);
-
-    // Pagination
-    const paginatedProducts = useMemo(() => {
-        const start = (currentPage - 1) * itemsPerPage;
-        return filteredProducts.slice(start, start + itemsPerPage);
-    }, [filteredProducts, currentPage]);
-
-    const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+    const filteredProducts = apiProducts;
+    const paginatedProducts = apiProducts;
 
     // Handlers
     const toggleBrand = (brand: string) => {
@@ -269,7 +216,7 @@ export default function ProductsPage() {
                                     </SheetContent>
                                 </Sheet>
 
-                                <span className="text-xs text-gray-400 font-medium">{filteredProducts.length} products</span>
+                                <span className="text-xs text-gray-400 font-medium">{totalProducts} products</span>
                             </div>
 
                             <div className="flex items-center gap-2">

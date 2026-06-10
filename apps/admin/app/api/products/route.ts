@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@bigbazar/db';
 import { auth } from '@/auth';
+import { checkAdminAuth } from '@/lib/auth-utils';
 import { getCache, setCache, invalidateCachePattern } from '@/lib/cache';
 
 export async function GET(req: NextRequest) {
@@ -25,8 +26,8 @@ export async function GET(req: NextRequest) {
 
         if (q) {
             whereClause.OR = [
-                { name: { contains: q } },
-                { sku: { contains: q } }
+                { name: { startsWith: q } },
+                { sku: { startsWith: q } }
             ];
         }
 
@@ -100,9 +101,9 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
     try {
-        const session = await auth();
-        if (!session) {
-            return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+        const authCheck = await checkAdminAuth();
+        if (!authCheck.authorized) {
+            return authCheck.response;
         }
 
         const body = await req.json();

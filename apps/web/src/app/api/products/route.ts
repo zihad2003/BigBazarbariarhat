@@ -10,8 +10,8 @@ export async function GET(req: NextRequest) {
     const maxPrice = searchParams.get('maxPrice') ? Number(searchParams.get('maxPrice')) : undefined;
     const query = searchParams.get('q') || searchParams.get('search') || '';
     const sort = searchParams.get('sort') || searchParams.get('sortBy') || 'newest';
-    const page = Math.max(1, Number(searchParams.get('page')) || 1);
-    const limit = Math.min(1000, Math.max(1, Number(searchParams.get('limit')) || 12));
+        const page = Math.max(1, Number(searchParams.get('page')) || 1);
+    const limit = Math.min(50, Math.max(1, Number(searchParams.get('limit')) || 12));
     const skip = (page - 1) * limit;
 
     // Build Prisma filters with proper types
@@ -21,8 +21,8 @@ export async function GET(req: NextRequest) {
 
     if (query) {
       where.OR = [
-        { name: { contains: query } },
-        { description: { contains: query } },
+        { name: { startsWith: query } },
+        { sku: { startsWith: query } },
       ];
     }
 

@@ -14,12 +14,14 @@ model User {
   email         String    @unique
   password      String
   role          Role      @default(USER)
+  phone         String?   @unique
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   orders        Order[]
   reviews       Review[]
 
   @@index([role])
+  @@index([phone])
 }
 
 enum Role {
@@ -77,11 +79,13 @@ model Product {
 model Order {
   id              String      @id @default(cuid())
   orderNumber     String      @unique
-  userId          String
-  user            User        @relation(fields: [userId], references: [id])
+  userId          String?
+  user            User?        @relation(fields: [userId], references: [id])
   status          OrderStatus @default(PENDING)
   totalAmount     Decimal     @db.Decimal(10, 2)
   shippingAddress Json
+  customerPhone   String      @default("")
+  adminNote       String?     @db.Text
   items           OrderItem[]
   paymentStatus   PaymentStatus @default(PENDING)
   paymentMethod   String?
@@ -92,6 +96,7 @@ model Order {
 
   @@index([createdAt])
   @@index([status])
+  @@index([customerPhone])
 }
 
 enum OrderStatus {
@@ -175,9 +180,15 @@ model StoreSetting {
   storeDescription String?  @db.Text
   supportEmail     String   @default("admin@bigbazar.com")
   currency         String   @default("BDT")
-  defaultLanguage  String   @default("en")
+  defaultLanguage  String   @default("bn")
   announcementText String?  @default("Free delivery on orders above Tk 1000 | Use code BIGBAZAR10 for 10% off | Exclusive Member Rewards Now Active")
   showAnnouncement Boolean  @default(true)
+  
+  // Steadfast Courier Configuration
+  enableSteadfastCheck Boolean  @default(false)
+  steadfastApiKey      String?  @db.Text
+  steadfastSecretKey   String?  @db.Text
+
   updatedAt        DateTime @updatedAt
 }
 

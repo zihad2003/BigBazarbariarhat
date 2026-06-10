@@ -113,14 +113,41 @@ export default function CustomerDetailPage(props: { params: Promise<{ id: string
                         </div>
                         <div>
                             <div className="flex items-center gap-3">
-                                <h1 className="text-xl font-semibold text-foreground">{customer.name}</h1>
+                                {isEditing ? (
+                                    <input
+                                        type="text"
+                                        value={editForm.name}
+                                        onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                                        className="px-2 py-1 bg-background border border-border rounded text-sm font-semibold text-foreground"
+                                    />
+                                ) : (
+                                    <h1 className="text-xl font-semibold text-foreground">{customer.name}</h1>
+                                )}
                                 {customer.stats.totalSpent > 5000 && (
                                     <span className="px-2 py-0.5 bg-primary/10 text-primary rounded text-[10px] font-bold uppercase tracking-wider border border-primary/20">
                                         Loyal Customer
                                     </span>
                                 )}
                             </div>
-                            <p className="text-[13px] text-muted-foreground mt-0.5">{customer.email}</p>
+                            {isEditing ? (
+                                <div className="flex flex-col gap-1.5 mt-1.5">
+                                    <input
+                                        type="email"
+                                        value={editForm.email}
+                                        onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                                        className="px-2 py-1 bg-background border border-border rounded text-[12px] text-muted-foreground"
+                                    />
+                                    <input
+                                        type="text"
+                                        value={editForm.phone}
+                                        placeholder="Phone"
+                                        onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
+                                        className="px-2 py-1 bg-background border border-border rounded text-[12px] text-muted-foreground"
+                                    />
+                                </div>
+                            ) : (
+                                <p className="text-[13px] text-muted-foreground mt-0.5">{customer.email}</p>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -245,7 +272,116 @@ export default function CustomerDetailPage(props: { params: Promise<{ id: string
                 </div>
 
                 {/* Right Column: Details & Management */}
-                <div className="space-y-6">
+                 <div className="space-y-6">
+                    {/* Customer Trust Score Card */}
+                    <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+                        <h2 className="text-sm font-semibold mb-4 flex items-center gap-2">
+                            <ShieldCheck className="w-4 h-4 text-primary" />
+                            Customer Trust Score
+                        </h2>
+                        {customer.stats && (
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-[13px] text-muted-foreground">Trust Level</span>
+                                    <span className={`px-2 py-0.5 rounded text-[11px] font-bold ${
+                                        customer.stats.trustTierColor === 'green' ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' :
+                                        customer.stats.trustTierColor === 'yellow' ? 'bg-amber-50 text-amber-600 border border-amber-100' :
+                                        customer.stats.trustTierColor === 'red' ? 'bg-rose-50 text-rose-600 border border-rose-100' :
+                                        'bg-zinc-50 text-zinc-600 border border-zinc-100'
+                                    }`}>
+                                        {customer.stats.trustTier}
+                                    </span>
+                                </div>
+                                {customer.stats.orderCount >= 2 && (
+                                    <div className="space-y-1">
+                                        <div className="flex justify-between text-[11px] font-medium text-muted-foreground">
+                                            <span>Score: {customer.stats.trustScore}%</span>
+                                            <span>{customer.stats.deliveredOrders} of {customer.stats.orderCount} delivered</span>
+                                        </div>
+                                        <div className="w-full bg-muted h-2 rounded-full overflow-hidden">
+                                            <div 
+                                                className={`h-full rounded-full transition-all duration-500 ${
+                                                    customer.stats.trustTierColor === 'green' ? 'bg-emerald-500' :
+                                                    customer.stats.trustTierColor === 'yellow' ? 'bg-amber-500' :
+                                                    'bg-rose-500'
+                                                }`}
+                                                style={{ width: `${customer.stats.trustScore}%` }}
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+                                <div className="grid grid-cols-2 gap-4 pt-2 border-t border-border text-[12px]">
+                                    <div>
+                                        <p className="text-muted-foreground font-medium">Placed</p>
+                                        <p className="font-bold mt-0.5">{customer.stats.orderCount}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-muted-foreground font-medium">Delivered</p>
+                                        <p className="font-bold mt-0.5 text-emerald-600">{customer.stats.deliveredOrders || 0}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-muted-foreground font-medium">Cancelled</p>
+                                        <p className="font-bold mt-0.5 text-rose-600">{customer.stats.cancelledOrders || 0}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-muted-foreground font-medium">Delivery Rate</p>
+                                        <p className="font-bold mt-0.5">{customer.stats.deliveryRate || 0}%</p>
+                                    </div>
+                                </div>
+                                {customer.stats.lastOrderDate && (
+                                    <div className="pt-2 text-[11px] text-muted-foreground">
+                                        Last Order: {new Date(customer.stats.lastOrderDate).toLocaleDateString()}
+                                    </div>
+                                )}
+                                {customer.stats.deliveryPartnerStats && (
+                                    <div className="pt-4 mt-4 border-t border-border space-y-3">
+                                        <div className="flex items-center justify-between">
+                                            <h4 className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground">Courier Stats (Bangladesh)</h4>
+                                            {customer.stats.deliveryPartnerStats.isMock && (
+                                                <span className="text-[9px] font-bold text-amber-600 px-1 py-0.2 bg-amber-50 rounded border border-amber-100">Sandbox</span>
+                                            )}
+                                        </div>
+                                        <div className="flex justify-between items-center text-[12px]">
+                                            <span className="text-muted-foreground">Courier Trust</span>
+                                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
+                                                customer.stats.deliveryPartnerStats.trustTierColor === 'green' ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' :
+                                                customer.stats.deliveryPartnerStats.trustTierColor === 'yellow' ? 'bg-amber-50 text-amber-600 border border-amber-100' :
+                                                customer.stats.deliveryPartnerStats.trustTierColor === 'red' ? 'bg-rose-50 text-rose-600 border border-rose-100' :
+                                                'bg-zinc-50 text-zinc-600 border border-zinc-100'
+                                            }`}>
+                                                {customer.stats.deliveryPartnerStats.trustTier}
+                                            </span>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4 pt-2 border-t border-border/50 text-[12px]">
+                                            <div>
+                                                <p className="text-muted-foreground font-medium">Total Parcels</p>
+                                                <p className="font-bold mt-0.5">{customer.stats.deliveryPartnerStats.totalOrders}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-muted-foreground font-medium">Delivered</p>
+                                                <p className="font-bold mt-0.5 text-emerald-600">{customer.stats.deliveryPartnerStats.deliveredOrders}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-muted-foreground font-medium">Returned</p>
+                                                <p className="font-bold mt-0.5 text-rose-600">{customer.stats.deliveryPartnerStats.cancelledOrders}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-muted-foreground font-medium">Success Rate</p>
+                                                <p className="font-bold mt-0.5">{customer.stats.deliveryPartnerStats.deliveryRate}%</p>
+                                            </div>
+                                        </div>
+                                        {customer.stats.deliveryPartnerStats.fraudReports > 0 && (
+                                            <div className="flex justify-between items-center text-[12px] bg-rose-50 text-rose-600 p-2 rounded border border-rose-100 dark:bg-rose-950/20 mt-1">
+                                                <span>Fraud Flags:</span>
+                                                <span className="font-bold">{customer.stats.deliveryPartnerStats.fraudReports}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+
                     {/* General Info */}
                     <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
                         <h2 className="text-sm font-semibold mb-6 flex items-center gap-2">

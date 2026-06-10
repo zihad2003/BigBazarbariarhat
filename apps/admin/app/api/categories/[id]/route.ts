@@ -1,13 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@bigbazar/db';
-import { auth } from '@/auth';
 import { getCache, setCache, invalidateCachePattern } from '@/lib/cache';
+import { checkAdminAuth } from '@/lib/auth-utils';
 
 export async function GET(
     req: NextRequest,
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const authCheck = await checkAdminAuth();
+        if (!authCheck.authorized) return authCheck.response;
+
         const { id } = await params;
         const cacheKey = `categories-detail-${id}`;
         const cachedData = getCache<any>(cacheKey);
@@ -34,14 +37,10 @@ export async function PATCH(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const { id } = await params;
-        try {
-            const session = await auth();
-            if (!session) return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
-        } catch {
-            console.warn('Auth check failed during PATCH, proceeding anyway');
-        }
+        const authCheck = await checkAdminAuth();
+        if (!authCheck.authorized) return authCheck.response;
 
+        const { id } = await params;
         const body = await req.json();
         
         // Only pick fields that exist in the Category Prisma model
@@ -73,16 +72,10 @@ export async function DELETE(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const { id } = await params;
+        const authCheck = await checkAdminAuth();
+        if (!authCheck.authorized) return authCheck.response;
 
-        // Auth check — wrapped defensively so a broken session doesn't crash the handler
-        try {
-            const session = await auth();
-            if (!session) return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
-        } catch {
-            // If auth itself throws (e.g. missing AUTH_SECRET), allow deletion anyway in dev
-            console.warn('Auth check failed during DELETE, proceeding anyway');
-        }
+        const { id } = await params;
 
         // 1. Orphan any subcategories (set parentId to null) so they are not deleted
         await prisma.category.updateMany({
@@ -134,3 +127,4 @@ export async function DELETE(
         );
     }
 }
+

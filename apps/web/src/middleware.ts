@@ -27,8 +27,14 @@ export default auth((req) => {
   
   // Admin pages are handled by their own middleware or layout usually, 
   // but if we handle them here:
-  if (isAdminPage && !isLoggedIn) {
-    return NextResponse.redirect(new URL(`/login?callbackUrl=${encodeURIComponent(req.nextUrl.pathname)}`, req.nextUrl));
+  if (isAdminPage) {
+    if (!isLoggedIn) {
+      return NextResponse.redirect(new URL(`/login?callbackUrl=${encodeURIComponent(req.nextUrl.pathname)}`, req.nextUrl));
+    }
+    const role = (req.auth as any)?.user?.role;
+    if (role !== 'ADMIN' && role !== 'SUPER_ADMIN') {
+      return NextResponse.redirect(new URL('/', req.nextUrl));
+    }
   }
 
   return NextResponse.next();

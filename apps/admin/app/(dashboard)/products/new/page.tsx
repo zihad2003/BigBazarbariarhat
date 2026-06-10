@@ -19,17 +19,7 @@ import {
     AlertCircle
 } from 'lucide-react';
 
-/* ──────────────────── Types ──────────────────── */
-
 interface Category { id: string; name: string; }
-interface Variant {
-    id: string;
-    size: string;
-    color: string;
-    sku: string;
-    stock: number;
-    price: number;
-}
 
 /* ──────────────────── Page ──────────────────── */
 
@@ -46,7 +36,13 @@ export default function NewProductPage() {
     const [category, setCategory] = useState('');
     const [description, setDescription] = useState('');
     const [instagramReelUrl, setInstagramReelUrl] = useState('');
-    const [variants, setVariants] = useState<Variant[]>([]);
+    
+    // Structured clothing variant states
+    const [structuredSizes, setStructuredSizes] = useState<string[]>(['S', 'M', 'L', 'XL', 'XXL']);
+    const [newSizeInput, setNewSizeInput] = useState('');
+    const [structuredColors, setStructuredColors] = useState<{ name: string, hex: string, stock: number }[]>([]);
+    const [fabric, setFabric] = useState('');
+    const [care, setCare] = useState('');
 
     // Flags
     const [featured, setFeatured] = useState(false);
@@ -55,6 +51,7 @@ export default function NewProductPage() {
     const [isNew, setIsNew] = useState(false);
     const [isActive, setIsActive] = useState(true);
 
+    const [uploading, setUploading] = useState(false);
     const [categories, setCategories] = useState<Category[]>([]);
 
     useEffect(() => {
@@ -88,7 +85,12 @@ export default function NewProductPage() {
                 stock,
                 categoryId: category,
                 instagramReelUrl,
-                variants,
+                variants: {
+                    sizes: structuredSizes,
+                    colors: structuredColors,
+                    fabric,
+                    care
+                },
                 featured,
                 isSale,
                 isHot,
@@ -117,25 +119,27 @@ export default function NewProductPage() {
         }
     };
 
-    const updateVariant = (id: string, key: keyof Variant, value: any) => {
-        setVariants(variants.map(v => 
-            v.id === id 
-                ? { ...v, [key]: key === 'stock' || key === 'price' ? parseFloat(value) || 0 : value } 
-                : v
-        ));
+    const handleUpload = async (file: File) => {
+        setUploading(true);
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            const res = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await res.json();
+            if (result.success) {
+                setImagePreview(result.url);
+            }
+        } catch (error) {
+            console.error('Failed to upload image:', error);
+        } finally {
+            setUploading(false);
+        }
     };
 
-    const addVariant = () => {
-        const newVariant: Variant = {
-            id: Math.random().toString(36).substr(2, 9),
-            size: '',
-            color: '',
-            sku: '',
-            stock: 0,
-            price: 0
-        };
-        setVariants([...variants, newVariant]);
-    };
+
 
     return (
         <div className="max-w-[1000px] mx-auto pb-20">
@@ -156,11 +160,11 @@ export default function NewProductPage() {
                     </button>
                     <button
                         onClick={handleSave}
-                        disabled={loading}
+                        disabled={loading || uploading}
                         className="px-6 py-2 bg-primary text-primary-foreground rounded-lg text-[13px] font-semibold hover:bg-primary/90 transition flex items-center gap-2"
                     >
-                        {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-                        Save Product
+                        {loading || uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+                        {uploading ? 'Uploading...' : (loading ? 'Saving...' : 'Save Product')}
                     </button>
                 </div>
             </div>
@@ -237,77 +241,137 @@ export default function NewProductPage() {
                         </div>
                     </div>
 
-                    {/* Variants */}
-                    <div className="bg-card border border-border rounded-xl p-6">
-                        <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-sm font-semibold flex items-center gap-2">
+                    {/* Clothing Variants & Specifications */}
+                    <div className="bg-card border border-border rounded-xl p-6 space-y-6">
+                        <div>
+                            <h2 className="text-sm font-semibold mb-4 flex items-center gap-2">
                                 <LayoutGrid className="w-4 h-4 text-primary" />
-                                Product Variants
+                                Sizes (সাইজ)
                             </h2>
-                            <button
-                                onClick={addVariant}
-                                className="text-[12px] font-semibold text-primary hover:underline flex items-center gap-1"
-                            >
-                                <Plus className="w-3 h-3" />
-                                Add Variant
-                            </button>
-                        </div>
-
-                        {variants.length === 0 ? (
-                            <div className="text-center py-10 border-2 border-dashed border-border rounded-xl">
-                                <p className="text-[13px] text-muted-foreground">No variants added yet (e.g. Sizes or Colors).</p>
-                                <button onClick={addVariant} className="mt-3 text-[12px] font-bold text-primary px-4 py-1.5 bg-primary/5 rounded-full hover:bg-primary/10 transition">
-                                    Add your first variant
-                                </button>
-                            </div>
-                        ) : (
-                            <div className="space-y-3">
-                                {variants.map((v, i) => (
-                                    <div key={v.id} className="grid grid-cols-5 gap-3 p-3 bg-muted/30 rounded-lg group relative">
-                                        <input
-                                            placeholder="Size"
-                                            value={v.size}
-                                            onChange={e => updateVariant(v.id, 'size', e.target.value)}
-                                            className="h-9 px-3 bg-background border border-input rounded-md text-[12px]"
-                                        />
-                                        <input
-                                            placeholder="Color"
-                                            value={v.color}
-                                            onChange={e => updateVariant(v.id, 'color', e.target.value)}
-                                            className="h-9 px-3 bg-background border border-input rounded-md text-[12px]"
-                                        />
-                                        <input
-                                            placeholder="SKU"
-                                            value={v.sku}
-                                            onChange={e => updateVariant(v.id, 'sku', e.target.value)}
-                                            className="h-9 px-3 bg-background border border-input rounded-md text-[12px]"
-                                        />
-                                        <input
-                                            type="number"
-                                            placeholder="Stock"
-                                            value={v.stock === 0 ? '' : v.stock}
-                                            onChange={e => updateVariant(v.id, 'stock', e.target.value)}
-                                            className="h-9 px-3 bg-background border border-input rounded-md text-[12px]"
-                                        />
-                                        <div className="flex items-center gap-2">
-                                            <input
-                                                type="number"
-                                                placeholder="Price"
-                                                value={v.price === 0 ? '' : v.price}
-                                                onChange={e => updateVariant(v.id, 'price', e.target.value)}
-                                                className="flex-1 h-9 px-3 bg-background border border-input rounded-md text-[12px]"
-                                            />
-                                            <button
-                                                onClick={() => setVariants(variants.filter(item => item.id !== v.id))}
-                                                className="p-2 text-destructive hover:bg-destructive/10 rounded-md transition-colors opacity-0 group-hover:opacity-100"
-                                            >
-                                                <Trash2 className="w-3.5 h-3.5" />
-                                            </button>
-                                        </div>
-                                    </div>
+                            <div className="flex flex-wrap gap-2 mb-3">
+                                {structuredSizes.map(size => (
+                                    <span key={size} className="px-3 py-1.5 bg-primary/10 border border-primary/20 text-primary text-xs font-bold rounded-lg flex items-center gap-1.5">
+                                        {size}
+                                        <button 
+                                            type="button" 
+                                            onClick={() => setStructuredSizes(structuredSizes.filter(s => s !== size))}
+                                            className="text-primary hover:text-rose-600 transition-colors"
+                                        >
+                                            &times;
+                                        </button>
+                                    </span>
                                 ))}
                             </div>
-                        )}
+                            <div className="flex gap-2">
+                                <input
+                                    type="text"
+                                    placeholder="Add size (e.g. S, M, L, 38, 40)"
+                                    value={newSizeInput}
+                                    onChange={e => setNewSizeInput(e.target.value)}
+                                    className="flex-1 h-9 px-3 bg-background border border-input rounded-lg text-xs outline-none"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        if (newSizeInput && !structuredSizes.includes(newSizeInput.trim())) {
+                                            setStructuredSizes([...structuredSizes, newSizeInput.trim()]);
+                                            setNewSizeInput('');
+                                        }
+                                    }}
+                                    className="px-3 py-1 bg-primary text-primary-foreground rounded-lg text-xs font-bold hover:bg-primary/90 transition-colors"
+                                >
+                                    Add Size
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="border-t border-border pt-6">
+                            <div className="flex items-center justify-between mb-4">
+                                <h2 className="text-sm font-semibold flex items-center gap-2">
+                                    <LayoutGrid className="w-4 h-4 text-primary" />
+                                    Colors & Stock (রঙ ও স্টক)
+                                </h2>
+                                <button
+                                    type="button"
+                                    onClick={() => setStructuredColors([...structuredColors, { name: '', hex: '#000000', stock: 0 }])}
+                                    className="px-3 py-1 bg-primary/5 text-primary rounded-lg text-xs font-bold hover:bg-primary/10 transition-colors"
+                                >
+                                    + Add Color
+                                </button>
+                            </div>
+                            {structuredColors.length === 0 ? (
+                                <p className="text-[12px] text-muted-foreground italic text-center py-4">No colors added yet.</p>
+                            ) : (
+                                <div className="space-y-3">
+                                    {structuredColors.map((color, idx) => (
+                                        <div key={idx} className="flex gap-3 items-center bg-muted/30 p-2.5 rounded-lg">
+                                            <input
+                                                type="text"
+                                                placeholder="Color Name (e.g. সাদা)"
+                                                value={color.name}
+                                                onChange={e => {
+                                                    const updated = [...structuredColors];
+                                                    updated[idx].name = e.target.value;
+                                                    setStructuredColors(updated);
+                                                }}
+                                                className="flex-1 h-9 px-3 bg-background border border-input rounded-lg text-xs"
+                                            />
+                                            <input
+                                                type="color"
+                                                value={color.hex}
+                                                onChange={e => {
+                                                    const updated = [...structuredColors];
+                                                    updated[idx].hex = e.target.value;
+                                                    setStructuredColors(updated);
+                                                }}
+                                                className="w-10 h-9 p-0 bg-transparent border-0 cursor-pointer"
+                                            />
+                                            <input
+                                                type="number"
+                                                placeholder="Stock"
+                                                value={color.stock}
+                                                onChange={e => {
+                                                    const updated = [...structuredColors];
+                                                    updated[idx].stock = parseInt(e.target.value) || 0;
+                                                    setStructuredColors(updated);
+                                                }}
+                                                className="w-20 h-9 px-3 bg-background border border-input rounded-lg text-xs"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => setStructuredColors(structuredColors.filter((_, i) => i !== idx))}
+                                                className="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
+                                            >
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="border-t border-border pt-6 grid grid-cols-2 gap-4">
+                            <div className="space-y-1.5">
+                                <label className="text-[12px] font-medium text-muted-foreground">Fabric (কাপড়)</label>
+                                <input
+                                    type="text"
+                                    placeholder="e.g. Cotton, Linen"
+                                    value={fabric}
+                                    onChange={e => setFabric(e.target.value)}
+                                    className="w-full h-11 px-4 bg-background border border-input rounded-lg text-[13px] outline-none"
+                                />
+                            </div>
+                            <div className="space-y-1.5">
+                                <label className="text-[12px] font-medium text-muted-foreground">Care Instructions (যত্ন)</label>
+                                <input
+                                    type="text"
+                                    placeholder="e.g. Hand wash, Machine wash"
+                                    value={care}
+                                    onChange={e => setCare(e.target.value)}
+                                    className="w-full h-11 px-4 bg-background border border-input rounded-lg text-[13px] outline-none"
+                                />
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -337,11 +401,7 @@ export default function NewProductPage() {
                                     accept="image/*"
                                     onChange={e => {
                                         const file = e.target.files?.[0];
-                                        if (file) {
-                                            const reader = new FileReader();
-                                            reader.onloadend = () => setImagePreview(reader.result as string);
-                                            reader.readAsDataURL(file);
-                                        }
+                                        if (file) handleUpload(file);
                                     }}
                                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                                 />

@@ -13,7 +13,7 @@ export async function GET() {
                     storeDescription: 'Premium Fashion & Essentials',
                     supportEmail: 'infobigbazar01@gmail.com',
                     currency: 'BDT',
-                    defaultLanguage: 'en'
+                    defaultLanguage: 'bn'
                 }
             });
         }

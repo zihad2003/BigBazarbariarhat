@@ -1,9 +1,13 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@bigbazar/db';
 import { getCache, setCache } from '@/lib/cache';
+import { checkAdminAuth } from '@/lib/auth-utils';
 
 export async function GET(req: Request) {
     try {
+        const authCheck = await checkAdminAuth();
+        if (!authCheck.authorized) return authCheck.response;
+
         const { searchParams } = new URL(req.url);
         const page = parseInt(searchParams.get('page') || '1');
         const limit = parseInt(searchParams.get('limit') || '10');
@@ -21,8 +25,9 @@ export async function GET(req: Request) {
             where: {
                 role: 'USER',
                 OR: [
-                    { name: { contains: query } },
-                    { email: { contains: query } },
+                    { name: { startsWith: query } },
+                    { email: { startsWith: query } },
+                    { phone: { startsWith: query } },
                 ],
             },
             include: {
@@ -45,6 +50,7 @@ export async function GET(req: Request) {
                 id: user.id,
                 name: user.name || 'Anonymous',
                 email: user.email,
+                phone: user.phone || '',
                 orderCount: user._count.orders,
                 totalSpent: totalSpent,
                 createdAt: user.createdAt,
@@ -55,8 +61,9 @@ export async function GET(req: Request) {
             where: {
                 role: 'USER',
                 OR: [
-                    { name: { contains: query } },
-                    { email: { contains: query } },
+                    { name: { startsWith: query } },
+                    { email: { startsWith: query } },
+                    { phone: { startsWith: query } },
                 ],
             },
         });

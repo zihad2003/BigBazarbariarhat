@@ -1,12 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@bigbazar/db';
 import { getCache, setCache, invalidateCachePattern } from '@/lib/cache';
+import { checkAdminAuth } from '@/lib/auth-utils';
+import { checkSteadfastCustomer } from '@/lib/steadfast';
 
 export async function GET(
     req: NextRequest,
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const authCheck = await checkAdminAuth();
+        if (!authCheck.authorized) return authCheck.response;
+
         const { id } = await params;
         const cacheKey = `orders-detail-${id}`;
         const cachedData = getCache<any>(cacheKey);
@@ -64,6 +69,63 @@ export async function GET(
             ? `${shipping.address}, ${shipping.upazila || ''}, ${shipping.district || ''}, ${shipping.division || ''}`
             : 'N/A';
 
+        // Calculate trust stats by customerPhone
+        let customerStats: any = null;
+        const lookupPhone = order.customerPhone || shipping?.phone;
+        
+        if (lookupPhone) {
+            const customerOrders = await prisma.order.findMany({
+                where: {
+                    OR: [
+                        { customerPhone: lookupPhone },
+                        ...(order.userId ? [{ userId: order.userId }] : [])
+                    ]
+                },
+                select: {
+                    status: true,
+                    totalAmount: true
+                }
+            });
+
+            const total = customerOrders.length;
+            const delivered = customerOrders.filter(o => o.status === 'DELIVERED').length;
+            const cancelled = customerOrders.filter(o => o.status === 'CANCELLED').length;
+            const totalSpent = customerOrders.reduce((sum, o) => sum + Number(o.totalAmount), 0);
+            const deliveryRate = total > 0 ? (delivered / total) * 100 : 0;
+
+            let score = 0;
+            let tier = 'New customer — no history';
+            let tierColor = 'gray';
+
+            if (total >= 2) {
+                score = Math.round((delivered / total) * 100);
+                if (score >= 80) {
+                    tier = 'Trusted';
+                    tierColor = 'green';
+                } else if (score >= 50) {
+                    tier = 'Moderate risk';
+                    tierColor = 'yellow';
+                } else {
+                    tier = 'High risk';
+                    tierColor = 'red';
+                }
+            }
+
+            const partnerStats = await checkSteadfastCustomer(lookupPhone);
+
+            customerStats = {
+                totalOrders: total,
+                deliveredOrders: delivered,
+                cancelledOrders: cancelled,
+                totalSpent,
+                deliveryRate: Math.round(deliveryRate),
+                trustScore: score,
+                trustTier: tier,
+                trustTierColor: tierColor,
+                deliveryPartnerStats: partnerStats
+            };
+        }
+
         const mappedOrder = {
             ...order,
             items: itemsMapped,
@@ -75,7 +137,9 @@ export async function GET(
             guestEmail: shipping?.email || order.user?.email || 'guest@bigbazar.com',
             guestPhone: shipping?.phone || 'N/A',
             guestAddress: guestAddress,
-            shippingAddress: null // Trigger guestAddress rendering in UI
+            shippingAddress: null, // Trigger guestAddress rendering in UI
+            adminNotes: order.adminNote || '', // Map database adminNote -> adminNotes
+            customerStats
         };
 
         setCache(cacheKey, mappedOrder, 10 * 1000); // Cache for 10 seconds
@@ -92,15 +156,21 @@ export async function PATCH(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const authCheck = await checkAdminAuth();
+        if (!authCheck.authorized) return authCheck.response;
+
         const { id } = await params;
         const body = await req.json();
-        const { status, paymentStatus } = body;
+        const { status, paymentStatus, adminNotes, adminNote } = body;
+
+        const noteToSave = adminNotes !== undefined ? adminNotes : (adminNote !== undefined ? adminNote : undefined);
 
         const updatedOrder = await prisma.order.update({
             where: { id },
             data: {
                 status: status || undefined,
                 paymentStatus: paymentStatus || undefined,
+                adminNote: noteToSave !== undefined ? noteToSave : undefined,
             },
             include: {
                 user: { select: { name: true, email: true } },
@@ -146,6 +216,63 @@ export async function PATCH(
             ? `${shipping.address}, ${shipping.upazila || ''}, ${shipping.district || ''}, ${shipping.division || ''}`
             : 'N/A';
 
+        // Calculate trust stats by customerPhone
+        let customerStats: any = null;
+        const lookupPhone = updatedOrder.customerPhone || shipping?.phone;
+        
+        if (lookupPhone) {
+            const customerOrders = await prisma.order.findMany({
+                where: {
+                    OR: [
+                        { customerPhone: lookupPhone },
+                        ...(updatedOrder.userId ? [{ userId: updatedOrder.userId }] : [])
+                    ]
+                },
+                select: {
+                    status: true,
+                    totalAmount: true
+                }
+            });
+
+            const total = customerOrders.length;
+            const delivered = customerOrders.filter(o => o.status === 'DELIVERED').length;
+            const cancelled = customerOrders.filter(o => o.status === 'CANCELLED').length;
+            const totalSpent = customerOrders.reduce((sum, o) => sum + Number(o.totalAmount), 0);
+            const deliveryRate = total > 0 ? (delivered / total) * 100 : 0;
+
+            let score = 0;
+            let tier = 'New customer — no history';
+            let tierColor = 'gray';
+
+            if (total >= 2) {
+                score = Math.round((delivered / total) * 100);
+                if (score >= 80) {
+                    tier = 'Trusted';
+                    tierColor = 'green';
+                } else if (score >= 50) {
+                    tier = 'Moderate risk';
+                    tierColor = 'yellow';
+                } else {
+                    tier = 'High risk';
+                    tierColor = 'red';
+                }
+            }
+
+            const partnerStats = await checkSteadfastCustomer(lookupPhone);
+
+            customerStats = {
+                totalOrders: total,
+                deliveredOrders: delivered,
+                cancelledOrders: cancelled,
+                totalSpent,
+                deliveryRate: Math.round(deliveryRate),
+                trustScore: score,
+                trustTier: tier,
+                trustTierColor: tierColor,
+                deliveryPartnerStats: partnerStats
+            };
+        }
+
         const mappedOrder = {
             ...updatedOrder,
             items: itemsMapped,
@@ -157,7 +284,9 @@ export async function PATCH(
             guestEmail: shipping?.email || updatedOrder.user?.email || 'guest@bigbazar.com',
             guestPhone: shipping?.phone || 'N/A',
             guestAddress: guestAddress,
-            shippingAddress: null
+            shippingAddress: null,
+            adminNotes: updatedOrder.adminNote || '', // Map database adminNote -> adminNotes
+            customerStats
         };
 
         // Invalidate order related caches, analytics, and dashboard-stats
@@ -171,3 +300,4 @@ export async function PATCH(
         return NextResponse.json({ success: false, message: 'Failed to update order detail' }, { status: 500 });
     }
 }
+

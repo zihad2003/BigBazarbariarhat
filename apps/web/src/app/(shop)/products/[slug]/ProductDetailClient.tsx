@@ -86,11 +86,35 @@ export default function ProductDetailClient({
     const { openCart, addNotification } = useUIStore();
 
     const sizes = useMemo(() => {
-        return product?.variants?.filter((v: any) => !v.hex) || [];
+        if (!product?.variants) return [];
+        // Check if new structured variants object
+        if (typeof product.variants === 'object' && !Array.isArray(product.variants)) {
+            if (Array.isArray(product.variants.sizes)) {
+                return product.variants.sizes.map((s: string) => ({ name: s }));
+            }
+            return [];
+        }
+        // Legacy flat array
+        if (Array.isArray(product.variants)) {
+            return product.variants.filter((v: any) => !v.hex) || [];
+        }
+        return [];
     }, [product]);
 
     const colors = useMemo(() => {
-        return product?.variants?.filter((v: any) => v.hex) || [];
+        if (!product?.variants) return [];
+        // Check if new structured variants object
+        if (typeof product.variants === 'object' && !Array.isArray(product.variants)) {
+            if (Array.isArray(product.variants.colors)) {
+                return product.variants.colors.map((c: any) => ({ name: c.name, hex: c.hex }));
+            }
+            return [];
+        }
+        // Legacy flat array
+        if (Array.isArray(product.variants)) {
+            return product.variants.filter((v: any) => v.hex) || [];
+        }
+        return [];
     }, [product]);
 
     useEffect(() => {
@@ -509,16 +533,37 @@ export default function ProductDetailClient({
 
                                 {activeTab === 'specifications' && (
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        {/* Render attributes if they exist */}
                                         {product.attributes?.map((attr: any) => (
                                             <div key={attr.key} className="flex flex-col gap-1.5 p-5 bg-gray-50 rounded-xl border border-gray-100 hover:bg-white hover:shadow-md transition-all duration-300">
                                                 <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{attr.key}</span>
                                                 <span className="text-sm font-bold text-gray-900">{attr.value}</span>
                                             </div>
                                         ))}
-                                        {(!product.attributes || product.attributes.length === 0) && (
+
+                                        {/* Render structured clothing variants info (Fabric & Care) */}
+                                        {product.variants && typeof product.variants === 'object' && !Array.isArray(product.variants) && (
+                                            <>
+                                                {product.variants.fabric && (
+                                                    <div className="flex flex-col gap-1.5 p-5 bg-gray-50 rounded-xl border border-gray-100 hover:bg-white hover:shadow-md transition-all duration-300">
+                                                        <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Fabric / উপাদান</span>
+                                                        <span className="text-sm font-bold text-gray-900">{product.variants.fabric}</span>
+                                                    </div>
+                                                )}
+                                                {product.variants.care && (
+                                                    <div className="flex flex-col gap-1.5 p-5 bg-gray-50 rounded-xl border border-gray-100 hover:bg-white hover:shadow-md transition-all duration-300">
+                                                        <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Care Instructions / যত্ন নির্দেশাবলী</span>
+                                                        <span className="text-sm font-bold text-gray-900">{product.variants.care}</span>
+                                                    </div>
+                                                )}
+                                            </>
+                                        )}
+
+                                        {/* Default empty state */}
+                                        {(!product.attributes || product.attributes.length === 0) && (!product.variants || Array.isArray(product.variants) || (!product.variants.fabric && !product.variants.care)) && (
                                             <div className="col-span-full py-16 text-center bg-gray-50 rounded-2xl border border-dashed border-gray-200">
                                                 <ClipboardList className="h-8 w-8 text-gray-200 mx-auto mb-3" />
-                                                <p className="text-gray-400 font-medium text-sm">No specifications available</p>
+                                                <p className="text-[13px] text-gray-400">No specifications listed for this product.</p>
                                             </div>
                                         )}
                                     </div>

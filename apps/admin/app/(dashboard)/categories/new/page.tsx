@@ -16,6 +16,7 @@ function NewCategoryPageContent() {
     const searchParams = useSearchParams();
     const queryParentId = searchParams.get('parentId');
     const [loading, setLoading] = useState(false);
+    const [uploading, setUploading] = useState(false);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [parentCategories, setParentCategories] = useState<any[]>([]);
 
@@ -80,6 +81,26 @@ function NewCategoryPageContent() {
         setSlug(s);
     };
 
+    const handleUpload = async (file: File) => {
+        setUploading(true);
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            const res = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await res.json();
+            if (result.success) {
+                setImagePreview(result.url);
+            }
+        } catch (error) {
+            console.error('Failed to upload image:', error);
+        } finally {
+            setUploading(false);
+        }
+    };
+
     return (
         <div className="max-w-[800px] mx-auto pb-20">
             {/* Header */}
@@ -99,11 +120,11 @@ function NewCategoryPageContent() {
                     </button>
                     <button
                         onClick={handleSave}
-                        disabled={loading}
+                        disabled={loading || uploading}
                         className="px-6 py-2 bg-primary text-primary-foreground rounded-lg text-[13px] font-semibold hover:bg-primary/90 transition flex items-center gap-2"
                     >
-                        {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-                        Save Category
+                        {loading || uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+                        {uploading ? 'Uploading...' : 'Save Category'}
                     </button>
                 </div>
             </div>
@@ -187,11 +208,7 @@ function NewCategoryPageContent() {
                                 accept="image/*"
                                 onChange={e => {
                                     const file = e.target.files?.[0];
-                                    if (file) {
-                                        const reader = new FileReader();
-                                        reader.onloadend = () => setImagePreview(reader.result as string);
-                                        reader.readAsDataURL(file);
-                                    }
+                                    if (file) handleUpload(file);
                                 }}
                                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                             />
@@ -206,11 +223,7 @@ function NewCategoryPageContent() {
                                     accept="image/*"
                                     onChange={e => {
                                         const file = e.target.files?.[0];
-                                        if (file) {
-                                            const reader = new FileReader();
-                                            reader.onloadend = () => setImagePreview(reader.result as string);
-                                            reader.readAsDataURL(file);
-                                        }
+                                        if (file) handleUpload(file);
                                     }}
                                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                                 />
@@ -220,6 +233,7 @@ function NewCategoryPageContent() {
                 </div>
             </div>
         </div>
+
     );
 }
 

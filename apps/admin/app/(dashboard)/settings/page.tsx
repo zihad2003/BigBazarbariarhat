@@ -150,6 +150,7 @@ export default function SettingsPage() {
         { id: 'SECURITY', label: 'Security', icon: Shield, desc: 'Login and data protection' },
         { id: 'APPEARANCE', label: 'Theme', icon: Palette, desc: 'Visual look and feel' },
         { id: 'LANGUAGE', label: 'Language', icon: Languages, desc: 'Language and region' },
+        { id: 'COURIER', label: 'Courier', icon: Truck, desc: 'Steadfast Courier setup' },
     ];
 
     return (
@@ -636,6 +637,56 @@ export default function SettingsPage() {
                                             <p className="text-[10px] uppercase font-bold text-primary-foreground/60 mb-0.5">Supported</p>
                                             <p className="text-[13px] font-bold">EN, BN</p>
                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {activeTab === 'COURIER' && (
+                        <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-300">
+                            <div className="bg-card border border-border rounded-xl p-6">
+                                <h2 className="text-sm font-semibold mb-6 flex items-center gap-2">
+                                    <Truck className="w-4 h-4 text-primary" />
+                                    Steadfast Courier Integration
+                                </h2>
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between p-4 bg-muted/20 border border-border rounded-xl">
+                                        <div>
+                                            <h4 className="text-[13px] font-bold text-foreground">Enable Steadfast Courier Check</h4>
+                                            <p className="text-[11px] text-muted-foreground">Automatically query recipient's delivery history from Steadfast API on orders.</p>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => setSettings({ ...settings, enable_steadfast: settings.enable_steadfast !== true })}
+                                            className={`w-12 h-6 rounded-full relative transition-colors duration-200 focus:outline-none ${settings.enable_steadfast === true ? 'bg-primary' : 'bg-muted-foreground/30'}`}
+                                        >
+                                            <span className={`absolute top-1 left-1 bg-white w-4 h-4 rounded-full transition-transform duration-200 ${settings.enable_steadfast === true ? 'translate-x-6' : 'translate-x-0'}`} />
+                                        </button>
+                                    </div>
+                                    
+                                    <div className="space-y-1.5">
+                                        <label className="text-[12px] font-medium text-muted-foreground">Steadfast API Key</label>
+                                        <input
+                                            type="password"
+                                            className="w-full h-11 px-4 bg-background border border-input rounded-lg text-[13px] outline-none focus:ring-2 focus:ring-ring transition"
+                                            value={settings.steadfast_api_key || ''}
+                                            onChange={e => setSettings({ ...settings, steadfast_api_key: e.target.value })}
+                                            placeholder="Enter Steadfast API Key"
+                                            disabled={settings.enable_steadfast !== true}
+                                        />
+                                    </div>
+
+                                    <div className="space-y-1.5">
+                                        <label className="text-[12px] font-medium text-muted-foreground">Steadfast Secret Key</label>
+                                        <input
+                                            type="password"
+                                            className="w-full h-11 px-4 bg-background border border-input rounded-lg text-[13px] outline-none focus:ring-2 focus:ring-ring transition"
+                                            value={settings.steadfast_secret_key || ''}
+                                            onChange={e => setSettings({ ...settings, steadfast_secret_key: e.target.value })}
+                                            placeholder="Enter Steadfast Secret Key"
+                                            disabled={settings.enable_steadfast !== true}
+                                        />
                                     </div>
                                 </div>
                             </div>

@@ -1,36 +1,20 @@
-'use client';
-
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
+import { prisma } from '@bigbazar/db';
+import { startOfDay, subDays, format } from 'date-fns';
 import {
     DollarSign, ShoppingCart, Package, Users,
-    TrendingUp, TrendingDown, AlertTriangle, ArrowUpRight,
+    ArrowUpRight, AlertTriangle
 } from 'lucide-react';
-import dynamic from 'next/dynamic';
-
-const DashboardCharts = dynamic(() => import('@/components/dashboard/dashboard-charts'), {
-    ssr: false,
-    loading: () => (
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-            <div className="lg:col-span-3 bg-card border border-border rounded-xl p-5 h-[340px] animate-pulse flex items-center justify-center">
-                <p className="text-[12px] text-muted-foreground">Loading sales performance...</p>
-            </div>
-            <div className="lg:col-span-2 bg-card border border-border rounded-xl p-5 h-[340px] animate-pulse flex items-center justify-center">
-                <p className="text-[12px] text-muted-foreground">Loading order volume...</p>
-            </div>
-        </div>
-    )
-});
+import DashboardChartsWrapper from '@/components/dashboard/dashboard-charts-wrapper';
 
 /* ──────────────────── Styles ──────────────────── */
 
 const statusStyle: Record<string, string> = {
-    Pending: 'bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400',
-    Processing: 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400',
-    Shipped: 'bg-violet-50 text-violet-600 dark:bg-violet-900/20 dark:text-violet-400',
-    Delivered: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400',
+    PENDING: 'bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400 border border-amber-100',
+    PROCESSING: 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 border border-blue-100',
+    SHIPPED: 'bg-violet-50 text-violet-600 dark:bg-violet-900/20 dark:text-violet-400 border border-violet-100',
+    DELIVERED: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400 border border-emerald-100',
+    CANCELLED: 'bg-rose-50 text-rose-600 dark:bg-rose-900/20 dark:text-rose-400 border border-rose-100',
 };
 
 /* ──────────────────── Stat Card ──────────────────── */
@@ -50,10 +34,7 @@ function Stat({ label, value, change, trend, icon: Icon, accent }: {
             <div>
                 <p className="text-2xl font-semibold text-foreground tracking-tight">{value}</p>
                 <div className="flex items-center gap-1.5 mt-1.5">
-                    <span className={`inline-flex items-center gap-0.5 text-[11px] font-semibold ${trend === 'up' ? 'text-emerald-600 dark:text-emerald-400' : trend === 'down' ? 'text-red-500' : 'text-muted-foreground'
-                        }`}>
-                        {trend === 'up' && <TrendingUp className="w-3 h-3" />}
-                        {trend === 'down' && <TrendingDown className="w-3 h-3" />}
+                    <span className="inline-flex items-center gap-0.5 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
                         {change}
                     </span>
                     <span className="text-[11px] text-muted-foreground">vs last month</span>
@@ -65,38 +46,86 @@ function Stat({ label, value, change, trend, icon: Icon, accent }: {
 
 /* ──────────────────── Page ──────────────────── */
 
-export default function DashboardPage() {
-    const router = useRouter();
-    
-    const { data, isLoading } = useQuery({
-        queryKey: ['dashboard-stats'],
-        queryFn: async () => {
-            const res = await fetch('/api/dashboard/stats');
-            const json = await res.json();
-            if (!json.success) throw new Error('Failed to fetch dashboard stats');
-            return json.data;
+export default async function DashboardPage() {
+    // Fetch dashboard stats directly from DB
+    const [totalSales, totalOrders, totalProducts, totalCustomers] = await Promise.all([
+        prisma.order.aggregate({
+            _sum: { totalAmount: true },
+            where: { status: 'DELIVERED' }
+        }),
+        prisma.order.count(),
+        prisma.product.count(),
+        prisma.user.count({ where: { role: 'USER' } })
+    ]);
+
+    // Fetch recent orders
+    const recentOrders = await prisma.order.findMany({
+        take: 5,
+        orderBy: { createdAt: 'desc' },
+        include: { user: { select: { name: true } } }
+    });
+
+    // Fetch low stock items
+    const lowStock = await prisma.product.findMany({
+        where: { stock: { lt: 10 }, isActive: true },
+        take: 4,
+        orderBy: { stock: 'asc' }
+    });
+
+    // Fetch chart data (last 7 days revenue)
+    const last7Days = Array.from({ length: 7 }, (_, i) => subDays(new Date(), i)).reverse();
+    const startDate = startOfDay(last7Days[0]);
+    const endDate = new Date(startOfDay(last7Days[6]).getTime() + 24 * 60 * 60 * 1000);
+
+    const ordersInLast7Days = await prisma.order.findMany({
+        where: {
+            createdAt: { gte: startDate, lt: endDate },
+            status: 'DELIVERED'
+        },
+        select: {
+            createdAt: true,
+            totalAmount: true
         }
     });
 
-    if (isLoading) {
-        return (
-            <div className="h-[60vh] flex items-center justify-center">
-                <div className="flex flex-col items-center gap-3">
-                    <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
-                    <p className="text-[13px] font-medium text-muted-foreground animate-pulse">Loading real-time stats...</p>
-                </div>
-            </div>
-        );
-    }
+    const chartData = last7Days.map((date) => {
+        const start = startOfDay(date);
+        const end = new Date(start.getTime() + 24 * 60 * 60 * 1000);
 
-    const stats = data?.stats || { sales: 0, orders: 0, products: 0, customers: 0 };
-    const chartData = data?.chartData || [];
-    const recentOrders = data?.recentOrders || [];
-    const lowStock = data?.lowStock || [];
+        const daysOrders = ordersInLast7Days.filter((o) => {
+            const orderDate = new Date(o.createdAt);
+            return orderDate >= start && orderDate < end;
+        });
+
+        const revenue = daysOrders.reduce((sum, o) => sum + Number(o.totalAmount || 0), 0);
+        const orders = daysOrders.length;
+
+        return {
+            day: format(date, 'eee'),
+            revenue,
+            orders
+        };
+    });
+
+    const formattedRecentOrders = recentOrders.map(o => ({
+        id: o.id.slice(-4),
+        fullId: o.id,
+        customer: o.user?.name || (o.shippingAddress && typeof o.shippingAddress === 'object' && (o.shippingAddress as any).name) || 'Guest',
+        amount: Number(o.totalAmount),
+        status: o.status,
+        date: format(new Date(o.createdAt), 'MMM d')
+    }));
+
+    const formattedLowStock = lowStock.map(p => ({
+        name: p.name,
+        sku: p.sku || 'N/A',
+        qty: p.stock
+    }));
+
+    const salesValue = totalSales._sum.totalAmount ? Number(totalSales._sum.totalAmount) : 0;
 
     return (
         <div className="space-y-6 max-w-[1400px]">
-
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div>
@@ -105,27 +134,26 @@ export default function DashboardPage() {
                 </div>
                 <div className="flex gap-2">
                     <button className="px-3.5 py-2 text-[13px] font-medium border border-border rounded-lg hover:bg-muted/60 transition-colors">Download</button>
-                    <button className="px-3.5 py-2 text-[13px] font-medium bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-1.5">
-                        New Order
+                    <Link href="/orders" className="px-3.5 py-2 text-[13px] font-medium bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-1.5">
+                        View Orders
                         <ArrowUpRight className="w-3.5 h-3.5" />
-                    </button>
+                    </Link>
                 </div>
             </div>
 
             {/* KPI Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <Stat label="Sales" value={`৳${stats.sales.toLocaleString()}`} change="+12.4%" trend="up" icon={DollarSign} accent="bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400" />
-                <Stat label="Orders" value={stats.orders.toString()} change="+5.2%" trend="up" icon={ShoppingCart} accent="bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400" />
-                <Stat label="Products" value={stats.products.toString()} change="0%" trend="flat" icon={Package} accent="bg-violet-50 text-violet-600 dark:bg-violet-900/20 dark:text-violet-400" />
-                <Stat label="Customers" value={stats.customers.toString()} change="+8.9%" trend="up" icon={Users} accent="bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400" />
+                <Stat label="Sales" value={`৳${salesValue.toLocaleString()}`} change="+12.4%" trend="up" icon={DollarSign} accent="bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400" />
+                <Stat label="Orders" value={totalOrders.toString()} change="+5.2%" trend="up" icon={ShoppingCart} accent="bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400" />
+                <Stat label="Products" value={totalProducts.toString()} change="0%" trend="flat" icon={Package} accent="bg-violet-50 text-violet-600 dark:bg-violet-900/20 dark:text-violet-400" />
+                <Stat label="Customers" value={totalCustomers.toString()} change="+8.9%" trend="up" icon={Users} accent="bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400" />
             </div>
 
             {/* Charts Row */}
-            <DashboardCharts chartData={chartData} />
+            <DashboardChartsWrapper chartData={chartData} />
 
             {/* Bottom Row */}
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-
                 {/* Recent Orders */}
                 <div className="lg:col-span-3 bg-card border border-border rounded-xl p-5">
                     <div className="flex items-center justify-between mb-4">
@@ -144,17 +172,35 @@ export default function DashboardPage() {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-border">
-                                {recentOrders.length > 0 ? recentOrders.map((o: any) => (
-                                    <tr key={o.id} className="hover:bg-muted/30 transition-colors cursor-pointer" onClick={() => router.push(`/orders/${o.id}`)}>
-                                        <td className="py-3 text-[13px] font-medium text-foreground">#{o.id}</td>
-                                        <td className="py-3 text-[13px] text-foreground">{o.customer}</td>
-                                        <td className="py-3 text-[13px] font-medium text-foreground">৳{o.amount.toLocaleString()}</td>
-                                        <td className="py-3">
-                                            <span className={`inline-block px-2 py-0.5 rounded-md text-[11px] font-semibold ${statusStyle[o.status] || 'bg-slate-100 text-slate-600'}`}>
-                                                {o.status}
-                                            </span>
+                                {formattedRecentOrders.length > 0 ? formattedRecentOrders.map((o: any) => (
+                                    <tr key={o.fullId} className="hover:bg-muted/30 transition-colors group">
+                                        <td className="py-3 text-[13px] font-medium text-foreground">
+                                            <Link href={`/orders/${o.fullId}`} className="block">
+                                                #{o.id}
+                                            </Link>
                                         </td>
-                                        <td className="py-3 text-[13px] text-muted-foreground">{o.date}</td>
+                                        <td className="py-3 text-[13px] text-foreground">
+                                            <Link href={`/orders/${o.fullId}`} className="block">
+                                                {o.customer}
+                                            </Link>
+                                        </td>
+                                        <td className="py-3 text-[13px] font-medium text-foreground">
+                                            <Link href={`/orders/${o.fullId}`} className="block">
+                                                ৳{o.amount.toLocaleString()}
+                                            </Link>
+                                        </td>
+                                        <td className="py-3">
+                                            <Link href={`/orders/${o.fullId}`} className="block">
+                                                <span className={`inline-block px-2 py-0.5 rounded-md text-[11px] font-semibold ${statusStyle[o.status] || 'bg-slate-100 text-slate-600'}`}>
+                                                    {o.status}
+                                                </span>
+                                            </Link>
+                                        </td>
+                                        <td className="py-3 text-[13px] text-muted-foreground">
+                                            <Link href={`/orders/${o.fullId}`} className="block">
+                                                {o.date}
+                                            </Link>
+                                        </td>
                                     </tr>
                                 )) : (
                                     <tr>
@@ -173,7 +219,7 @@ export default function DashboardPage() {
                         <h2 className="text-sm font-semibold text-foreground">Low Stock Alert</h2>
                     </div>
                     <div className="space-y-3">
-                        {lowStock.length > 0 ? lowStock.map((item: any) => (
+                        {formattedLowStock.length > 0 ? formattedLowStock.map((item: any) => (
                             <div key={item.sku} className="flex items-center justify-between p-3 rounded-lg bg-muted/40 hover:bg-muted/60 transition-colors">
                                 <div className="min-w-0 flex-1">
                                     <p className="text-[13px] font-medium text-foreground truncate">{item.name}</p>

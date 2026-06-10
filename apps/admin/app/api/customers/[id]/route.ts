@@ -1,12 +1,17 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@bigbazar/db';
 import { getCache, setCache, invalidateCachePattern } from '@/lib/cache';
+import { checkAdminAuth } from '@/lib/auth-utils';
+import { checkSteadfastCustomer } from '@/lib/steadfast';
 
 export async function GET(
     req: Request,
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const authCheck = await checkAdminAuth();
+        if (!authCheck.authorized) return authCheck.response;
+
         const { id } = await params;
         const cacheKey = `customers-detail-${id}`;
         const cachedData = getCache<any>(cacheKey);
@@ -35,22 +40,72 @@ export async function GET(
             return NextResponse.json({ success: false, error: 'Customer not found' }, { status: 404 });
         }
 
-        // Calculate Stats
-        const allOrders = await prisma.order.findMany({
-            where: { userId: id },
-            select: { totalAmount: true }
+        // Calculate Stats using both userId and phone (for guest order linkage)
+        const orderWhereClause: any = {
+            OR: [
+                { userId: id }
+            ]
+        };
+        if (user.phone) {
+            orderWhereClause.OR.push({ customerPhone: user.phone });
+        }
+
+        const allCustomerOrders = await prisma.order.findMany({
+            where: orderWhereClause,
+            orderBy: { createdAt: 'desc' },
+            select: {
+                id: true,
+                orderNumber: true,
+                status: true,
+                totalAmount: true,
+                createdAt: true
+            }
         });
 
-        const totalSpent = allOrders.reduce((sum, o) => sum + Number(o.totalAmount), 0);
-        const orderCount = allOrders.length;
-        const averageOrderValue = orderCount > 0 ? totalSpent / orderCount : 0;
+        const totalOrders = allCustomerOrders.length;
+        const deliveredOrders = allCustomerOrders.filter(o => o.status === 'DELIVERED').length;
+        const cancelledOrders = allCustomerOrders.filter(o => o.status === 'CANCELLED').length;
+        const totalSpent = allCustomerOrders.reduce((sum, o) => sum + Number(o.totalAmount), 0);
+        const lastOrder = totalOrders > 0 ? allCustomerOrders[0] : null;
+
+        const deliveryRate = totalOrders > 0 ? (deliveredOrders / totalOrders) * 100 : 0;
+        const cancellationRate = totalOrders > 0 ? (cancelledOrders / totalOrders) * 100 : 0;
+
+        let tier = 'New customer — no history';
+        let tierColor = 'gray';
+        let score = 0;
+
+        if (totalOrders >= 2) {
+            score = Math.round((deliveredOrders / totalOrders) * 100);
+            if (score >= 80) {
+                tier = 'Trusted';
+                tierColor = 'green';
+            } else if (score >= 50) {
+                tier = 'Moderate risk';
+                tierColor = 'yellow';
+            } else {
+                tier = 'High risk';
+                tierColor = 'red';
+            }
+        }
+
+        const partnerStats = user.phone ? await checkSteadfastCustomer(user.phone) : null;
 
         const responseData = {
             ...user,
             stats: {
                 totalSpent,
-                orderCount,
-                averageOrderValue
+                orderCount: totalOrders,
+                averageOrderValue: totalOrders > 0 ? totalSpent / totalOrders : 0,
+                deliveredOrders,
+                cancelledOrders,
+                deliveryRate: Math.round(deliveryRate),
+                cancellationRate: Math.round(cancellationRate),
+                trustScore: score,
+                trustTier: tier,
+                trustTierColor: tierColor,
+                lastOrderDate: lastOrder ? lastOrder.createdAt : null,
+                deliveryPartnerStats: partnerStats
             },
             // For UI compatibility, providing empty addresses as placeholder if not in schema
             addresses: [] 
@@ -73,6 +128,9 @@ export async function PATCH(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const authCheck = await checkAdminAuth();
+        if (!authCheck.authorized) return authCheck.response;
+
         const { id } = await params;
         const body = await req.json();
         
@@ -81,6 +139,7 @@ export async function PATCH(
             data: {
                 name: body.name,
                 email: body.email,
+                phone: body.phone,
             }
         });
 
@@ -93,3 +152,4 @@ export async function PATCH(
         return NextResponse.json({ success: false, error: 'Failed to update customer' }, { status: 500 });
     }
 }
+

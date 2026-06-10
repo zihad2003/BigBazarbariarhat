@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@bigbazar/db';
-import { auth } from '@/auth';
 import { getCache, setCache, invalidateCachePattern } from '@/lib/cache';
+import { checkAdminAuth } from '@/lib/auth-utils';
 
 export async function GET() {
     try {
+        const authCheck = await checkAdminAuth();
+        if (!authCheck.authorized) return authCheck.response;
+
         const cacheKey = 'settings-store';
         const cachedData = getCache<any>(cacheKey);
         if (cachedData) {
@@ -22,7 +25,7 @@ export async function GET() {
                     storeDescription: 'A premium retail platform',
                     supportEmail: 'admin@bigbazar.com',
                     currency: 'BDT',
-                    defaultLanguage: 'en'
+                    defaultLanguage: 'bn'
                 }
             });
         }
@@ -35,7 +38,10 @@ export async function GET() {
             currency: setting.currency,
             default_language: setting.defaultLanguage,
             announcement_text: setting.announcementText,
-            show_announcement: setting.showAnnouncement
+            show_announcement: setting.showAnnouncement,
+            enable_steadfast: setting.enableSteadfastCheck,
+            steadfast_api_key: setting.steadfastApiKey,
+            steadfast_secret_key: setting.steadfastSecretKey
         };
 
         setCache(cacheKey, responseData, 30 * 1000); // Cache for 30 seconds
@@ -52,13 +58,22 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
     try {
-        const session = await auth();
-        if (!session) {
-            return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
-        }
+        const authCheck = await checkAdminAuth();
+        if (!authCheck.authorized) return authCheck.response;
 
         const body = await req.json();
-        const { store_name, store_description, support_email, currency, default_language, announcement_text, show_announcement } = body;
+        const { 
+            store_name, 
+            store_description, 
+            support_email, 
+            currency, 
+            default_language, 
+            announcement_text, 
+            show_announcement,
+            enable_steadfast,
+            steadfast_api_key,
+            steadfast_secret_key
+        } = body;
 
         const setting = await prisma.storeSetting.upsert({
             where: { id: '1' },
@@ -67,9 +82,12 @@ export async function POST(req: NextRequest) {
                 storeDescription: store_description,
                 supportEmail: support_email,
                 currency,
-                defaultLanguage: default_language,
+                defaultLanguage: default_language || 'bn',
                 announcementText: announcement_text,
-                showAnnouncement: show_announcement
+                showAnnouncement: show_announcement,
+                enableSteadfastCheck: enable_steadfast !== undefined ? enable_steadfast : false,
+                steadfastApiKey: steadfast_api_key || null,
+                steadfastSecretKey: steadfast_secret_key || null
             },
             create: {
                 id: '1',
@@ -77,9 +95,12 @@ export async function POST(req: NextRequest) {
                 storeDescription: store_description || '',
                 supportEmail: support_email || 'admin@bigbazar.com',
                 currency: currency || 'BDT',
-                defaultLanguage: default_language || 'en',
+                defaultLanguage: default_language || 'bn',
                 announcementText: announcement_text || '',
-                showAnnouncement: show_announcement !== undefined ? show_announcement : true
+                showAnnouncement: show_announcement !== undefined ? show_announcement : true,
+                enableSteadfastCheck: enable_steadfast !== undefined ? enable_steadfast : false,
+                steadfastApiKey: steadfast_api_key || null,
+                steadfastSecretKey: steadfast_secret_key || null
             }
         });
 
@@ -95,7 +116,10 @@ export async function POST(req: NextRequest) {
             currency: setting.currency,
             default_language: setting.defaultLanguage,
             announcement_text: setting.announcementText,
-            show_announcement: setting.showAnnouncement
+            show_announcement: setting.showAnnouncement,
+            enable_steadfast: setting.enableSteadfastCheck,
+            steadfast_api_key: setting.steadfastApiKey,
+            steadfast_secret_key: setting.steadfastSecretKey
         };
 
         return NextResponse.json({
@@ -107,4 +131,5 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ success: false, message: 'Failed to save settings' }, { status: 500 });
     }
 }
+
 

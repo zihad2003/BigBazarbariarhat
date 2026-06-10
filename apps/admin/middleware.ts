@@ -7,10 +7,18 @@ const { auth } = NextAuth(authConfig);
 export default auth((req) => {
   const isLoggedIn = !!req.auth;
   const isAuthPage = req.nextUrl.pathname.startsWith("/login");
+  const isUnauthorizedPage = req.nextUrl.pathname.startsWith("/unauthorized");
+
+  if (isUnauthorizedPage) {
+    return NextResponse.next();
+  }
 
   if (isAuthPage) {
     if (isLoggedIn) {
-      return NextResponse.redirect(new URL("/", req.nextUrl));
+      const role = (req.auth as any)?.user?.role;
+      if (role === 'ADMIN' || role === 'SUPER_ADMIN') {
+        return NextResponse.redirect(new URL("/", req.nextUrl));
+      }
     }
     return NextResponse.next();
   }
@@ -23,6 +31,11 @@ export default auth((req) => {
 
     const encodedCallbackUrl = encodeURIComponent(callbackUrl);
     return NextResponse.redirect(new URL(`/login?callbackUrl=${encodedCallbackUrl}`, req.nextUrl));
+  }
+
+  const role = (req.auth as any)?.user?.role;
+  if (role !== 'ADMIN' && role !== 'SUPER_ADMIN') {
+    return NextResponse.redirect(new URL("/unauthorized", req.nextUrl));
   }
 
   return NextResponse.next();

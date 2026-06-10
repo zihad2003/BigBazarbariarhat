@@ -18,6 +18,7 @@ export default function EditCategoryPage(props: { params: Promise<{ id: string }
     const params = useParams();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [uploading, setUploading] = useState(false);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [parentCategories, setParentCategories] = useState<any[]>([]);
 
@@ -99,6 +100,26 @@ export default function EditCategoryPage(props: { params: Promise<{ id: string }
         setSlug(s);
     };
 
+    const handleUpload = async (file: File) => {
+        setUploading(true);
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            const res = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await res.json();
+            if (result.success) {
+                setImagePreview(result.url);
+            }
+        } catch (error) {
+            console.error('Failed to upload image:', error);
+        } finally {
+            setUploading(false);
+        }
+    };
+
     if (loading) {
         return (
             <div className="h-[60vh] flex flex-col items-center justify-center gap-4">
@@ -127,11 +148,11 @@ export default function EditCategoryPage(props: { params: Promise<{ id: string }
                     </button>
                     <button
                         onClick={handleSave}
-                        disabled={saving}
+                        disabled={saving || uploading}
                         className="px-6 py-2 bg-primary text-primary-foreground rounded-lg text-[13px] font-semibold hover:bg-primary/90 transition flex items-center gap-2"
                     >
-                        {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                        Save Changes
+                        {saving || uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                        {uploading ? 'Uploading...' : 'Save Changes'}
                     </button>
                 </div>
             </div>
@@ -224,11 +245,7 @@ export default function EditCategoryPage(props: { params: Promise<{ id: string }
                                 accept="image/*"
                                 onChange={e => {
                                     const file = e.target.files?.[0];
-                                    if (file) {
-                                        const reader = new FileReader();
-                                        reader.onloadend = () => setImagePreview(reader.result as string);
-                                        reader.readAsDataURL(file);
-                                    }
+                                    if (file) handleUpload(file);
                                 }}
                                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                             />
@@ -243,11 +260,7 @@ export default function EditCategoryPage(props: { params: Promise<{ id: string }
                                     accept="image/*"
                                     onChange={e => {
                                         const file = e.target.files?.[0];
-                                        if (file) {
-                                            const reader = new FileReader();
-                                            reader.onloadend = () => setImagePreview(reader.result as string);
-                                            reader.readAsDataURL(file);
-                                        }
+                                        if (file) handleUpload(file);
                                     }}
                                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                                 />
@@ -259,3 +272,4 @@ export default function EditCategoryPage(props: { params: Promise<{ id: string }
         </div>
     );
 }
+

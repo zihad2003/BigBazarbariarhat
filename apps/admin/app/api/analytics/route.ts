@@ -2,9 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@bigbazar/db';
 import { startOfDay, subDays, format } from 'date-fns';
 import { getCache, setCache } from '@/lib/cache';
+import { checkAdminAuth } from '@/lib/auth-utils';
 
 export async function GET(req: NextRequest) {
     try {
+        const authCheck = await checkAdminAuth();
+        if (!authCheck.authorized) return authCheck.response;
+
         const { searchParams } = new URL(req.url);
         const range = searchParams.get('range') || '7d';
         

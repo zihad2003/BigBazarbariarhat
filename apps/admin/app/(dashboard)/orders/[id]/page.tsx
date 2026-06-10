@@ -81,6 +81,36 @@ export default function OrderDetailPage() {
         }
     };
 
+    const handleQuickStatusTransition = async (nextStatus: string, nextPaymentStatus?: string) => {
+        setUpdating(true);
+        try {
+            const bodyPayload: any = {
+                status: nextStatus,
+                adminNotes
+            };
+            if (nextPaymentStatus) {
+                bodyPayload.paymentStatus = nextPaymentStatus;
+            }
+            const res = await fetch(`/api/orders/${params.id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(bodyPayload)
+            });
+            const result = await res.json();
+            if (result.success) {
+                setOrder(result.data);
+                setStatus(result.data.status);
+                if (nextPaymentStatus) {
+                    setPaymentStatus(nextPaymentStatus);
+                }
+            }
+        } catch (error) {
+            console.error('Quick status update failed:', error);
+        } finally {
+            setUpdating(false);
+        }
+    };
+
     if (loading) {
         return (
             <div className="h-[60vh] flex flex-col items-center justify-center gap-4">
@@ -238,7 +268,6 @@ export default function OrderDetailPage() {
                                     className="w-full h-10 px-3 bg-white/10 border border-white/20 rounded-lg text-[13px] font-medium outline-none focus:bg-white/20"
                                 >
                                     <option value="PENDING" className="text-black">Pending</option>
-                                    <option value="CONFIRMED" className="text-black">Confirmed</option>
                                     <option value="PROCESSING" className="text-black">Processing</option>
                                     <option value="SHIPPED" className="text-black">Shipped</option>
                                     <option value="DELIVERED" className="text-black">Delivered</option>
@@ -256,6 +285,54 @@ export default function OrderDetailPage() {
                                     <option value="PAID" className="text-black">Paid</option>
                                     <option value="REFUNDED" className="text-black">Refunded</option>
                                 </select>
+                            </div>
+                            
+                            {/* Quick Actions workflow */}
+                            <div className="pt-4 border-t border-white/10 space-y-2">
+                                <label className="text-[11px] font-semibold text-primary-foreground/80 uppercase tracking-wider block">Quick Actions</label>
+                                {order.status === 'PENDING' && (
+                                    <button
+                                        onClick={() => handleQuickStatusTransition('PROCESSING')}
+                                        disabled={updating}
+                                        className="w-full py-2 bg-white text-primary rounded-lg text-[13px] font-bold hover:bg-white/90 transition flex items-center justify-center gap-2"
+                                    >
+                                        <Check className="w-4 h-4" />
+                                        Confirm Order
+                                    </button>
+                                )}
+                                {order.status === 'PROCESSING' && (
+                                    <button
+                                        onClick={() => handleQuickStatusTransition('SHIPPED')}
+                                        disabled={updating}
+                                        className="w-full py-2 bg-white text-primary rounded-lg text-[13px] font-bold hover:bg-white/90 transition flex items-center justify-center gap-2"
+                                    >
+                                        <Truck className="w-4 h-4" />
+                                        Mark Shipped
+                                    </button>
+                                )}
+                                {order.status === 'SHIPPED' && (
+                                    <button
+                                        onClick={() => handleQuickStatusTransition('DELIVERED', 'PAID')}
+                                        disabled={updating}
+                                        className="w-full py-2 bg-white text-primary rounded-lg text-[13px] font-bold hover:bg-white/90 transition flex items-center justify-center gap-2"
+                                    >
+                                        <CheckCircle2 className="w-4 h-4" />
+                                        Mark Delivered (COD Paid)
+                                    </button>
+                                )}
+                                {(order.status === 'PENDING' || order.status === 'PROCESSING') && (
+                                    <button
+                                        onClick={() => handleQuickStatusTransition('CANCELLED')}
+                                        disabled={updating}
+                                        className="w-full py-2 bg-rose-600 text-white rounded-lg text-[13px] font-bold hover:bg-rose-700 transition flex items-center justify-center gap-2"
+                                    >
+                                        <XCircle className="w-4 h-4" />
+                                        Cancel Order
+                                    </button>
+                                )}
+                                {(order.status === 'DELIVERED' || order.status === 'CANCELLED') && (
+                                    <p className="text-[12px] text-primary-foreground/60 italic text-center">No further transitions available</p>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -285,6 +362,100 @@ export default function OrderDetailPage() {
                                 <span className="text-[13px]">{order.guestPhone}</span>
                             </div>
                         </div>
+
+                        {order.customerStats && (
+                            <div className="mt-6 pt-6 border-t border-border space-y-4">
+                                <h4 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Customer Trust Score</h4>
+                                <div className="p-3 bg-muted/40 border border-border rounded-lg space-y-2">
+                                    <div className="flex justify-between items-center text-[12px]">
+                                        <span className="text-muted-foreground">Rating Tier:</span>
+                                        <span className={`px-2 py-0.5 rounded text-[11px] font-bold uppercase ${
+                                            order.customerStats.trustTierColor === 'green' ? 'bg-emerald-50 text-emerald-600 border border-emerald-100 dark:bg-emerald-950/20' :
+                                            order.customerStats.trustTierColor === 'yellow' ? 'bg-amber-50 text-amber-600 border border-amber-100 dark:bg-amber-950/20' :
+                                            order.customerStats.trustTierColor === 'red' ? 'bg-rose-50 text-rose-600 border border-rose-100 dark:bg-rose-950/20' :
+                                            'bg-muted text-muted-foreground'
+                                        }`}>
+                                            {order.customerStats.trustTier}
+                                        </span>
+                                    </div>
+                                    <div className="flex justify-between text-[12px]">
+                                        <span className="text-muted-foreground">Total Orders Placed:</span>
+                                        <span className="font-semibold">{order.customerStats.totalOrders}</span>
+                                    </div>
+                                    <div className="flex justify-between text-[12px]">
+                                        <span className="text-muted-foreground">Delivered / Cancelled:</span>
+                                        <span className="font-semibold text-emerald-600">
+                                            {order.customerStats.deliveredOrders} <span className="text-muted-foreground">/</span> <span className="text-rose-600">{order.customerStats.cancelledOrders}</span>
+                                        </span>
+                                    </div>
+                                    {order.customerStats.totalOrders >= 2 && (
+                                        <div className="flex justify-between text-[12px]">
+                                            <span className="text-muted-foreground">Delivery Success Rate:</span>
+                                            <span className={`font-bold ${
+                                                order.customerStats.deliveryRate >= 80 ? 'text-emerald-600' :
+                                                order.customerStats.deliveryRate >= 50 ? 'text-amber-600' :
+                                                'text-rose-600'
+                                            }`}>
+                                                {order.customerStats.deliveryRate}%
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {order.customerStats.deliveryPartnerStats && (
+                                        <div className="pt-4 mt-4 border-t border-border/60 space-y-2">
+                                            <div className="flex items-center justify-between mb-1">
+                                                <h5 className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground">Courier Stats (Bangladesh)</h5>
+                                                {order.customerStats.deliveryPartnerStats.isMock && (
+                                                    <span className="text-[9px] font-bold text-amber-600 px-1 py-0.2 bg-amber-50 rounded border border-amber-100">Sandbox</span>
+                                                )}
+                                            </div>
+                                            
+                                            <div className="flex justify-between items-center text-[12px]">
+                                                <span className="text-muted-foreground">Courier Trust:</span>
+                                                <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
+                                                    order.customerStats.deliveryPartnerStats.trustTierColor === 'green' ? 'bg-emerald-50 text-emerald-600 border border-emerald-100 dark:bg-emerald-950/20' :
+                                                    order.customerStats.deliveryPartnerStats.trustTierColor === 'yellow' ? 'bg-amber-50 text-amber-600 border border-amber-100 dark:bg-amber-950/20' :
+                                                    order.customerStats.deliveryPartnerStats.trustTierColor === 'red' ? 'bg-rose-50 text-rose-600 border border-rose-100 dark:bg-rose-950/20' :
+                                                    'bg-muted text-muted-foreground'
+                                                }`}>
+                                                    {order.customerStats.deliveryPartnerStats.trustTier}
+                                                </span>
+                                            </div>
+
+                                            <div className="flex justify-between text-[12px]">
+                                                <span className="text-muted-foreground">Total Parcels:</span>
+                                                <span className="font-semibold">{order.customerStats.deliveryPartnerStats.totalOrders}</span>
+                                            </div>
+
+                                            <div className="flex justify-between text-[12px]">
+                                                <span className="text-muted-foreground">Delivered / Returned:</span>
+                                                <span className="font-semibold text-emerald-600">
+                                                    {order.customerStats.deliveryPartnerStats.deliveredOrders} <span className="text-muted-foreground">/</span> <span className="text-rose-600">{order.customerStats.deliveryPartnerStats.cancelledOrders}</span>
+                                                </span>
+                                            </div>
+
+                                            <div className="flex justify-between text-[12px]">
+                                                <span className="text-muted-foreground">Success Rate:</span>
+                                                <span className={`font-bold ${
+                                                    order.customerStats.deliveryPartnerStats.deliveryRate >= 80 ? 'text-emerald-600' :
+                                                    order.customerStats.deliveryPartnerStats.deliveryRate >= 50 ? 'text-amber-600' :
+                                                    'text-rose-600'
+                                                }`}>
+                                                    {order.customerStats.deliveryPartnerStats.deliveryRate}%
+                                                </span>
+                                            </div>
+
+                                            {order.customerStats.deliveryPartnerStats.fraudReports > 0 && (
+                                                <div className="flex justify-between text-[12px] bg-rose-50 text-rose-600 p-2 rounded border border-rose-100 dark:bg-rose-950/25 mt-1">
+                                                    <span>Fraud Flags:</span>
+                                                    <span className="font-bold">{order.customerStats.deliveryPartnerStats.fraudReports}</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     {/* Payment Details */}

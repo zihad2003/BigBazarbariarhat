@@ -38,6 +38,7 @@ type BannerFormValues = z.infer<typeof bannerSchema>;
 export default function NewBannerPage() {
     const router = useRouter();
     const [saving, setSaving] = useState(false);
+    const [uploading, setUploading] = useState(false);
 
     const {
         register,
@@ -87,6 +88,26 @@ export default function NewBannerPage() {
         }
     };
 
+    const handleUpload = async (file: File, field: 'imageDesktop' | 'imageMobile' | 'videoUrl') => {
+        setUploading(true);
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            const res = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await res.json();
+            if (result.success) {
+                setValue(field, result.url);
+            }
+        } catch (error) {
+            console.error('Upload failed:', error);
+        } finally {
+            setUploading(false);
+        }
+    };
+
     return (
         <div className="max-w-[1000px] mx-auto pb-20">
             {/* Header */}
@@ -109,11 +130,11 @@ export default function NewBannerPage() {
                     </button>
                     <button
                         onClick={handleSubmit(onSubmit)}
-                        disabled={saving}
+                        disabled={saving || uploading}
                         className="px-6 py-2 bg-primary text-primary-foreground rounded-lg text-[13px] font-semibold hover:bg-primary/90 transition flex items-center gap-2 shadow-sm"
                     >
-                        {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                        {saving ? 'Creating...' : 'Create Banner'}
+                        {saving || uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                        {uploading ? 'Uploading...' : (saving ? 'Creating...' : 'Create Banner')}
                     </button>
                 </div>
             </div>
@@ -185,11 +206,7 @@ export default function NewBannerPage() {
                                                 accept="image/*"
                                                 onChange={e => {
                                                     const file = e.target.files?.[0];
-                                                    if (file) {
-                                                        const reader = new FileReader();
-                                                        reader.onloadend = () => setValue('imageDesktop', reader.result as string);
-                                                        reader.readAsDataURL(file);
-                                                    }
+                                                    if (file) handleUpload(file, 'imageDesktop');
                                                 }}
                                                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                                             />
@@ -235,11 +252,7 @@ export default function NewBannerPage() {
                                                 accept="image/*"
                                                 onChange={e => {
                                                     const file = e.target.files?.[0];
-                                                    if (file) {
-                                                        const reader = new FileReader();
-                                                        reader.onloadend = () => setValue('imageMobile', reader.result as string);
-                                                        reader.readAsDataURL(file);
-                                                    }
+                                                    if (file) handleUpload(file, 'imageMobile');
                                                 }}
                                                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                                             />
@@ -284,11 +297,7 @@ export default function NewBannerPage() {
                                                 accept="video/*"
                                                 onChange={e => {
                                                     const file = e.target.files?.[0];
-                                                    if (file) {
-                                                        const reader = new FileReader();
-                                                        reader.onloadend = () => setValue('videoUrl', reader.result as string);
-                                                        reader.readAsDataURL(file);
-                                                    }
+                                                    if (file) handleUpload(file, 'videoUrl');
                                                 }}
                                                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                                             />

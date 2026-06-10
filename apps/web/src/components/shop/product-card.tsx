@@ -10,7 +10,6 @@ import { formatPrice, cn } from '@/lib/utils'
 import type { Product } from '@/types/product'
 import { useCartStore } from '@/store/cartStore'
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 import { useUIStore } from '@/lib/stores/ui-store'
 import { useWishlistStore } from '@/store/wishlistStore'
 import { DeliveryInfoModal } from './delivery-info-modal'
@@ -81,10 +80,7 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
 
     if (layout === 'list') {
         return (
-            <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
+            <div
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
                 className="group relative flex flex-col md:flex-row gap-8 lg:gap-12 bg-white p-6 lg:p-10 rounded-[3rem] border border-gray-100 hover:border-transparent transition-all duration-700 hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.12)]"
@@ -190,31 +186,24 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
                                 disabled={isOutOfStock || isAdding}
                                 className="flex-1 sm:w-64 h-16 bg-black text-white hover:bg-gray-800 font-black uppercase tracking-widest text-[10px] rounded-2xl shadow-2xl shadow-black/10 relative overflow-hidden group/btn"
                             >
-                                <AnimatePresence mode="wait">
-                                    {isAdding ? (
-                                        <motion.span key="adding" initial={{ y: 20 }} animate={{ y: 0 }} exit={{ y: -20 }}>
-                                            Adding...
-                                        </motion.span>
-                                    ) : (
-                                        <motion.span key="idle" initial={{ y: 20 }} animate={{ y: 0 }} exit={{ y: -20 }} className="flex items-center gap-2">
-                                            <ShoppingBag className="h-4 w-4" />
-                                            Add to Cart
-                                        </motion.span>
-                                    )}
-                                </AnimatePresence>
+                                {isAdding ? (
+                                    <span>Adding...</span>
+                                ) : (
+                                    <span className="flex items-center gap-2">
+                                        <ShoppingBag className="h-4 w-4" />
+                                        Add to Cart
+                                    </span>
+                                )}
                             </Button>
                         </div>
                     </div>
                 </div>
-            </motion.div>
+            </div>
         )
     }
 
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+        <div
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             className="group relative"
@@ -312,19 +301,17 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
                         disabled={isAdding || isOutOfStock}
                         className="w-full h-7 md:h-12 bg-luxury-gold text-luxury-black hover:bg-white hover:text-luxury-black font-black uppercase tracking-[0.2em] text-[7px] md:text-[9px] rounded-lg md:rounded-xl shadow-xl shadow-luxury-gold/20 flex items-center justify-center gap-1 md:gap-3 border border-white/10 transition-all duration-300 px-1 md:px-3"
                     >
-                        <AnimatePresence mode="wait">
-                            {isAdding ? (
-                                <motion.div key="adding" initial={{ y: 5, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -5, opacity: 0 }} className="flex items-center gap-1 md:gap-2">
-                                    <div className="h-2 w-2 md:h-3 md:w-3 border-2 border-luxury-black/30 border-t-luxury-black rounded-full animate-spin" />
-                                    <span>{language === 'bn' ? 'যোগ...' : 'Adding...'}</span>
-                                </motion.div>
-                            ) : (
-                                <motion.div key="idle" initial={{ y: 5, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -5, opacity: 0 }} className="flex items-center gap-1 md:gap-2">
-                                    <ShoppingBag className="h-2.5 w-2.5 md:h-3.5 md:w-3.5" />
-                                    <span>{t?.common?.addToCart || 'Add to Cart'}</span>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
+                        {isAdding ? (
+                            <div className="flex items-center gap-1 md:gap-2 justify-center">
+                                <div className="h-2 w-2 md:h-3 md:w-3 border-2 border-luxury-black/30 border-t-luxury-black rounded-full animate-spin" />
+                                <span>{language === 'bn' ? 'যোগ...' : 'Adding...'}</span>
+                            </div>
+                        ) : (
+                            <div className="flex items-center gap-1 md:gap-2 justify-center">
+                                <ShoppingBag className="h-2.5 w-2.5 md:h-3.5 md:w-3.5" />
+                                <span>{t?.common?.addToCart || 'Add to Cart'}</span>
+                            </div>
+                        )}
                     </Button>
 
                     {/* Order Now (Quick Buy) */}
@@ -387,6 +374,6 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
                     onClose={() => setIsQuickViewOpen(false)}
                 />
             )}
-        </motion.div>
+        </div>
     )
 }

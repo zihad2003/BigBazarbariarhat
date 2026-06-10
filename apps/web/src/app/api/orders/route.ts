@@ -34,6 +34,13 @@ export async function POST(req: NextRequest) {
     if (!shippingAddress || !shippingAddress.fullName || !shippingAddress.phone) {
       return NextResponse.json({ success: false, message: 'Shipping address with name and phone is required.' }, { status: 400 });
     }
+    
+    // Bangladesh mobile number format validation: 01[3-9]XXXXXXXX
+    const isBDPhone = /^01[3-9]\d{8}$/.test(shippingAddress.phone);
+    if (!isBDPhone) {
+      return NextResponse.json({ success: false, message: 'সঠিক বাংলাদেশী মোবাইল নম্বর প্রদান করুন (যেমন: 017XXXXXXXX)।' }, { status: 400 });
+    }
+
     if (!totalAmount || isNaN(Number(totalAmount))) {
       return NextResponse.json({ success: false, message: 'Invalid total amount.' }, { status: 400 });
     }
@@ -49,33 +56,6 @@ export async function POST(req: NextRequest) {
 
     // Generate a unique order number
     const orderNumber = `ORD-${Date.now()}-${globalThis.crypto.randomUUID().slice(0, 6).toUpperCase()}`;
-
-    // Guest orders: store contact info in shippingAddress JSON
-    // The Order model's userId is nullable — if not, we need to handle guest differently.
-    // Since the current schema requires userId, we create/find a guest user per email.
-    let finalUserId = userId;
-    if (!finalUserId) {
-      // Use guest email from shipping address if provided, otherwise use a per-session guest
-      const guestEmail = shippingAddress.email || `guest-${globalThis.crypto.randomUUID().slice(0, 8)}@bigbazar.com`;
-      let guestUser = await prisma.user.findUnique({ where: { email: guestEmail } });
-      if (!guestUser) {
-        // Create a guest user with a random secure password (they can't log in without resetting)
-        const array = new Uint8Array(32);
-        globalThis.crypto.getRandomValues(array);
-        const randomPassword = Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
-        const bcrypt = await import('bcryptjs');
-        const hashedPassword = await bcrypt.hash(randomPassword, 10);
-        guestUser = await prisma.user.create({
-          data: {
-            email: guestEmail,
-            name: shippingAddress.fullName,
-            password: hashedPassword,
-            role: 'USER',
-          },
-        });
-      }
-      finalUserId = guestUser.id;
-    }
 
     // Create the order and decrement product stock within a database transaction to prevent overselling
     const order = await prisma.$transaction(async (tx) => {
@@ -108,7 +88,8 @@ export async function POST(req: NextRequest) {
       return await tx.order.create({
         data: {
           orderNumber,
-          userId: finalUserId,
+          userId: userId,
+          customerPhone: shippingAddress.phone,
           totalAmount: Number(totalAmount),
           shippingAddress,
           paymentMethod: paymentMethod ?? 'CASH_ON_DELIVERY',
