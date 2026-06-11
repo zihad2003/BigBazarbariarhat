@@ -16,7 +16,9 @@ import {
     ShieldCheck, 
     Headphones, 
     Clock,
-    Sparkles
+    Sparkles,
+    Gift,
+    Crown
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -632,65 +634,152 @@ export default function HomeClient({
                         </motion.div>
                     ))}
                 </div>
+            </section>
 
-                {/* Wedding Touch Banner */}
-                <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.2, duration: 0.8 }}
-                    className="mt-6 md:mt-8 relative w-full h-[220px] md:h-[300px] overflow-hidden rounded-[2rem] border border-[#bf953f]/30 shadow-lg hover:shadow-2xl transition-all duration-500 bg-[#120509] group"
-                >
-                    <Link href="/products?category=wedding-touch" className="block w-full h-full relative">
-                        <Image
-                            src={fallbackCategoryImages['Wedding Touch'] || 'https://images.unsplash.com/photo-1607190074257-dd4b7af0309f?q=80&w=1200&auto=format&fit=crop'}
-                            alt="Wedding Touch Collection"
-                            fill
-                            className="object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
-                            quality={90}
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-r from-[#1b0811]/90 via-[#0d0205]/60 to-transparent opacity-95 group-hover:opacity-100 transition-opacity duration-300" />
-                        <div className="absolute inset-4 sm:inset-6 border border-[#bf953f]/20 rounded-[1.5rem] pointer-events-none" />
-                        <div className="absolute inset-5 sm:inset-7 border-[0.5px] border-[#bf953f]/30 rounded-[1.2rem] pointer-events-none" />
+            {/* Shop by Occasion Section */}
+            <section className="max-w-7xl mx-auto px-4 py-10 md:py-14">
+                <div className="mb-8">
+                    <h2 className="text-2xl md:text-3xl font-sans font-bold text-foreground uppercase tracking-wider">
+                        {language === 'bn' ? 'অনুষ্ঠান অনুযায়ী কেনাকাটা করুন' : 'Shop by Occasion'}
+                    </h2>
+                    <p className="text-xs text-muted-foreground uppercase tracking-widest mt-1">
+                        {language === 'bn' ? 'বিশেষ মুহূর্তের জন্য বিশেষ কালেকশন' : 'Special collections for your special moments'}
+                    </p>
+                </div>
 
-                        <div className="absolute top-6 left-6 sm:top-8 sm:left-8 w-6 h-6 border-t-[1.5px] border-l-[1.5px] border-[#bf953f] pointer-events-none" />
-                        <div className="absolute top-6 right-6 sm:top-8 sm:right-8 w-6 h-6 border-t-[1.5px] border-r-[1.5px] border-[#bf953f] pointer-events-none" />
-                        <div className="absolute bottom-6 left-6 sm:bottom-8 sm:left-8 w-6 h-6 border-b-[1.5px] border-l-[1.5px] border-[#bf953f] pointer-events-none" />
-                        <div className="absolute bottom-6 right-6 sm:bottom-8 sm:right-8 w-6 h-6 border-b-[1.5px] border-r-[1.5px] border-[#bf953f] pointer-events-none" />
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mt-6 md:mt-8">
+                    {/* Card 1: Wedding Touch */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.1, duration: 0.6 }}
+                        className="relative w-full h-[350px] md:h-[420px] overflow-hidden rounded-[2rem] border border-[#bf953f]/20 shadow-lg hover:shadow-2xl transition-all duration-500 bg-[#120509] group"
+                    >
+                        <Link href="/products?category=wedding-touch" className="block w-full h-full relative">
+                            <Image
+                                src={fallbackCategoryImages['Wedding Touch'] || 'https://images.unsplash.com/photo-1607190074257-dd4b7af0309f?q=80&w=800&auto=format&fit=crop'}
+                                alt="Wedding Touch Collection"
+                                fill
+                                className="object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
+                                quality={90}
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent opacity-95 group-hover:opacity-100 transition-opacity duration-300 z-10" />
+                            
+                            <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-8 z-20 space-y-3 sm:space-y-4">
+                                <div className="flex items-center gap-1.5">
+                                    <span className="text-[#bf953f] text-[10px] font-black uppercase tracking-[0.3em] block">
+                                        {language === 'bn' ? 'বিয়ের কালেকশন' : 'Wedding Touch'}
+                                    </span>
+                                    <Sparkles className="h-3.5 w-3.5 text-[#bf953f] animate-pulse" />
+                                </div>
 
-                        <div className="absolute inset-y-0 left-14 sm:left-24 right-14 sm:right-24 flex flex-col justify-center max-w-xs sm:max-w-md md:max-w-lg z-10 text-white space-y-3 sm:space-y-4">
-                            <div className="flex items-center gap-1.5">
-                                <span className="text-[#bf953f] text-[9px] sm:text-[10px] font-black uppercase tracking-[0.4em] block">
-                                    {language === 'bn' ? 'বিয়ের কালেকশন' : 'Wedding Collection'}
-                                </span>
-                                <Sparkles className="h-3 w-3 text-[#bf953f] animate-pulse" />
+                                <h3 className="text-2xl md:text-3xl font-playfair font-bold text-white uppercase tracking-wide leading-tight">
+                                    {language === 'bn' ? 'বিয়ের ছোঁয়া' : 'Wedding Touch'}
+                                </h3>
+
+                                <p className="text-xs text-white/80 font-sans tracking-wide leading-relaxed line-clamp-2 max-w-xs font-light">
+                                    {language === 'bn' ? 'আপনার বিশেষ দিনের জন্য বিশেষ শাড়ি, শেরওয়ানি এবং উৎসবের পোশাক।' : 'Exclusive sarees, sherwanis, and festive wear for your special day.'}
+                                </p>
+
+                                <div className="pt-2 flex items-center gap-1.5 text-xs uppercase tracking-widest font-black text-[#bf953f] group-hover:text-white transition-colors duration-300">
+                                    <span className="border-b border-[#bf953f]/0 group-hover:border-white transition-all pb-0.5">
+                                        {language === 'bn' ? 'কালেকশন দেখুন' : 'Explore Collection'}
+                                    </span>
+                                    <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                                </div>
                             </div>
+                        </Link>
+                    </motion.div>
 
-                            <h3 className="text-2xl sm:text-4xl md:text-5xl font-playfair font-normal uppercase tracking-wider leading-none">
-                                {language === 'bn' ? (
-                                    <>
-                                        বিয়ের <br className="hidden sm:inline" />
-                                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#bf953f] via-[#fcf6ba] to-[#b38728] font-serif italic capitalize">ছোঁয়া</span>
-                                    </>
-                                ) : (
-                                    <>
-                                        Wedding <br className="hidden sm:inline" />
-                                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#bf953f] via-[#fcf6ba] to-[#b38728] font-serif italic capitalize">Touch</span>
-                                    </>
-                                )}
-                            </h3>
+                    {/* Card 2: Festive / Eid */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.2, duration: 0.6 }}
+                        className="relative w-full h-[350px] md:h-[420px] overflow-hidden rounded-[2rem] border border-[#bf953f]/20 shadow-lg hover:shadow-2xl transition-all duration-500 bg-[#120509] group"
+                    >
+                        <Link href="/products?category=festive" className="block w-full h-full relative">
+                            <Image
+                                src="https://images.unsplash.com/photo-1609357518652-6cf0416f0cbe?q=80&w=800&auto=format&fit=crop"
+                                alt="Festive / Eid Collection"
+                                fill
+                                className="object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
+                                quality={90}
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent opacity-95 group-hover:opacity-100 transition-opacity duration-300 z-10" />
+                            
+                            <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-8 z-20 space-y-3 sm:space-y-4">
+                                <div className="flex items-center gap-1.5">
+                                    <span className="text-[#bf953f] text-[10px] font-black uppercase tracking-[0.3em] block">
+                                        {language === 'bn' ? 'উৎসবের কালেকশন' : 'Festive Wear'}
+                                    </span>
+                                    <Gift className="h-3.5 w-3.5 text-[#bf953f] animate-pulse" />
+                                </div>
 
-                            <p className="text-xs sm:text-sm text-white/70 font-serif leading-relaxed line-clamp-2 max-w-sm font-light">
-                                {language === 'bn' ? 'আপনার বিশেষ দিনের জন্য বিশেষ শাড়ি, শেরওয়ানি এবং উৎসবের পোশাক।' : 'Exclusive sarees, sherwanis, and festive wear for your special day.'}
-                            </p>
+                                <h3 className="text-2xl md:text-3xl font-playfair font-bold text-white uppercase tracking-wide leading-tight">
+                                    {language === 'bn' ? 'উৎসব / ঈদ' : 'Festive / Eid'}
+                                </h3>
 
-                            <div className="pt-2 flex items-center gap-2 text-xs uppercase tracking-widest font-black text-[#bf953f] group-hover:text-white transition-colors duration-300">
-                                <span>{language === 'bn' ? 'কালেকশন দেখুন' : 'Explore Collection'}</span>
-                                <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                                <p className="text-xs text-white/80 font-sans tracking-wide leading-relaxed line-clamp-2 max-w-xs font-light">
+                                    {language === 'bn' ? 'উৎসবের আমেজে আকর্ষণীয় ডিজাইনার পাঞ্জাবি ও সালোয়ার কামিজ।' : 'Celebrate in style with beautiful designer punjabis & salwar suits.'}
+                                </p>
+
+                                <div className="pt-2 flex items-center gap-1.5 text-xs uppercase tracking-widest font-black text-[#bf953f] group-hover:text-white transition-colors duration-300">
+                                    <span className="border-b border-[#bf953f]/0 group-hover:border-white transition-all pb-0.5">
+                                        {language === 'bn' ? 'কালেকশন দেখুন' : 'Explore Collection'}
+                                    </span>
+                                    <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                                </div>
                             </div>
-                        </div>
-                    </Link>
-                </motion.div>
+                        </Link>
+                    </motion.div>
+
+                    {/* Card 3: Party Wear */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.3, duration: 0.6 }}
+                        className="relative w-full h-[350px] md:h-[420px] overflow-hidden rounded-[2rem] border border-[#bf953f]/20 shadow-lg hover:shadow-2xl transition-all duration-500 bg-[#120509] group"
+                    >
+                        <Link href="/products?category=party-wear" className="block w-full h-full relative">
+                            <Image
+                                src="https://images.unsplash.com/photo-1566174053879-31528523f8ae?q=80&w=800&auto=format&fit=crop"
+                                alt="Party Wear Collection"
+                                fill
+                                className="object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
+                                quality={90}
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent opacity-95 group-hover:opacity-100 transition-opacity duration-300 z-10" />
+                            
+                            <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-8 z-20 space-y-3 sm:space-y-4">
+                                <div className="flex items-center gap-1.5">
+                                    <span className="text-[#bf953f] text-[10px] font-black uppercase tracking-[0.3em] block">
+                                        {language === 'bn' ? 'পার্টি কালেকশন' : 'Party Glamour'}
+                                    </span>
+                                    <Crown className="h-3.5 w-3.5 text-[#bf953f] animate-pulse" />
+                                </div>
+
+                                <h3 className="text-2xl md:text-3xl font-playfair font-bold text-white uppercase tracking-wide leading-tight">
+                                    {language === 'bn' ? 'পার্টি ওয়্যার' : 'Party Wear'}
+                                </h3>
+
+                                <p className="text-xs text-white/80 font-sans tracking-wide leading-relaxed line-clamp-2 max-w-xs font-light">
+                                    {language === 'bn' ? 'পার্টির জন্য গর্জিয়াস ডিজাইনার থ্রি-পিস ও লেহেঙ্গা কালেকশন।' : 'Make a statement with our gorgeous designer party gowns & lehengas.'}
+                                </p>
+
+                                <div className="pt-2 flex items-center gap-1.5 text-xs uppercase tracking-widest font-black text-[#bf953f] group-hover:text-white transition-colors duration-300">
+                                    <span className="border-b border-[#bf953f]/0 group-hover:border-white transition-all pb-0.5">
+                                        {language === 'bn' ? 'কালেকশন দেখুন' : 'Explore Collection'}
+                                    </span>
+                                    <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                                </div>
+                            </div>
+                        </Link>
+                    </motion.div>
+                </div>
             </section>
 
             <div className="max-w-7xl mx-auto px-4"><div className="border-t border-gray-100" /></div>
