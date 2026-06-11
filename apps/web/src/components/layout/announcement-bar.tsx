@@ -16,7 +16,7 @@ export function AnnouncementBar() {
                 if (res.ok) {
                     const result = await res.json();
                     if (result.success && result.data) {
-                        const announcementText = result.data.announcement_text || "For styling assistance & customizations, WhatsApp us at +91-8270288816";
+                        const announcementText = result.data.announcement_text || "🚚 মিরসরাইতে ফ্রি ডেলিভারি! | Free Delivery for Mirsharai";
                         const showAnnouncement = result.data.show_announcement !== false;
                         
                         setText(announcementText);
