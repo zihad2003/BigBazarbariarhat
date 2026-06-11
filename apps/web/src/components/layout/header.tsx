@@ -86,6 +86,7 @@ const getNavCategories = (t: any): any[] => [
 ];
 
 export function Header() {
+    const { language } = useLanguageStore();
     const t = useTranslation();
     const [categories, setCategories] = useState<any[]>([]);
     const [isScrolled, setIsScrolled] = useState(false);
@@ -225,7 +226,7 @@ export function Header() {
                                 )} />
                                 <input
                                     type="text"
-                                    placeholder={t.common.search || "Search for products, brands and more..."}
+                                    placeholder={language === 'bn' ? "পণ্য খুঁজুন..." : "Search products..."}
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                     onFocus={() => setIsSearchFocused(true)}

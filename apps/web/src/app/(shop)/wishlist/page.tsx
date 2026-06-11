@@ -84,7 +84,7 @@ export default function WishlistPage() {
                 <div className="mb-6">
                     <Breadcrumbs 
                         items={[
-                            { label: t?.common?.wishlist || 'Wishlist', active: true }
+                            { label: language === 'bn' ? 'উইশলিস্ট' : 'Wishlist', active: true }
                         ]} 
                     />
                 </div>
@@ -96,14 +96,14 @@ export default function WishlistPage() {
                         animate={{ opacity: 1, y: 0 }}
                         className="space-y-4"
                     >
-                        <Link href="/shop" className="group inline-flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 hover:text-black transition-all">
+                        <Link href="/products" className="group inline-flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 hover:text-black transition-all">
                             <div className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center group-hover:bg-black group-hover:border-black group-hover:text-white transition-all duration-300">
                                 <ArrowLeft className="h-3.5 w-3.5" />
                             </div>
-                            Continue Shopping
+                            {language === 'bn' ? 'শপিং চালিয়ে যান' : 'Continue Shopping'}
                         </Link>
                         <h1 className="text-4xl md:text-5xl font-playfair font-black text-gray-900 tracking-tight leading-none uppercase">
-                            Your <span className="font-serif italic text-luxury-gold lowercase">wishlist</span>.
+                            {language === 'bn' ? 'আপনার উইশলিস্ট' : 'Your Wishlist'}
                         </h1>
                     </motion.div>
 
@@ -111,13 +111,17 @@ export default function WishlistPage() {
                         initial={{ opacity: 0, y: 15 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
-                        className="flex items-center gap-4"
+                        className="flex justify-end w-full md:w-auto self-stretch md:self-auto"
                     >
                         <div className="flex flex-col items-start md:items-end">
-                            <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Saved Curations</span>
-                            <div className="flex items-center gap-3 bg-gray-50 border border-gray-100 px-5 py-3 rounded-xl">
+                            <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">
+                                {language === 'bn' ? 'সংরক্ষিত পণ্য' : 'Saved Curations'}
+                            </span>
+                            <div className="flex items-center gap-3 bg-gray-50 border border-gray-100 px-5 py-3 rounded-xl shadow-sm">
                                 <Heart className="h-4 w-4 text-rose-500 fill-rose-500 animate-pulse" />
-                                <span className="text-[10px] font-black uppercase tracking-widest text-gray-900 font-mono">{items.length} Curated Item{items.length !== 1 ? 's' : ''}</span>
+                                <span className="text-[10px] font-black uppercase tracking-widest text-gray-900 font-mono">
+                                    {items.length} {language === 'bn' ? 'টি পণ্য' : `Curated Item${items.length !== 1 ? 's' : ''}`}
+                                </span>
                             </div>
                         </div>
                     </motion.div>
@@ -219,15 +223,21 @@ export default function WishlistPage() {
                                         <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-luxury-gold mb-2">
                                             <Sparkles className="h-5 w-5 animate-spin-slow" />
                                         </div>
-                                        <h3 className="text-3xl font-playfair font-black tracking-tight leading-none uppercase">Move whole list to cart</h3>
-                                        <p className="text-gray-400 font-medium text-sm max-w-sm">Consolidate all curated items into your cart to complete purchase instantly.</p>
+                                        <h3 className="text-3xl font-playfair font-black tracking-tight leading-none uppercase">
+                                            {language === 'bn' ? 'সম্পূর্ণ তালিকাটি কার্টে যোগ করুন' : 'Move whole list to cart'}
+                                        </h3>
+                                        <p className="text-gray-400 font-medium text-sm max-w-sm">
+                                            {language === 'bn' 
+                                                ? 'তাত্ক্ষণিকভাবে কেনাকাটা সম্পন্ন করতে আপনার সংরক্ষিত সব পণ্য কার্টে স্থানান্তরিত করুন।' 
+                                                : 'Consolidate all curated items into your cart to complete purchase instantly.'}
+                                        </p>
                                     </div>
                                     <Button
                                         onClick={handleMoveAllToCart}
                                         className="bg-white text-gray-950 hover:bg-luxury-gold hover:text-luxury-black rounded-lg h-14 px-10 text-[10px] font-black uppercase tracking-[0.2em] shadow-xl transition-all duration-500 hover:scale-[1.02]"
                                     >
                                         <ShoppingBag className="h-4 w-4 mr-2" />
-                                        Add All to Cart
+                                        {language === 'bn' ? 'সবগুলো কার্টে যোগ করুন' : 'Add All to Cart'}
                                     </Button>
                                 </div>
                             </motion.div>
@@ -242,13 +252,17 @@ export default function WishlistPage() {
                             <div className="w-28 h-28 bg-white rounded-full flex items-center justify-center mx-auto mb-8 shadow-md relative group overflow-hidden border border-gray-100">
                                 <Heart className="h-10 w-10 text-gray-200 group-hover:text-rose-400 group-hover:scale-110 transition-all duration-500" />
                             </div>
-                            <h2 className="text-2xl md:text-3xl font-playfair font-black text-gray-900 mb-3 tracking-tight uppercase">Your curation is empty</h2>
+                            <h2 className="text-2xl md:text-3xl font-playfair font-black text-gray-900 mb-3 tracking-tight uppercase">
+                                {language === 'bn' ? 'আপনার উইশলিস্ট খালি' : 'Your Wishlist is Empty'}
+                            </h2>
                             <p className="text-gray-500 mb-8 max-w-md mx-auto text-sm md:text-base font-serif italic">
-                                Gather inspired styles and curation files. Explore our catalogs to curate your personalized selection.
+                                {language === 'bn' 
+                                    ? 'আমাদের নতুন কালেকশন দেখুন এবং আপনার পছন্দের পোশাকগুলো এখানে সংরক্ষণ করুন।' 
+                                    : 'Explore our latest arrivals and save your favorite pieces to compile your dream collection.'}
                             </p>
-                            <Link href="/shop">
+                            <Link href="/products">
                                 <Button className="bg-black text-white hover:bg-gray-800 rounded-lg px-8 h-12 text-[10px] font-black uppercase tracking-[0.2em] shadow-lg hover:scale-105 transition-all">
-                                    Start Curation <ArrowRight className="h-4 w-4 ml-2 inline" />
+                                    {language === 'bn' ? 'ক্যাটালগ দেখুন' : 'Explore Catalog'} <ArrowRight className="h-4 w-4 ml-2 inline" />
                                 </Button>
                             </Link>
                         </motion.div>
