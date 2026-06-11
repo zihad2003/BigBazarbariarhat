@@ -205,11 +205,11 @@ export function Header() {
                                 <h1 className="text-xl sm:text-2xl font-black tracking-widest uppercase block font-playfair transition-colors duration-300">
                                     {isHome && !isScrolled ? (
                                         <>
-                                            <span className="text-[#D4A017]">BIG</span> <span className="text-white">BAZAR</span>
+                                            <span className="text-[#E11D48]">BIG</span> <span className="text-white">BAZAR</span>
                                         </>
                                     ) : (
                                         <>
-                                            <span className="text-[#D4A017]">BIG</span> <span className="text-[#1A6B3C]">BAZAR</span>
+                                            <span className="text-[#E11D48]">BIG</span> <span className="text-[#0F172A]">BAZAR</span>
                                         </>
                                     )}
                                 </h1>
