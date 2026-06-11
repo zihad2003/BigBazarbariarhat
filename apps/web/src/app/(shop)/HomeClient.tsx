@@ -79,20 +79,50 @@ function HeroSlider({ dbBanners }: { dbBanners?: any[] }) {
             href: b.linkUrl || '/products',
             badge: undefined,
         }))
-        : getHeroSlides(t);
+        : [
+            {
+                id: 1,
+                image: 'https://images.unsplash.com/photo-1610030469668-93535c17b6b3?q=80&w=1800&auto=format&fit=crop',
+                title: t?.hero?.slide1Title || 'Elegance Redefined',
+                subtitle: t?.hero?.slide1Subtitle || 'Discover a curated collection of artisanal sarees and designer lehengas, where heritage craftsmanship meets modern silhouettes.',
+                cta: t?.common?.shopNow || 'SHOP COLLECTION',
+                href: '/products?category=wedding-touch',
+                badge: 'THE NEW HERITAGE',
+                videoUrl: null,
+            },
+            {
+                id: 2,
+                image: 'https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?q=80&w=1200&auto=format&fit=crop',
+                title: t?.hero?.slide2Title || 'Premium Menswear',
+                subtitle: t?.hero?.slide2Subtitle || 'Crafted for the Modern Man',
+                cta: t?.common?.explore || 'EXPLORE COLLECTION',
+                href: '/products?category=men',
+                badge: 'PREMIUM MENSWEAR',
+                videoUrl: null,
+            },
+            {
+                id: 3,
+                image: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=1200&auto=format&fit=crop',
+                title: t?.hero?.slide3Title || 'Flash Sale',
+                subtitle: t?.hero?.slide3Subtitle || 'Up to 50% Off — Limited Time',
+                cta: t?.common?.shopNow || 'SHOP SALE',
+                href: '/sale',
+                badge: 'FLASH SALE — 50% OFF',
+                videoUrl: null,
+            },
+        ];
+
     const [current, setCurrent] = useState(0);
     const total = slides.length;
     const videoRef = useRef<HTMLVideoElement>(null);
     const isVideo = !!slides[current]?.videoUrl;
 
-    // Auto-advance only for photo slides
     useEffect(() => {
         if (isVideo) return;
-        const timer = setInterval(() => setCurrent(c => (c + 1) % total), 5000);
+        const timer = setInterval(() => setCurrent(c => (c + 1) % total), 6000);
         return () => clearInterval(timer);
     }, [total, current, isVideo]);
 
-    // Play video from start whenever we land on a video slide
     useEffect(() => {
         if (isVideo && videoRef.current) {
             videoRef.current.currentTime = 0;
@@ -104,7 +134,7 @@ function HeroSlider({ dbBanners }: { dbBanners?: any[] }) {
     const goPrev = () => setCurrent(c => (c - 1 + total) % total);
 
     return (
-        <div className="relative w-full h-[60vh] md:h-[80vh] overflow-hidden bg-gray-100">
+        <div className="relative w-full h-[65vh] md:h-[85vh] overflow-hidden bg-gray-900">
             <AnimatePresence mode="wait">
                 {slides.map((slide, i) =>
                     i === current ? (
@@ -127,7 +157,7 @@ function HeroSlider({ dbBanners }: { dbBanners?: any[] }) {
                                         playsInline
                                         onEnded={goNext}
                                     />
-                                    <div className="absolute top-4 right-16 flex items-center gap-1.5 bg-black/40 backdrop-blur-sm text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full">
+                                    <div className="absolute top-4 right-16 flex items-center gap-1.5 bg-black/40 backdrop-blur-sm text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full z-20">
                                         <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
                                         Video
                                     </div>
@@ -137,19 +167,22 @@ function HeroSlider({ dbBanners }: { dbBanners?: any[] }) {
                                     src={slide.image || '/placeholder.png'}
                                     alt={slide.title}
                                     fill
-                                    className="object-cover object-top"
+                                    className="object-cover object-center"
                                     quality={95}
                                     priority
                                 />
                             )}
-                            <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent" />
-                            <div className="absolute inset-0 flex flex-col justify-center px-8 md:px-20">
+                            {/* Overlay matches the dark moody heritage feel of the reference */}
+                            <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/35 to-transparent" />
+                            
+                            {/* Content container - left aligned overlay */}
+                            <div className="absolute inset-0 flex flex-col justify-center px-8 md:px-20 max-w-2xl z-20">
                                 {slide.badge && (
                                     <motion.span
                                         initial={{ opacity: 0, y: 10 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: 0.2 }}
-                                        className="inline-block mb-4 text-xs font-black uppercase tracking-[0.3em] bg-destructive text-white px-4 py-1.5 w-fit"
+                                        className="inline-block mb-4 text-[10px] md:text-[11px] font-black uppercase tracking-[0.3em] text-[#16A34A] bg-[#16A34A]/10 border border-[#16A34A]/20 px-3.5 py-1.5 rounded-full w-fit"
                                     >
                                         {slide.badge}
                                     </motion.span>
@@ -158,15 +191,24 @@ function HeroSlider({ dbBanners }: { dbBanners?: any[] }) {
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.3 }}
-                                    className="text-4xl md:text-6xl lg:text-7xl font-playfair font-black text-white leading-tight mb-3"
+                                    className="text-4xl md:text-6xl font-playfair font-normal text-white leading-tight mb-4 tracking-tight"
                                 >
-                                    {slide.title}
+                                    {slide.title.includes(' ') ? (
+                                        <>
+                                            {slide.title.substring(0, slide.title.lastIndexOf(' '))} <br />
+                                            <span className="text-[#16A34A] font-bold">
+                                                {slide.title.substring(slide.title.lastIndexOf(' ') + 1)}
+                                            </span>
+                                        </>
+                                    ) : (
+                                        slide.title
+                                    )}
                                 </motion.h1>
                                 <motion.p
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.4 }}
-                                    className="text-white/80 text-sm md:text-lg uppercase tracking-widest mb-8"
+                                    className="text-white/80 text-xs md:text-sm mb-8 leading-relaxed max-w-md font-light"
                                 >
                                     {slide.subtitle}
                                 </motion.p>
@@ -176,12 +218,10 @@ function HeroSlider({ dbBanners }: { dbBanners?: any[] }) {
                                     transition={{ delay: 0.5 }}
                                 >
                                     <Link href={slide.href}>
-                                        <Button
-                                            className="bg-white text-foreground hover:bg-destructive hover:text-white uppercase tracking-widest font-bold px-8 py-3 rounded-none text-sm transition-all duration-300"
-                                        >
+                                        <button className="group inline-flex items-center gap-2 px-8 py-3.5 bg-[#1A6B3C] hover:bg-[#1A6B3C]/90 text-white font-bold uppercase tracking-widest text-[11px] transition-all duration-300 shadow-lg shadow-black/25">
                                             {slide.cta}
-                                            <ArrowRight className="ml-2 h-4 w-4" />
-                                        </Button>
+                                            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                                        </button>
                                     </Link>
                                 </motion.div>
                             </div>
@@ -192,20 +232,20 @@ function HeroSlider({ dbBanners }: { dbBanners?: any[] }) {
 
             <button
                 onClick={goPrev}
-                className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/30 hover:bg-white text-white hover:text-foreground backdrop-blur-sm flex items-center justify-center transition-all duration-200"
+                className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/20 hover:bg-white text-white hover:text-foreground backdrop-blur-sm flex items-center justify-center transition-all duration-300 rounded-full z-30"
                 aria-label="Previous"
             >
                 <ChevronLeft className="h-5 w-5" />
             </button>
             <button
                 onClick={goNext}
-                className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/30 hover:bg-white text-white hover:text-foreground backdrop-blur-sm flex items-center justify-center transition-all duration-200"
+                className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/20 hover:bg-white text-white hover:text-foreground backdrop-blur-sm flex items-center justify-center transition-all duration-300 rounded-full z-30"
                 aria-label="Next"
             >
                 <ChevronRight className="h-5 w-5" />
             </button>
 
-            <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex gap-2">
+            <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex gap-2 z-30">
                 {slides.map((slide, i) => (
                     <button
                         key={i}

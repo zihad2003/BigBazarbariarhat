@@ -97,6 +97,7 @@ export function Header() {
     const searchRef = useRef<HTMLDivElement>(null);
     
     const pathname = usePathname();
+    const isHome = pathname === '/';
     const router = useRouter();
     const cartCount = useCartStore(state => state.getItemCount());
     const wishlistCount = useWishlistStore(state => state.getItemCount());
@@ -188,33 +189,216 @@ export function Header() {
             <AnnouncementBar />
             
             <header className={cn(
-                "sticky top-0 z-50 transition-all duration-500",
-                isScrolled ? "bg-white/80 backdrop-blur-xl shadow-xl shadow-black/5" : "bg-white"
+                "z-50 transition-all duration-500 w-full",
+                isHome 
+                    ? (isScrolled 
+                        ? "sticky top-0 bg-white/95 backdrop-blur-xl shadow-xl shadow-black/5 text-slate-900 border-b border-slate-100 animate-fadeInDown" 
+                        : "absolute left-0 right-0 bg-transparent text-white border-b border-white/10")
+                    : "sticky top-0 bg-white/95 backdrop-blur-xl shadow-xl shadow-black/5 text-slate-900 border-b border-slate-100"
             )}>
                 <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
-                    <div className="flex items-center justify-between h-24 lg:h-28">
-                        
-                        {/* Left & Center: Logo + Navigation */}
-                        <div className="flex items-center gap-8 2xl:gap-12">
-                            {/* Logo */}
-                            <Link href="/" className="group shrink-0">
-                                <div className="flex items-center">
-                                    <h1 className="text-lg sm:text-2xl font-bold tracking-tighter uppercase block font-playfair">
-                                        <span className="text-[#E11D48]">BIG</span> <span className="text-[#0F172A]">BAZAR</span>
-                                    </h1>
-                                </div>
+                    {/* Row 1: Logo, Centered Search, Action Icons */}
+                    <div className="flex items-center justify-between h-20 lg:h-24">
+                        {/* Logo */}
+                        <Link href="/" className="group shrink-0 flex items-center gap-3">
+                            <div className={cn(
+                                "w-10 h-10 rounded-full border-2 flex items-center justify-center font-playfair font-black text-lg transition-all duration-300",
+                                isHome && !isScrolled 
+                                    ? "border-white text-white bg-white/5" 
+                                    : "border-primary text-primary bg-primary/5"
+                            )}>
+                                BB
+                            </div>
+                            <div className="flex flex-col">
+                                <span className={cn(
+                                    "text-lg lg:text-xl font-bold tracking-widest uppercase block font-playfair leading-none transition-colors duration-300",
+                                    isHome && !isScrolled ? "text-white" : "text-slate-900"
+                                )}>
+                                    BIG BAZAR
+                                </span>
+                                <span className={cn(
+                                    "text-[8px] font-black uppercase tracking-[0.25em] mt-0.5 leading-none transition-colors duration-300",
+                                    isHome && !isScrolled ? "text-white/60" : "text-slate-400"
+                                )}>
+                                    Your Fashion. Our Passion!!
+                                </span>
+                            </div>
+                        </Link>
+
+                        {/* Search Bar - Center */}
+                        <div ref={searchRef} className="hidden lg:block relative flex-1 max-w-md mx-auto">
+                            <form onSubmit={handleSearch} className="relative group">
+                                <Search className={cn(
+                                    "absolute left-4 top-1/2 -translate-y-1/2 h-3.5 w-3.5 transition-colors duration-300",
+                                    isHome && !isScrolled ? "text-white/70" : "text-slate-400"
+                                )} />
+                                <input
+                                    type="text"
+                                    placeholder={t.common.search || "Search for products, brands and more"}
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    onFocus={() => setIsSearchFocused(true)}
+                                    className={cn(
+                                        "w-full pl-11 pr-10 py-2.5 rounded-full text-[11px] font-black uppercase tracking-widest transition-all duration-300 focus:outline-none focus:ring-2 placeholder:text-slate-400/70",
+                                        isHome && !isScrolled
+                                            ? "bg-white/10 border border-white/20 text-white placeholder:text-white/50 focus:bg-white/20 focus:ring-white/20 focus:border-white/30"
+                                            : "bg-slate-100 border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:bg-white focus:ring-primary/20 focus:border-primary/30"
+                                    )}
+                                />
+                                {searchQuery && (
+                                    <button 
+                                        type="button" 
+                                        onClick={() => setSearchQuery('')}
+                                        className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-slate-50/10 rounded-full"
+                                    >
+                                        <X className={cn("h-3.5 w-3.5", isHome && !isScrolled ? "text-white/50" : "text-slate-400")} />
+                                    </button>
+                                )}
+                            </form>
+
+                            {/* Search Dropdown */}
+                            <AnimatePresence>
+                                {isSearchFocused && (
+                                    <motion.div 
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: 10 }}
+                                        className="absolute top-full left-0 right-0 mt-4 bg-white rounded-2xl shadow-2xl border border-slate-100 p-6 z-50 overflow-hidden text-slate-900"
+                                    >
+                                        <div className="space-y-10">
+                                            {/* Suggestions */}
+                                            {searchResults.length > 0 && (
+                                                <div className="space-y-4">
+                                                    <h3 className="text-[9px] font-black text-primary uppercase tracking-[0.3em] text-left">Suggestions</h3>
+                                                    <div className="space-y-3">
+                                                        {searchResults.map((p: any) => (
+                                                            <Link
+                                                                key={p.id}
+                                                                href={`/products/${p.slug}`}
+                                                                onClick={() => setIsSearchFocused(false)}
+                                                                className="flex items-center gap-4 p-3 rounded-2xl hover:bg-slate-50 transition-all group"
+                                                            >
+                                                                <div className="w-12 h-16 bg-slate-50 rounded-xl overflow-hidden relative shrink-0 border border-slate-100">
+                                                                    <Image src={p.images?.[0]?.url || '/placeholder.jpg'} alt={p.name} fill className="object-cover" />
+                                                                </div>
+                                                                <div className="flex-1 min-w-0 text-left">
+                                                                    <p className="text-[11px] font-black text-slate-900 uppercase tracking-tight truncate group-hover:text-primary transition-colors">{p.name}</p>
+                                                                    <p className="text-[10px] font-black text-slate-400 font-mono mt-1">{formatPrice(p.salePrice || p.basePrice)}</p>
+                                                                </div>
+                                                            </Link>
+                                                        ))}
+                                                    </div>
+                                                    <Button
+                                                        onClick={() => handleSearch()}
+                                                        className="w-full mt-4 bg-foreground text-white rounded-xl h-12 text-[10px] font-black uppercase tracking-widest hover:bg-primary transition-all"
+                                                    >
+                                                        View All Results <ArrowRight className="h-3 w-3 ml-2" />
+                                                    </Button>
+                                                </div>
+                                            )}
+
+                                            {/* Recent & Popular */}
+                                            <div className="grid grid-cols-2 gap-8 text-left">
+                                                <div>
+                                                    <h3 className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em] mb-4 flex items-center gap-2"><Clock className="h-3 w-3" /> Recent</h3>
+                                                    <div className="flex flex-col gap-2">
+                                                        {recentSearches.length > 0 ? recentSearches.map(s => (
+                                                            <button key={s} onClick={() => handleSearch(undefined, s)} className="text-[10px] font-black text-slate-600 hover:text-primary transition-all uppercase tracking-widest text-left">{s}</button>
+                                                        )) : <p className="text-[9px] font-bold text-slate-300 uppercase tracking-widest">No recent searches</p>}
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em] mb-4 flex items-center gap-2"><TrendingUp className="h-3 w-3" /> Popular</h3>
+                                                    <div className="flex flex-col gap-2">
+                                                        {['Men', 'Women', 'Kids', 'Sale'].map(s => (
+                                                            <button key={s} onClick={() => handleSearch(undefined, s)} className="text-[10px] font-black text-slate-600 hover:text-primary transition-all uppercase tracking-widest text-left">{s}</button>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+
+                        {/* Right Actions */}
+                        <div className="flex items-center gap-4 lg:gap-6 shrink-0">
+                            {/* Search trigger for mobile */}
+                            <button 
+                                onClick={() => openSearch()}
+                                className="lg:hidden p-2.5 rounded-full transition-all bg-transparent hover:bg-white/10" 
+                                aria-label="Search"
+                            >
+                                <Search className={cn("h-5 w-5", isHome && !isScrolled ? "text-white" : "text-slate-900")} />
+                            </button>
+
+                            {/* Wishlist */}
+                            <Link 
+                                href="/wishlist" 
+                                className="hidden sm:block p-2.5 rounded-full transition-all relative hover:bg-white/10"
+                            >
+                                <Heart className={cn("h-5 w-5", isHome && !isScrolled ? "text-white" : "text-slate-900")} />
+                                {mounted && wishlistCount > 0 && (
+                                    <span className="absolute top-1 right-1 w-4 h-4 bg-primary text-white text-[8px] font-black rounded-full flex items-center justify-center border border-white shadow-sm">
+                                        {wishlistCount}
+                                    </span>
+                                )}
                             </Link>
 
-                            {/* Navigation - Desktop */}
-                            <nav className="hidden xl:flex items-center gap-6 2xl:gap-10">
-                                {categories.filter(c => !c.isHidden).map((category) => (
+                            {/* Cart */}
+                            <Link 
+                                href="/cart"
+                                className="p-2.5 rounded-full transition-all relative duration-300 hover:bg-white/10"
+                            >
+                                <ShoppingBag className={cn("h-5 w-5", isHome && !isScrolled ? "text-white" : "text-slate-900")} />
+                                {mounted && cartCount > 0 && (
+                                    <span className="absolute top-1 right-1 w-4 h-4 bg-primary text-white text-[8px] font-black rounded-full flex items-center justify-center border border-white shadow-sm">
+                                        {cartCount}
+                                    </span>
+                                )}
+                            </Link>
+
+                            {/* Profile */}
+                            <Link href="/account/profile" className={cn(
+                                "hidden sm:block p-0.5 rounded-full transition-all duration-300",
+                                isHome && !isScrolled ? "hover:ring-4 hover:ring-white/15" : "hover:ring-4 hover:ring-primary/10"
+                            )}>
+                                <div className={cn(
+                                    "w-9 h-9 rounded-full flex items-center justify-center font-black text-xs transition-colors duration-300",
+                                    isHome && !isScrolled ? "bg-white/10 text-white" : "bg-slate-100 text-slate-900"
+                                )}>
+                                    <User className="h-4 w-4" />
+                                </div>
+                            </Link>
+                            <MobileMenu />
+                        </div>
+                    </div>
+
+                    {/* Row 2: Centered Category Navigation Links (Desktop) */}
+                    <div className={cn(
+                        "hidden xl:flex items-center justify-center border-t py-3 mt-0.5 transition-colors duration-300",
+                        isHome && !isScrolled ? "border-white/10" : "border-slate-100"
+                    )}>
+                        <nav className="flex items-center gap-8 2xl:gap-12">
+                            {categories.filter(c => !c.isHidden).map((category) => {
+                                const isSale = category.name.toLowerCase().includes('sale') || category.name.toLowerCase().includes('discount') || category.name.toLowerCase().includes('exclusive');
+                                return (
                                     <div 
                                         key={category.name}
                                         className="relative group/mega"
                                         onMouseEnter={() => setActiveMegaMenu(category.name)}
                                         onMouseLeave={() => setActiveMegaMenu(null)}
                                     >
-                                        <Link href={category.href} className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest hover:text-primary transition-colors py-10">
+                                        <Link 
+                                            href={category.href} 
+                                            className={cn(
+                                                "flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest transition-colors py-2 relative block",
+                                                isSale
+                                                    ? (isHome && !isScrolled ? "text-[#16A34A] hover:text-[#16A34A]/80 font-black" : "text-primary hover:text-primary/80 font-black")
+                                                    : (isHome && !isScrolled ? "text-white/90 hover:text-white" : "text-slate-800 hover:text-primary")
+                                            )}
+                                        >
                                             {category.name} <ChevronDown className={cn("h-3 w-3 transition-transform duration-300", activeMegaMenu === category.name && "rotate-180")} />
                                         </Link>
 
@@ -224,9 +408,9 @@ export function Header() {
                                                     initial={{ opacity: 0, y: 10 }}
                                                     animate={{ opacity: 1, y: 0 }}
                                                     exit={{ opacity: 0, y: 10 }}
-                                                    className="absolute top-full left-1/2 -translate-x-1/2 w-[400px] bg-white rounded-[2rem] shadow-2xl border border-slate-100 p-6 overflow-hidden z-50"
+                                                    className="absolute top-full left-1/2 -translate-x-1/2 w-[400px] bg-white rounded-[2rem] shadow-2xl border border-slate-100 p-6 overflow-hidden z-50 text-slate-900"
                                                 >
-                                                    <div className="grid grid-cols-2 gap-6">
+                                                    <div className="grid grid-cols-2 gap-6 text-left">
                                                         <div className="space-y-4">
                                                             <h3 className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">{category.name} Collection</h3>
                                                             <ul className="space-y-3">
@@ -250,142 +434,11 @@ export function Header() {
                                             )}
                                         </AnimatePresence>
                                     </div>
-                                ))}
-                            </nav>
-                        </div>
-
-                        {/* Search & Actions */}
-                        <div className="flex items-center gap-6 flex-1 justify-end max-w-2xl">
-                            
-                            {/* Search Bar - Desktop */}
-                            <div ref={searchRef} className="hidden lg:block relative flex-1 max-w-xs">
-                                <form onSubmit={handleSearch} className="relative group">
-                                    <Search className={cn(
-                                        "absolute left-0 top-1/2 -translate-y-1/2 h-3.5 w-3.5 transition-colors duration-300",
-                                        isSearchFocused ? "text-slate-900" : "text-slate-400 group-hover:text-slate-700"
-                                    )} />
-                                    <input
-                                        type="text"
-                                        placeholder={t.common.search}
-                                        value={searchQuery}
-                                        onChange={(e) => setSearchQuery(e.target.value)}
-                                        onFocus={() => setIsSearchFocused(true)}
-                                        className={cn(
-                                            "w-full bg-transparent border-0 border-b pl-7 pr-6 py-2 rounded-none text-[11px] font-black uppercase tracking-widest transition-all duration-300 focus:outline-none focus:ring-0 focus:border-slate-900 placeholder:text-slate-400/70",
-                                            isSearchFocused
-                                                ? "border-slate-900 text-slate-900"
-                                                : "border-slate-200 text-slate-700 hover:border-slate-400"
-                                        )}
-                                    />
-                                    {searchQuery && (
-                                        <button 
-                                            type="button" 
-                                            onClick={() => setSearchQuery('')}
-                                            className="absolute right-0 top-1/2 -translate-y-1/2 p-1 hover:bg-slate-50 rounded-full"
-                                        >
-                                            <X className="h-3 w-3 text-slate-400 hover:text-slate-900 transition-colors" />
-                                        </button>
-                                    )}
-                                </form>
-
-                                {/* Search Dropdown */}
-                                <AnimatePresence>
-                                    {isSearchFocused && (
-                                        <motion.div 
-                                            initial={{ opacity: 0, y: 10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            exit={{ opacity: 0, y: 10 }}
-                                            className="absolute top-full left-0 right-0 mt-4 bg-white rounded-2xl shadow-2xl border border-slate-100 p-6 z-50 overflow-hidden"
-                                        >
-                                            <div className="space-y-10">
-                                                {/* Suggestions */}
-                                                {searchResults.length > 0 && (
-                                                    <div className="space-y-4">
-                                                        <h3 className="text-[9px] font-black text-primary uppercase tracking-[0.3em]">Suggestions</h3>
-                                                        <div className="space-y-3">
-                                                            {searchResults.map((p: any) => (
-                                                                <Link
-                                                                    key={p.id}
-                                                                    href={`/products/${p.slug}`}
-                                                                    onClick={() => setIsSearchFocused(false)}
-                                                                    className="flex items-center gap-4 p-3 rounded-2xl hover:bg-slate-50 transition-all group"
-                                                                >
-                                                                    <div className="w-12 h-16 bg-slate-50 rounded-xl overflow-hidden relative shrink-0 border border-slate-100">
-                                                                        <Image src={p.images?.[0]?.url || '/placeholder.jpg'} alt={p.name} fill className="object-cover" />
-                                                                    </div>
-                                                                    <div className="flex-1 min-w-0">
-                                                                        <p className="text-[11px] font-black text-slate-900 uppercase tracking-tight truncate group-hover:text-primary transition-colors">{p.name}</p>
-                                                                        <p className="text-[10px] font-black text-slate-400 font-mono mt-1">{formatPrice(p.salePrice || p.basePrice)}</p>
-                                                                    </div>
-                                                                </Link>
-                                                            ))}
-                                                        </div>
-                                                        <Button
-                                                            onClick={() => handleSearch()}
-                                                            className="w-full mt-4 bg-foreground text-white rounded-xl h-12 text-[10px] font-black uppercase tracking-widest hover:bg-primary transition-all"
-                                                        >
-                                                            View All Results <ArrowRight className="h-3 w-3 ml-2" />
-                                                        </Button>
-                                                    </div>
-                                                )}
-
-                                                {/* Recent & Popular */}
-                                                <div className="grid grid-cols-2 gap-8">
-                                                    <div>
-                                                        <h3 className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em] mb-4 flex items-center gap-2"><Clock className="h-3 w-3" /> Recent</h3>
-                                                        <div className="flex flex-col gap-2">
-                                                            {recentSearches.length > 0 ? recentSearches.map(s => (
-                                                                <button key={s} onClick={() => handleSearch(undefined, s)} className="text-[10px] font-black text-slate-600 hover:text-primary transition-all uppercase tracking-widest text-left">{s}</button>
-                                                            )) : <p className="text-[9px] font-bold text-slate-300 uppercase tracking-widest">No recent searches</p>}
-                                                        </div>
-                                                    </div>
-                                                    <div>
-                                                        <h3 className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em] mb-4 flex items-center gap-2"><TrendingUp className="h-3 w-3" /> Popular</h3>
-                                                        <div className="flex flex-col gap-2">
-                                                            {['Men', 'Women', 'Kids', 'Sale'].map(s => (
-                                                                <button key={s} onClick={() => handleSearch(undefined, s)} className="text-[10px] font-black text-slate-600 hover:text-primary transition-all uppercase tracking-widest text-left">{s}</button>
-                                                            ))}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-                            </div>
-
-                            {/* Actions */}
-                            <div className="flex items-center gap-4">
-                                <button 
-                                    onClick={() => openSearch()}
-                                    className="lg:hidden p-3 bg-slate-50 hover:bg-slate-100 rounded-2xl transition-all" 
-                                    aria-label="Search"
-                                >
-                                    <Search className="h-5 w-5 text-slate-900" />
-                                </button>
-                                <Link href="/wishlist" className="hidden sm:block p-3 bg-slate-50 hover:bg-red-50 hover:text-destructive rounded-2xl transition-all relative">
-                                    <Heart className="h-5 w-5" />
-                                    {mounted && wishlistCount > 0 && <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 text-white text-[9px] font-black rounded-full flex items-center justify-center border-2 border-white shadow-sm">{wishlistCount}</span>}
-                                </Link>
-                                <Link 
-                                    href="/cart"
-                                    className="p-3 bg-slate-50 text-slate-900 hover:bg-primary/10 hover:text-primary rounded-2xl transition-all relative duration-300"
-                                >
-                                    <ShoppingBag className="h-5 w-5" />
-                                    {mounted && cartCount > 0 && <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 text-white text-[9px] font-black rounded-full flex items-center justify-center border-2 border-white shadow-sm">{cartCount}</span>}
-                                </Link>
-                                <Link href="/account/profile" className="hidden sm:block p-1 bg-slate-100 rounded-2xl hover:ring-4 hover:ring-primary/10 transition-all duration-300">
-                                    <div className="w-10 h-10 bg-white rounded-[0.9rem] flex items-center justify-center text-slate-900 font-black text-xs uppercase tracking-tighter">
-                                        <User className="h-5 w-5" />
-                                    </div>
-                                </Link>
-                                <MobileMenu />
-                            </div>
-                        </div>
+                                );
+                            })}
+                        </nav>
                     </div>
                 </div>
-
-
             </header>
 
             <MobileBottomNav />
