@@ -198,7 +198,7 @@ export function Header() {
             )}>
                 <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
                     {/* Row 1: Logo, Centered Search, Action Icons */}
-                    <div className="flex items-center justify-between h-20 lg:h-24">
+                    <div className="flex items-center justify-between h-14 lg:h-16">
                         {/* Logo */}
                         <Link href="/" className="group shrink-0">
                             <div className="flex items-center">
@@ -368,7 +368,7 @@ export function Header() {
 
                     {/* Row 2: Centered Category Navigation Links (Desktop) */}
                     <div className={cn(
-                        "hidden xl:flex items-center justify-center border-t py-3 mt-0.5 transition-colors duration-300",
+                        "hidden xl:flex items-center justify-center border-t py-1.5 mt-0 transition-colors duration-300",
                         isHome && !isScrolled ? "border-white/10" : "border-slate-100"
                     )}>
                         <nav className="flex items-center gap-8 2xl:gap-12">
@@ -384,7 +384,7 @@ export function Header() {
                                         <Link 
                                             href={category.href} 
                                             className={cn(
-                                                "flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest transition-colors py-2 relative block",
+                                                "flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest transition-colors py-1 relative block",
                                                 isSale
                                                     ? (isHome && !isScrolled ? "text-[#16A34A] hover:text-[#16A34A]/80 font-black" : "text-primary hover:text-primary/80 font-black")
                                                     : (isHome && !isScrolled ? "text-white/90 hover:text-white" : "text-slate-800 hover:text-primary")
