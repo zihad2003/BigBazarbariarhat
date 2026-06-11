@@ -226,7 +226,7 @@ export function Header() {
                                 )} />
                                 <input
                                     type="text"
-                                    placeholder={language === 'bn' ? "পণ্য খুঁজুন..." : "Search products..."}
+                                    placeholder="Search products..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                     onFocus={() => setIsSearchFocused(true)}

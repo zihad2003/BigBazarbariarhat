@@ -29,8 +29,8 @@ import { useThrottle } from '@/hooks/use-throttle'
 // --- Local Translations ---
 const localTranslations: Record<string, any> = {
     en: {
-        emptyCart: 'Your Cart is Empty',
-        emptyCartDesc: "You haven't added anything to your cart yet. Browse our collection and find something you love.",
+        emptyCart: 'Your Shopping Bag is Empty',
+        emptyCartDesc: "You haven't added any products to your cart yet. Explore our latest collections to find your perfect style.",
         startShopping: 'Start Shopping',
         yourCart: 'Your Cart',
         items: 'Items',
@@ -49,9 +49,9 @@ const localTranslations: Record<string, any> = {
         standard: 'Standard',
     },
     bn: {
-        emptyCart: 'আপনার শপিং ব্যাগ খালি',
-        emptyCartDesc: 'আপনি এখনও কার্টে কোনো পণ্য যোগ করেননি। আমাদের নতুন কালেকশনগুলো দেখুন এবং আপনার পছন্দের পণ্যটি বেছে নিন।',
-        startShopping: 'কেনাকাটা শুরু করুন',
+        emptyCart: 'Your Shopping Bag is Empty',
+        emptyCartDesc: "You haven't added any products to your cart yet. Explore our latest collections to find your perfect style.",
+        startShopping: 'Start Shopping',
         yourCart: 'আপনার ব্যাগ (কার্ট)',
         items: 'টি পণ্য',
         item: 'টি পণ্য',
