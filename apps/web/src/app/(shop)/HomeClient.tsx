@@ -458,26 +458,32 @@ function FlashSaleSection({ products }: { products: any[] }) {
                     onTouchStart={handleTouchStart}
                     onTouchEnd={handleTouchEnd}
                 >
-                    {products.map((p, i) => (
-                        <div 
-                            key={p.id} 
-                            className="min-w-[75%] sm:min-w-[45%] md:min-w-[22%] snap-start flex-shrink-0"
-                        >
-                            <ProductCard product={p} index={i} />
-                            <div className="mt-4 bg-gray-100 h-1 md:h-1.5 rounded-full overflow-hidden">
-                                <motion.div 
-                                    initial={{ width: 0 }}
-                                    whileInView={{ width: '65%' }}
-                                    className="bg-destructive h-full"
-                                    transition={{ duration: 1, ease: 'easeOut' }}
-                                />
+                    {products.map((p, i) => {
+                        const stockLeft = p.stock !== undefined && p.stock !== null && p.stock > 0 
+                            ? p.stock 
+                            : (5 + (p.id.charCodeAt(p.id.length - 1) % 15));
+                        const reservedPercent = 50 + (p.id.charCodeAt(0) % 35);
+                        return (
+                            <div 
+                                key={p.id} 
+                                className="min-w-[75%] sm:min-w-[45%] md:min-w-[22%] snap-start flex-shrink-0"
+                            >
+                                <ProductCard product={p} index={i} />
+                                <div className="mt-4 bg-gray-100 h-1 md:h-1.5 rounded-full overflow-hidden">
+                                    <motion.div 
+                                        initial={{ width: 0 }}
+                                        whileInView={{ width: `${reservedPercent}%` }}
+                                        className="bg-destructive h-full"
+                                        transition={{ duration: 1, ease: 'easeOut' }}
+                                    />
+                                </div>
+                                <p className="text-[7px] md:text-[9px] font-black uppercase tracking-widest mt-1.5 text-muted-foreground flex justify-between">
+                                    <span>{reservedPercent}% Reserved</span>
+                                    <span>{stockLeft} Left</span>
+                                </p>
                             </div>
-                            <p className="text-[7px] md:text-[9px] font-black uppercase tracking-widest mt-1.5 text-muted-foreground flex justify-between">
-                                <span>65% Reserved</span>
-                                <span>12 Left</span>
-                            </p>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
 
                 <div className="flex md:hidden justify-center items-center gap-1.5 mt-2">
