@@ -664,21 +664,21 @@ export default function HomeClient({
                                 className="object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
                                 quality={90}
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent opacity-95 group-hover:opacity-100 transition-opacity duration-300 z-10" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-95 group-hover:opacity-100 transition-opacity duration-300 z-10" />
                             
-                            <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-8 z-20 space-y-3 sm:space-y-4">
-                                <div className="flex items-center gap-1.5">
-                                    <span className="text-[#bf953f] text-[10px] font-black uppercase tracking-[0.3em] block">
+                            <div className="absolute inset-0 flex flex-col justify-end p-6 sm:p-8 z-20 space-y-3 sm:space-y-4">
+                                <div className="flex items-center gap-1.5 flex-wrap">
+                                    <span className="text-[#bf953f] text-[10px] font-black uppercase tracking-[0.2em] block">
                                         {language === 'bn' ? 'বিয়ের কালেকশন' : 'Wedding Touch'}
                                     </span>
-                                    <Sparkles className="h-3.5 w-3.5 text-[#bf953f] animate-pulse" />
+                                    <Sparkles className="h-3.5 w-3.5 text-[#bf953f] flex-shrink-0 animate-pulse" />
                                 </div>
 
-                                <h3 className="text-2xl md:text-3xl font-playfair font-bold text-white uppercase tracking-wide leading-tight">
+                                <h3 className="text-xl sm:text-2xl lg:text-3xl font-playfair font-bold text-white uppercase tracking-wide leading-tight">
                                     {language === 'bn' ? 'বিয়ের ছোঁয়া' : 'Wedding Touch'}
                                 </h3>
 
-                                <p className="text-xs text-white/80 font-sans tracking-wide leading-relaxed line-clamp-2 max-w-xs font-light">
+                                <p className="text-xs text-white/80 font-sans tracking-wide leading-relaxed line-clamp-2 max-w-full font-light">
                                     {language === 'bn' ? 'আপনার বিশেষ দিনের জন্য বিশেষ শাড়ি, শেরওয়ানি এবং উৎসবের পোশাক।' : 'Exclusive sarees, sherwanis, and festive wear for your special day.'}
                                 </p>
 
@@ -708,21 +708,21 @@ export default function HomeClient({
                                 className="object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
                                 quality={90}
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent opacity-95 group-hover:opacity-100 transition-opacity duration-300 z-10" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-95 group-hover:opacity-100 transition-opacity duration-300 z-10" />
                             
-                            <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-8 z-20 space-y-3 sm:space-y-4">
-                                <div className="flex items-center gap-1.5">
-                                    <span className="text-[#bf953f] text-[10px] font-black uppercase tracking-[0.3em] block">
+                            <div className="absolute inset-0 flex flex-col justify-end p-6 sm:p-8 z-20 space-y-3 sm:space-y-4">
+                                <div className="flex items-center gap-1.5 flex-wrap">
+                                    <span className="text-[#bf953f] text-[10px] font-black uppercase tracking-[0.2em] block">
                                         {language === 'bn' ? 'উৎসবের কালেকশন' : 'Festive Wear'}
                                     </span>
-                                    <Gift className="h-3.5 w-3.5 text-[#bf953f] animate-pulse" />
+                                    <Gift className="h-3.5 w-3.5 text-[#bf953f] flex-shrink-0 animate-pulse" />
                                 </div>
 
-                                <h3 className="text-2xl md:text-3xl font-playfair font-bold text-white uppercase tracking-wide leading-tight">
+                                <h3 className="text-xl sm:text-2xl lg:text-3xl font-playfair font-bold text-white uppercase tracking-wide leading-tight">
                                     {language === 'bn' ? 'উৎসব / ঈদ' : 'Festive / Eid'}
                                 </h3>
 
-                                <p className="text-xs text-white/80 font-sans tracking-wide leading-relaxed line-clamp-2 max-w-xs font-light">
+                                <p className="text-xs text-white/80 font-sans tracking-wide leading-relaxed line-clamp-2 max-w-full font-light">
                                     {language === 'bn' ? 'উৎসবের আমেজে আকর্ষণীয় ডিজাইনার পাঞ্জাবি ও সালোয়ার কামিজ।' : 'Celebrate in style with beautiful designer punjabis & salwar suits.'}
                                 </p>
 
@@ -752,21 +752,21 @@ export default function HomeClient({
                                 className="object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
                                 quality={90}
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent opacity-95 group-hover:opacity-100 transition-opacity duration-300 z-10" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-95 group-hover:opacity-100 transition-opacity duration-300 z-10" />
                             
-                            <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-8 z-20 space-y-3 sm:space-y-4">
-                                <div className="flex items-center gap-1.5">
-                                    <span className="text-[#bf953f] text-[10px] font-black uppercase tracking-[0.3em] block">
+                            <div className="absolute inset-0 flex flex-col justify-end p-6 sm:p-8 z-20 space-y-3 sm:space-y-4">
+                                <div className="flex items-center gap-1.5 flex-wrap">
+                                    <span className="text-[#bf953f] text-[10px] font-black uppercase tracking-[0.2em] block">
                                         {language === 'bn' ? 'পার্টি কালেকশন' : 'Party Glamour'}
                                     </span>
-                                    <Crown className="h-3.5 w-3.5 text-[#bf953f] animate-pulse" />
+                                    <Crown className="h-3.5 w-3.5 text-[#bf953f] flex-shrink-0 animate-pulse" />
                                 </div>
 
-                                <h3 className="text-2xl md:text-3xl font-playfair font-bold text-white uppercase tracking-wide leading-tight">
+                                <h3 className="text-xl sm:text-2xl lg:text-3xl font-playfair font-bold text-white uppercase tracking-wide leading-tight">
                                     {language === 'bn' ? 'পার্টি ওয়্যার' : 'Party Wear'}
                                 </h3>
 
-                                <p className="text-xs text-white/80 font-sans tracking-wide leading-relaxed line-clamp-2 max-w-xs font-light">
+                                <p className="text-xs text-white/80 font-sans tracking-wide leading-relaxed line-clamp-2 max-w-full font-light">
                                     {language === 'bn' ? 'পার্টির জন্য গর্জিয়াস ডিজাইনার থ্রি-পিস ও লেহেঙ্গা কালেকশন।' : 'Make a statement with our gorgeous designer party gowns & lehengas.'}
                                 </p>
 
