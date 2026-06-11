@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
-import { Loader2, ArrowRight, ShieldCheck, ShoppingBag, UserPlus } from 'lucide-react';
+import { Loader2, ArrowRight, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 
 export default function SignupPage() {
@@ -65,8 +65,12 @@ export default function SignupPage() {
             <Card className="w-full max-w-md border-none shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] rounded-[2.5rem] overflow-hidden">
                 <div className="h-2 bg-black w-full" />
                 <CardHeader className="space-y-4 pt-10 px-8 text-center">
-                    <div className="mx-auto w-16 h-16 bg-black rounded-2xl flex items-center justify-center text-white mb-2 shadow-xl">
-                        <UserPlus className="h-8 w-8" />
+                    <div className="mx-auto w-16 h-16 bg-white border border-gray-100 rounded-2xl flex items-center justify-center p-2 mb-2 shadow-xl overflow-hidden">
+                        <img 
+                            src="/favicon.ico" 
+                            alt="Big Bazar Logo" 
+                            className="w-full h-full object-contain" 
+                        />
                     </div>
                     <div>
                         <CardTitle className="text-3xl font-black tracking-tight uppercase">Create Account</CardTitle>
@@ -87,7 +91,7 @@ export default function SignupPage() {
                             <Input
                                 id="name"
                                 type="text"
-                                placeholder="EX: ABDUR RAHMAN"
+                                placeholder="e.g., Abdur Rahman"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
                                 required
@@ -133,11 +137,6 @@ export default function SignupPage() {
                     </form>
                 </CardContent>
                 <CardFooter className="px-8 pb-10 flex flex-col items-center gap-6 border-t border-gray-50 pt-8">
-                    <div className="flex items-center gap-4 text-gray-400">
-                        <div className="h-px w-8 bg-gray-100" />
-                        <span className="text-[9px] font-black uppercase tracking-[0.2em]">Secure Registration</span>
-                        <div className="h-px w-8 bg-gray-100" />
-                    </div>
                     <div className="flex items-center gap-3 text-emerald-500 bg-emerald-50 px-4 py-2 rounded-full border border-emerald-100">
                         <ShieldCheck className="h-3 w-3" />
                         <span className="text-[9px] font-black uppercase tracking-widest">Secure Sign Up</span>
