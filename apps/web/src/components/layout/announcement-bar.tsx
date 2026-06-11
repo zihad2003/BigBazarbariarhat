@@ -76,24 +76,24 @@ export function AnnouncementBar() {
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    className="bg-[#FBC5D8] text-slate-900 relative overflow-hidden z-[60]"
+                    className="bg-primary text-white relative overflow-hidden z-[60]"
                 >
                     <div className="flex items-center justify-center py-2 px-12 group cursor-pointer">
                         <div className="flex items-center gap-8 animate-marquee whitespace-nowrap">
-                            <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.25em] flex items-center gap-4 text-slate-900">
+                            <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.25em] flex items-center gap-4 text-white">
                                 {renderContent()}
                             </p>
-                            <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.25em] flex items-center gap-4 text-slate-900" aria-hidden="true">
+                            <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.25em] flex items-center gap-4 text-white" aria-hidden="true">
                                 {renderContent()}
                             </p>
                         </div>
                     </div>
                     <button 
                         onClick={handleClose}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 p-2 hover:bg-slate-900/10 rounded-full transition-colors"
+                        className="absolute right-4 top-1/2 -translate-y-1/2 p-2 hover:bg-white/10 rounded-full transition-colors"
                         aria-label="Close Announcement"
                     >
-                        <X className="h-3 w-3 text-slate-900/60 hover:text-slate-900" />
+                        <X className="h-3 w-3 text-white/60 hover:text-white" />
                     </button>
                     
                     <style jsx>{`
