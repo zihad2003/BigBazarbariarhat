@@ -359,6 +359,7 @@ function ProductCard({ product, index }: { product: any; index: number }) {
 
 // --- FLASH SALE COMPONENT ---
 function FlashSaleSection({ products }: { products: any[] }) {
+    const { language } = useLanguageStore();
     const [timeLeft, setTimeLeft] = useState({ h: 12, m: 45, s: 0 });
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const [isPaused, setIsPaused] = useState(false);
@@ -428,17 +429,21 @@ function FlashSaleSection({ products }: { products: any[] }) {
                             <Clock className="h-8 w-8" />
                         </div>
                         <div>
-                            <h2 className="text-4xl font-black text-foreground uppercase tracking-tighter leading-none mb-2">Flash Sale</h2>
-                            <p className="text-destructive font-black text-xs uppercase tracking-[0.3em]">Limited Time Offer</p>
+                            <h2 className="text-4xl font-black text-foreground uppercase tracking-tighter leading-none mb-2">
+                                {language === 'bn' ? 'ফ্ল্যাশ সেল' : 'Flash Sale'}
+                            </h2>
+                            <p className="text-destructive font-black text-xs uppercase tracking-[0.3em]">
+                                {language === 'bn' ? 'সীমিত সময়ের অফার' : 'Limited Time Offer'}
+                            </p>
                         </div>
                     </div>
                     
                     <div className="flex items-center gap-8">
                         <div className="flex gap-4">
                             {[
-                                { val: timeLeft.h, label: 'Hours' },
-                                { val: timeLeft.m, label: 'Min' },
-                                { val: timeLeft.s, label: 'Sec' }
+                                { val: timeLeft.h, label: language === 'bn' ? 'ঘণ্টা' : 'Hours' },
+                                { val: timeLeft.m, label: language === 'bn' ? 'মিনিট' : 'Min' },
+                                { val: timeLeft.s, label: language === 'bn' ? 'সেকেন্ড' : 'Sec' }
                             ].map((t, i) => (
                                 <div key={i} className="flex flex-col items-center">
                                     <div className="w-16 h-16 bg-white border-2 border-destructive/20 rounded-2xl flex items-center justify-center text-2xl font-black text-destructive shadow-sm">
@@ -478,8 +483,8 @@ function FlashSaleSection({ products }: { products: any[] }) {
                                     />
                                 </div>
                                 <p className="text-[7px] md:text-[9px] font-black uppercase tracking-widest mt-1.5 text-muted-foreground flex justify-between">
-                                    <span>{reservedPercent}% Reserved</span>
-                                    <span>{stockLeft} Left</span>
+                                    <span>{language === 'bn' ? `${reservedPercent}% সংরক্ষিত` : `${reservedPercent}% Reserved`}</span>
+                                    <span>{language === 'bn' ? `${stockLeft}টি বাকি` : `${stockLeft} Left`}</span>
                                 </p>
                             </div>
                         );
@@ -487,7 +492,9 @@ function FlashSaleSection({ products }: { products: any[] }) {
                 </div>
 
                 <div className="flex md:hidden justify-center items-center gap-1.5 mt-2">
-                    <span className="text-[9px] font-black text-destructive/40 uppercase tracking-widest animate-pulse">Swipe Left/Right to explore</span>
+                    <span className="text-[9px] font-black text-destructive/40 uppercase tracking-widest animate-pulse">
+                        {language === 'bn' ? 'অন্বেষণ করতে বামে/ডানে সোয়াইপ করুন' : 'Swipe Left/Right to explore'}
+                    </span>
                 </div>
             </div>
         </section>
@@ -559,6 +566,7 @@ export default function HomeClient({
         setMounted(true);
     }, []);
 
+    const { language } = useLanguageStore();
     const t = useTranslation();
 
     if (!mounted) {
@@ -600,10 +608,15 @@ export default function HomeClient({
 
                                 <div className="absolute bottom-6 left-6 right-6 text-white flex flex-col z-10">
                                     <span className="text-lg md:text-xl font-bold font-playfair uppercase tracking-wide group-hover:text-yellow-400 transition-colors duration-300">
-                                        {cat.name}
+                                        {language === 'bn' ? (
+                                            cat.key === 'men' ? 'পুরুষদের' : 
+                                            cat.key === 'women' ? 'মহিলাদের' : 
+                                            cat.key.includes('kids') ? 'বাচ্চাদের' : 
+                                            cat.key.includes('wedding') ? 'ওয়েডিং' : cat.name
+                                        ) : cat.name}
                                     </span>
                                     <div className="flex items-center gap-1 mt-1.5 text-[10px] text-yellow-400 font-bold uppercase tracking-widest">
-                                        <span>Explore</span>
+                                        <span>{language === 'bn' ? 'কালেকশন' : 'Explore'}</span>
                                         <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
                                     </div>
                                 </div>
@@ -611,7 +624,7 @@ export default function HomeClient({
                                 {cat.comingSoon && (
                                     <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex items-center justify-center z-20">
                                         <span className="bg-yellow-400 text-yellow-900 text-[10px] font-black uppercase tracking-[0.2em] px-4 py-2 rounded-none shadow-lg">
-                                            Coming Soon
+                                            {language === 'bn' ? 'শীঘ্রই আসছে' : 'Coming Soon'}
                                         </span>
                                     </div>
                                 )}
@@ -648,22 +661,31 @@ export default function HomeClient({
                         <div className="absolute inset-y-0 left-14 sm:left-24 right-14 sm:right-24 flex flex-col justify-center max-w-xs sm:max-w-md md:max-w-lg z-10 text-white space-y-3 sm:space-y-4">
                             <div className="flex items-center gap-1.5">
                                 <span className="text-[#bf953f] text-[9px] sm:text-[10px] font-black uppercase tracking-[0.4em] block">
-                                    Wedding Collection
+                                    {language === 'bn' ? 'ওয়েডিং কালেকশন' : 'Wedding Collection'}
                                 </span>
                                 <Sparkles className="h-3 w-3 text-[#bf953f] animate-pulse" />
                             </div>
 
                             <h3 className="text-2xl sm:text-4xl md:text-5xl font-playfair font-normal uppercase tracking-wider leading-none">
-                                Wedding <br className="hidden sm:inline" />
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#bf953f] via-[#fcf6ba] to-[#b38728] font-serif italic capitalize">Touch</span>
+                                {language === 'bn' ? (
+                                    <>
+                                        ওয়েডিং <br className="hidden sm:inline" />
+                                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#bf953f] via-[#fcf6ba] to-[#b38728] font-serif italic capitalize">টাচ</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        Wedding <br className="hidden sm:inline" />
+                                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#bf953f] via-[#fcf6ba] to-[#b38728] font-serif italic capitalize">Touch</span>
+                                    </>
+                                )}
                             </h3>
 
                             <p className="text-xs sm:text-sm text-white/70 font-serif leading-relaxed line-clamp-2 max-w-sm font-light">
-                                Exclusive sarees, sherwanis, and festive wear for your special day.
+                                {language === 'bn' ? 'আপনার বিশেষ দিনের জন্য বিশেষ শাড়ি, শেরওয়ানি এবং উৎসবের পোশাক।' : 'Exclusive sarees, sherwanis, and festive wear for your special day.'}
                             </p>
 
                             <div className="pt-2 flex items-center gap-2 text-xs uppercase tracking-widest font-black text-[#bf953f] group-hover:text-white transition-colors duration-300">
-                                <span>Explore Collection</span>
+                                <span>{language === 'bn' ? 'কালেকশন দেখুন' : 'Explore Collection'}</span>
                                 <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
                             </div>
                         </div>
