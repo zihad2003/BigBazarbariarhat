@@ -654,7 +654,7 @@ export default function HomeClient({
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ delay: 0.1, duration: 0.6 }}
-                        className="relative w-full h-[350px] md:h-[420px] overflow-hidden rounded-[2rem] border border-[#bf953f]/20 shadow-lg hover:shadow-2xl transition-all duration-500 bg-[#120509] group"
+                        className="relative w-full h-[350px] md:h-[420px] overflow-hidden rounded-none border border-gray-100 shadow-none transition-all duration-500 bg-[#120509] group"
                     >
                         <Link href="/products?category=wedding-touch" className="block w-full h-full relative">
                             <Image
@@ -698,11 +698,11 @@ export default function HomeClient({
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ delay: 0.2, duration: 0.6 }}
-                        className="relative w-full h-[350px] md:h-[420px] overflow-hidden rounded-[2rem] border border-[#bf953f]/20 shadow-lg hover:shadow-2xl transition-all duration-500 bg-[#120509] group"
+                        className="relative w-full h-[350px] md:h-[420px] overflow-hidden rounded-none border border-gray-100 shadow-none transition-all duration-500 bg-[#120509] group"
                     >
                         <Link href="/products?category=festive" className="block w-full h-full relative">
                             <Image
-                                src="https://images.unsplash.com/photo-1609357518652-6cf0416f0cbe?q=80&w=800&auto=format&fit=crop"
+                                src="https://images.unsplash.com/photo-1608748010899-18f300247112?q=80&w=500&auto=format&fit=crop"
                                 alt="Festive / Eid Collection"
                                 fill
                                 className="object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
@@ -742,7 +742,7 @@ export default function HomeClient({
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ delay: 0.3, duration: 0.6 }}
-                        className="relative w-full h-[350px] md:h-[420px] overflow-hidden rounded-[2rem] border border-[#bf953f]/20 shadow-lg hover:shadow-2xl transition-all duration-500 bg-[#120509] group"
+                        className="relative w-full h-[350px] md:h-[420px] overflow-hidden rounded-none border border-gray-100 shadow-none transition-all duration-500 bg-[#120509] group"
                     >
                         <Link href="/products?category=party-wear" className="block w-full h-full relative">
                             <Image
