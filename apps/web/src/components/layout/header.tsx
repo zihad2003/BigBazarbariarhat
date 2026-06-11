@@ -200,28 +200,19 @@ export function Header() {
                     {/* Row 1: Logo, Centered Search, Action Icons */}
                     <div className="flex items-center justify-between h-20 lg:h-24">
                         {/* Logo */}
-                        <Link href="/" className="group shrink-0 flex items-center gap-3">
-                            <div className={cn(
-                                "w-10 h-10 rounded-full border-2 flex items-center justify-center font-playfair font-black text-lg transition-all duration-300",
-                                isHome && !isScrolled 
-                                    ? "border-white text-white bg-white/5" 
-                                    : "border-primary text-primary bg-primary/5"
-                            )}>
-                                BB
-                            </div>
-                            <div className="flex flex-col">
-                                <span className={cn(
-                                    "text-lg lg:text-xl font-bold tracking-widest uppercase block font-playfair leading-none transition-colors duration-300",
-                                    isHome && !isScrolled ? "text-white" : "text-slate-900"
-                                )}>
-                                    BIG BAZAR
-                                </span>
-                                <span className={cn(
-                                    "text-[8px] font-black uppercase tracking-[0.25em] mt-0.5 leading-none transition-colors duration-300",
-                                    isHome && !isScrolled ? "text-white/60" : "text-slate-400"
-                                )}>
-                                    Your Fashion. Our Passion!!
-                                </span>
+                        <Link href="/" className="group shrink-0">
+                            <div className="flex items-center">
+                                <h1 className="text-xl sm:text-2xl font-black tracking-widest uppercase block font-playfair transition-colors duration-300">
+                                    {isHome && !isScrolled ? (
+                                        <>
+                                            <span className="text-[#D4A017]">BIG</span> <span className="text-white">BAZAR</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <span className="text-[#D4A017]">BIG</span> <span className="text-[#1A6B3C]">BAZAR</span>
+                                        </>
+                                    )}
+                                </h1>
                             </div>
                         </Link>
 
@@ -229,20 +220,20 @@ export function Header() {
                         <div ref={searchRef} className="hidden lg:block relative flex-1 max-w-md mx-auto">
                             <form onSubmit={handleSearch} className="relative group">
                                 <Search className={cn(
-                                    "absolute left-4 top-1/2 -translate-y-1/2 h-3.5 w-3.5 transition-colors duration-300",
+                                    "absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 transition-colors duration-300",
                                     isHome && !isScrolled ? "text-white/70" : "text-slate-400"
                                 )} />
                                 <input
                                     type="text"
-                                    placeholder={t.common.search || "Search for products, brands and more"}
+                                    placeholder={t.common.search || "Search for products, brands and more..."}
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                     onFocus={() => setIsSearchFocused(true)}
                                     className={cn(
-                                        "w-full pl-11 pr-10 py-2.5 rounded-full text-[11px] font-black uppercase tracking-widest transition-all duration-300 focus:outline-none focus:ring-2 placeholder:text-slate-400/70",
+                                        "w-full pl-11 pr-10 py-2.5 rounded-full text-sm font-medium transition-all duration-300 focus:outline-none focus:ring-2",
                                         isHome && !isScrolled
-                                            ? "bg-white/10 border border-white/20 text-white placeholder:text-white/50 focus:bg-white/20 focus:ring-white/20 focus:border-white/30"
-                                            : "bg-slate-100 border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:bg-white focus:ring-primary/20 focus:border-primary/30"
+                                            ? "bg-white/10 border border-white/20 text-white placeholder:text-white/60 focus:bg-white/20 focus:ring-white/20 focus:border-white/30"
+                                            : "bg-slate-50 border border-slate-200 text-slate-800 placeholder:text-slate-400 focus:bg-white focus:ring-primary/20 focus:border-primary/30"
                                     )}
                                 />
                                 {searchQuery && (
