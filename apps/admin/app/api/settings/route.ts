@@ -25,7 +25,7 @@ export async function GET() {
                     storeDescription: 'A premium retail platform',
                     supportEmail: 'admin@bigbazar.com',
                     currency: 'BDT',
-                    defaultLanguage: 'bn'
+                    defaultLanguage: 'en'
                 }
             });
         }
@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
                 storeDescription: store_description,
                 supportEmail: support_email,
                 currency,
-                defaultLanguage: default_language || 'bn',
+                defaultLanguage: default_language || 'en',
                 announcementText: announcement_text,
                 showAnnouncement: show_announcement,
                 enableSteadfastCheck: enable_steadfast !== undefined ? enable_steadfast : false,
@@ -95,7 +95,7 @@ export async function POST(req: NextRequest) {
                 storeDescription: store_description || '',
                 supportEmail: support_email || 'admin@bigbazar.com',
                 currency: currency || 'BDT',
-                defaultLanguage: default_language || 'bn',
+                defaultLanguage: default_language || 'en',
                 announcementText: announcement_text || '',
                 showAnnouncement: show_announcement !== undefined ? show_announcement : true,
                 enableSteadfastCheck: enable_steadfast !== undefined ? enable_steadfast : false,
