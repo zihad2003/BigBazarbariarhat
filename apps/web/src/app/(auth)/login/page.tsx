@@ -49,13 +49,13 @@ export default function LoginPage() {
             <Card className="w-full max-w-md border-none shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] rounded-[2.5rem] overflow-hidden">
                 <div className="h-2 bg-black w-full" />
                 <CardHeader className="space-y-4 pt-10 px-8 text-center">
-                    <div className="mx-auto w-16 h-16 bg-white border border-gray-100 rounded-2xl flex items-center justify-center p-2 mb-2 shadow-xl overflow-hidden">
+                    <Link href="/" className="mx-auto w-16 h-16 bg-white border border-gray-100 rounded-2xl flex items-center justify-center p-2 mb-2 shadow-xl overflow-hidden hover:scale-105 transition-all">
                         <img 
                             src="/favicon.ico" 
                             alt="Big Bazar Logo" 
                             className="w-full h-full object-contain" 
                         />
-                    </div>
+                    </Link>
                     <div>
                         <CardTitle className="text-3xl font-black tracking-tight uppercase">Login</CardTitle>
                         <CardDescription className="text-xs font-black text-gray-400 uppercase tracking-widest mt-2">
