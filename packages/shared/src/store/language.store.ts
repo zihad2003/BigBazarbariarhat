@@ -133,7 +133,7 @@ export const translations = {
             kidsBoys: 'শিশু (ছেলে)',
             kidsGirls: 'শিশু (মেয়ে)',
             kidsDesc: 'চমকপ্রদ বিলাসিতা',
-            weddingTouch: 'ওয়েডিং টাচ',
+            weddingTouch: 'বিয়ের ছোঁয়া',
             weddingDesc: 'ঐতিহ্যবাহী কমনীয়তা',
             accessories: 'আনুষঙ্গিক',
             accessoriesDesc: 'নিখুঁত ছোঁয়া',

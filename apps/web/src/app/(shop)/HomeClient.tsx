@@ -612,7 +612,7 @@ export default function HomeClient({
                                             cat.key === 'men' ? 'পুরুষদের' : 
                                             cat.key === 'women' ? 'মহিলাদের' : 
                                             cat.key.includes('kids') ? 'বাচ্চাদের' : 
-                                            cat.key.includes('wedding') ? 'ওয়েডিং' : cat.name
+                                            cat.key.includes('wedding') ? 'বিয়ের' : cat.name
                                         ) : cat.name}
                                     </span>
                                     <div className="flex items-center gap-1 mt-1.5 text-[10px] text-yellow-400 font-bold uppercase tracking-widest">
@@ -661,7 +661,7 @@ export default function HomeClient({
                         <div className="absolute inset-y-0 left-14 sm:left-24 right-14 sm:right-24 flex flex-col justify-center max-w-xs sm:max-w-md md:max-w-lg z-10 text-white space-y-3 sm:space-y-4">
                             <div className="flex items-center gap-1.5">
                                 <span className="text-[#bf953f] text-[9px] sm:text-[10px] font-black uppercase tracking-[0.4em] block">
-                                    {language === 'bn' ? 'ওয়েডিং কালেকশন' : 'Wedding Collection'}
+                                    {language === 'bn' ? 'বিয়ের কালেকশন' : 'Wedding Collection'}
                                 </span>
                                 <Sparkles className="h-3 w-3 text-[#bf953f] animate-pulse" />
                             </div>
@@ -669,8 +669,8 @@ export default function HomeClient({
                             <h3 className="text-2xl sm:text-4xl md:text-5xl font-playfair font-normal uppercase tracking-wider leading-none">
                                 {language === 'bn' ? (
                                     <>
-                                        ওয়েডিং <br className="hidden sm:inline" />
-                                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#bf953f] via-[#fcf6ba] to-[#b38728] font-serif italic capitalize">টাচ</span>
+                                        বিয়ের <br className="hidden sm:inline" />
+                                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#bf953f] via-[#fcf6ba] to-[#b38728] font-serif italic capitalize">ছোঁয়া</span>
                                     </>
                                 ) : (
                                     <>
