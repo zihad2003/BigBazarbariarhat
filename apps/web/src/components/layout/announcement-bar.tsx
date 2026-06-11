@@ -76,7 +76,7 @@ export function AnnouncementBar() {
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    className="bg-primary text-white relative overflow-hidden z-[60]"
+                    className="bg-[#E11D48] text-white relative overflow-hidden z-[60]"
                 >
                     <div className="flex items-center justify-center py-2 px-12 group cursor-pointer">
                         <div className="flex items-center gap-8 animate-marquee whitespace-nowrap">

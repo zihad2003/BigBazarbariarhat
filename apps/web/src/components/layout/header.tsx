@@ -209,7 +209,7 @@ export function Header() {
                                         </>
                                     ) : (
                                         <>
-                                            <span className="text-[#E11D48]">BIG</span> <span className="text-[#0F172A]">BAZAR</span>
+                                            <span className="text-[#E11D48]">BIG</span> <span className="text-[#000000]">BAZAR</span>
                                         </>
                                     )}
                                 </h1>
