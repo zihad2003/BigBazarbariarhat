@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
-import { Loader2, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Loader2, ArrowRight, ArrowLeft, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 
 export default function SignupPage() {
@@ -144,6 +144,10 @@ export default function SignupPage() {
                     <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">
                         Already have an account? <Link href="/login" className="text-black hover:underline">Log In Here</Link>
                     </p>
+                    <div className="h-px w-full bg-gray-100" />
+                    <Link href="/" className="text-[10px] text-gray-400 hover:text-black font-black uppercase tracking-widest flex items-center gap-1.5 transition-colors">
+                        <ArrowLeft className="h-3.5 w-3.5" /> Continue Shopping
+                    </Link>
                 </CardFooter>
             </Card>
         </div>

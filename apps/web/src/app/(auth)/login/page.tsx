@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
-import { Loader2, ArrowRight, ShieldCheck, ShoppingBag } from 'lucide-react';
+import { Loader2, ArrowRight, ArrowLeft, ShieldCheck, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
 
 export default function LoginPage() {
@@ -151,6 +151,10 @@ export default function LoginPage() {
                     <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">
                         New here? <Link href="/signup" className="text-black hover:underline">Create Account</Link>
                     </p>
+                    <div className="h-px w-full bg-gray-100" />
+                    <Link href="/" className="text-[10px] text-gray-400 hover:text-black font-black uppercase tracking-widest flex items-center gap-1.5 transition-colors">
+                        <ArrowLeft className="h-3.5 w-3.5" /> Continue Shopping
+                    </Link>
                 </CardFooter>
             </Card>
         </div>
