@@ -56,7 +56,7 @@ const getNavCategories = (t: any): any[] => [
     {
         name: t?.categories?.kidsBoys || 'Kids(Boys)',
         href: '/products?category=kids-boys',
-        featured: 'https://images.unsplash.com/photo-1519234129322-2636a0d0d885?q=80&w=800&auto=format&fit=crop',
+        featured: 'https://images.unsplash.com/photo-1503919545889-aef636e10ad4?q=80&w=800&auto=format&fit=crop',
         subcategories: [
             { name: 'T-Shirts', href: '/products?category=kids-boys&subcategory=kids-boys-t-shirts' },
             { name: 'Pants', href: '/products?category=kids-boys&subcategory=kids-boys-pants' },
@@ -66,7 +66,7 @@ const getNavCategories = (t: any): any[] => [
     {
         name: t?.categories?.kidsGirls || 'Kids(Girls)',
         href: '/products?category=kids-girls',
-        featured: 'https://images.unsplash.com/photo-1514316454349-f50db90e2270?q=80&w=800&auto=format&fit=crop',
+        featured: 'https://images.unsplash.com/photo-1518837695005-2083093ee35b?q=80&w=800&auto=format&fit=crop',
         subcategories: [
             { name: 'Dresses', href: '/products?category=kids-girls&subcategory=kids-girls-dresses' },
             { name: 'Tops', href: '/products?category=kids-girls&subcategory=kids-girls-tops' },
@@ -107,8 +107,17 @@ export function Header() {
 
     useEffect(() => {
         setMounted(true);
-        const handleScroll = () => setIsScrolled(window.scrollY > 20);
-        window.addEventListener('scroll', handleScroll);
+        let ticking = false;
+        const handleScroll = () => {
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    setIsScrolled(window.scrollY > 30);
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        };
+        window.addEventListener('scroll', handleScroll, { passive: true });
         
         const saved = localStorage.getItem('recent-searches');
         if (saved) setRecentSearches(JSON.parse(saved));
@@ -120,8 +129,8 @@ export function Header() {
         const defaultImages: Record<string, string> = {
             'Men': 'https://images.unsplash.com/photo-1516259762381-22954d7d3ad2?q=80&w=800&auto=format&fit=crop',
             'Women': 'https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=800&auto=format&fit=crop',
-            'Kids(Boys)': 'https://images.unsplash.com/photo-1519234129322-2636a0d0d885?q=80&w=800&auto=format&fit=crop',
-            'Kids(Girls)': 'https://images.unsplash.com/photo-1514316454349-f50db90e2270?q=80&w=800&auto=format&fit=crop',
+            'Kids(Boys)': 'https://images.unsplash.com/photo-1503919545889-aef636e10ad4?q=80&w=800&auto=format&fit=crop',
+            'Kids(Girls)': 'https://images.unsplash.com/photo-1518837695005-2083093ee35b?q=80&w=800&auto=format&fit=crop',
             'Wedding Touch': 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=800&auto=format&fit=crop',
         };
         const fetchNav = async () => {
@@ -190,12 +199,12 @@ export function Header() {
             <AnnouncementBar />
             
             <header className={cn(
-                "z-50 transition-all duration-500 w-full",
+                "z-50 transition-all duration-300 ease-in-out w-full h-14 lg:h-16 xl:h-[114px]",
                 isHome 
                     ? (isScrolled 
-                        ? "sticky top-0 bg-white/95 backdrop-blur-xl shadow-xl shadow-black/5 text-slate-900 border-b border-slate-100 animate-fadeInDown" 
+                        ? "fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-md shadow-xl shadow-black/5 text-slate-900 border-b border-slate-100" 
                         : "absolute left-0 right-0 bg-transparent text-white border-b border-white/10")
-                    : "sticky top-0 bg-white/95 backdrop-blur-xl shadow-xl shadow-black/5 text-slate-900 border-b border-slate-100"
+                    : "sticky top-0 bg-white/95 backdrop-blur-md shadow-xl shadow-black/5 text-slate-900 border-b border-slate-100"
             )}>
                 <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
                     {/* Row 1: Logo, Centered Search, Action Icons */}
@@ -203,16 +212,12 @@ export function Header() {
                         {/* Logo */}
                         <Link href="/" className="group shrink-0">
                             <div className="flex items-center">
-                                <h1 className="text-xl sm:text-2xl font-black tracking-widest uppercase block font-playfair transition-colors duration-300">
-                                    {isHome && !isScrolled ? (
-                                        <>
-                                            <span className="text-[#E11D48]">BIG</span> <span className="text-white">BAZAR</span>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <span className="text-[#E11D48]">BIG</span> <span className="text-[#000000]">BAZAR</span>
-                                        </>
-                                    )}
+                                <h1 className="text-xl sm:text-2xl font-black tracking-widest uppercase block font-playfair transition-all duration-300 ease-in-out">
+                                    <span className="text-[#E11D48] transition-all duration-300 ease-in-out">BIG</span>{" "}
+                                    <span className={cn(
+                                        "transition-all duration-300 ease-in-out",
+                                        isHome && !isScrolled ? "text-white" : "text-neutral-900"
+                                    )}>BAZAR</span>
                                 </h1>
                             </div>
                         </Link>
@@ -221,7 +226,7 @@ export function Header() {
                         <div ref={searchRef} className="hidden lg:block relative flex-1 max-w-md mx-auto">
                             <form onSubmit={handleSearch} className="relative group">
                                 <Search className={cn(
-                                    "absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 transition-colors duration-300",
+                                    "absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 transition-all duration-300 ease-in-out",
                                     isHome && !isScrolled ? "text-white/70" : "text-slate-400"
                                 )} />
                                 <input
@@ -243,7 +248,7 @@ export function Header() {
                                         onClick={() => setSearchQuery('')}
                                         className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-slate-50/10 rounded-full"
                                     >
-                                        <X className={cn("h-3.5 w-3.5", isHome && !isScrolled ? "text-white/50" : "text-slate-400")} />
+                                        <X className={cn("h-3.5 w-3.5 transition-all duration-300 ease-in-out", isHome && !isScrolled ? "text-white/50" : "text-slate-400")} />
                                     </button>
                                 )}
                             </form>
@@ -319,18 +324,18 @@ export function Header() {
                             {/* Search trigger for mobile */}
                             <button 
                                 onClick={() => openSearch()}
-                                className="lg:hidden p-2.5 rounded-full transition-all bg-transparent hover:bg-white/10" 
+                                className="lg:hidden p-2.5 rounded-full transition-all duration-300 ease-in-out bg-transparent hover:bg-white/10" 
                                 aria-label="Search"
                             >
-                                <Search className={cn("h-5 w-5", isHome && !isScrolled ? "text-white" : "text-slate-900")} />
+                                <Search className={cn("h-5 w-5 transition-all duration-300 ease-in-out", isHome && !isScrolled ? "text-white" : "text-slate-900")} />
                             </button>
 
                             {/* Wishlist */}
                             <Link 
                                 href="/wishlist" 
-                                className="hidden sm:block p-2.5 rounded-full transition-all relative hover:bg-white/10"
+                                className="hidden sm:block p-2.5 rounded-full transition-all duration-300 ease-in-out relative hover:bg-white/10"
                             >
-                                <Heart className={cn("h-5 w-5", isHome && !isScrolled ? "text-white" : "text-slate-900")} />
+                                <Heart className={cn("h-5 w-5 transition-all duration-300 ease-in-out", isHome && !isScrolled ? "text-white" : "text-slate-900")} />
                                 {mounted && wishlistCount > 0 && (
                                     <span className="absolute top-1 right-1 w-4 h-4 bg-primary text-white text-[8px] font-black rounded-full flex items-center justify-center border border-white shadow-sm">
                                         {wishlistCount}
@@ -341,9 +346,9 @@ export function Header() {
                             {/* Cart */}
                             <Link 
                                 href="/cart"
-                                className="p-2.5 rounded-full transition-all relative duration-300 hover:bg-white/10"
+                                className="p-2.5 rounded-full transition-all relative duration-300 ease-in-out hover:bg-white/10"
                             >
-                                <ShoppingBag className={cn("h-5 w-5", isHome && !isScrolled ? "text-white" : "text-slate-900")} />
+                                <ShoppingBag className={cn("h-5 w-5 transition-all duration-300 ease-in-out", isHome && !isScrolled ? "text-white" : "text-slate-900")} />
                                 {mounted && cartCount > 0 && (
                                     <span className="absolute top-1 right-1 w-4 h-4 bg-primary text-white text-[8px] font-black rounded-full flex items-center justify-center border border-white shadow-sm">
                                         {cartCount}
@@ -353,11 +358,11 @@ export function Header() {
 
                             {/* Profile */}
                             <Link href="/account/profile" className={cn(
-                                "hidden sm:block p-0.5 rounded-full transition-all duration-300",
+                                "hidden sm:block p-0.5 rounded-full transition-all duration-300 ease-in-out",
                                 isHome && !isScrolled ? "hover:ring-4 hover:ring-white/15" : "hover:ring-4 hover:ring-primary/10"
                             )}>
                                 <div className={cn(
-                                    "w-9 h-9 rounded-full flex items-center justify-center font-black text-xs transition-colors duration-300",
+                                    "w-9 h-9 rounded-full flex items-center justify-center font-black text-xs transition-all duration-300 ease-in-out",
                                     isHome && !isScrolled ? "bg-white/10 text-white" : "bg-slate-100 text-slate-900"
                                 )}>
                                     <User className="h-4 w-4" />
@@ -369,10 +374,10 @@ export function Header() {
 
                     {/* Row 2: Centered Category Navigation Links (Desktop) */}
                     <div className={cn(
-                        "hidden xl:flex items-center justify-center border-t py-1.5 mt-0 transition-colors duration-300",
+                        "hidden xl:flex items-center justify-center border-t py-1.5 mt-0 transition-all duration-300 ease-in-out",
                         isHome && !isScrolled ? "border-white/10" : "border-slate-100"
                     )}>
-                        <nav className="flex items-center gap-8 2xl:gap-12">
+                        <nav className="flex items-center gap-8 2xl:gap-12 transition-all duration-300 ease-in-out">
                             {categories.filter(c => !c.isHidden).map((category) => {
                                 const isSale = category.name.toLowerCase().includes('sale') || category.name.toLowerCase().includes('discount') || category.name.toLowerCase().includes('exclusive');
                                 return (
@@ -385,7 +390,7 @@ export function Header() {
                                         <Link 
                                             href={category.href} 
                                             className={cn(
-                                                "flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest transition-colors py-1 relative block",
+                                                "flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest transition-all duration-300 ease-in-out py-1 relative block",
                                                 isSale
                                                     ? (isHome && !isScrolled ? "text-[#16A34A] hover:text-[#16A34A]/80 font-black" : "text-primary hover:text-primary/80 font-black")
                                                     : (isHome && !isScrolled ? "text-white/90 hover:text-white" : "text-slate-800 hover:text-primary")

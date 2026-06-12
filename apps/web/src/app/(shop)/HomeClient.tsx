@@ -18,7 +18,9 @@ import {
     Clock,
     Sparkles,
     Gift,
-    Crown
+    Crown,
+    RotateCcw,
+    ChevronUp
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -28,43 +30,12 @@ import { useUIStore } from '@/lib/stores/ui-store';
 import { cn, formatPrice } from '@/lib/utils';
 
 // --- DATA HELPERS ---
-const getHeroSlides = (t: any) => [
-    {
-        id: 1,
-        image: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=1800&auto=format&fit=crop',
-        title: t?.hero?.slide1Title || 'New Season Collection',
-        subtitle: t?.hero?.slide1Subtitle || "Women's Fashion 2026",
-        cta: t?.common?.shopNow || 'Shop Now',
-        href: '/products?category=women',
-        videoUrl: null,
-    },
-    {
-        id: 2,
-        image: 'https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?q=80&w=1800&auto=format&fit=crop',
-        title: t?.hero?.slide2Title || 'Premium Menswear',
-        subtitle: t?.hero?.slide2Subtitle || 'Crafted for the Modern Man',
-        cta: t?.common?.explore || 'Explore',
-        href: '/products?category=men',
-        videoUrl: null,
-    },
-    {
-        id: 3,
-        image: 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?q=80&w=1800&auto=format&fit=crop',
-        title: t?.hero?.slide3Title || 'Flash Sale',
-        subtitle: t?.hero?.slide3Subtitle || 'Up to 50% Off — Limited Time',
-        cta: t?.common?.shopNow || 'Shop Now',
-        href: '/sale',
-        badge: '50% OFF',
-        videoUrl: null,
-    },
-];
-
 const fallbackCategoryImages: Record<string, string> = {
-    'Women': 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=500&auto=format&fit=crop',
-    'Men': 'https://images.unsplash.com/photo-1488161628813-04466f872be2?q=80&w=500&auto=format&fit=crop',
-    'Kids(Boys)': 'https://images.unsplash.com/photo-1503919545889-aef636e10ad4?q=80&w=500&auto=format&fit=crop',
-    'Kids(Girls)': 'https://images.unsplash.com/photo-1518837695005-2083093ee35b?q=80&w=500&auto=format&fit=crop',
-    'Wedding Touch': 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?q=80&w=500&auto=format&fit=crop',
+    'Women':        'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=500&auto=format&fit=crop',
+    'Men':          'https://images.unsplash.com/photo-1488161628813-04466f872be2?q=80&w=500&auto=format&fit=crop',
+    'Kids(Boys)':   'https://images.unsplash.com/photo-1503919545889-aef636e10ad4?q=80&w=500&auto=format&fit=crop',
+    'Kids(Girls)':  'https://images.unsplash.com/photo-1518837695005-2083093ee35b?q=80&w=500&auto=format&fit=crop',
+    'Wedding Touch':'https://images.unsplash.com/photo-1583939003579-730e3918a45a?q=80&w=500&auto=format&fit=crop',
 };
 
 // --- HERO SLIDER ---
@@ -76,7 +47,7 @@ function HeroSlider({ dbBanners }: { dbBanners?: any[] }) {
             image: b.imageDesktop,
             videoUrl: b.videoUrl || null,
             title: b.title,
-            subtitle: b.subtitle || "",
+            subtitle: b.subtitle || '',
             cta: b.linkText || t?.common?.shopNow || 'Shop Now',
             href: b.linkUrl || '/products',
             badge: undefined,
@@ -87,9 +58,9 @@ function HeroSlider({ dbBanners }: { dbBanners?: any[] }) {
                 image: 'https://images.unsplash.com/photo-1610030469668-93535c17b6b3?q=80&w=1800&auto=format&fit=crop',
                 title: t?.hero?.slide1Title || 'Elegance Redefined',
                 subtitle: t?.hero?.slide1Subtitle || 'Discover a curated collection of artisanal sarees and designer lehengas, where heritage craftsmanship meets modern silhouettes.',
-                cta: t?.common?.shopNow || 'SHOP COLLECTION',
+                cta: t?.common?.shopNow || 'Shop Collection',
                 href: '/products?category=wedding-touch',
-                badge: 'THE NEW HERITAGE',
+                badge: 'The New Heritage',
                 videoUrl: null,
             },
             {
@@ -97,19 +68,19 @@ function HeroSlider({ dbBanners }: { dbBanners?: any[] }) {
                 image: 'https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?q=80&w=1200&auto=format&fit=crop',
                 title: t?.hero?.slide2Title || 'Premium Menswear',
                 subtitle: t?.hero?.slide2Subtitle || 'Crafted for the Modern Man',
-                cta: t?.common?.explore || 'EXPLORE COLLECTION',
+                cta: t?.common?.explore || 'Explore Collection',
                 href: '/products?category=men',
-                badge: 'PREMIUM MENSWEAR',
+                badge: 'Premium Menswear',
                 videoUrl: null,
             },
             {
                 id: 3,
                 image: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=1200&auto=format&fit=crop',
                 title: t?.hero?.slide3Title || 'Flash Sale',
-                subtitle: t?.hero?.slide3Subtitle || 'Up to 50% Off — Limited Time',
-                cta: t?.common?.shopNow || 'SHOP SALE',
+                subtitle: t?.hero?.slide3Subtitle || 'Up to 50% Off — Limited Time Only',
+                cta: t?.common?.shopNow || 'Shop Sale',
                 href: '/sale',
-                badge: 'FLASH SALE — 50% OFF',
+                badge: 'Flash Sale — 50% Off',
                 videoUrl: null,
             },
         ];
@@ -136,69 +107,58 @@ function HeroSlider({ dbBanners }: { dbBanners?: any[] }) {
     const goPrev = () => setCurrent(c => (c - 1 + total) % total);
 
     return (
-        <div className="relative w-full h-[65vh] md:h-[85vh] overflow-hidden bg-gray-900">
+        <div className="relative w-full h-[65vh] md:h-[88vh] overflow-hidden bg-neutral-900">
             <AnimatePresence mode="wait">
                 {slides.map((slide, i) =>
                     i === current ? (
                         <motion.div
                             key={slide.id}
                             className="absolute inset-0"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
+                            initial={{ opacity: 0, scale: 1.02 }}
+                            animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0 }}
-                            transition={{ duration: 0.8 }}
+                            transition={{ duration: 0.9 }}
                         >
                             {slide.videoUrl ? (
-                                <>
-                                    <video
-                                        ref={videoRef}
-                                        src={slide.videoUrl}
-                                        className="absolute inset-0 w-full h-full object-cover object-center"
-                                        autoPlay
-                                        muted
-                                        playsInline
-                                        onEnded={goNext}
-                                    />
-                                    <div className="absolute top-4 right-16 flex items-center gap-1.5 bg-black/40 backdrop-blur-sm text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full z-20">
-                                        <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-                                        Video
-                                    </div>
-                                </>
+                                <video
+                                    ref={videoRef}
+                                    src={slide.videoUrl}
+                                    className="absolute inset-0 w-full h-full object-cover"
+                                    autoPlay muted playsInline onEnded={goNext}
+                                />
                             ) : (
                                 <Image
                                     src={slide.image || '/placeholder.png'}
                                     alt={slide.title}
-                                    fill
-                                    className="object-cover object-center"
-                                    quality={95}
-                                    priority
+                                    fill className="object-cover object-center"
+                                    quality={95} priority
                                 />
                             )}
-                            {/* Overlay matches the dark moody heritage feel of the reference */}
-                            <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/35 to-transparent" />
-                            
-                            {/* Content container - left aligned overlay */}
-                            <div className="absolute inset-0 flex flex-col justify-center px-8 md:px-20 max-w-2xl z-20">
+                            {/* Gradient overlay */}
+                            <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/30 to-transparent" />
+
+                            {/* Content */}
+                            <div className="absolute inset-0 flex flex-col justify-center px-8 md:px-20 max-w-3xl z-10">
                                 {slide.badge && (
                                     <motion.span
-                                        initial={{ opacity: 0, y: 10 }}
+                                        initial={{ opacity: 0, y: 12 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: 0.2 }}
-                                        className="inline-block mb-4 text-[10px] md:text-[11px] font-black uppercase tracking-[0.3em] text-[#16A34A] bg-[#16A34A]/10 border border-[#16A34A]/20 px-3.5 py-1.5 rounded-full w-fit"
+                                        className="inline-block mb-5 text-[10px] md:text-[11px] font-black uppercase tracking-[0.3em] text-emerald-400 border border-emerald-400/30 bg-emerald-400/10 px-4 py-1.5 rounded-lg w-fit"
                                     >
                                         {slide.badge}
                                     </motion.span>
                                 )}
                                 <motion.h1
-                                    initial={{ opacity: 0, y: 20 }}
+                                    initial={{ opacity: 0, y: 22 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.3 }}
-                                    className="text-4xl md:text-6xl font-playfair font-normal text-white leading-tight mb-4 tracking-tight"
+                                    className="text-4xl md:text-6xl lg:text-7xl font-playfair font-normal text-white leading-[1.08] mb-5 tracking-tight"
                                 >
                                     {slide.title.includes(' ') ? (
                                         <>
                                             {slide.title.substring(0, slide.title.lastIndexOf(' '))} <br />
-                                            <span className="text-[#16A34A] font-bold">
+                                            <span className="text-emerald-400 font-bold italic">
                                                 {slide.title.substring(slide.title.lastIndexOf(' ') + 1)}
                                             </span>
                                         </>
@@ -207,20 +167,20 @@ function HeroSlider({ dbBanners }: { dbBanners?: any[] }) {
                                     )}
                                 </motion.h1>
                                 <motion.p
-                                    initial={{ opacity: 0, y: 20 }}
+                                    initial={{ opacity: 0, y: 22 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.4 }}
-                                    className="text-white/80 text-xs md:text-sm mb-8 leading-relaxed max-w-md font-light"
+                                    className="text-white/70 text-sm md:text-base mb-8 leading-relaxed max-w-md font-light"
                                 >
                                     {slide.subtitle}
                                 </motion.p>
                                 <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
+                                    initial={{ opacity: 0, y: 22 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.5 }}
                                 >
                                     <Link href={slide.href}>
-                                        <button className="group inline-flex items-center gap-2 px-8 py-3.5 bg-[#1A6B3C] hover:bg-[#1A6B3C]/90 text-white font-bold uppercase tracking-widest text-[11px] transition-all duration-300 shadow-lg shadow-black/25">
+                                        <button className="group inline-flex items-center gap-3 px-8 py-3.5 bg-white text-neutral-900 hover:bg-emerald-400 hover:text-white font-black uppercase tracking-widest text-[11px] rounded-xl transition-all duration-300 shadow-xl shadow-black/20">
                                             {slide.cta}
                                             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                                         </button>
@@ -232,86 +192,138 @@ function HeroSlider({ dbBanners }: { dbBanners?: any[] }) {
                 )}
             </AnimatePresence>
 
-            <button
-                onClick={goPrev}
-                className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/20 hover:bg-white text-white hover:text-foreground backdrop-blur-sm flex items-center justify-center transition-all duration-300 rounded-full z-30"
-                aria-label="Previous"
-            >
+            {/* Nav arrows */}
+            <button onClick={goPrev} aria-label="Previous" className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/10 hover:bg-white text-white hover:text-neutral-900 backdrop-blur-sm flex items-center justify-center rounded-xl transition-all z-20 border border-white/20">
                 <ChevronLeft className="h-5 w-5" />
             </button>
-            <button
-                onClick={goNext}
-                className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/20 hover:bg-white text-white hover:text-foreground backdrop-blur-sm flex items-center justify-center transition-all duration-300 rounded-full z-30"
-                aria-label="Next"
-            >
+            <button onClick={goNext} aria-label="Next" className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/10 hover:bg-white text-white hover:text-neutral-900 backdrop-blur-sm flex items-center justify-center rounded-xl transition-all z-20 border border-white/20">
                 <ChevronRight className="h-5 w-5" />
             </button>
 
-            <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex gap-2 z-30">
-                {slides.map((slide, i) => (
+            {/* Dots */}
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+                {slides.map((_, i) => (
                     <button
                         key={i}
                         onClick={() => setCurrent(i)}
-                        className={`h-1.5 rounded-full transition-all duration-300 ${i === current ? 'w-8 bg-white' : 'w-2 bg-white/50'}`}
+                        className={`h-1.5 rounded-full transition-all duration-300 ${i === current ? 'w-8 bg-white' : 'w-2 bg-white/40'}`}
                         aria-label={`Slide ${i + 1}`}
                     />
                 ))}
+            </div>
+
+            {/* Slide counter */}
+            <div className="absolute bottom-6 right-6 text-[10px] font-bold text-white/50 uppercase tracking-widest z-20">
+                {String(current + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}
             </div>
         </div>
     );
 }
 
-// --- PRODUCT CARD (Minimal, Aarong-style) ---
+// --- TRUST BAR ---
+function TrustBar() {
+    const features = [
+        { icon: Truck,        title: 'Free Delivery',       subtitle: 'On orders over ৳999' },
+        { icon: RotateCcw,    title: 'Easy Returns',        subtitle: '7-day hassle-free return' },
+        { icon: ShieldCheck,  title: 'Secure Checkout',     subtitle: '100% protected payment' },
+        { icon: Headphones,   title: '24/7 Support',        subtitle: 'Dedicated customer care' },
+    ];
+    return (
+        <div className="border-y border-neutral-100 bg-white">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-neutral-100">
+                    {features.map(({ icon: Icon, title, subtitle }) => (
+                        <div key={title} className="flex items-center gap-4 px-6 py-5">
+                            <div className="w-9 h-9 rounded-xl bg-neutral-50 border border-neutral-100 flex items-center justify-center shrink-0">
+                                <Icon className="h-4 w-4 text-neutral-700" />
+                            </div>
+                            <div>
+                                <p className="text-[11px] font-black text-neutral-900 uppercase tracking-tight">{title}</p>
+                                <p className="text-[10px] text-neutral-400 font-medium mt-0.5">{subtitle}</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// --- SECTION HEADER ---
+function SectionHeader({ label, title, viewAllHref }: { label?: string; title: string; viewAllHref?: string }) {
+    return (
+        <div className="flex items-end justify-between mb-10">
+            <div>
+                {label && (
+                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-neutral-400 block mb-2">{label}</span>
+                )}
+                <h2 className="text-2xl md:text-3xl font-playfair font-bold text-neutral-900 tracking-tight">{title}</h2>
+            </div>
+            {viewAllHref && (
+                <Link href={viewAllHref} className="group inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-neutral-400 hover:text-neutral-900 transition-colors border-b border-neutral-200 hover:border-neutral-900 pb-0.5">
+                    View All <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
+                </Link>
+            )}
+        </div>
+    );
+}
+
+// --- PRODUCT CARD ---
 function ProductCard({ product, index }: { product: any; index: number }) {
     const { language } = useLanguageStore();
     const t = useTranslation();
     const [isHovered, setIsHovered] = useState(false);
+    const [inWishlist, setInWishlist] = useState(false);
     const addItem = useCartStore((state) => state.addItem);
     const { addNotification } = useUIStore();
     const router = useRouter();
 
     const firstImage = product.images?.[0];
-    const resolvedImage = typeof firstImage === 'string' 
-        ? firstImage 
-        : (firstImage && typeof firstImage === 'object' && 'url' in firstImage 
-            ? (firstImage as any).url 
+    const resolvedImage = typeof firstImage === 'string'
+        ? firstImage
+        : (firstImage && typeof firstImage === 'object' && 'url' in firstImage
+            ? (firstImage as any).url
             : (product.image || '/placeholder.png'));
 
     return (
         <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: index * 0.05, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ delay: index * 0.06, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
             className="group"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
             <Link href={`/products/${product.slug || product.id}`}>
-                <div className="relative aspect-[3/4] overflow-hidden rounded-[1.5rem] md:rounded-[2rem] bg-gray-100 mb-3 border border-gray-100/50">
+                <div className="relative aspect-[3/4] overflow-hidden rounded-xl bg-neutral-100 mb-3 border border-neutral-100">
                     <Image
                         src={resolvedImage}
                         alt={product.name}
                         fill
-                        className={`object-cover transition-transform duration-700 ${isHovered ? 'scale-110' : 'scale-100'}`}
+                        className={`object-cover transition-transform duration-700 ${isHovered ? 'scale-108' : 'scale-100'}`}
                         quality={90}
+                        style={{ transform: isHovered ? 'scale(1.08)' : 'scale(1)' }}
                     />
+                    {/* Sale badge */}
                     {(product.salePrice || product.isFlashSale) && (
-                        <span className="absolute top-2 left-2 bg-destructive text-white text-[10px] font-black uppercase tracking-widest px-2 py-1 z-10 shadow-lg">
+                        <span className="absolute top-2.5 left-2.5 bg-rose-500 text-white text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-lg z-10">
                             {product.isFlashSale ? 'Flash Sale' : 'Sale'}
                         </span>
                     )}
+                    {/* Wishlist */}
                     <button
-                        className={`absolute top-2 right-2 w-8 h-8 bg-white flex items-center justify-center transition-all duration-200 shadow-sm ${isHovered ? 'opacity-100' : 'opacity-0'}`}
+                        onClick={(e) => { e.preventDefault(); setInWishlist(w => !w); }}
+                        className={`absolute top-2.5 right-2.5 w-8 h-8 bg-white rounded-xl flex items-center justify-center shadow-sm border border-neutral-100 transition-all duration-200 ${isHovered ? 'opacity-100 scale-100' : 'opacity-0 scale-90'}`}
                         aria-label="Add to wishlist"
                     >
-                        <Heart className="h-4 w-4 text-foreground hover:text-destructive transition-colors" />
+                        <Heart className={`h-3.5 w-3.5 transition-colors ${inWishlist ? 'fill-rose-500 text-rose-500' : 'text-neutral-400'}`} />
                     </button>
-
+                    {/* Add to cart slide-up */}
                     <div className={`absolute bottom-0 left-0 right-0 transition-all duration-300 ${isHovered ? 'translate-y-0' : 'translate-y-full'}`}>
                         <button
-                            onClick={(e) => { 
-                                e.preventDefault(); 
+                            onClick={(e) => {
+                                e.preventDefault();
                                 addItem({
                                     productId: product.id,
                                     name: product.name,
@@ -321,37 +333,36 @@ function ProductCard({ product, index }: { product: any; index: number }) {
                                     stock: 100,
                                 });
                                 addNotification({ type: 'success', message: `${product.name} added to cart` });
-                                router.push('/cart');
                             }}
-                            className="w-full bg-foreground text-white text-[10px] uppercase tracking-widest font-bold py-3 flex items-center justify-center gap-2 hover:bg-destructive transition-colors"
+                            className="w-full bg-neutral-900 text-white text-[10px] uppercase tracking-widest font-bold py-3 flex items-center justify-center gap-2 hover:bg-neutral-700 transition-colors"
                         >
-                            <ShoppingBag className="h-3 w-3" />
+                            <ShoppingBag className="h-3.5 w-3.5" />
                             {t.common.addToCart}
                         </button>
                     </div>
                 </div>
             </Link>
 
-            <div className="space-y-3">
+            <div className="space-y-1.5">
                 <Link href={`/products/${product.slug || product.id}`}>
-                    <h3 className="text-sm font-semibold text-foreground leading-snug group-hover:text-destructive transition-colors min-h-[2.5rem] line-clamp-2">
+                    <h3 className="text-sm font-semibold text-neutral-800 leading-snug group-hover:text-neutral-500 transition-colors line-clamp-2">
                         {product.name}
                     </h3>
                 </Link>
                 <div className="flex items-center gap-1">
                     {[...Array(5)].map((_, i) => (
-                        <Star key={i} className={`h-3 w-3 ${i < Math.floor(product.rating || 0) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} />
+                        <Star key={i} className={`h-3 w-3 ${i < Math.floor(product.rating || 0) ? 'fill-amber-400 text-amber-400' : 'text-neutral-200'}`} />
                     ))}
-                    <span className="text-[10px] text-muted-foreground ml-1">({product.rating || 0})</span>
+                    <span className="text-[10px] text-neutral-400 ml-1">({product.rating || 0})</span>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 pt-0.5">
                     {product.salePrice ? (
                         <>
-                            <span className="font-bold text-destructive text-sm">{formatPrice(product.salePrice, language)}</span>
-                            <span className="text-xs text-muted-foreground line-through">{formatPrice(product.price, language)}</span>
+                            <span className="font-black text-rose-600 text-sm">{formatPrice(product.salePrice, language)}</span>
+                            <span className="text-xs text-neutral-400 line-through">{formatPrice(product.price, language)}</span>
                         </>
                     ) : (
-                        <span className="font-bold text-foreground text-sm">{formatPrice(product.price, language)}</span>
+                        <span className="font-black text-neutral-900 text-sm">{formatPrice(product.price, language)}</span>
                     )}
                 </div>
             </div>
@@ -359,7 +370,7 @@ function ProductCard({ product, index }: { product: any; index: number }) {
     );
 }
 
-// --- FLASH SALE COMPONENT ---
+// --- FLASH SALE SECTION ---
 function FlashSaleSection({ products }: { products: any[] }) {
     const { language } = useLanguageStore();
     const [timeLeft, setTimeLeft] = useState({ h: 12, m: 45, s: 0 });
@@ -381,125 +392,141 @@ function FlashSaleSection({ products }: { products: any[] }) {
 
     useEffect(() => {
         if (!products.length) return;
-
-        let animationFrameId: number;
-
+        let animId: number;
         const animate = () => {
             if (scrollContainerRef.current && !isPaused) {
-                const container = scrollContainerRef.current;
-                container.scrollLeft += 0.75;
-
-                if (container.scrollLeft + container.clientWidth >= container.scrollWidth - 10) {
-                    container.scrollLeft = 0;
-                }
+                const c = scrollContainerRef.current;
+                c.scrollLeft += 0.75;
+                if (c.scrollLeft + c.clientWidth >= c.scrollWidth - 10) c.scrollLeft = 0;
             }
-            animationFrameId = requestAnimationFrame(animate);
+            animId = requestAnimationFrame(animate);
         };
-
-        animationFrameId = requestAnimationFrame(animate);
-
-        return () => {
-            cancelAnimationFrame(animationFrameId);
-            if (touchTimeoutRef.current) clearTimeout(touchTimeoutRef.current);
-        };
+        animId = requestAnimationFrame(animate);
+        return () => { cancelAnimationFrame(animId); if (touchTimeoutRef.current) clearTimeout(touchTimeoutRef.current); };
     }, [products, isPaused]);
-
-    const handleTouchStart = () => {
-        setIsPaused(true);
-        if (touchTimeoutRef.current) clearTimeout(touchTimeoutRef.current);
-    };
-
-    const handleTouchEnd = () => {
-        if (touchTimeoutRef.current) clearTimeout(touchTimeoutRef.current);
-        touchTimeoutRef.current = setTimeout(() => {
-            setIsPaused(false);
-        }, 3000);
-    };
 
     if (!products.length) return null;
 
     return (
-        <section className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 my-8 md:my-16">
-            <div 
-                className="bg-destructive/5 py-12 px-4 md:py-16 md:px-12 rounded-[2.5rem] overflow-hidden relative border border-destructive/10"
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-12 md:my-20">
+            <div
+                className="bg-neutral-900 py-10 px-6 md:py-14 md:px-10 rounded-xl overflow-hidden relative border border-neutral-800"
                 onMouseEnter={() => setIsPaused(true)}
                 onMouseLeave={() => setIsPaused(false)}
             >
-                <div className="flex flex-col md:flex-row items-center justify-between mb-12 gap-8">
-                    <div className="flex items-center gap-6">
-                        <div className="bg-destructive text-white p-4 rounded-3xl shadow-xl shadow-destructive/20 animate-pulse">
-                            <Clock className="h-8 w-8" />
+                {/* Header */}
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-10 gap-6">
+                    <div className="flex items-center gap-5">
+                        <div className="w-12 h-12 bg-rose-500 rounded-xl flex items-center justify-center shrink-0">
+                            <Clock className="h-6 w-6 text-white" />
                         </div>
                         <div>
-                            <h2 className="text-4xl font-black text-foreground uppercase tracking-tighter leading-none mb-2">
+                            <h2 className="text-2xl md:text-3xl font-black text-white uppercase tracking-tight">
                                 {language === 'bn' ? 'ফ্ল্যাশ সেল' : 'Flash Sale'}
                             </h2>
-                            <p className="text-destructive font-black text-xs uppercase tracking-[0.3em]">
-                                {language === 'bn' ? 'সীমিত সময়ের অফার' : 'Limited Time Offer'}
+                            <p className="text-rose-400 font-bold text-[10px] uppercase tracking-widest mt-1">
+                                {language === 'bn' ? 'সীমিত সময়ের অফার' : 'Limited time offer'}
                             </p>
                         </div>
                     </div>
-                    
-                    <div className="flex items-center gap-8">
-                        <div className="flex gap-4">
-                            {[
-                                { val: timeLeft.h, label: language === 'bn' ? 'ঘণ্টা' : 'Hours' },
-                                { val: timeLeft.m, label: language === 'bn' ? 'মিনিট' : 'Min' },
-                                { val: timeLeft.s, label: language === 'bn' ? 'সেকেন্ড' : 'Sec' }
-                            ].map((t, i) => (
-                                <div key={i} className="flex flex-col items-center">
-                                    <div className="w-16 h-16 bg-white border-2 border-destructive/20 rounded-2xl flex items-center justify-center text-2xl font-black text-destructive shadow-sm">
-                                        {t.val.toString().padStart(2, '0')}
-                                    </div>
-                                    <span className="text-[9px] font-black uppercase tracking-widest mt-2 text-destructive/60">{t.label}</span>
+
+                    <div className="flex items-center gap-3">
+                        {[
+                            { val: timeLeft.h, label: language === 'bn' ? 'ঘণ্টা' : 'H' },
+                            { val: timeLeft.m, label: language === 'bn' ? 'মিনিট' : 'M' },
+                            { val: timeLeft.s, label: language === 'bn' ? 'সেকেন্ড' : 'S' }
+                        ].map((t, i) => (
+                            <div key={i} className="flex flex-col items-center">
+                                <div className="w-14 h-14 bg-white/10 border border-white/10 rounded-xl flex items-center justify-center text-2xl font-black text-white tabular-nums">
+                                    {t.val.toString().padStart(2, '0')}
                                 </div>
-                            ))}
-                        </div>
+                                <span className="text-[9px] font-bold uppercase tracking-widest mt-1.5 text-white/40">{t.label}</span>
+                            </div>
+                        ))}
                     </div>
                 </div>
 
-                <div 
+                {/* Products */}
+                <div
                     ref={scrollContainerRef}
-                    className="flex overflow-x-auto gap-4 md:gap-8 pb-12 px-2 snap-x snap-mandatory scrollbar-none scroll-smooth [&::-webkit-scrollbar]:hidden"
-                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-                    onTouchStart={handleTouchStart}
-                    onTouchEnd={handleTouchEnd}
+                    className="flex overflow-x-auto gap-4 pb-2 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden"
+                    style={{ scrollbarWidth: 'none' }}
+                    onTouchStart={() => { setIsPaused(true); if (touchTimeoutRef.current) clearTimeout(touchTimeoutRef.current); }}
+                    onTouchEnd={() => { touchTimeoutRef.current = setTimeout(() => setIsPaused(false), 3000); }}
                 >
                     {products.map((p, i) => {
-                        const stockLeft = p.stock !== undefined && p.stock !== null && p.stock > 0 
-                            ? p.stock 
-                            : (5 + (p.id.charCodeAt(p.id.length - 1) % 15));
-                        const reservedPercent = 50 + (p.id.charCodeAt(0) % 35);
+                        const stockLeft = p.stock > 0 ? p.stock : (5 + (p.id.charCodeAt(p.id.length - 1) % 15));
+                        const reservedPct = 50 + (p.id.charCodeAt(0) % 35);
                         return (
-                            <div 
-                                key={p.id} 
-                                className="min-w-[75%] sm:min-w-[45%] md:min-w-[22%] snap-start flex-shrink-0"
-                            >
-                                <ProductCard product={p} index={i} />
-                                <div className="mt-4 bg-gray-100 h-1 md:h-1.5 rounded-full overflow-hidden">
-                                    <motion.div 
+                            <div key={p.id} className="min-w-[75%] sm:min-w-[45%] md:min-w-[22%] snap-start flex-shrink-0">
+                                {/* White card wrapper for dark bg contrast */}
+                                <div className="bg-white rounded-xl p-3 border border-neutral-100">
+                                    <ProductCard product={p} index={i} />
+                                </div>
+                                <div className="mt-3 bg-white/10 h-1 rounded-full overflow-hidden">
+                                    <motion.div
                                         initial={{ width: 0 }}
-                                        whileInView={{ width: `${reservedPercent}%` }}
-                                        className="bg-destructive h-full"
+                                        whileInView={{ width: `${reservedPct}%` }}
+                                        className="bg-rose-500 h-full"
                                         transition={{ duration: 1, ease: 'easeOut' }}
                                     />
                                 </div>
-                                <p className="text-[7px] md:text-[9px] font-black uppercase tracking-widest mt-1.5 text-muted-foreground flex justify-between">
-                                    <span>{language === 'bn' ? `${reservedPercent}% সংরক্ষিত` : `${reservedPercent}% Reserved`}</span>
-                                    <span>{language === 'bn' ? `${stockLeft}টি বাকি` : `${stockLeft} Left`}</span>
+                                <p className="text-[9px] font-bold uppercase tracking-widest mt-1.5 text-white/50 flex justify-between">
+                                    <span>{reservedPct}% Reserved</span>
+                                    <span>{stockLeft} Left</span>
                                 </p>
                             </div>
                         );
                     })}
                 </div>
-
-                <div className="flex md:hidden justify-center items-center gap-1.5 mt-2">
-                    <span className="text-[9px] font-black text-destructive/40 uppercase tracking-widest animate-pulse">
-                        {language === 'bn' ? 'অন্বেষণ করতে বামে/ডানে সোয়াইপ করুন' : 'Swipe Left/Right to explore'}
-                    </span>
-                </div>
             </div>
         </section>
+    );
+}
+
+// --- CATEGORY CARD ---
+function CategoryCard({ cat, index, language }: { cat: any; index: number; language: string }) {
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: index * 0.08, duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+        >
+            <Link href={cat.href} className="group block relative aspect-[3/4] overflow-hidden rounded-xl bg-neutral-100 border border-neutral-100 hover:border-neutral-300 transition-all duration-500">
+                <Image
+                    src={cat.image}
+                    alt={cat.name}
+                    fill
+                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                    quality={85}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+
+                <div className="absolute bottom-0 left-0 right-0 p-5 z-10">
+                    <span className="text-base md:text-lg font-black text-white uppercase tracking-tight block group-hover:text-emerald-400 transition-colors duration-300">
+                        {language === 'bn' ? (
+                            cat.key === 'men' ? 'পুরুষদের' :
+                            cat.key === 'women' ? 'মহিলাদের' :
+                            cat.key.includes('kids') ? 'বাচ্চাদের' :
+                            cat.key.includes('wedding') ? 'বিয়ের' : cat.name
+                        ) : cat.name}
+                    </span>
+                    <div className="flex items-center gap-1 mt-1.5 text-[10px] text-white/60 font-bold uppercase tracking-widest group-hover:text-emerald-400 transition-colors">
+                        <span>Shop</span>
+                        <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
+                    </div>
+                </div>
+
+                {cat.comingSoon && (
+                    <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px] flex items-center justify-center z-20">
+                        <span className="bg-amber-400 text-amber-900 text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-lg">
+                            {language === 'bn' ? 'শীঘ্রই আসছে' : 'Coming Soon'}
+                        </span>
+                    </div>
+                )}
+            </Link>
+        </motion.div>
     );
 }
 
@@ -507,45 +534,53 @@ function FlashSaleSection({ products }: { products: any[] }) {
 function HomeSkeleton() {
     return (
         <div className="bg-white min-h-screen">
-            {/* 1. Hero Slider Skeleton */}
-            <div className="relative w-full h-[60vh] md:h-[80vh] bg-gray-50 flex items-center justify-center">
-                <Skeleton className="w-full h-full bg-gray-100/50" />
-            </div>
-
-            {/* 2. Category Strip Skeleton */}
-            <section className="max-w-7xl mx-auto px-4 py-12 md:py-20">
-                <div className="text-center max-w-2xl mx-auto mb-12 space-y-4">
-                    <Skeleton className="h-10 w-64 bg-gray-100 mx-auto rounded-xl" />
-                    <Skeleton className="h-1 w-16 bg-gray-200 mx-auto" />
-                    <Skeleton className="h-4 w-80 bg-gray-100 mx-auto rounded-full" />
-                </div>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
-                    {[1, 2, 3, 4].map((i) => (
-                        <Skeleton key={i} className="aspect-[3/4] w-full bg-gray-100/60 rounded-[2rem]" />
-                    ))}
-                </div>
-            </section>
-
-            {/* 3. New Arrivals Skeleton */}
-            <section className="max-w-7xl mx-auto px-4 py-10 md:py-14">
-                <div className="flex items-end justify-between mb-8">
+            <div className="relative w-full h-[60vh] md:h-[88vh] bg-neutral-100 animate-pulse" />
+            <div className="border-y border-neutral-100 h-16" />
+            <section className="max-w-7xl mx-auto px-4 py-16 md:py-20">
+                <div className="flex items-end justify-between mb-10">
                     <div className="space-y-3">
-                        <Skeleton className="h-8 w-48 bg-gray-100 rounded-lg" />
-                        <Skeleton className="h-4 w-32 bg-gray-100 rounded-full" />
+                        <Skeleton className="h-4 w-24 bg-neutral-100 rounded" />
+                        <Skeleton className="h-8 w-52 bg-neutral-100 rounded-lg" />
                     </div>
-                    <Skeleton className="h-6 w-20 bg-gray-100 rounded-full" />
+                    <Skeleton className="h-4 w-16 bg-neutral-100 rounded" />
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-8">
-                    {[1, 2, 3, 4].map((i) => (
-                        <div key={i} className="space-y-4">
-                            <Skeleton className="aspect-[3/4] w-full bg-gray-100/60 rounded-[2rem]" />
-                            <Skeleton className="h-4 w-2/3 bg-gray-100 rounded-full" />
-                            <Skeleton className="h-4 w-1/3 bg-gray-100 rounded-full" />
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+                    {[1,2,3,4].map(i => (
+                        <div key={i} className="space-y-3">
+                            <Skeleton className="aspect-[3/4] w-full bg-neutral-100 rounded-xl" />
+                            <Skeleton className="h-4 w-2/3 bg-neutral-100 rounded" />
+                            <Skeleton className="h-4 w-1/3 bg-neutral-100 rounded" />
                         </div>
                     ))}
                 </div>
             </section>
         </div>
+    );
+}
+
+// --- SCROLL TO TOP ---
+function ScrollToTop() {
+    const [visible, setVisible] = useState(false);
+    useEffect(() => {
+        const handler = () => setVisible(window.scrollY > 600);
+        window.addEventListener('scroll', handler, { passive: true });
+        return () => window.removeEventListener('scroll', handler);
+    }, []);
+    return (
+        <AnimatePresence>
+            {visible && (
+                <motion.button
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                    className="fixed bottom-24 md:bottom-8 right-4 md:right-6 w-11 h-11 bg-neutral-900 text-white rounded-xl flex items-center justify-center shadow-lg hover:bg-neutral-700 transition-all z-50 border border-neutral-800"
+                    aria-label="Scroll to top"
+                >
+                    <ChevronUp className="h-5 w-5" />
+                </motion.button>
+            )}
+        </AnimatePresence>
     );
 }
 
@@ -564,277 +599,144 @@ export default function HomeClient({
     promoBanners: any[];
 }) {
     const [mounted, setMounted] = useState(false);
-    useEffect(() => {
-        setMounted(true);
-    }, []);
-
+    useEffect(() => { setMounted(true); }, []);
     const { language } = useLanguageStore();
     const t = useTranslation();
 
-    if (!mounted) {
-        return <HomeSkeleton />;
-    }
+    if (!mounted) return <HomeSkeleton />;
 
     return (
         <main className="min-h-screen bg-white text-foreground">
-            {/* 1. HERO BANNER SLIDER */}
+            <ScrollToTop />
+
+            {/* 1. HERO SLIDER */}
             <HeroSlider dbBanners={heroBanners} />
 
-            {/* 2. CATEGORY STRIP */}
-            <section className="max-w-7xl mx-auto px-4 py-12 md:py-20">
-                <div className="text-center max-w-2xl mx-auto mb-12">
-                    <h2 className="text-3xl md:text-5xl font-playfair font-black text-foreground uppercase tracking-tight mb-3">
-                        {t?.categories?.title || 'Shop By Category'}
-                    </h2>
-                    <div className="w-16 h-1 bg-destructive mx-auto mb-4" />
-                </div>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
+            {/* 2. TRUST BAR */}
+            <TrustBar />
+
+            {/* 3. SHOP BY CATEGORY */}
+            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
+                <SectionHeader
+                    label="Big Bazar Bariarhat"
+                    title={t?.categories?.title || 'Shop By Category'}
+                    viewAllHref="/products"
+                />
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-5">
                     {categories.map((cat, i) => (
-                        <motion.div
-                            key={cat.key}
-                            initial={{ opacity: 0, y: 30 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: i * 0.08, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                        >
-                            <Link href={cat.href} className="group block relative aspect-[3/4] overflow-hidden rounded-[2rem] bg-gray-100 border border-gray-100/50 shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
-                                <Image
-                                    src={cat.image}
-                                    alt={cat.name}
-                                    fill
-                                    className="object-cover transition-transform duration-1000 ease-out group-hover:scale-110"
-                                    quality={85}
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-transparent opacity-90 group-hover:opacity-100 transition-opacity duration-300" />
-                                <div className="absolute inset-4 rounded-[1.5rem] border border-white/0 group-hover:border-white/20 transition-all duration-500 scale-95 group-hover:scale-100" />
-
-                                <div className="absolute bottom-6 left-6 right-6 text-white flex flex-col z-10">
-                                    <span className="text-lg md:text-xl font-bold font-playfair uppercase tracking-wide group-hover:text-yellow-400 transition-colors duration-300">
-                                        {language === 'bn' ? (
-                                            cat.key === 'men' ? 'পুরুষদের' : 
-                                            cat.key === 'women' ? 'মহিলাদের' : 
-                                            cat.key.includes('kids') ? 'বাচ্চাদের' : 
-                                            cat.key.includes('wedding') ? 'বিয়ের' : cat.name
-                                        ) : cat.name}
-                                    </span>
-                                    <div className="flex items-center gap-1 mt-1.5 text-[10px] text-yellow-400 font-bold uppercase tracking-widest">
-                                        <span>{language === 'bn' ? 'কালেকশন' : 'Explore'}</span>
-                                        <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
-                                    </div>
-                                </div>
-
-                                {cat.comingSoon && (
-                                    <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex items-center justify-center z-20">
-                                        <span className="bg-yellow-400 text-yellow-900 text-[10px] font-black uppercase tracking-[0.2em] px-4 py-2 rounded-none shadow-lg">
-                                            {language === 'bn' ? 'শীঘ্রই আসছে' : 'Coming Soon'}
-                                        </span>
-                                    </div>
-                                )}
-                            </Link>
-                        </motion.div>
+                        <CategoryCard key={cat.key} cat={cat} index={i} language={language} />
                     ))}
                 </div>
             </section>
 
-            {/* Shop by Occasion Section */}
-            <section className="max-w-7xl mx-auto px-4 py-10 md:py-14">
-                <div className="mb-8">
-                    <h2 className="text-2xl md:text-3xl font-sans font-bold text-foreground uppercase tracking-wider">
-                        {language === 'bn' ? 'অনুষ্ঠান অনুযায়ী কেনাকাটা করুন' : 'Shop by Occasion'}
-                    </h2>
-                    <p className="text-xs text-muted-foreground uppercase tracking-widest mt-1">
-                        {language === 'bn' ? 'বিশেষ মুহূর্তের জন্য বিশেষ কালেকশন' : 'Special collections for your special moments'}
-                    </p>
-                </div>
+            {/* Divider */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="border-t border-neutral-100" />
+            </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mt-6 md:mt-8">
-                    {/* Card 1: Wedding Touch */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: 0.1, duration: 0.6 }}
-                        className="relative w-full h-[350px] md:h-[420px] overflow-hidden rounded-none border border-gray-100 shadow-none transition-all duration-500 bg-[#120509] group"
-                    >
-                        <Link href="/products?category=wedding-touch" className="block w-full h-full relative">
-                            <Image
-                                src={fallbackCategoryImages['Wedding Touch'] || 'https://images.unsplash.com/photo-1607190074257-dd4b7af0309f?q=80&w=800&auto=format&fit=crop'}
-                                alt="Wedding Touch Collection"
-                                fill
-                                className="object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
-                                quality={90}
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-95 group-hover:opacity-100 transition-opacity duration-300 z-10" />
-                            
-                            <div className="absolute inset-0 flex flex-col justify-end p-6 sm:p-8 z-20 space-y-3 sm:space-y-4">
-                                <div className="flex items-center gap-1.5 flex-wrap">
-                                    <span className="text-[#bf953f] text-[10px] font-black uppercase tracking-[0.2em] block">
-                                        {language === 'bn' ? 'বিয়ের কালেকশন' : 'Wedding Touch'}
-                                    </span>
-                                    <Sparkles className="h-3.5 w-3.5 text-[#bf953f] flex-shrink-0 animate-pulse" />
-                                </div>
-
-                                <h3 className="text-xl sm:text-2xl lg:text-3xl font-playfair font-bold text-white uppercase tracking-wide leading-tight">
-                                    {language === 'bn' ? 'বিয়ের ছোঁয়া' : 'Wedding Touch'}
-                                </h3>
-
-                                <p className="text-xs text-white/80 font-sans tracking-wide leading-relaxed line-clamp-2 max-w-full font-light">
-                                    {language === 'bn' ? 'আপনার বিশেষ দিনের জন্য বিশেষ শাড়ি, শেরওয়ানি এবং উৎসবের পোশাক।' : 'Exclusive sarees, sherwanis, and festive wear for your special day.'}
-                                </p>
-
-                                <div className="pt-2 flex items-center gap-1.5 text-xs uppercase tracking-widest font-black text-[#bf953f] group-hover:text-white transition-colors duration-300">
-                                    <span className="border-b border-[#bf953f]/0 group-hover:border-white transition-all pb-0.5">
-                                        {language === 'bn' ? 'কালেকশন দেখুন' : 'Explore Collection'}
-                                    </span>
-                                    <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
-                                </div>
-                            </div>
-                        </Link>
-                    </motion.div>
-
-                    {/* Card 2: Festive / Eid */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: 0.2, duration: 0.6 }}
-                        className="relative w-full h-[350px] md:h-[420px] overflow-hidden rounded-none border border-gray-100 shadow-none transition-all duration-500 bg-[#120509] group"
-                    >
-                        <Link href="/products?category=festive" className="block w-full h-full relative">
-                            <Image
-                                src="https://images.unsplash.com/photo-1608748010899-18f300247112?q=80&w=500&auto=format&fit=crop"
-                                alt="Festive / Eid Collection"
-                                fill
-                                className="object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
-                                quality={90}
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-95 group-hover:opacity-100 transition-opacity duration-300 z-10" />
-                            
-                            <div className="absolute inset-0 flex flex-col justify-end p-6 sm:p-8 z-20 space-y-3 sm:space-y-4">
-                                <div className="flex items-center gap-1.5 flex-wrap">
-                                    <span className="text-[#bf953f] text-[10px] font-black uppercase tracking-[0.2em] block">
-                                        {language === 'bn' ? 'উৎসবের কালেকশন' : 'Festive Wear'}
-                                    </span>
-                                    <Gift className="h-3.5 w-3.5 text-[#bf953f] flex-shrink-0 animate-pulse" />
-                                </div>
-
-                                <h3 className="text-xl sm:text-2xl lg:text-3xl font-playfair font-bold text-white uppercase tracking-wide leading-tight">
-                                    {language === 'bn' ? 'উৎসব / ঈদ' : 'Festive / Eid'}
-                                </h3>
-
-                                <p className="text-xs text-white/80 font-sans tracking-wide leading-relaxed line-clamp-2 max-w-full font-light">
-                                    {language === 'bn' ? 'উৎসবের আমেজে আকর্ষণীয় ডিজাইনার পাঞ্জাবি ও সালোয়ার কামিজ।' : 'Celebrate in style with beautiful designer punjabis & salwar suits.'}
-                                </p>
-
-                                <div className="pt-2 flex items-center gap-1.5 text-xs uppercase tracking-widest font-black text-[#bf953f] group-hover:text-white transition-colors duration-300">
-                                    <span className="border-b border-[#bf953f]/0 group-hover:border-white transition-all pb-0.5">
-                                        {language === 'bn' ? 'কালেকশন দেখুন' : 'Explore Collection'}
-                                    </span>
-                                    <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
-                                </div>
-                            </div>
-                        </Link>
-                    </motion.div>
-
-                    {/* Card 3: Party Wear */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: 0.3, duration: 0.6 }}
-                        className="relative w-full h-[350px] md:h-[420px] overflow-hidden rounded-none border border-gray-100 shadow-none transition-all duration-500 bg-[#120509] group"
-                    >
-                        <Link href="/products?category=party-wear" className="block w-full h-full relative">
-                            <Image
-                                src="https://images.unsplash.com/photo-1566174053879-31528523f8ae?q=80&w=800&auto=format&fit=crop"
-                                alt="Party Wear Collection"
-                                fill
-                                className="object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
-                                quality={90}
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-95 group-hover:opacity-100 transition-opacity duration-300 z-10" />
-                            
-                            <div className="absolute inset-0 flex flex-col justify-end p-6 sm:p-8 z-20 space-y-3 sm:space-y-4">
-                                <div className="flex items-center gap-1.5 flex-wrap">
-                                    <span className="text-[#bf953f] text-[10px] font-black uppercase tracking-[0.2em] block">
-                                        {language === 'bn' ? 'পার্টি কালেকশন' : 'Party Glamour'}
-                                    </span>
-                                    <Crown className="h-3.5 w-3.5 text-[#bf953f] flex-shrink-0 animate-pulse" />
-                                </div>
-
-                                <h3 className="text-xl sm:text-2xl lg:text-3xl font-playfair font-bold text-white uppercase tracking-wide leading-tight">
-                                    {language === 'bn' ? 'পার্টি ওয়্যার' : 'Party Wear'}
-                                </h3>
-
-                                <p className="text-xs text-white/80 font-sans tracking-wide leading-relaxed line-clamp-2 max-w-full font-light">
-                                    {language === 'bn' ? 'পার্টির জন্য গর্জিয়াস ডিজাইনার থ্রি-পিস ও লেহেঙ্গা কালেকশন।' : 'Make a statement with our gorgeous designer party gowns & lehengas.'}
-                                </p>
-
-                                <div className="pt-2 flex items-center gap-1.5 text-xs uppercase tracking-widest font-black text-[#bf953f] group-hover:text-white transition-colors duration-300">
-                                    <span className="border-b border-[#bf953f]/0 group-hover:border-white transition-all pb-0.5">
-                                        {language === 'bn' ? 'কালেকশন দেখুন' : 'Explore Collection'}
-                                    </span>
-                                    <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
-                                </div>
-                            </div>
-                        </Link>
-                    </motion.div>
-                </div>
-            </section>
-
-            <div className="max-w-7xl mx-auto px-4"><div className="border-t border-gray-100" /></div>
-
-            {/* 3. NEW ARRIVALS GRID */}
-            <section className="max-w-7xl mx-auto px-4 py-10 md:py-14">
-                <div className="flex items-end justify-between mb-8">
-                    <div>
-                        <h2 className="text-2xl md:text-3xl font-playfair font-bold text-foreground uppercase tracking-wider">
-                            {t?.newArrivals?.title || 'New Arrivals'}
-                        </h2>
-                        <p className="text-xs text-muted-foreground uppercase tracking-widest mt-1">
-                            {t?.newArrivals?.subtitle || 'Shop our latest designs'}
-                        </p>
-                    </div>
-                    <Link href="/new-arrivals" className="text-xs font-bold uppercase tracking-widest text-foreground border-b border-foreground hover:text-destructive hover:border-destructive transition-colors pb-0.5 flex items-center gap-1">
-                        {t?.common?.viewAll || 'View All'}
-                        <ArrowRight className="h-3 w-3" />
-                    </Link>
-                </div>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-8">
+            {/* 4. NEW ARRIVALS */}
+            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
+                <SectionHeader
+                    label="Just Landed"
+                    title={t?.newArrivals?.title || 'New Arrivals'}
+                    viewAllHref="/new-arrivals"
+                />
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-10">
                     {newArrivals.map((product, index) => (
                         <ProductCard key={product.id} product={product} index={index} />
                     ))}
                 </div>
             </section>
 
-            {/* 4. PROMO BANNERS (2-column) */}
-            <section className="max-w-7xl mx-auto px-4 pb-10 md:pb-14">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {promoBanners.map((banner, i) => (
-                        <Link key={banner.id || i} href={banner.linkUrl || '/shop'} className="group block relative h-[250px] md:h-[320px] overflow-hidden">
-                            <Image
-                                src={banner.imageDesktop || '/placeholder.png'}
-                                alt={banner.title}
-                                fill
-                                className="object-cover transition-transform duration-700 group-hover:scale-105"
-                                quality={90}
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-                            <div className="absolute bottom-6 left-6 text-white">
-                                <span className="text-[10px] uppercase tracking-widest font-bold text-white/70 block mb-1">{banner.subtitle}</span>
-                                <h3 className="text-2xl md:text-3xl font-playfair font-black">{banner.title}</h3>
-                                <div className="flex items-center gap-2 mt-2 text-xs uppercase tracking-widest text-white/80 group-hover:text-white transition-colors">
-                                    <span>{banner.linkText || t?.common?.shopNow || 'Shop Now'}</span>
-                                    <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
+            {/* 5. FLASH SALE */}
+            <FlashSaleSection products={flashProducts} />
+
+            {/* 6. WEDDING COLLECTION */}
+            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 md:pb-20">
+                <SectionHeader
+                    label="Special Occasions"
+                    title={language === 'bn' ? 'বিয়ের স্পেশাল কালেকশন' : 'Wedding Collection'}
+                />
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    {[
+                        {
+                            href: '/products?category=wedding-touch',
+                            image: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?q=80&w=800&auto=format&fit=crop',
+                            label: language === 'bn' ? 'বিয়েল ছোঁয়া' : 'Wedding Touch',
+                            sub: language === 'bn' ? 'মূল বিয়ের পোশাক' : 'Bridal & Groom Wear',
+                        },
+                        {
+                            href: '/products?category=holud-mehedi',
+                            image: 'https://images.unsplash.com/photo-1615247001958-f4bc92fa6a4a?q=80&w=800&auto=format&fit=crop',
+                            label: language === 'bn' ? 'গায়ে হলুদ ও মেহেদি' : 'Holud & Mehedi',
+                            sub: language === 'bn' ? 'গায়ে হলুদ ও মেহেদি কালেকশন' : 'Haldi & Mehendi Celebration',
+                        },
+                        {
+                            href: '/products?category=wedding-guest',
+                            image: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=800&auto=format&fit=crop',
+                            label: language === 'bn' ? 'বিয়েবাড়ির অতিথি' : 'Wedding Guest',
+                            sub: language === 'bn' ? 'বিয়েবাড়ির অতিথি কালেকশন' : 'Wedding Guest Wear',
+                        },
+                    ].map(({ href, image, label, sub }, i) => (
+                        <motion.div
+                            key={href}
+                            initial={{ opacity: 0, y: 24 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: i * 0.1, duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+                        >
+                            <Link href={href} className="group block relative aspect-[3/4] overflow-hidden rounded-xl bg-neutral-100 border border-neutral-100 hover:border-neutral-300 transition-all duration-500">
+                                <Image src={image} alt={label} fill className="object-cover transition-transform duration-700 ease-out group-hover:scale-105" quality={90} />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                                <div className="absolute bottom-0 left-0 right-0 p-5 z-10">
+                                    <span className="text-base md:text-lg font-black text-white uppercase tracking-tight block group-hover:text-emerald-400 transition-colors duration-300">
+                                        {label}
+                                    </span>
+                                    <span className="text-[11px] text-white/60 block mt-1">{sub}</span>
+                                    <div className="flex items-center gap-1 mt-2.5 text-[10px] text-white/50 font-bold uppercase tracking-widest group-hover:text-emerald-400 transition-colors">
+                                        <span>Explore</span>
+                                        <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
+                                    </div>
                                 </div>
-                            </div>
-                        </Link>
+                            </Link>
+                        </motion.div>
                     ))}
                 </div>
             </section>
 
-            {/* 6. FLASH SALE SECTION */}
-            <FlashSaleSection products={flashProducts} />
+            {/* 7. PROMO BANNERS */}
+            {promoBanners.length > 0 && (
+                <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 md:pb-20">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        {promoBanners.map((banner, i) => (
+                            <Link
+                                key={banner.id || i}
+                                href={banner.linkUrl || '/products'}
+                                className="group block relative h-[220px] md:h-[300px] overflow-hidden rounded-xl border border-neutral-100"
+                            >
+                                <Image
+                                    src={banner.imageDesktop || '/placeholder.png'}
+                                    alt={banner.title}
+                                    fill
+                                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                                    quality={90}
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent" />
+                                <div className="absolute bottom-5 left-6 text-white">
+                                    {banner.subtitle && (
+                                        <span className="text-[10px] uppercase tracking-widest font-bold text-white/60 block mb-1">{banner.subtitle}</span>
+                                    )}
+                                    <h3 className="text-xl md:text-2xl font-playfair font-black">{banner.title}</h3>
+                                    <div className="flex items-center gap-2 mt-2 text-[10px] uppercase tracking-widest text-white/70 group-hover:text-white transition-colors font-bold">
+                                        <span>{banner.linkText || t?.common?.shopNow || 'Shop Now'}</span>
+                                        <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
+                                    </div>
+                                </div>
+                            </Link>
+                        ))}
+                    </div>
+                </section>
+            )}
         </main>
     );
 }

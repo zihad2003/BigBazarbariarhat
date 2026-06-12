@@ -135,8 +135,8 @@ function OrderSuccessContent() {
                     <ShoppingBag className="h-10 w-10 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-black" />
                 </div>
                 <div className="text-center space-y-2">
-                    <p className="text-gray-400 font-black uppercase tracking-[0.3em] text-xs">Securing Transaction</p>
-                    <p className="text-[10px] text-gray-300 font-bold uppercase tracking-widest animate-pulse">Wait for authorization</p>
+                    <p className="text-gray-400 font-black uppercase tracking-[0.3em] text-xs">Processing Order</p>
+                    <p className="text-[10px] text-gray-300 font-bold uppercase tracking-widest animate-pulse">Please wait...</p>
                 </div>
             </div>
         );
@@ -153,19 +153,19 @@ function OrderSuccessContent() {
                     <div className="w-24 h-24 bg-rose-50 rounded-[2.5rem] flex items-center justify-center mx-auto mb-8 border border-rose-100 shadow-xl shadow-rose-500/5">
                         <ShieldCheck className="h-10 w-10 text-rose-500" />
                     </div>
-                    <h1 className="text-4xl font-black text-gray-900 mb-4 tracking-tight">Verification Failed</h1>
+                    <h1 className="text-4xl font-black text-gray-900 mb-4 tracking-tight">Loading Failed</h1>
                     <p className="text-gray-500 text-lg font-medium mb-12 leading-relaxed">
-                        {errorMessage || 'The requested order could not be authenticated.'}
+                        {errorMessage || 'The requested order could not be loaded.'}
                     </p>
                     <div className="flex flex-col gap-4">
                         <Link href="/account/orders">
                             <Button className="h-16 w-full bg-black text-white hover:bg-gray-800 rounded-2xl uppercase tracking-widest font-black text-sm shadow-xl shadow-black/10">
-                                Order Archives
+                                View Orders
                             </Button>
                         </Link>
                         <Link href="/shop">
                             <Button variant="ghost" className="h-16 w-full text-gray-400 hover:text-black font-black uppercase tracking-widest text-xs">
-                                Return to Market
+                                Return to Shop
                             </Button>
                         </Link>
                     </div>
@@ -185,11 +185,11 @@ function OrderSuccessContent() {
                 <div className="max-w-7xl mx-auto flex items-center justify-between">
                     <Link href="/shop" className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-gray-400 hover:text-black transition-colors group">
                         <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
-                        Back to Market
+                        Back to Shop
                     </Link>
                     <div className="flex items-center gap-2">
                         <Sparkles className="h-4 w-4 text-emerald-500" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-500">Transaction Secured</span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-500">Order Confirmed</span>
                     </div>
                 </div>
             </div>
@@ -218,7 +218,7 @@ function OrderSuccessContent() {
                         transition={{ delay: 0.1 }}
                         className="text-xl text-gray-400 mb-10 max-w-2xl mx-auto font-medium"
                     >
-                        Your acquisition has been authenticated. We are preparing your artifacts for secure shipment.
+                        Your order has been received. We are preparing your items for shipment.
                     </motion.p>
 
                     <motion.div
@@ -228,11 +228,11 @@ function OrderSuccessContent() {
                         className="flex flex-wrap justify-center gap-6"
                     >
                         <div className="flex items-center gap-3 bg-white px-6 py-3 rounded-2xl border border-gray-100 shadow-sm">
-                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Order Reference</span>
+                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Order Number</span>
                             <span className="text-sm font-black text-gray-900 tracking-wider">#{orderNumber}</span>
                         </div>
                         <div className="flex items-center gap-3 bg-white px-6 py-3 rounded-2xl border border-gray-100 shadow-sm">
-                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Authenticated on</span>
+                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Ordered on</span>
                             <span className="text-sm font-black text-gray-900">
                                 {new Date(order.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                             </span>
@@ -251,10 +251,10 @@ function OrderSuccessContent() {
                             className="bg-white border border-gray-100 rounded-[3rem] p-8 lg:p-12 shadow-sm"
                         >
                             <div className="flex items-center justify-between border-b border-gray-50 pb-8 mb-8">
-                                <h3 className="text-2xl font-black text-gray-900">Acquisition Summary</h3>
+                                <h3 className="text-2xl font-black text-gray-900">Order Summary</h3>
                                 <div className="flex items-center gap-2 bg-gray-50 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest text-gray-400">
                                     <Package className="h-3 w-3" />
-                                    {order.items.length} Artifacts
+                                    {order.items.length} Items
                                 </div>
                             </div>
 
@@ -302,21 +302,21 @@ function OrderSuccessContent() {
 
                             <div className="mt-12 pt-12 border-t border-gray-50 space-y-4">
                                 <div className="flex justify-between items-center">
-                                    <span className="text-sm font-bold uppercase tracking-widest text-gray-400">Total Asset Value</span>
+                                    <span className="text-sm font-bold uppercase tracking-widest text-gray-400">Subtotal</span>
                                     <span className="font-black text-lg text-gray-900 font-mono tracking-tighter">৳{order.subtotal.toLocaleString()}</span>
                                 </div>
                                 <div className="flex justify-between items-center">
-                                    <span className="text-sm font-bold uppercase tracking-widest text-gray-400">Secure Courier</span>
+                                    <span className="text-sm font-bold uppercase tracking-widest text-gray-400">Shipping</span>
                                     <span className="font-black text-lg text-gray-900 font-mono tracking-tighter">৳{order.shippingCost.toLocaleString()}</span>
                                 </div>
                                 <div className="flex justify-between items-end pt-8 border-t border-gray-50 mt-8">
                                     <div>
-                                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Authenticated Total</p>
+                                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Total Amount</p>
                                         <h4 className="text-5xl font-black text-gray-900 tracking-tighter font-mono">৳{order.totalAmount.toLocaleString()}</h4>
                                     </div>
                                     <div className="hidden sm:block">
                                         <div className="bg-emerald-50 text-emerald-500 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border border-emerald-100">
-                                            Transaction Complete
+                                            Order Confirmed
                                         </div>
                                     </div>
                                 </div>
@@ -333,7 +333,7 @@ function OrderSuccessContent() {
                             </Link>
                             <Link href="/account/orders" className="flex-1">
                                 <Button variant="outline" className="w-full h-20 border-gray-200 hover:border-black text-gray-900 bg-white rounded-[1.5rem] uppercase tracking-widest font-black text-sm group shadow-sm transition-all hover:shadow-lg">
-                                    Manage Archive
+                                    View Orders
                                     <ArrowRight className="w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform" />
                                 </Button>
                             </Link>
@@ -342,7 +342,7 @@ function OrderSuccessContent() {
 
                     {/* Right Column: Meta Details */}
                     <div className="lg:col-span-4 space-y-8">
-                        {/* Destination Card */}
+                        {/* Delivery Address Card */}
                         <motion.div
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
@@ -352,7 +352,7 @@ function OrderSuccessContent() {
                             <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-bl-[5rem] group-hover:scale-110 transition-transform -mr-10 -mt-10" />
                             <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-8 flex items-center gap-3">
                                 <MapPin className="h-4 w-4 text-indigo-500" />
-                                Delivery Destination
+                                Delivery Address
                             </h4>
 
                             <div className="space-y-6 relative z-10">
@@ -366,7 +366,7 @@ function OrderSuccessContent() {
                                 <div className="pt-6 border-t border-gray-50">
                                     <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 flex items-center gap-2">
                                         <CreditCard className="h-3 w-3" />
-                                        Instrument
+                                        Payment Method
                                     </p>
                                     <div className="flex items-center justify-between">
                                         <p className="font-black text-gray-900 uppercase tracking-tight">{order.paymentMethod?.replace(/_/g, ' ')}</p>
@@ -380,7 +380,7 @@ function OrderSuccessContent() {
                             </div>
                         </motion.div>
 
-                        {/* Timeline & Shield */}
+                        {/* Delivery & Shield */}
                         <motion.div
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
@@ -390,20 +390,20 @@ function OrderSuccessContent() {
                             <div className="absolute bottom-0 right-0 w-32 h-32 bg-white/5 rounded-tl-[5rem] group-hover:scale-110 transition-transform" />
                             <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-600 mb-8 flex items-center gap-3">
                                 <Calendar className="h-4 w-4 text-emerald-400" />
-                                Dispatch window
+                                Delivery Window
                             </h4>
                             <div className="space-y-8 relative z-10">
                                 <div>
                                     <p className="text-[10px] font-black uppercase tracking-widest text-emerald-400 mb-1">Estimated Window</p>
                                     <p className="text-2xl font-black">2-4 Business Days</p>
-                                    <p className="text-sm text-gray-500 mt-2 font-medium">Standard Logistics Dispatch</p>
+                                    <p className="text-sm text-gray-500 mt-2 font-medium">Standard Shipping</p>
                                 </div>
                                 <div className="pt-8 border-t border-white/10 flex items-center gap-4">
                                     <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center text-emerald-400">
                                         <ShieldCheck className="h-6 w-6" />
                                     </div>
                                     <div>
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">Protection Active</p>
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">Shipping Protection</p>
                                         <p className="text-xs font-bold text-gray-300">Package Insured & Tracked</p>
                                     </div>
                                 </div>
@@ -412,13 +412,13 @@ function OrderSuccessContent() {
 
                         {/* Support Info */}
                         <div className="bg-white rounded-[2.5rem] p-8 border border-gray-100 text-center">
-                            <h5 className="font-black text-gray-900 mb-2">Requirement assistance?</h5>
-                            <p className="text-xs text-gray-400 font-bold mb-6">Our global concierge is standing by.</p>
+                            <h5 className="font-black text-gray-900 mb-2">Need assistance?</h5>
+                            <p className="text-xs text-gray-400 font-bold mb-6">Our support team is standing by.</p>
                             <a
-                                href="mailto:concierge@bigbazar.com"
+                                href="mailto:support@bigbazar.com"
                                 className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600 hover:text-black transition-colors"
                             >
-                                Contact Concierge <ArrowRight className="h-3 w-3" />
+                                Contact Support <ArrowRight className="h-3 w-3" />
                             </a>
                         </div>
                     </div>

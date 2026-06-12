@@ -20,45 +20,120 @@ import {
     RefreshCcw,
     XCircle,
     ChevronRight,
-    Map
+    Map,
+    Headphones
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { formatPrice, cn } from '@/lib/utils';
-import { MOCK_ORDERS, OrderStatus } from '@/lib/mock-data/orders';
+import { MOCK_ORDERS } from '@/lib/mock-data/orders';
 
 const STATUS_CONFIG: Record<string, { color: string, bg: string, icon: any, label: string }> = {
-    placed: { color: 'text-gray-400', bg: 'bg-gray-50', icon: Clock, label: 'Order Placed' },
-    pending: { color: 'text-amber-600', bg: 'bg-amber-50', icon: Clock, label: 'Awaiting Authorization' },
-    processing: { color: 'text-blue-600', bg: 'bg-blue-50', icon: RefreshCcw, label: 'Artifact Curation' },
-    shipped: { color: 'text-orange-600', bg: 'bg-orange-50', icon: Truck, label: 'Logistics Transit' },
-    delivered: { color: 'text-emerald-600', bg: 'bg-emerald-50', icon: CheckCircle2, label: 'Successfully Delivered' },
-    cancelled: { color: 'text-rose-600', bg: 'bg-rose-50', icon: XCircle, label: 'Manifest Cancelled' },
-    out_for_delivery: { color: 'text-indigo-600', bg: 'bg-indigo-50', icon: Map, label: 'Out for Deployment' }
+    placed:           { color: 'text-neutral-500',  bg: 'bg-neutral-100',  icon: Clock,         label: 'Order Placed'   },
+    pending:          { color: 'text-amber-700',    bg: 'bg-amber-50',     icon: Clock,         label: 'Pending'        },
+    processing:       { color: 'text-blue-700',     bg: 'bg-blue-50',      icon: RefreshCcw,    label: 'Processing'     },
+    shipped:          { color: 'text-orange-700',   bg: 'bg-orange-50',    icon: Truck,         label: 'Shipped'        },
+    delivered:        { color: 'text-emerald-700',  bg: 'bg-emerald-50',   icon: CheckCircle2,  label: 'Delivered'      },
+    cancelled:        { color: 'text-rose-700',     bg: 'bg-rose-50',      icon: XCircle,       label: 'Cancelled'      },
+    out_for_delivery: { color: 'text-indigo-700',   bg: 'bg-indigo-50',    icon: Map,           label: 'Out for Delivery'},
 };
 
+const TIMELINE_STEPS = [
+    { id: 'placed',     label: 'Placed',      icon: Clock        },
+    { id: 'pending',    label: 'Confirmed',   icon: ShieldCheck  },
+    { id: 'processing', label: 'Processing',  icon: Package      },
+    { id: 'shipped',    label: 'Shipped',     icon: Truck        },
+    { id: 'delivered',  label: 'Delivered',   icon: CheckCircle2 },
+];
+
+const STEP_ORDER = ['placed', 'pending', 'processing', 'shipped', 'delivered'];
+
 export default function OrderDetailPage() {
-    const params = useParams();
-    const router = useRouter();
-    const orderId = params.orderId as string;
-    const [order, setOrder] = useState<any>(null);
+    const params   = useParams();
+    const router   = useRouter();
+    const orderId  = params.orderId as string;
+    const [order, setOrder]     = useState<any>(null);
     const [isLoaded, setIsLoaded] = useState(false);
 
     useEffect(() => {
-        const localOrders = JSON.parse(localStorage.getItem('bigbazar-orders') || '[]');
-        const allOrders = [...MOCK_ORDERS, ...localOrders];
-        const foundOrder = allOrders.find((o: any) => o.id === orderId || o.id === `ORD-${orderId}` || o.id === `BBB-${orderId}`);
-        
-        if (foundOrder) {
-            setOrder(foundOrder);
-        }
+        const local = JSON.parse(localStorage.getItem('bigbazar-orders') || '[]');
+        const all   = [...MOCK_ORDERS, ...local];
+        const found = all.find((o: any) =>
+            o.id === orderId || o.id === `ORD-${orderId}` || o.id === `BBB-${orderId}`
+        );
+        if (found) setOrder(found);
         setIsLoaded(true);
     }, [orderId]);
 
+    /* ── Invoice helpers ─────────────────────────────────────── */
+    const handlePrint = () => {
+        if (!order) return;
+        const win = window.open('', '_blank', 'width=800,height=900');
+        if (!win) { alert('Please allow pop-ups to print invoices.'); return; }
+
+        const rows = order.items.map((item: any) => `
+          <tr>
+            <td style="padding:10px 0;border-bottom:1px solid #f0f0f0;font-size:13px;">${item.name}</td>
+            <td style="padding:10px 0;border-bottom:1px solid #f0f0f0;text-align:center;font-size:13px;">${item.quantity}</td>
+            <td style="padding:10px 0;border-bottom:1px solid #f0f0f0;text-align:right;font-size:13px;">৳ ${item.price.toLocaleString()}</td>
+            <td style="padding:10px 0;border-bottom:1px solid #f0f0f0;text-align:right;font-size:13px;font-weight:700;">৳ ${(item.price * item.quantity).toLocaleString()}</td>
+          </tr>`).join('');
+
+        const a = order.shippingAddress;
+        win.document.write(`<!DOCTYPE html><html><head>
+          <title>Invoice #${order.id} — Big Bazar Bariarhat</title>
+          <style>
+            *{margin:0;padding:0;box-sizing:border-box}
+            body{font-family:-apple-system,'Segoe UI',sans-serif;color:#171717;padding:40px;max-width:800px;margin:0 auto}
+            .hd{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:40px;padding-bottom:24px;border-bottom:2px solid #171717}
+            .brand{font-size:22px;font-weight:900;letter-spacing:-.5px;text-transform:uppercase}
+            .brand-sub{font-size:10px;color:#a3a3a3;font-weight:500;margin-top:4px;letter-spacing:2px;text-transform:uppercase}
+            .inv-lbl{font-size:28px;font-weight:900;text-align:right;letter-spacing:-1px;text-transform:uppercase}
+            .inv-id{font-size:11px;color:#a3a3a3;font-weight:600;text-align:right;margin-top:4px}
+            .meta{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:32px}
+            .mb h4{font-size:9px;font-weight:700;color:#a3a3a3;text-transform:uppercase;letter-spacing:2px;margin-bottom:8px}
+            .mb p{font-size:13px;line-height:1.6}
+            table{width:100%;border-collapse:collapse;margin-bottom:24px}
+            th{font-size:9px;font-weight:700;color:#a3a3a3;text-transform:uppercase;letter-spacing:1.5px;padding:8px 0;border-bottom:2px solid #171717;text-align:left}
+            th:nth-child(2){text-align:center}
+            th:nth-child(3),th:nth-child(4){text-align:right}
+            .tots{margin-left:auto;width:260px}
+            .row{display:flex;justify-content:space-between;padding:6px 0;font-size:13px}
+            .row.tot{font-weight:900;font-size:18px;border-top:2px solid #171717;padding-top:12px;margin-top:8px}
+            .ft{margin-top:48px;padding-top:20px;border-top:1px solid #e5e5e5;text-align:center;font-size:10px;color:#a3a3a3}
+            @media print{body{padding:20px}}
+          </style></head><body>
+          <div class="hd">
+            <div><div class="brand">Big Bazar</div><div class="brand-sub">Bariarhat · Since 2024</div></div>
+            <div><div class="inv-lbl">Invoice</div><div class="inv-id">#${order.id} · ${new Date(order.date).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}</div></div>
+          </div>
+          <div class="meta">
+            <div class="mb"><h4>Ship To</h4><p><strong>${a.fullName}</strong><br/>${a.address}<br/>${a.upazila}, ${a.district}<br/>${a.division}<br/>Phone: ${a.phone}</p></div>
+            <div class="mb" style="text-align:right"><h4>Payment</h4><p>${order.paymentMethod}</p><h4 style="margin-top:16px">Status</h4><p style="text-transform:capitalize">${order.status}</p></div>
+          </div>
+          <table><thead><tr><th>Item</th><th>Qty</th><th>Unit Price</th><th>Total</th></tr></thead><tbody>${rows}</tbody></table>
+          <div class="tots">
+            <div class="row"><span>Subtotal</span><span>৳ ${order.subtotal.toLocaleString()}</span></div>
+            <div class="row"><span>Shipping</span><span>${order.shippingCost === 0 ? 'Free' : '৳ '+order.shippingCost.toLocaleString()}</span></div>
+            ${order.discount > 0 ? `<div class="row"><span>Discount</span><span style="color:#dc2626">-৳ ${order.discount.toLocaleString()}</span></div>` : ''}
+            <div class="row tot"><span>Total</span><span>৳ ${order.total.toLocaleString()}</span></div>
+          </div>
+          <div class="ft">Thank you for shopping with Big Bazar Bariarhat.<br/>Questions? support@bigbazar.com</div>
+        </body></html>`);
+        win.document.close();
+        win.focus();
+        setTimeout(() => win.print(), 300);
+    };
+
+    const handleDownload = () => {
+        alert(`PDF download coming soon!\nAPI endpoint: /api/orders/invoice/${orderId}`);
+    };
+
+    /* ── Loading / not found ─────────────────────────────────── */
     if (!isLoaded) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-white">
-                <RefreshCcw className="h-10 w-10 animate-spin text-indigo-600" />
+                <div className="w-8 h-8 border-2 border-neutral-200 border-t-neutral-900 rounded-full animate-spin" />
             </div>
         );
     }
@@ -66,113 +141,136 @@ export default function OrderDetailPage() {
     if (!order) {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center bg-white px-6 text-center">
-                <div className="w-24 h-24 bg-rose-50 rounded-3xl flex items-center justify-center text-rose-500 mb-8">
-                    <ShieldCheck className="h-10 w-10" />
+                <div className="w-20 h-20 bg-neutral-50 rounded-xl flex items-center justify-center text-neutral-300 mb-6 border border-neutral-100">
+                    <ShoppingBag className="h-9 w-9" />
                 </div>
-                <h1 className="text-3xl font-black text-gray-900 mb-4 tracking-tight uppercase">Manifest Not Found</h1>
-                <p className="text-gray-400 mb-10 max-w-sm font-medium">The order identifier provided does not match our authorized records.</p>
+                <h1 className="text-2xl font-black text-neutral-900 mb-3 tracking-tight uppercase">Order Not Found</h1>
+                <p className="text-neutral-400 text-sm font-medium mb-8 max-w-xs">We couldn't locate an order with the provided ID.</p>
                 <Link href="/account/orders">
-                    <Button className="rounded-2xl px-10 h-16 bg-black text-white hover:bg-gray-800 transition-all font-black text-xs uppercase tracking-widest">
-                        Back to Manifests
+                    <Button className="rounded-xl px-8 h-11 bg-neutral-900 text-white hover:bg-neutral-800 font-bold text-[10px] uppercase tracking-widest">
+                        Back to Orders
                     </Button>
                 </Link>
             </div>
         );
     }
 
-    const currentStatusConfig = STATUS_CONFIG[order.status];
+    const statusCfg = STATUS_CONFIG[order.status] ?? STATUS_CONFIG.pending;
+    const StatusIcon = statusCfg.icon;
+    const currentStepIdx = STEP_ORDER.indexOf(order.status);
 
     return (
-        <div className="bg-[#fafafa] min-h-screen pb-24 font-sans">
-            <main className="max-w-6xl mx-auto px-6 py-12 lg:py-20">
-                
-                {/* Navigation & Actions */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
-                    <button onClick={() => router.back()} className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 hover:text-black transition-colors group">
-                        <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" /> Back to History
+        <div className="bg-white min-h-screen pb-24 font-sans">
+            <main className="max-w-6xl mx-auto px-4 sm:px-6 py-10 lg:py-14">
+
+                {/* ── Top bar ──────────────────────────────────────── */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+                    <button
+                        onClick={() => router.push('/account/orders')}
+                        className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-neutral-400 hover:text-neutral-900 transition-colors group"
+                    >
+                        <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
+                        Back to Orders
                     </button>
-                    <div className="flex items-center gap-3">
-                        <Button variant="outline" className="rounded-xl h-12 px-6 text-[10px] font-black uppercase tracking-widest border-gray-100 gap-2">
-                            <Download className="h-4 w-4" /> Download Manifest
+
+                    <div className="flex items-center gap-2">
+                        <Button
+                            variant="outline"
+                            onClick={handleDownload}
+                            className="rounded-xl h-10 px-5 text-[10px] font-bold uppercase tracking-widest border-neutral-200 text-neutral-600 hover:border-neutral-900 hover:text-neutral-900 transition-all gap-2"
+                        >
+                            <Download className="h-3.5 w-3.5" /> Download Invoice
                         </Button>
-                        <Button variant="outline" className="rounded-xl h-12 px-6 text-[10px] font-black uppercase tracking-widest border-gray-100 gap-2">
-                            <Printer className="h-4 w-4" /> Print Invoice
+                        <Button
+                            variant="outline"
+                            onClick={handlePrint}
+                            className="rounded-xl h-10 px-5 text-[10px] font-bold uppercase tracking-widest border-neutral-200 text-neutral-600 hover:border-neutral-900 hover:text-neutral-900 transition-all gap-2"
+                        >
+                            <Printer className="h-3.5 w-3.5" /> Print Invoice
                         </Button>
                     </div>
                 </div>
 
-                {/* Status Hero */}
-                <section className="bg-white rounded-[3rem] p-10 lg:p-16 border border-gray-100 shadow-sm mb-12 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-gray-50 rounded-bl-[10rem] -mr-20 -mt-20 pointer-events-none" />
-                    
-                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-12 relative z-10">
-                        <div className="space-y-6">
-                            <div className="flex items-center gap-4">
-                                <h1 className="text-4xl font-black text-gray-900 tracking-tighter font-mono">#{order.id}</h1>
-                                <div className={cn("px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest", currentStatusConfig.bg, currentStatusConfig.color)}>
-                                    {currentStatusConfig.label}
-                                </div>
+                {/* ── Status Hero card ─────────────────────────────── */}
+                <section className="bg-neutral-50 rounded-xl border border-neutral-100 p-8 mb-8">
+
+                    {/* Order ID + status + meta */}
+                    <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6 mb-8">
+                        <div className="space-y-3">
+                            <div className="flex items-center gap-3 flex-wrap">
+                                <h1 className="text-3xl font-black text-neutral-900 tracking-tight">#{order.id}</h1>
+                                <span className={cn(
+                                    "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[9px] font-bold uppercase tracking-widest",
+                                    statusCfg.bg, statusCfg.color
+                                )}>
+                                    <StatusIcon className="h-3 w-3" />
+                                    {statusCfg.label}
+                                </span>
                             </div>
-                            <div className="flex flex-wrap items-center gap-8 text-[11px] font-black uppercase tracking-widest text-gray-400">
-                                <div className="flex items-center gap-3">
-                                    <Calendar className="h-4 w-4" /> Placed on {new Date(order.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
-                                </div>
-                                <div className="flex items-center gap-3">
-                                    <ShoppingBag className="h-4 w-4" /> {order.items.length} Artifacts
-                                </div>
-                                <div className="flex items-center gap-3 text-emerald-500">
-                                    <ShieldCheck className="h-4 w-4" /> Authenticated Protocol
-                                </div>
+                            <div className="flex flex-wrap items-center gap-5 text-[10px] font-bold uppercase tracking-widest text-neutral-400">
+                                <span className="flex items-center gap-1.5">
+                                    <Calendar className="h-3.5 w-3.5" />
+                                    {new Date(order.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
+                                </span>
+                                <span className="flex items-center gap-1.5">
+                                    <ShoppingBag className="h-3.5 w-3.5" />
+                                    {order.items.length} {order.items.length === 1 ? 'Item' : 'Items'}
+                                </span>
+                                <span className="flex items-center gap-1.5 text-emerald-600">
+                                    <ShieldCheck className="h-3.5 w-3.5" />
+                                    Payment Verified
+                                </span>
                             </div>
                         </div>
-                        <div className="text-left lg:text-right">
-                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] mb-2">Authenticated Value</p>
-                            <p className="text-5xl font-black text-gray-900 tracking-tighter font-mono">{formatPrice(order.total)}</p>
+
+                        <div className="lg:text-right">
+                            <p className="text-[9px] font-bold text-neutral-400 uppercase tracking-widest mb-1">Total Amount</p>
+                            <p className="text-4xl font-black text-neutral-900 tracking-tight">{formatPrice(order.total)}</p>
                         </div>
                     </div>
 
-                    {/* Timeline Stepper */}
-                    <div className="mt-20 pt-20 border-t border-gray-50">
-                        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                            {[
-                                { id: 'placed', label: 'Placed', icon: Clock },
-                                { id: 'pending', label: 'Confirmed', icon: ShieldCheck },
-                                { id: 'processing', label: 'Curation', icon: Package },
-                                { id: 'shipped', label: 'In Transit', icon: Truck },
-                                { id: 'delivered', label: 'Delivered', icon: CheckCircle2 },
-                            ].map((step, idx) => {
-                                const stepInfo = order.timeline?.find((t: any) => t.status === step.id) || 
-                                                (order.status === step.id ? { completed: true, date: 'Processing', time: '' } : null);
-                                const isCompleted = stepInfo?.completed || 
-                                                  ['pending', 'processing', 'shipped', 'delivered'].slice(['placed', 'pending', 'processing', 'shipped', 'delivered'].indexOf(step.id)).includes(order.status) && idx <= ['placed', 'pending', 'processing', 'shipped', 'delivered'].indexOf(order.status);
-                                const isCurrent = order.status === step.id;
+                    {/* ── Delivery Timeline ── */}
+                    <div className="pt-6 border-t border-neutral-100">
+                        <div className="relative flex items-start justify-between">
+                            {/* Connecting line track */}
+                            <div className="absolute top-5 left-5 right-5 h-[2px] bg-neutral-200" />
+                            {/* Animated progress fill */}
+                            <motion.div
+                                className="absolute top-5 left-5 h-[2px] bg-neutral-900"
+                                initial={{ width: 0 }}
+                                animate={{ width: currentStepIdx <= 0 ? '0%' : `${(currentStepIdx / (TIMELINE_STEPS.length - 1)) * 100}%` }}
+                                transition={{ duration: 1.2, ease: 'easeOut' }}
+                            />
+
+                            {TIMELINE_STEPS.map((step, idx) => {
+                                const isCompleted = idx <= currentStepIdx;
+                                const isCurrent   = idx === currentStepIdx;
+                                const stepData    = order.timeline?.find((t: any) => t.status === step.id);
 
                                 return (
-                                    <div key={step.id} className="relative space-y-4">
-                                        <div className="flex items-center gap-4">
-                                            <div className={cn(
-                                                "w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-500 z-10",
-                                                isCompleted ? "bg-black text-white shadow-xl shadow-black/10" : "bg-gray-50 text-gray-300 border border-gray-100"
-                                            )}>
-                                                <step.icon className={cn("h-5 w-5", isCurrent && "animate-pulse")} />
-                                            </div>
-                                            {idx < 4 && (
-                                                <div className="hidden md:block absolute left-12 right-[-1rem] top-6 h-[2px] bg-gray-50 -z-0">
-                                                    <motion.div 
-                                                        initial={{ width: 0 }}
-                                                        animate={{ width: isCompleted ? '100%' : '0%' }}
-                                                        className="h-full bg-black"
-                                                        transition={{ duration: 1, delay: idx * 0.2 }}
-                                                    />
-                                                </div>
-                                            )}
+                                    <div key={step.id} className="relative flex flex-col items-center gap-2 flex-1">
+                                        {/* Icon bubble */}
+                                        <div className={cn(
+                                            "w-10 h-10 rounded-xl flex items-center justify-center z-10 border-2 transition-all duration-500",
+                                            isCompleted
+                                                ? "bg-neutral-900 border-neutral-900 text-white"
+                                                : "bg-white border-neutral-200 text-neutral-300"
+                                        )}>
+                                            <step.icon className={cn("h-4 w-4", isCurrent && "animate-pulse")} />
                                         </div>
-                                        <div>
-                                            <p className={cn("text-[10px] font-black uppercase tracking-widest", isCompleted ? "text-gray-900" : "text-gray-300")}>{step.label}</p>
-                                            {stepInfo?.date && (
-                                                <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mt-1">{stepInfo.date}</p>
-                                            )}
-                                        </div>
+                                        {/* Label */}
+                                        <p className={cn(
+                                            "text-[9px] font-black uppercase tracking-widest text-center whitespace-nowrap",
+                                            isCompleted ? "text-neutral-900" : "text-neutral-300"
+                                        )}>
+                                            {step.label}
+                                        </p>
+                                        {/* Date */}
+                                        {stepData?.date && stepData.date !== '' && (
+                                            <p className="text-[8px] font-medium text-neutral-400 text-center whitespace-nowrap">
+                                                {stepData.date}
+                                            </p>
+                                        )}
                                     </div>
                                 );
                             })}
@@ -180,35 +278,49 @@ export default function OrderDetailPage() {
                     </div>
                 </section>
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-                    
-                    {/* Left: Artifact List */}
-                    <div className="lg:col-span-8 space-y-8">
-                        <section className="bg-white rounded-[3rem] p-10 border border-gray-100 shadow-sm">
-                            <h3 className="text-[11px] font-black text-gray-400 uppercase tracking-[0.3em] mb-12">Artifact Manifest</h3>
-                            <div className="space-y-10">
+                {/* ── Lower grid ───────────────────────────────────── */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+                    {/* Order Items */}
+                    <div className="lg:col-span-8 space-y-4">
+                        <section className="bg-neutral-50 rounded-xl border border-neutral-100 p-6">
+                            <h3 className="text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-6">Order Items</h3>
+                            <div className="space-y-6">
                                 {order.items.map((item: any) => (
-                                    <div key={item.id} className="flex flex-col sm:flex-row gap-8 group">
-                                        <div className="relative w-32 aspect-[3/4] bg-gray-50 rounded-[2rem] overflow-hidden shrink-0 border border-gray-50">
-                                            <Image src={item.image} alt={item.name} fill className="object-cover group-hover:scale-110 transition-transform duration-1000" />
+                                    <div key={item.id} className="flex gap-5 group">
+                                        <div className="relative w-20 aspect-[3/4] bg-neutral-100 rounded-xl overflow-hidden shrink-0">
+                                            <Image
+                                                src={item.image}
+                                                alt={item.name}
+                                                fill
+                                                className="object-cover group-hover:scale-105 transition-transform duration-700"
+                                            />
                                         </div>
-                                        <div className="flex-1 flex flex-col justify-center py-2">
-                                            <div className="flex justify-between items-start gap-4 mb-4">
+                                        <div className="flex-1 flex flex-col justify-between py-1">
+                                            <div className="flex justify-between items-start gap-4">
                                                 <div>
-                                                    <h4 className="text-xl font-black text-gray-900 uppercase tracking-tight leading-tight group-hover:text-indigo-600 transition-colors">{item.name}</h4>
-                                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-2">{item.variantId ? `CONFIG: ${item.variantId}` : 'STANDARD CONFIG'}</p>
+                                                    <h4 className="text-sm font-black text-neutral-900 uppercase tracking-tight leading-snug group-hover:text-neutral-600 transition-colors">
+                                                        {item.name}
+                                                    </h4>
+                                                    <p className="text-[10px] font-medium text-neutral-400 mt-1">
+                                                        {item.variantId ? `Variant: ${item.variantId}` : 'Standard'}
+                                                    </p>
                                                 </div>
-                                                <div className="text-right">
-                                                    <p className="text-lg font-black text-gray-900 font-mono tracking-tighter">{formatPrice(item.price * item.quantity)}</p>
-                                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">{item.quantity} × {formatPrice(item.price)}</p>
+                                                <div className="text-right shrink-0">
+                                                    <p className="text-base font-black text-neutral-900 tracking-tight">
+                                                        {formatPrice(item.price * item.quantity)}
+                                                    </p>
+                                                    <p className="text-[10px] font-medium text-neutral-400 mt-0.5">
+                                                        {item.quantity} × {formatPrice(item.price)}
+                                                    </p>
                                                 </div>
                                             </div>
-                                            <div className="flex items-center gap-4 pt-4 border-t border-gray-50 mt-4">
-                                                <Button variant="ghost" className="h-10 px-4 rounded-xl text-[9px] font-black uppercase tracking-widest text-gray-400 hover:text-black">
-                                                    View Artifact <ChevronRight className="h-3 w-3 ml-2" />
+                                            <div className="flex items-center gap-3 pt-3 border-t border-neutral-100 mt-3">
+                                                <Button variant="ghost" className="h-8 px-3 rounded-lg text-[9px] font-bold uppercase tracking-widest text-neutral-400 hover:text-neutral-900">
+                                                    View Product <ChevronRight className="h-3 w-3 ml-1" />
                                                 </Button>
-                                                <Button variant="ghost" className="h-10 px-4 rounded-xl text-[9px] font-black uppercase tracking-widest text-indigo-600 hover:bg-indigo-50">
-                                                    Submit Report
+                                                <Button variant="ghost" className="h-8 px-3 rounded-lg text-[9px] font-bold uppercase tracking-widest text-neutral-400 hover:text-neutral-900">
+                                                    Leave Review
                                                 </Button>
                                             </div>
                                         </div>
@@ -218,26 +330,28 @@ export default function OrderDetailPage() {
                         </section>
                     </div>
 
-                    {/* Right: Logistics & Transaction */}
-                    <div className="lg:col-span-4 space-y-8">
-                        
-                        {/* Destination Coordinates */}
-                        <section className="bg-white rounded-[3rem] p-10 border border-gray-100 shadow-sm">
-                            <div className="flex items-center gap-4 mb-10">
-                                <MapPin className="h-5 w-5 text-indigo-600" />
-                                <h3 className="text-[11px] font-black text-gray-400 uppercase tracking-[0.3em]">Destination</h3>
+                    {/* Right sidebar */}
+                    <div className="lg:col-span-4 space-y-4">
+
+                        {/* Delivery Address */}
+                        <section className="bg-neutral-50 rounded-xl border border-neutral-100 p-5">
+                            <div className="flex items-center gap-2 mb-4">
+                                <MapPin className="h-4 w-4 text-neutral-400" />
+                                <h3 className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">Delivery Address</h3>
                             </div>
-                            <div className="space-y-6">
+                            <div className="space-y-4">
                                 <div>
-                                    <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-2">Recipient</p>
-                                    <p className="text-sm font-black text-gray-900 uppercase tracking-tight leading-relaxed">
-                                        {order.shippingAddress.fullName}<br />
+                                    <p className="text-[9px] font-bold text-neutral-400 uppercase tracking-widest mb-1">Recipient</p>
+                                    <p className="text-sm font-black text-neutral-900 leading-snug">
+                                        {order.shippingAddress.fullName}
+                                    </p>
+                                    <p className="text-xs text-neutral-400 font-medium mt-0.5">
                                         {order.shippingAddress.phone}
                                     </p>
                                 </div>
-                                <div className="pt-6 border-t border-gray-50">
-                                    <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-2">Physical Coordinates</p>
-                                    <p className="text-sm font-black text-gray-900 uppercase tracking-tight leading-relaxed">
+                                <div className="pt-3 border-t border-neutral-100">
+                                    <p className="text-[9px] font-bold text-neutral-400 uppercase tracking-widest mb-1">Address</p>
+                                    <p className="text-xs font-medium text-neutral-700 leading-relaxed">
                                         {order.shippingAddress.address}<br />
                                         {order.shippingAddress.upazila}, {order.shippingAddress.district}<br />
                                         {order.shippingAddress.division}
@@ -246,59 +360,59 @@ export default function OrderDetailPage() {
                             </div>
                         </section>
 
-                        {/* Transaction Protocol */}
-                        <section className="bg-white rounded-[3rem] p-10 border border-gray-100 shadow-sm">
-                            <div className="flex items-center gap-4 mb-10">
-                                <CreditCard className="h-5 w-5 text-indigo-600" />
-                                <h3 className="text-[11px] font-black text-gray-400 uppercase tracking-[0.3em]">Protocol</h3>
+                        {/* Payment Summary */}
+                        <section className="bg-neutral-50 rounded-xl border border-neutral-100 p-5">
+                            <div className="flex items-center gap-2 mb-4">
+                                <CreditCard className="h-4 w-4 text-neutral-400" />
+                                <h3 className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">Payment</h3>
                             </div>
-                            <div className="space-y-6">
-                                <div>
-                                    <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-2">Channel</p>
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 bg-black rounded-xl flex items-center justify-center text-white text-[10px] font-black uppercase">
-                                            {order.paymentMethod.includes('bKash') ? 'bK' : order.paymentMethod.includes('Nagad') ? 'Na' : '৳'}
-                                        </div>
-                                        <p className="text-sm font-black text-gray-900 uppercase tracking-tight">{order.paymentMethod}</p>
+                            <div className="space-y-3">
+                                {/* Method */}
+                                <div className="flex items-center gap-2">
+                                    <div className="w-7 h-7 bg-neutral-900 rounded-lg flex items-center justify-center text-white text-[9px] font-black">
+                                        {order.paymentMethod.includes('bKash') ? 'bK'
+                                            : order.paymentMethod.includes('Nagad') ? 'Na'
+                                            : '৳'}
                                     </div>
+                                    <p className="text-sm font-bold text-neutral-900">{order.paymentMethod}</p>
                                 </div>
-                                
-                                <div className="pt-8 border-t border-gray-50 space-y-4">
-                                    <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-gray-400">
-                                        <span>Initial Value</span>
-                                        <span className="text-gray-900 font-mono">{formatPrice(order.subtotal)}</span>
+
+                                {/* Breakdown */}
+                                <div className="pt-3 border-t border-neutral-100 space-y-2">
+                                    <div className="flex justify-between text-xs font-medium text-neutral-500">
+                                        <span>Subtotal</span>
+                                        <span className="font-bold text-neutral-900">{formatPrice(order.subtotal)}</span>
                                     </div>
-                                    <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-gray-400">
-                                        <span>Logistics Transit</span>
-                                        <span className="text-gray-900 font-mono">{formatPrice(order.shippingCost)}</span>
+                                    <div className="flex justify-between text-xs font-medium text-neutral-500">
+                                        <span>Shipping</span>
+                                        <span className="font-bold text-neutral-900">
+                                            {order.shippingCost === 0 ? 'Free' : formatPrice(order.shippingCost)}
+                                        </span>
                                     </div>
                                     {order.discount > 0 && (
-                                        <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-emerald-500">
-                                            <span>Adjustment</span>
-                                            <span className="font-mono">-{formatPrice(order.discount)}</span>
+                                        <div className="flex justify-between text-xs font-medium text-emerald-600">
+                                            <span>Discount</span>
+                                            <span className="font-bold">−{formatPrice(order.discount)}</span>
                                         </div>
                                     )}
-                                    <div className="pt-6 mt-6 border-t border-dashed border-gray-200">
-                                        <div className="flex justify-between items-end">
-                                            <div>
-                                                <p className="text-[8px] font-black text-gray-400 uppercase tracking-[0.3em] mb-1">Authenticated Total</p>
-                                                <h4 className="text-3xl font-black text-gray-900 tracking-tighter font-mono">{formatPrice(order.total)}</h4>
-                                            </div>
-                                            <ShieldCheck className="h-8 w-8 text-indigo-100" />
-                                        </div>
+                                    <div className="flex justify-between items-center pt-3 border-t border-neutral-200 mt-1">
+                                        <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Total</span>
+                                        <span className="text-xl font-black text-neutral-900 tracking-tight">
+                                            {formatPrice(order.total)}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
                         </section>
 
-                        {/* Quick Actions */}
-                        <div className="space-y-4">
-                            <Button className="w-full h-16 bg-black text-white hover:bg-gray-800 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-black/20">
-                                Contact Support Node
+                        {/* Action Buttons */}
+                        <div className="space-y-2">
+                            <Button className="w-full h-10 bg-neutral-900 text-white hover:bg-neutral-800 rounded-xl text-[10px] font-bold uppercase tracking-widest gap-2">
+                                <Headphones className="h-4 w-4" /> Contact Support
                             </Button>
                             {order.status === 'delivered' && (
-                                <Button variant="outline" className="w-full h-16 rounded-2xl text-[10px] font-black uppercase tracking-widest border-gray-100 hover:border-black transition-all">
-                                    Initiate Return Matrix
+                                <Button variant="outline" className="w-full h-10 rounded-xl text-[10px] font-bold uppercase tracking-widest border-neutral-200 hover:border-neutral-900 transition-all">
+                                    Request Return
                                 </Button>
                             )}
                         </div>

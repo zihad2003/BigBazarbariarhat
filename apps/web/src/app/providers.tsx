@@ -2,6 +2,7 @@
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useState } from 'react';
+import { SessionProvider } from 'next-auth/react';
 // import dynamic from 'next/dynamic';
 
 import { useEffect } from 'react';
@@ -18,25 +19,29 @@ function LanguageInitializer({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         const initLanguage = async () => {
             try {
-                // If the user initially loads /cart or /checkout, force 'bn' (Bangla)
-                const initialPath = window.location.pathname;
-                if (initialPath === '/cart' || initialPath === '/checkout') {
-                    setLanguage('bn');
-                    return;
+                // If the user already has a persisted language choice, respect it
+                const storedValue = localStorage.getItem('language-storage');
+                if (storedValue) {
+                    try {
+                        const parsed = JSON.parse(storedValue);
+                        if (parsed?.state?.language === 'en' || parsed?.state?.language === 'bn') {
+                            return;
+                        }
+                    } catch (e) {
+                        // Ignore JSON parsing errors
+                    }
                 }
 
+                // Otherwise, initialize from admin settings
                 const result = await SettingsService.getSettings();
                 if (result.success && result.data?.default_language) {
-                    // Check current path again in case they navigated to cart/checkout during fetch
-                    const currentPath = window.location.pathname;
-                    if (currentPath === '/cart' || currentPath === '/checkout') {
-                        setLanguage('bn');
-                    } else {
-                        setLanguage(result.data.default_language as any);
-                    }
+                    setLanguage(result.data.default_language as any);
+                } else {
+                    setLanguage('en');
                 }
             } catch (error) {
                 console.error('Failed to initialize language from admin settings:', error);
+                setLanguage('en');
             }
         };
         initLanguage();
@@ -49,12 +54,14 @@ export default function Providers({ children }: { children: React.ReactNode }) {
     const [queryClient] = useState(() => new QueryClient());
 
     return (
-        <QueryClientProvider client={queryClient}>
-            <LanguageInitializer>
-                {children}
-                {/* {process.env.NODE_ENV === 'development' && <Agentation endpoint="http://localhost:4747" />} */}
-            </LanguageInitializer>
-        </QueryClientProvider>
+        <SessionProvider>
+            <QueryClientProvider client={queryClient}>
+                <LanguageInitializer>
+                    {children}
+                    {/* {process.env.NODE_ENV === 'development' && <Agentation endpoint="http://localhost:4747" />} */}
+                </LanguageInitializer>
+            </QueryClientProvider>
+        </SessionProvider>
     );
 }
 

@@ -17,13 +17,13 @@ const categoriesToSeed = [
   {
     name: 'Kids(Boys)',
     slug: 'kids-boys',
-    image: 'https://images.unsplash.com/photo-1519234129322-2636a0d0d885?q=80&w=800&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1503919545889-aef636e10ad4?q=80&w=800&auto=format&fit=crop',
     subcategories: ['T-Shirts', 'Pants', 'Outerwear']
   },
   {
     name: 'Kids(Girls)',
     slug: 'kids-girls',
-    image: 'https://images.unsplash.com/photo-1514316454349-f50db90e2270?q=80&w=800&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1518837695005-2083093ee35b?q=80&w=800&auto=format&fit=crop',
     subcategories: ['Dresses', 'Tops', 'Skirts']
   },
   {

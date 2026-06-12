@@ -25,7 +25,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             where: { email: credentials.email as string },
           });
 
-          if (!user) return null;
+          if (!user || !user.password) return null;
 
           // Only allow ADMIN and SUPER_ADMIN roles in the admin panel
           if (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN") {

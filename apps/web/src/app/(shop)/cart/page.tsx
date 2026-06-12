@@ -96,10 +96,7 @@ export default function CartPage() {
     const throttledUpdateQuantity = useThrottle(updateQuantity, 300)
     const throttledRemoveItem = useThrottle(removeItem, 300)
 
-    // Default cart page to Bangla language
-    useEffect(() => {
-        setLanguage('bn')
-    }, [setLanguage])
+
 
     useEffect(() => {
         setIsMounted(true)

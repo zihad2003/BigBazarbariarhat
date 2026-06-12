@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import Google from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
-import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@bigbazar/db";
 import { authConfig } from "./auth.config";
 
@@ -11,8 +11,11 @@ if (!process.env.NEXTAUTH_SECRET) {
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
   ...authConfig,
-  adapter: PrismaAdapter(prisma),
   providers: [
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    }),
     Credentials({
       name: "Credentials",
       credentials: {
@@ -27,7 +30,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             where: { email: credentials.email as string },
           });
 
-          if (!user) return null;
+          if (!user || !user.password) return null;
 
           const isPasswordValid = await bcrypt.compare(
             credentials.password as string,
@@ -49,4 +52,63 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       },
     }),
   ],
+  callbacks: {
+    ...authConfig.callbacks,
+    async signIn({ user, account, profile }) {
+      if (account?.provider === "google") {
+        const email = user.email;
+        if (!email) return false;
+
+        try {
+          const existingUser = await prisma.user.findUnique({
+            where: { email },
+          });
+
+          if (existingUser) {
+            // seamlessly log them in and update profile image/name if needed
+            await prisma.user.update({
+              where: { email },
+              data: {
+                image: user.image || existingUser.image,
+                name: user.name || existingUser.name,
+              },
+            });
+          } else {
+            // automatically register as a new customer with null password and provider type 'google'
+            await prisma.user.create({
+              data: {
+                email,
+                name: user.name || email.split("@")[0],
+                password: null,
+                provider: "google",
+                image: user.image || null,
+                role: "USER",
+              },
+            });
+          }
+          return true;
+        } catch (error) {
+          console.error("Google sign in callback error:", error);
+          return false;
+        }
+      }
+      return true;
+    },
+    async jwt({ token, user, account }) {
+      if (user) {
+        try {
+          const dbUser = await prisma.user.findUnique({
+            where: { email: token.email as string },
+          });
+          if (dbUser) {
+            token.id = dbUser.id;
+            token.role = dbUser.role;
+          }
+        } catch (error) {
+          console.error("JWT user fetch error:", error);
+        }
+      }
+      return token;
+    },
+  },
 });

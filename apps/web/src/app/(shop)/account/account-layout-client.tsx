@@ -16,10 +16,10 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
-import { motion } from 'framer-motion';
 import { useEffect } from 'react';
 
 const sidebarItems = [
+    { label: 'Dashboard', icon: LayoutDashboard, href: '/account' },
     { label: 'Profile', icon: User, href: '/account/profile' },
     { label: 'My Orders', icon: Package, href: '/account/orders' },
     { label: 'Wishlist', icon: Heart, href: '/account/wishlist' },
@@ -40,7 +40,11 @@ export default function AccountLayoutClient({ children }: { children: React.Reac
     }, [status, pathname, router]);
 
     if (status === 'loading') {
-        return <div className="min-h-screen flex items-center justify-center bg-white"><div className="w-10 h-10 border-4 border-black border-t-transparent rounded-full animate-spin" /></div>;
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-white">
+                <div className="w-8 h-8 border-2 border-neutral-200 border-t-neutral-900 rounded-full animate-spin" />
+            </div>
+        );
     }
 
     if (!session) return null;
@@ -48,68 +52,56 @@ export default function AccountLayoutClient({ children }: { children: React.Reac
     const user = session.user;
 
     return (
-        <div className="bg-[#fafafa] min-h-screen">
-            <div className="max-w-7xl mx-auto px-6 lg:px-12 py-12 lg:py-20">
-                <div className="flex flex-col lg:flex-row gap-12">
+        <div className="bg-white min-h-screen">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-8 lg:py-12">
+                <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
                     
                     {/* Sidebar - Desktop */}
-                    <aside className="hidden lg:block w-80 shrink-0">
-                        <div className="bg-white rounded-[3rem] border border-gray-100 p-8 sticky top-32 shadow-sm">
-                            <div className="flex items-center gap-5 mb-10 pb-10 border-b border-gray-50">
-                                <div className="relative w-16 h-16 rounded-2xl bg-black flex items-center justify-center text-white text-2xl font-black shadow-xl shadow-black/10 overflow-hidden">
+                    <aside className="hidden lg:block w-64 shrink-0">
+                        <div className="bg-neutral-50 rounded-xl border border-neutral-100 p-6 sticky top-28">
+                            {/* User Profile Badge */}
+                            <div className="flex flex-col items-center text-center mb-6 pb-6 border-b border-neutral-100">
+                                <div className="relative w-16 h-16 rounded-xl bg-neutral-900 flex items-center justify-center text-white text-xl font-black overflow-hidden mb-3">
                                     {user?.image ? (
                                         <Image src={user.image} alt={user.name || ''} fill className="object-cover" />
                                     ) : (
                                         user?.name?.charAt(0).toUpperCase() || 'U'
                                     )}
                                 </div>
-                                <div className="min-w-0">
-                                    <h2 className="font-black text-gray-900 text-lg truncate uppercase tracking-tight">{user?.name || 'Curator'}</h2>
-                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest truncate">{user?.email}</p>
-                                </div>
+                                <h2 className="font-black text-neutral-900 text-sm uppercase tracking-tight">{user?.name || 'Customer'}</h2>
+                                <p className="text-[11px] text-neutral-400 break-all font-medium mt-1 leading-relaxed px-2">{user?.email}</p>
                             </div>
 
-                            <nav className="space-y-2">
-                                <Link
-                                    href="/account"
-                                    className={cn(
-                                        "flex items-center justify-between p-4 rounded-2xl transition-all group",
-                                        pathname === '/account' ? "bg-black text-white shadow-xl shadow-black/10" : "text-gray-400 hover:bg-gray-50 hover:text-black"
-                                    )}
-                                >
-                                    <div className="flex items-center gap-4">
-                                        <LayoutDashboard className="h-5 w-5" />
-                                        <span className="text-[11px] font-black uppercase tracking-widest">Dashboard</span>
-                                    </div>
-                                    <ChevronRight className={cn("h-4 w-4 transition-transform group-hover:translate-x-1", pathname === '/account' ? "text-white" : "text-gray-200")} />
-                                </Link>
-
+                            {/* Navigation */}
+                            <nav className="space-y-1">
                                 {sidebarItems.map((item) => {
-                                    const isActive = pathname.startsWith(item.href);
+                                    const isActive = item.href === '/account' 
+                                        ? pathname === '/account' 
+                                        : pathname.startsWith(item.href);
                                     return (
                                         <Link
                                             key={item.href}
                                             href={item.href}
                                             className={cn(
-                                                "flex items-center justify-between p-4 rounded-2xl transition-all group",
-                                                isActive ? "bg-black text-white shadow-xl shadow-black/10" : "text-gray-400 hover:bg-gray-50 hover:text-black"
+                                                "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-[11px] font-bold uppercase tracking-widest",
+                                                isActive 
+                                                    ? "bg-neutral-900 text-white" 
+                                                    : "text-neutral-400 hover:bg-white hover:text-neutral-900"
                                             )}
                                         >
-                                            <div className="flex items-center gap-4">
-                                                <item.icon className="h-5 w-5" />
-                                                <span className="text-[11px] font-black uppercase tracking-widest">{item.label}</span>
-                                            </div>
-                                            <ChevronRight className={cn("h-4 w-4 transition-transform group-hover:translate-x-1", isActive ? "text-white" : "text-gray-200")} />
+                                            <item.icon className="h-4 w-4" />
+                                            <span>{item.label}</span>
                                         </Link>
                                     );
                                 })}
 
+                                {/* Sign Out */}
                                 <button
                                     onClick={() => signOut({ callbackUrl: '/' })}
-                                    className="w-full flex items-center gap-4 p-4 rounded-2xl text-rose-500 hover:bg-rose-50 transition-all font-black text-[11px] uppercase tracking-widest mt-10"
+                                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-rose-500 hover:bg-rose-50 transition-all font-bold text-[11px] uppercase tracking-widest mt-6"
                                 >
-                                    <LogOut className="h-5 w-5" />
-                                    Sign Out Protocol
+                                    <LogOut className="h-4 w-4" />
+                                    Sign Out
                                 </button>
                             </nav>
                         </div>
@@ -123,34 +115,29 @@ export default function AccountLayoutClient({ children }: { children: React.Reac
             </div>
 
             {/* Mobile Navigation - Bottom Bar */}
-            <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-6 py-4 z-50 flex items-center justify-between shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
-                {sidebarItems.slice(0, 4).map((item) => {
-                    const isActive = pathname.startsWith(item.href);
-                    return (
-                        <Link
-                            key={item.href}
-                            href={item.href}
-                            className={cn(
-                                "flex flex-col items-center gap-1.5 px-3 py-1 rounded-xl transition-all",
-                                isActive ? "text-black" : "text-gray-300"
-                            )}
-                        >
-                            <item.icon className="h-5 w-5" />
-                            <span className="text-[8px] font-black uppercase tracking-widest">{item.label.split(' ')[0]}</span>
-                            {isActive && <motion.div layoutId="mobileNav" className="absolute -bottom-1 w-1 h-1 bg-black rounded-full" />}
-                        </Link>
-                    );
-                })}
-                <Link
-                    href="/account"
-                    className={cn(
-                        "flex flex-col items-center gap-1.5 px-3 py-1 rounded-xl transition-all",
-                        pathname === '/account' ? "text-black" : "text-gray-300"
-                    )}
-                >
-                    <LayoutDashboard className="h-5 w-5" />
-                    <span className="text-[8px] font-black uppercase tracking-widest">Home</span>
-                </Link>
+            <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-neutral-100 px-4 py-3 z-50">
+                <div className="flex items-center justify-between">
+                    {sidebarItems.slice(0, 5).map((item) => {
+                        const isActive = item.href === '/account' 
+                            ? pathname === '/account' 
+                            : pathname.startsWith(item.href);
+                        return (
+                            <Link
+                                key={item.href}
+                                href={item.href}
+                                className={cn(
+                                    "flex flex-col items-center gap-1 px-3 py-1.5 rounded-xl transition-all",
+                                    isActive ? "text-neutral-900" : "text-neutral-300"
+                                )}
+                            >
+                                <item.icon className={cn("h-5 w-5", isActive && "stroke-[2.5]")} />
+                                <span className="text-[8px] font-black uppercase tracking-widest">
+                                    {item.label === 'Dashboard' ? 'Home' : item.label.split(' ')[0]}
+                                </span>
+                            </Link>
+                        );
+                    })}
+                </div>
             </div>
         </div>
     );

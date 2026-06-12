@@ -230,10 +230,7 @@ export default function CheckoutPage() {
         setTimeout(() => setCopiedText(null), 2000);
     };
 
-    // Default checkout page to Bangla language
-    useEffect(() => {
-        setLanguage('bn');
-    }, [setLanguage]);
+
 
     const bkashNumberConfig = process.env.NEXT_PUBLIC_BKASH_NUMBER || '01857045449';
     const nagadNumberConfig = process.env.NEXT_PUBLIC_NAGAD_NUMBER || '01819134889';

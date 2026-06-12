@@ -6,6 +6,8 @@ const withBundleAnalyzer =
     : (config: NextConfig) => config;
 
 const nextConfig: NextConfig = {
+  devIndicators: false,
+
   // ─── Image Optimization ──────────────────────────────────────
   images: {
     loader: 'custom',

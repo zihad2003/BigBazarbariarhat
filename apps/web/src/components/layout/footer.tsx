@@ -2,12 +2,27 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Facebook, Instagram, MapPin, Phone, Mail, CreditCard, Truck, Shield } from 'lucide-react';
+import { Facebook, Instagram, MapPin, Phone, Mail, CreditCard, Truck, Shield, ChevronDown } from 'lucide-react';
 import { useLanguageStore, useTranslation } from '@bigbazar/shared';
+import { cn } from '@/lib/utils';
 
 export function Footer() {
     const { language, setLanguage } = useLanguageStore();
     const t = useTranslation();
+
+    const [openSections, setOpenSections] = useState<Record<string, boolean>>({
+        shop: false,
+        help: false,
+        company: false,
+        legal: false,
+    });
+
+    const toggleSection = (section: string) => {
+        setOpenSections(prev => ({
+            ...prev,
+            [section]: !prev[section]
+        }));
+    };
 
     const footerLinks = {
         shop: [
@@ -54,12 +69,12 @@ export function Footer() {
             {/* Features Bar */}
             <div className="border-b border-border bg-gradient-to-r from-background via-card to-background relative overflow-hidden">
                 <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
-                <div className="max-w-7xl mx-auto px-6 lg:px-8 py-10 relative z-10">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="max-w-7xl mx-auto px-6 lg:px-8 py-6 sm:py-10 relative z-10">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
                         {features.map((feature) => (
-                            <div key={feature.title} className="flex items-center gap-5 group p-4 rounded-2xl hover:bg-card/50 transition-colors duration-300 border border-transparent hover:border-border/50">
-                                <div className="flex-shrink-0 w-14 h-14 bg-background rounded-full flex items-center justify-center border border-border shadow-sm group-hover:border-destructive group-hover:shadow-md group-hover:shadow-destructive/10 group-hover:scale-110 transition-all duration-300">
-                                    <feature.icon className="h-6 w-6 text-muted-foreground transition-colors group-hover:text-destructive" />
+                            <div key={feature.title} className="flex items-center gap-3 sm:gap-5 group p-3 sm:p-4 rounded-2xl hover:bg-card/50 transition-colors duration-300 border border-transparent hover:border-border/50">
+                                <div className="flex-shrink-0 w-10 h-10 sm:w-14 sm:h-14 bg-background rounded-full flex items-center justify-center border border-border shadow-sm group-hover:border-destructive group-hover:shadow-md group-hover:shadow-destructive/10 group-hover:scale-110 transition-all duration-300">
+                                    <feature.icon className="h-5 w-5 sm:h-6 sm:w-6 text-muted-foreground transition-colors group-hover:text-destructive" />
                                 </div>
                                 <div>
                                     <h4 className="font-playfair font-bold text-foreground text-sm uppercase tracking-wider mb-1 group-hover:text-destructive transition-colors">{feature.title}</h4>
@@ -74,8 +89,8 @@ export function Footer() {
 
 
             {/* Main Footer */}
-            <div className="max-w-7xl mx-auto px-6 lg:px-8 py-16">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-10">
+            <div className="max-w-7xl mx-auto px-6 lg:px-8 py-10 sm:py-16">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-8 sm:gap-10">
                     {/* Brand Column */}
                     <div className="col-span-1 sm:col-span-2 lg:col-span-2 space-y-8">
                         <Link href="/" className="inline-block group">
@@ -145,9 +160,22 @@ export function Footer() {
                     </div>
 
                     {/* Shop Links */}
-                    <div className="mt-2">
-                        <h3 className="text-sm font-bold text-foreground uppercase tracking-[0.2em] mb-6 font-playfair">Shop</h3>
-                        <ul className="space-y-3">
+                    <div className="border-b border-border/40 sm:border-none py-3 sm:py-0">
+                        <button 
+                            type="button"
+                            onClick={() => toggleSection('shop')}
+                            className="flex items-center justify-between w-full sm:cursor-default text-left group"
+                        >
+                            <h3 className="text-sm font-bold text-foreground uppercase tracking-[0.2em] font-playfair sm:mb-6">Shop</h3>
+                            <ChevronDown className={cn(
+                                "h-4 w-4 text-muted-foreground transition-transform duration-300 sm:hidden",
+                                openSections.shop && "rotate-180"
+                            )} />
+                        </button>
+                        <ul className={cn(
+                            "space-y-3 mt-4 sm:mt-0 transition-all duration-300 sm:block",
+                            openSections.shop ? "block" : "hidden"
+                        )}>
                             {footerLinks.shop.map((link) => (
                                 <li key={link.name}>
                                     <Link href={link.href} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-all duration-300 block w-fit relative after:absolute after:-bottom-1 after:left-0 after:h-[2px] after:w-0 after:bg-destructive hover:after:w-full after:transition-all after:duration-300">
@@ -159,9 +187,22 @@ export function Footer() {
                     </div>
 
                     {/* Help Links */}
-                    <div className="mt-2">
-                        <h3 className="text-sm font-bold text-foreground uppercase tracking-[0.2em] mb-6 font-playfair">Help</h3>
-                        <ul className="space-y-3">
+                    <div className="border-b border-border/40 sm:border-none py-3 sm:py-0">
+                        <button 
+                            type="button"
+                            onClick={() => toggleSection('help')}
+                            className="flex items-center justify-between w-full sm:cursor-default text-left group"
+                        >
+                            <h3 className="text-sm font-bold text-foreground uppercase tracking-[0.2em] font-playfair sm:mb-6">Help</h3>
+                            <ChevronDown className={cn(
+                                "h-4 w-4 text-muted-foreground transition-transform duration-300 sm:hidden",
+                                openSections.help && "rotate-180"
+                            )} />
+                        </button>
+                        <ul className={cn(
+                            "space-y-3 mt-4 sm:mt-0 transition-all duration-300 sm:block",
+                            openSections.help ? "block" : "hidden"
+                        )}>
                             {footerLinks.help.map((link) => (
                                 <li key={link.name}>
                                     <Link href={link.href} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-all duration-300 block w-fit relative after:absolute after:-bottom-1 after:left-0 after:h-[2px] after:w-0 after:bg-destructive hover:after:w-full after:transition-all after:duration-300">
@@ -173,9 +214,22 @@ export function Footer() {
                     </div>
 
                     {/* Company Links */}
-                    <div className="mt-2">
-                        <h3 className="text-sm font-bold text-foreground uppercase tracking-[0.2em] mb-6 font-playfair">Company</h3>
-                        <ul className="space-y-3">
+                    <div className="border-b border-border/40 sm:border-none py-3 sm:py-0">
+                        <button 
+                            type="button"
+                            onClick={() => toggleSection('company')}
+                            className="flex items-center justify-between w-full sm:cursor-default text-left group"
+                        >
+                            <h3 className="text-sm font-bold text-foreground uppercase tracking-[0.2em] font-playfair sm:mb-6">Company</h3>
+                            <ChevronDown className={cn(
+                                "h-4 w-4 text-muted-foreground transition-transform duration-300 sm:hidden",
+                                openSections.company && "rotate-180"
+                            )} />
+                        </button>
+                        <ul className={cn(
+                            "space-y-3 mt-4 sm:mt-0 transition-all duration-300 sm:block",
+                            openSections.company ? "block" : "hidden"
+                        )}>
                             {footerLinks.company.map((link) => (
                                 <li key={link.name}>
                                     <Link href={link.href} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-all duration-300 block w-fit relative after:absolute after:-bottom-1 after:left-0 after:h-[2px] after:w-0 after:bg-destructive hover:after:w-full after:transition-all after:duration-300">
@@ -187,9 +241,22 @@ export function Footer() {
                     </div>
 
                     {/* Legal Links */}
-                    <div className="mt-2">
-                        <h3 className="text-sm font-bold text-foreground uppercase tracking-[0.2em] mb-6 font-playfair">Legal</h3>
-                        <ul className="space-y-3">
+                    <div className="border-b border-border/40 sm:border-none py-3 sm:py-0">
+                        <button 
+                            type="button"
+                            onClick={() => toggleSection('legal')}
+                            className="flex items-center justify-between w-full sm:cursor-default text-left group"
+                        >
+                            <h3 className="text-sm font-bold text-foreground uppercase tracking-[0.2em] font-playfair sm:mb-6">Legal</h3>
+                            <ChevronDown className={cn(
+                                "h-4 w-4 text-muted-foreground transition-transform duration-300 sm:hidden",
+                                openSections.legal && "rotate-180"
+                            )} />
+                        </button>
+                        <ul className={cn(
+                            "space-y-3 mt-4 sm:mt-0 transition-all duration-300 sm:block",
+                            openSections.legal ? "block" : "hidden"
+                        )}>
                             {footerLinks.legal.map((link) => (
                                 <li key={link.name}>
                                     <Link href={link.href} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-all duration-300 block w-fit relative after:absolute after:-bottom-1 after:left-0 after:h-[2px] after:w-0 after:bg-destructive hover:after:w-full after:transition-all after:duration-300">

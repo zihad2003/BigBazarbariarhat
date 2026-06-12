@@ -56,7 +56,7 @@ export default function OrderDetailsPage({ params }: { params: Promise<{ orderNu
                     <ShoppingBag className="h-8 w-8 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-black" />
                 </div>
                 <p className="text-gray-400 font-black uppercase tracking-[0.2em] text-xs animate-pulse text-center">
-                    Authenticating Order<br /><span className="text-[10px] mt-1 block">#{orderNumber}</span>
+                    Loading Order<br /><span className="text-[10px] mt-1 block">#{orderNumber}</span>
                 </p>
             </div>
         );
@@ -71,11 +71,11 @@ export default function OrderDetailsPage({ params }: { params: Promise<{ orderNu
                     </div>
                     <h1 className="text-4xl font-black text-gray-900 mb-4 tracking-tight">Order Not Found</h1>
                     <p className="text-gray-500 text-lg font-medium mb-12 leading-relaxed">
-                        {errorMessage || 'The requested order could not be located in our archives.'}
+                        {errorMessage || "We couldn't find the order details for this order."}
                     </p>
                     <Link href="/account/orders">
                         <Button className="h-16 w-full bg-black text-white hover:bg-gray-800 rounded-2xl uppercase tracking-widest font-black text-sm shadow-xl shadow-black/10">
-                            Return to Collection
+                            Return to Orders
                         </Button>
                     </Link>
                 </div>
@@ -106,7 +106,7 @@ export default function OrderDetailsPage({ params }: { params: Promise<{ orderNu
                     >
                         <Link href="/account/orders" className="inline-flex items-center gap-2 text-sm font-bold text-gray-400 hover:text-black transition-colors mb-4 uppercase tracking-widest group">
                             <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
-                            Back to History
+                            Back to Orders
                         </Link>
                         <h1 className="text-5xl lg:text-6xl font-black text-gray-900 tracking-tight mb-4">
                             Order <span className="text-gray-400">#</span>{order.order_number}
@@ -149,7 +149,7 @@ export default function OrderDetailsPage({ params }: { params: Promise<{ orderNu
                     >
                         <div className="bg-white border border-gray-100 rounded-[3rem] p-8 lg:p-12 shadow-sm">
                             <div className="flex items-center justify-between border-b border-gray-50 pb-8 mb-8">
-                                <h3 className="text-2xl font-black text-gray-900">Items Selection</h3>
+                                <h3 className="text-2xl font-black text-gray-900">Items in Order</h3>
                                 <span className="bg-gray-50 text-gray-400 px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest">
                                     {order.items?.length || 0} Products
                                 </span>
@@ -207,28 +207,28 @@ export default function OrderDetailsPage({ params }: { params: Promise<{ orderNu
 
                             <div className="mt-12 pt-12 border-t border-gray-50 space-y-4">
                                 <div className="flex justify-between items-center text-gray-400">
-                                    <span className="text-sm font-bold uppercase tracking-widest">Archive Subtotal</span>
+                                    <span className="text-sm font-bold uppercase tracking-widest">Subtotal</span>
                                     <span className="font-black text-lg text-gray-900">৳{order.subtotal?.toLocaleString()}</span>
                                 </div>
                                 <div className="flex justify-between items-center text-gray-400">
-                                    <span className="text-sm font-bold uppercase tracking-widest">Secure Shipping</span>
+                                    <span className="text-sm font-bold uppercase tracking-widest">Shipping</span>
                                     <span className="font-black text-lg text-gray-900">৳{order.shipping_cost?.toLocaleString()}</span>
                                 </div>
                                 {order.tax_amount > 0 && (
                                     <div className="flex justify-between items-center text-gray-400">
-                                        <span className="text-sm font-bold uppercase tracking-widest">Applied Tax</span>
+                                        <span className="text-sm font-bold uppercase tracking-widest">Tax</span>
                                         <span className="font-black text-lg text-gray-900">৳{order.tax_amount?.toLocaleString()}</span>
                                     </div>
                                 )}
                                 <div className="flex justify-between items-end pt-8 border-t border-gray-50 mt-8">
                                     <div>
-                                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Authenticated Total</p>
+                                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Total Amount</p>
                                         <h4 className="text-5xl font-black text-gray-900 tracking-tighter">৳{order.total_amount?.toLocaleString()}</h4>
                                     </div>
                                     <div className="text-right hidden sm:block">
                                         <div className="flex items-center gap-2 bg-emerald-50 text-emerald-600 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest border border-emerald-100">
                                             <CheckCircle2 className="h-4 w-4" />
-                                            {order.payment_status === 'paid' ? 'Authenticated' : 'Pending Verification'}
+                                            {order.payment_status === 'paid' ? 'Paid' : 'Pending Payment'}
                                         </div>
                                     </div>
                                 </div>
@@ -247,12 +247,12 @@ export default function OrderDetailsPage({ params }: { params: Promise<{ orderNu
                             <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-bl-[5rem] group-hover:scale-110 transition-transform -mr-10 -mt-10" />
                             <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-8 flex items-center gap-3">
                                 <MapPin className="h-4 w-4 text-indigo-500" />
-                                Delivery Destination
+                                Delivery Address
                             </h4>
 
                             <div className="space-y-6 relative z-10">
                                 <div>
-                                    <p className="font-black text-gray-900 text-xl mb-2">{order.guest_name || 'Valued Client'}</p>
+                                    <p className="font-black text-gray-900 text-xl mb-2">{order.guest_name || 'Customer'}</p>
                                     <div className="space-y-1 text-gray-500 font-bold leading-relaxed">
                                         <p>{order.guest_address?.address_line1}</p>
                                         {order.guest_address?.address_line2 && <p>{order.guest_address?.address_line2}</p>}
@@ -261,7 +261,7 @@ export default function OrderDetailsPage({ params }: { params: Promise<{ orderNu
                                     </div>
                                 </div>
                                 <div className="pt-6 border-t border-gray-50">
-                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Secure Contact</p>
+                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Phone Number</p>
                                     <p className="font-black text-gray-900 tracking-wider">{order.guest_phone}</p>
                                 </div>
                             </div>
@@ -272,7 +272,7 @@ export default function OrderDetailsPage({ params }: { params: Promise<{ orderNu
                             <div className="absolute bottom-0 right-0 w-40 h-40 bg-white/5 rounded-tl-[8rem] group-hover:bg-white/10 transition-colors" />
                             <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-8 flex items-center gap-3">
                                 <CreditCard className="h-4 w-4 text-emerald-400" />
-                                Payment Instrument
+                                Payment Method
                             </h4>
 
                             <div className="space-y-8 relative z-10">
@@ -287,7 +287,7 @@ export default function OrderDetailsPage({ params }: { params: Promise<{ orderNu
                                             }`}>
                                             {order.payment_status?.toUpperCase() || 'PENDING'}
                                         </span>
-                                        <span className="text-gray-500 text-[10px] font-black uppercase tracking-[0.2em]">Method Verified</span>
+                                        <span className="text-gray-500 text-[10px] font-black uppercase tracking-[0.2em]">Payment Confirmed</span>
                                     </div>
                                 </div>
 
@@ -297,7 +297,7 @@ export default function OrderDetailsPage({ params }: { params: Promise<{ orderNu
                                             <Package className="h-6 w-6" />
                                         </div>
                                         <div>
-                                            <p className="text-xs font-black uppercase tracking-widest text-gray-400 mb-1">Secure Transaction ID</p>
+                                            <p className="text-xs font-black uppercase tracking-widest text-gray-400 mb-1">Transaction ID</p>
                                             <p className="text-xs font-mono font-bold text-gray-300">TXN-{order.id?.slice(-8).toUpperCase()}</p>
                                         </div>
                                     </div>
@@ -312,7 +312,7 @@ export default function OrderDetailsPage({ params }: { params: Promise<{ orderNu
                             </div>
                             <div>
                                 <h5 className="font-black text-gray-900">Need Assistance?</h5>
-                                <p className="text-xs text-gray-400 font-bold mt-1">Our concierge is ready to help 24/7.</p>
+                                    <p className="text-xs text-gray-400 font-bold mt-1">Our team is ready to help 24/7.</p>
                             </div>
                         </div>
                     </motion.div>
