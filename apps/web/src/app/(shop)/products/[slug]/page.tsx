@@ -62,14 +62,14 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
     if (!product) {
         return (
-            <div className="max-w-7xl mx-auto px-6 lg:px-12 py-40 text-center">
-                <div className="w-24 h-24 bg-gray-50 rounded-[2rem] flex items-center justify-center mx-auto mb-8">
-                    <Info className="h-10 w-10 text-gray-200" />
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 text-center">
+                <div className="w-16 h-16 bg-neutral-50 border border-neutral-100 rounded-xl flex items-center justify-center mx-auto mb-8 shadow-sm">
+                    <Info className="h-6 w-6 text-neutral-400" />
                 </div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-4 font-playfair">Product Not Found</h1>
-                <p className="text-gray-400 mb-10 max-w-lg mx-auto font-medium">This product is currently unavailable or may have been removed.</p>
+                <h1 className="text-3xl font-playfair font-bold text-neutral-900 mb-4">Product Not Found</h1>
+                <p className="text-neutral-500 mb-8 max-w-md mx-auto text-sm leading-relaxed">This product is currently unavailable or may have been removed.</p>
                 <Link href="/products">
-                    <Button className="rounded-xl px-10 h-14 bg-foreground text-white hover:bg-primary font-bold uppercase tracking-wider text-sm">
+                    <Button className="rounded-xl px-8 h-12 bg-neutral-900 hover:bg-neutral-800 text-white font-bold uppercase tracking-wider text-xs transition-all shadow-md">
                         Back to Products
                     </Button>
                 </Link>

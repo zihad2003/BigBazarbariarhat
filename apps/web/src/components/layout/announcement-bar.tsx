@@ -51,7 +51,7 @@ export function AnnouncementBar() {
                         <span>
                             {subParts.map((sub, sIdx) => 
                                 sub.toUpperCase() === 'BIGBAZAR10' 
-                                    ? <span key={sIdx} className="text-indigo-400 font-bold">{sub}</span>
+                                    ? <span key={sIdx} className="text-emerald-300 font-bold">{sub}</span>
                                     : sub
                             )}
                         </span>

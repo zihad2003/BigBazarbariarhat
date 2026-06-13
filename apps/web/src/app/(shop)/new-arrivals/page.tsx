@@ -128,8 +128,8 @@ export default function NewArrivalsPage() {
                             key={cat}
                             onClick={() => { setSelectedCategory(cat === 'All Categories' ? null : cat); setCurrentPage(1); }}
                             className={cn(
-                                "w-full text-left px-4 py-2 rounded-xl text-sm transition-all",
-                                (selectedCategory === cat || (cat === 'All Categories' && selectedCategory === null)) ? "bg-foreground text-white font-bold" : "text-gray-500 hover:bg-gray-100"
+                                "w-full text-left px-4 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all",
+                                (selectedCategory === cat || (cat === 'All Categories' && selectedCategory === null)) ? "bg-neutral-900 text-white shadow-sm" : "text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900"
                             )}
                         >
                             {cat}
@@ -140,7 +140,7 @@ export default function NewArrivalsPage() {
 
             <Button 
                 variant="outline" 
-                className="w-full h-12 rounded-2xl border-dashed border-2 font-black uppercase tracking-widest text-[10px] hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 transition-all"
+                className="w-full h-11 rounded-xl border-dashed border-2 font-black uppercase tracking-widest text-[10px] hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 transition-all"
                 onClick={clearAllFilters}
             >
                 <FilterX className="h-4 w-4 mr-2" />
@@ -157,20 +157,20 @@ export default function NewArrivalsPage() {
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
                     <div className="space-y-4">
                         <div className="flex items-center gap-3">
-                            <div className="h-px w-8 bg-destructive" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-destructive">Just In</span>
+                            <div className="h-px w-8 bg-emerald-600" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600">Just In</span>
                         </div>
-                        <h1 className="text-4xl lg:text-5xl font-playfair font-bold tracking-tight text-gray-900 leading-tight">
-                            Shop <span className="text-destructive">New Arrivals</span>
+                        <h1 className="text-4xl lg:text-5xl font-playfair font-bold tracking-tight text-neutral-900 leading-tight">
+                            Shop <span className="text-emerald-600 font-bold italic">New Arrivals</span>
                         </h1>
                         <p className="text-gray-500 font-medium max-w-md">
                             Explore our latest masterworks and fresh additions to the collection.
                         </p>
                     </div>
                     <div className="flex items-center gap-4">
-                        <div className="bg-gray-50 px-6 py-3 rounded-2xl border border-gray-100">
-                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-1">Total Items</span>
-                            <span className="text-xl font-black text-gray-900">{filteredProducts.length} <span className="text-sm font-medium text-gray-400">products</span></span>
+                        <div className="bg-neutral-50 px-6 py-3 rounded-xl border border-neutral-100">
+                            <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest block mb-1">Total Items</span>
+                            <span className="text-xl font-black text-neutral-900">{filteredProducts.length} <span className="text-sm font-medium text-neutral-400">products</span></span>
                         </div>
                     </div>
                 </div>
@@ -188,11 +188,11 @@ export default function NewArrivalsPage() {
                     <main className="flex-1">
                         
                         {/* Toolbar Module */}
-                        <div className="flex flex-col sm:flex-row items-center justify-between gap-6 mb-12 bg-gray-50/50 p-4 rounded-[2.5rem] border border-gray-100">
+                        <div className="flex flex-col sm:flex-row items-center justify-between gap-6 mb-12 bg-neutral-50/50 p-4 rounded-xl border border-neutral-100">
                             <div className="flex items-center gap-4 w-full sm:w-auto">
                                 <Sheet>
                                     <SheetTrigger asChild>
-                                        <Button variant="outline" className="lg:hidden h-12 w-12 rounded-2xl p-0 border-gray-200 hover:bg-white hover:shadow-xl transition-all">
+                                        <Button variant="outline" className="lg:hidden h-12 w-12 rounded-xl p-0 border-neutral-200 hover:bg-white hover:shadow-md transition-all">
                                             <SlidersHorizontal className="h-5 w-5" />
                                         </Button>
                                     </SheetTrigger>
@@ -210,18 +210,18 @@ export default function NewArrivalsPage() {
                                         placeholder="Search new items..."
                                         value={searchQuery}
                                         onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
-                                        className="h-12 pl-12 pr-4 bg-white border-gray-200 rounded-2xl focus:ring-2 focus:ring-black/5 transition-all font-medium"
+                                        className="h-12 pl-12 pr-4 bg-white border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900/10 transition-all font-medium text-sm"
                                     />
                                 </div>
                             </div>
 
                             <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
-                                <div className="hidden sm:flex items-center bg-white border border-gray-100 rounded-2xl p-1 shadow-sm">
+                                <div className="hidden sm:flex items-center bg-white border border-neutral-100 rounded-xl p-1 shadow-sm">
                                     <button 
                                         onClick={() => setViewMode('grid')}
                                         className={cn(
                                             "h-10 w-10 flex items-center justify-center rounded-xl transition-all",
-                                            viewMode === 'grid' ? "bg-black text-white shadow-xl" : "text-gray-400 hover:text-black"
+                                            viewMode === 'grid' ? "bg-neutral-900 text-white shadow-md shadow-neutral-900/10" : "text-neutral-400 hover:text-black"
                                         )}
                                     >
                                         <LayoutGrid className="h-4 w-4" />
@@ -230,7 +230,7 @@ export default function NewArrivalsPage() {
                                         onClick={() => setViewMode('list')}
                                         className={cn(
                                             "h-10 w-10 flex items-center justify-center rounded-xl transition-all",
-                                            viewMode === 'list' ? "bg-black text-white shadow-xl" : "text-gray-400 hover:text-black"
+                                            viewMode === 'list' ? "bg-neutral-900 text-white shadow-md shadow-neutral-900/10" : "text-neutral-400 hover:text-black"
                                         )}
                                     >
                                         <List className="h-4 w-4" />
@@ -238,10 +238,10 @@ export default function NewArrivalsPage() {
                                 </div>
 
                                 <Select value={sortBy} onValueChange={(val) => setSortBy(val)}>
-                                    <SelectTrigger className="w-[180px] h-12 rounded-2xl border-gray-200 bg-white font-bold text-xs uppercase tracking-widest focus:ring-black/5 transition-all">
+                                    <SelectTrigger className="w-[180px] h-12 rounded-xl border-neutral-200 bg-white font-bold text-xs uppercase tracking-widest focus:ring-neutral-900/10 transition-all">
                                         <SelectValue placeholder="Sort By" />
                                     </SelectTrigger>
-                                    <SelectContent className="rounded-2xl border-gray-100 shadow-2xl">
+                                    <SelectContent className="rounded-xl border-neutral-100 shadow-2xl">
                                         <SelectItem value="newest" className="font-bold text-xs uppercase tracking-widest py-3">Newest First</SelectItem>
                                         <SelectItem value="price_low" className="font-bold text-xs uppercase tracking-widest py-3">Price: Low to High</SelectItem>
                                         <SelectItem value="price_high" className="font-bold text-xs uppercase tracking-widest py-3">Price: High to Low</SelectItem>
@@ -267,7 +267,7 @@ export default function NewArrivalsPage() {
                                     variant="outline"
                                     disabled={currentPage === 1}
                                     onClick={() => setCurrentPage(prev => prev - 1)}
-                                    className="h-11 px-6 rounded-xl border-gray-200 font-bold uppercase tracking-wider text-xs"
+                                    className="h-11 px-6 rounded-xl border-neutral-200 font-bold uppercase tracking-wider text-xs"
                                 >
                                     Previous
                                 </Button>
@@ -279,8 +279,8 @@ export default function NewArrivalsPage() {
                                             className={cn(
                                                 "w-11 h-11 rounded-xl flex items-center justify-center text-sm font-bold transition-all",
                                                 currentPage === i + 1
-                                                    ? "bg-foreground text-white shadow-lg shadow-black/15"
-                                                    : "bg-gray-50 text-gray-400 hover:bg-gray-100"
+                                                    ? "bg-neutral-900 text-white shadow-md shadow-neutral-900/10"
+                                                    : "bg-neutral-50 text-neutral-400 hover:bg-neutral-100"
                                             )}
                                         >
                                             {i + 1}
@@ -291,7 +291,7 @@ export default function NewArrivalsPage() {
                                     variant="outline"
                                     disabled={currentPage === totalPages}
                                     onClick={() => setCurrentPage(prev => prev + 1)}
-                                    className="h-11 px-6 rounded-xl border-gray-200 font-bold uppercase tracking-wider text-xs"
+                                    className="h-11 px-6 rounded-xl border-neutral-200 font-bold uppercase tracking-wider text-xs"
                                 >
                                     Next
                                 </Button>

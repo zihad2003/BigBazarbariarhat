@@ -4,7 +4,7 @@ import HomeClient from './HomeClient';
 // Server-side fallback category images
 const fallbackCategoryImages: Record<string, string> = {
     'Women': 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=500&auto=format&fit=crop',
-    'Men': 'https://images.unsplash.com/photo-1488161628813-04466f872be2?q=80&w=500&auto=format&fit=crop',
+    'Men': 'https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?q=80&w=500&auto=format&fit=crop',
     'Kids(Boys)': 'https://images.unsplash.com/photo-1503919545889-aef636e10ad4?q=80&w=500&auto=format&fit=crop',
     'Kids(Girls)': 'https://images.unsplash.com/photo-1518837695005-2083093ee35b?q=80&w=500&auto=format&fit=crop',
     'Wedding Touch': 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?q=80&w=500&auto=format&fit=crop',
@@ -88,7 +88,6 @@ export default async function HomePage() {
     }));
 
     const categories = dbCategories
-        .filter((cat) => cat.name.toLowerCase() !== 'wedding touch')
         .map((cat) => ({
             key: cat.slug,
             name: cat.name,

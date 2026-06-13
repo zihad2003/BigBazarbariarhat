@@ -5,7 +5,7 @@ const categoriesToSeed = [
   {
     name: 'Men',
     slug: 'men',
-    image: 'https://images.unsplash.com/photo-1516259762381-22954d7d3ad2?q=80&w=800&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?q=80&w=800&auto=format&fit=crop',
     subcategories: ['T-Shirts', 'Denim', 'Knitwear', 'Outerwear']
   },
   {

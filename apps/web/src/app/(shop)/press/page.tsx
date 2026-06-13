@@ -1,29 +1,39 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Newspaper } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function PressPage() {
     return (
-        <main className="min-h-[70vh] flex flex-col items-center justify-center p-8 bg-gray-50 text-center">
-            <div className="max-w-xl space-y-6 bg-white p-12 shadow-sm border border-gray-100">
-                <h1 className="text-4xl font-playfair font-black text-foreground uppercase tracking-widest">
-                    Press
-                </h1>
-                <div className="h-1 w-16 bg-destructive mx-auto" />
-                <p className="text-muted-foreground leading-relaxed">
-                    This page is currently under development. The full press content and functionality will be available in a future update.
-                </p>
-                <div className="pt-8">
-                    <Link href="/">
-                        <Button className="bg-foreground text-white hover:bg-destructive uppercase tracking-widest font-bold px-8">
-                            <ArrowLeft className="w-4 h-4 mr-2" />
-                            Back to Shop
-                        </Button>
-                    </Link>
+        <div className="bg-white min-h-screen font-sans text-neutral-900">
+            <main className="max-w-xl mx-auto px-4 sm:px-6 py-20 lg:py-32 text-center">
+                <div className="space-y-8 bg-neutral-50 rounded-xl p-8 lg:p-12 border border-neutral-100 shadow-sm flex flex-col items-center">
+                    <div className="w-12 h-12 bg-neutral-900 rounded-xl flex items-center justify-center text-white">
+                        <Newspaper className="h-5 w-5" />
+                    </div>
+                    
+                    <div className="space-y-3">
+                        <h1 className="text-3xl font-playfair font-bold text-neutral-900">
+                            Press Room
+                        </h1>
+                        <div className="h-0.5 w-12 bg-neutral-300 mx-auto" />
+                    </div>
+
+                    <p className="text-neutral-500 text-sm leading-relaxed max-w-sm">
+                        Our press and media kit section is currently being updated. For media inquiries, please reach out to us directly.
+                    </p>
+
+                    <div className="pt-4">
+                        <Link href="/">
+                            <Button className="bg-neutral-900 hover:bg-neutral-800 text-white uppercase tracking-widest font-black text-[10px] px-8 h-12 rounded-xl transition-all">
+                                <ArrowLeft className="w-4 h-4 mr-2" />
+                                Back to Shop
+                            </Button>
+                        </Link>
+                    </div>
                 </div>
-            </div>
-        </main>
+            </main>
+        </div>
     );
 }

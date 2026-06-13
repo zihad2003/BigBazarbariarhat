@@ -12,14 +12,10 @@ import {
     ArrowRight, 
     ChevronLeft, 
     ChevronRight, 
-    Truck, 
-    ShieldCheck, 
-    Headphones, 
     Clock,
     Sparkles,
     Gift,
     Crown,
-    RotateCcw,
     ChevronUp
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -32,7 +28,7 @@ import { cn, formatPrice } from '@/lib/utils';
 // --- DATA HELPERS ---
 const fallbackCategoryImages: Record<string, string> = {
     'Women':        'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=500&auto=format&fit=crop',
-    'Men':          'https://images.unsplash.com/photo-1488161628813-04466f872be2?q=80&w=500&auto=format&fit=crop',
+    'Men':          'https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?q=80&w=500&auto=format&fit=crop',
     'Kids(Boys)':   'https://images.unsplash.com/photo-1503919545889-aef636e10ad4?q=80&w=500&auto=format&fit=crop',
     'Kids(Girls)':  'https://images.unsplash.com/photo-1518837695005-2083093ee35b?q=80&w=500&auto=format&fit=crop',
     'Wedding Touch':'https://images.unsplash.com/photo-1583939003579-730e3918a45a?q=80&w=500&auto=format&fit=crop',
@@ -212,42 +208,11 @@ function HeroSlider({ dbBanners }: { dbBanners?: any[] }) {
                 ))}
             </div>
 
-            {/* Slide counter */}
-            <div className="absolute bottom-6 right-6 text-[10px] font-bold text-white/50 uppercase tracking-widest z-20">
-                {String(current + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}
-            </div>
         </div>
     );
 }
 
-// --- TRUST BAR ---
-function TrustBar() {
-    const features = [
-        { icon: Truck,        title: 'Free Delivery',       subtitle: 'On orders over ৳999' },
-        { icon: RotateCcw,    title: 'Easy Returns',        subtitle: '7-day hassle-free return' },
-        { icon: ShieldCheck,  title: 'Secure Checkout',     subtitle: '100% protected payment' },
-        { icon: Headphones,   title: '24/7 Support',        subtitle: 'Dedicated customer care' },
-    ];
-    return (
-        <div className="border-y border-neutral-100 bg-white">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-neutral-100">
-                    {features.map(({ icon: Icon, title, subtitle }) => (
-                        <div key={title} className="flex items-center gap-4 px-6 py-5">
-                            <div className="w-9 h-9 rounded-xl bg-neutral-50 border border-neutral-100 flex items-center justify-center shrink-0">
-                                <Icon className="h-4 w-4 text-neutral-700" />
-                            </div>
-                            <div>
-                                <p className="text-[11px] font-black text-neutral-900 uppercase tracking-tight">{title}</p>
-                                <p className="text-[10px] text-neutral-400 font-medium mt-0.5">{subtitle}</p>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </div>
-    );
-}
+
 
 // --- SECTION HEADER ---
 function SectionHeader({ label, title, viewAllHref }: { label?: string; title: string; viewAllHref?: string }) {
@@ -279,11 +244,18 @@ function ProductCard({ product, index }: { product: any; index: number }) {
     const router = useRouter();
 
     const firstImage = product.images?.[0];
-    const resolvedImage = typeof firstImage === 'string'
+    let resolvedImage = typeof firstImage === 'string'
         ? firstImage
         : (firstImage && typeof firstImage === 'object' && 'url' in firstImage
             ? (firstImage as any).url
-            : (product.image || '/placeholder.png'));
+            : (product.image || ''));
+    
+    // Route Instagram URLs through proxy
+    if (resolvedImage && (resolvedImage.includes('instagram.com') || resolvedImage.includes('cdninstagram.com'))) {
+        resolvedImage = `/api/proxy-image?url=${encodeURIComponent(resolvedImage)}`;
+    }
+
+    const hasImage = !!resolvedImage;
 
     return (
         <motion.div
@@ -297,14 +269,23 @@ function ProductCard({ product, index }: { product: any; index: number }) {
         >
             <Link href={`/products/${product.slug || product.id}`}>
                 <div className="relative aspect-[3/4] overflow-hidden rounded-xl bg-neutral-100 mb-3 border border-neutral-100">
-                    <Image
-                        src={resolvedImage}
-                        alt={product.name}
-                        fill
-                        className={`object-cover transition-transform duration-700 ${isHovered ? 'scale-108' : 'scale-100'}`}
-                        quality={90}
-                        style={{ transform: isHovered ? 'scale(1.08)' : 'scale(1)' }}
-                    />
+                    {hasImage ? (
+                        <Image
+                            src={resolvedImage}
+                            alt={product.name}
+                            fill
+                            className={`object-cover transition-transform duration-700 ${isHovered ? 'scale-108' : 'scale-100'}`}
+                            quality={80}
+                            style={{ transform: isHovered ? 'scale(1.08)' : 'scale(1)' }}
+                        />
+                    ) : (
+                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-neutral-100 to-neutral-200">
+                            <div className="w-16 h-16 rounded-2xl bg-neutral-300/50 flex items-center justify-center mb-3">
+                                <ShoppingBag className="h-7 w-7 text-neutral-400" />
+                            </div>
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-400">No Image</span>
+                        </div>
+                    )}
                     {/* Sale badge */}
                     {(product.salePrice || product.isFlashSale) && (
                         <span className="absolute top-2.5 left-2.5 bg-rose-500 text-white text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-lg z-10">
@@ -612,8 +593,7 @@ export default function HomeClient({
             {/* 1. HERO SLIDER */}
             <HeroSlider dbBanners={heroBanners} />
 
-            {/* 2. TRUST BAR */}
-            <TrustBar />
+
 
             {/* 3. SHOP BY CATEGORY */}
             <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">

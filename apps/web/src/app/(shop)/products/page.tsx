@@ -142,13 +142,13 @@ export default function ProductsPage() {
         <div className="space-y-10">
             {/* Categories */}
             <div>
-                <h3 className="text-xs font-black text-gray-900 uppercase tracking-[0.2em] mb-6">{t?.categories?.title || 'Categories'}</h3>
+                <h3 className="text-xs font-black text-neutral-900 uppercase tracking-[0.2em] mb-6">{t?.categories?.title || 'Categories'}</h3>
                 <div className="space-y-2">
                     <button
                         onClick={() => { setSelectedCategory(null); setCurrentPage(1); }}
                         className={cn(
-                            "w-full text-left px-4 py-2 rounded-xl text-sm transition-all uppercase tracking-widest text-[10px] font-bold",
-                            selectedCategory === null ? "bg-foreground text-white shadow-lg" : "text-gray-500 hover:bg-gray-100"
+                            "w-full text-left px-4 py-2.5 rounded-xl text-sm transition-all uppercase tracking-widest text-[10px] font-bold",
+                            selectedCategory === null ? "bg-neutral-900 text-white shadow-sm" : "text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900"
                         )}
                     >
                         {t?.common?.viewAll || 'All Categories'}
@@ -158,8 +158,8 @@ export default function ProductsPage() {
                             key={cat.key}
                             onClick={() => { setSelectedCategory(cat.key); setCurrentPage(1); }}
                             className={cn(
-                                "w-full text-left px-4 py-2 rounded-xl text-sm transition-all uppercase tracking-widest text-[10px] font-bold",
-                                (selectedCategory?.toLowerCase() === cat.key.toLowerCase() || selectedCategory?.toLowerCase().startsWith(cat.key.toLowerCase() + '-')) ? "bg-destructive text-white shadow-lg" : "text-gray-500 hover:bg-gray-100"
+                                "w-full text-left px-4 py-2.5 rounded-xl text-sm transition-all uppercase tracking-widest text-[10px] font-bold",
+                                (selectedCategory?.toLowerCase() === cat.key.toLowerCase() || selectedCategory?.toLowerCase().startsWith(cat.key.toLowerCase() + '-')) ? "bg-neutral-900 text-white shadow-sm" : "text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900"
                             )}
                         >
                             {cat.label}
@@ -181,8 +181,8 @@ export default function ProductsPage() {
 
                 {/* Header */}
                 <div className="mb-4 sm:mb-8">
-                    <h1 className="text-xl sm:text-3xl lg:text-4xl font-playfair font-bold tracking-tight text-gray-900">
-                        Shop <span className="text-destructive">Our Products</span>
+                    <h1 className="text-xl sm:text-3xl lg:text-4xl font-playfair font-bold tracking-tight text-neutral-900">
+                        Shop <span className="text-emerald-600 font-bold italic">Our Products</span>
                     </h1>
                 </div>
 
@@ -204,7 +204,7 @@ export default function ProductsPage() {
                                 {/* Mobile Filter Trigger */}
                                 <Sheet>
                                     <SheetTrigger asChild>
-                                        <Button variant="outline" className="lg:hidden h-8 w-8 rounded-lg p-0 border-gray-200">
+                                        <Button variant="outline" className="lg:hidden h-8 w-8 rounded-lg p-0 border-neutral-200">
                                             <SlidersHorizontal className="h-3.5 w-3.5" />
                                         </Button>
                                     </SheetTrigger>
@@ -216,16 +216,16 @@ export default function ProductsPage() {
                                     </SheetContent>
                                 </Sheet>
 
-                                <span className="text-xs text-gray-400 font-medium">{totalProducts} products</span>
+                                <span className="text-xs text-neutral-400 font-medium">{totalProducts} products</span>
                             </div>
 
                             <div className="flex items-center gap-2">
-                                <div className="hidden sm:flex items-center border border-gray-100 rounded-lg p-0.5">
+                                <div className="hidden sm:flex items-center border border-neutral-100 rounded-lg p-0.5">
                                     <button 
                                         onClick={() => setViewMode('grid')}
                                         className={cn(
                                             "h-7 w-7 flex items-center justify-center rounded-md transition-all",
-                                            viewMode === 'grid' ? "bg-gray-900 text-white" : "text-gray-400 hover:text-black"
+                                            viewMode === 'grid' ? "bg-neutral-900 text-white" : "text-neutral-400 hover:text-black"
                                         )}
                                     >
                                         <LayoutGrid className="h-3.5 w-3.5" />
@@ -234,7 +234,7 @@ export default function ProductsPage() {
                                         onClick={() => setViewMode('list')}
                                         className={cn(
                                             "h-7 w-7 flex items-center justify-center rounded-md transition-all",
-                                            viewMode === 'list' ? "bg-gray-900 text-white" : "text-gray-400 hover:text-black"
+                                            viewMode === 'list' ? "bg-neutral-900 text-white" : "text-neutral-400 hover:text-black"
                                         )}
                                     >
                                         <List className="h-3.5 w-3.5" />
@@ -242,10 +242,10 @@ export default function ProductsPage() {
                                 </div>
 
                                 <Select value={sortBy} onValueChange={(val) => setSortBy(val)}>
-                                    <SelectTrigger className="w-[120px] sm:w-[150px] h-8 rounded-lg border-gray-200 bg-white text-[10px] sm:text-xs font-medium focus:ring-black/5">
+                                    <SelectTrigger className="w-[120px] sm:w-[150px] h-8 rounded-lg border-neutral-200 bg-white text-[10px] sm:text-xs font-medium focus:ring-black/5">
                                         <SelectValue placeholder="Sort" />
                                     </SelectTrigger>
-                                    <SelectContent className="rounded-xl border-gray-100 shadow-xl">
+                                    <SelectContent className="rounded-xl border-neutral-100 shadow-xl">
                                         <SelectItem value="newest" className="text-xs py-2">Newest</SelectItem>
                                         <SelectItem value="price_low" className="text-xs py-2">Price: Low to High</SelectItem>
                                         <SelectItem value="price_high" className="text-xs py-2">Price: High to Low</SelectItem>
@@ -272,7 +272,7 @@ export default function ProductsPage() {
                                     variant="outline"
                                     disabled={currentPage === 1}
                                     onClick={() => setCurrentPage(prev => prev - 1)}
-                                    className="h-11 px-6 rounded-xl border-gray-200 font-bold uppercase tracking-wider text-xs"
+                                    className="h-11 px-6 rounded-xl border-neutral-200 font-bold uppercase tracking-wider text-xs"
                                 >
                                     Previous
                                 </Button>
@@ -284,8 +284,8 @@ export default function ProductsPage() {
                                             className={cn(
                                                 "w-11 h-11 rounded-xl flex items-center justify-center text-sm font-bold transition-all",
                                                 currentPage === i + 1
-                                                    ? "bg-foreground text-white shadow-lg shadow-black/15"
-                                                    : "bg-gray-50 text-gray-400 hover:bg-gray-100"
+                                                    ? "bg-neutral-900 text-white shadow-md shadow-neutral-900/10"
+                                                    : "bg-neutral-50 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-900"
                                             )}
                                         >
                                             {i + 1}
@@ -296,7 +296,7 @@ export default function ProductsPage() {
                                     variant="outline"
                                     disabled={currentPage === totalPages}
                                     onClick={() => setCurrentPage(prev => prev + 1)}
-                                    className="h-11 px-6 rounded-xl border-gray-200 font-bold uppercase tracking-wider text-xs"
+                                    className="h-11 px-6 rounded-xl border-neutral-200 font-bold uppercase tracking-wider text-xs"
                                 >
                                     Next
                                 </Button>

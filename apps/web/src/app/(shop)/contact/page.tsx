@@ -1,8 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
-import { Mail, Phone, MapPin, Send, MessageSquare, Globe, ArrowLeft, Loader2 } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, MessageSquare, Globe, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -15,148 +14,151 @@ export default function ContactPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
-        // Mock submission protocol
         await new Promise(resolve => setTimeout(resolve, 1500));
         setIsSubmitting(false);
         setSubmitted(true);
     };
 
     return (
-        <div className="bg-[#fafafa] min-h-screen font-sans">
-            <main className="max-w-7xl mx-auto px-6 lg:px-12 py-12 lg:py-24">
+        <div className="bg-white min-h-screen font-sans">
+            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
                 
                 {/* Header */}
-                <div className="mb-20">
+                <div className="mb-16">
                     <div className="flex items-center gap-3 mb-4">
-                        <div className="h-px w-8 bg-black" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400">Communication Terminal</span>
+                        <div className="h-px w-8 bg-neutral-300" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-neutral-400">Get In Touch</span>
                     </div>
-                    <h1 className="text-5xl md:text-7xl font-black text-gray-900 tracking-tighter uppercase leading-none">Initiate<br />Contact</h1>
+                    <h1 className="text-4xl md:text-6xl font-playfair font-bold text-neutral-900 tracking-tight leading-tight">Contact Us</h1>
+                    <p className="text-neutral-500 mt-4 max-w-lg text-sm leading-relaxed">
+                        Have a question about an order, need styling help, or want to collaborate? We&apos;d love to hear from you.
+                    </p>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-20">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
                     
-                    {/* Contact Info Matrix */}
-                    <div className="lg:col-span-5 space-y-12">
-                        <div className="bg-black text-white rounded-[3rem] p-12 relative overflow-hidden group shadow-2xl shadow-black/20">
-                            <div className="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-bl-[5rem] group-hover:scale-110 transition-transform -mr-12 -mt-12" />
+                    {/* Contact Info */}
+                    <div className="lg:col-span-5 space-y-8">
+                        <div className="bg-neutral-900 text-white rounded-xl p-10 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-bl-[4rem] -mr-8 -mt-8" />
                             
-                            <h3 className="text-[11px] font-black text-indigo-400 uppercase tracking-[0.4em] mb-12">Headquarters Protocol</h3>
+                            <h3 className="text-[10px] font-black text-neutral-400 uppercase tracking-[0.3em] mb-10">Store Information</h3>
                             
-                            <div className="space-y-10 relative z-10">
-                                <div className="flex items-start gap-6">
-                                    <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center text-indigo-400 shrink-0">
-                                        <MapPin className="h-6 w-6" />
+                            <div className="space-y-8 relative z-10">
+                                <div className="flex items-start gap-5">
+                                    <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-white/60 shrink-0">
+                                        <MapPin className="h-5 w-5" />
                                     </div>
                                     <div>
-                                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Location Coordinates</p>
-                                        <p className="text-lg font-bold tracking-tight uppercase">Bariarhat Central Plaza<br />Chittagong, BD 4324</p>
+                                        <p className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1.5">Our Store</p>
+                                        <p className="text-sm font-semibold tracking-tight">Bariarhat Central Plaza<br />Mirsharai, Chittagong</p>
                                     </div>
                                 </div>
 
-                                <div className="flex items-start gap-6">
-                                    <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center text-indigo-400 shrink-0">
-                                        <Mail className="h-6 w-6" />
+                                <div className="flex items-start gap-5">
+                                    <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-white/60 shrink-0">
+                                        <Mail className="h-5 w-5" />
                                     </div>
                                     <div>
-                                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Transmission Channel</p>
-                                        <p className="text-lg font-bold tracking-tight uppercase">Support@bigbazar.com<br />Press@bigbazar.com</p>
+                                        <p className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1.5">Email</p>
+                                        <p className="text-sm font-semibold tracking-tight">infobigbazar01@gmail.com</p>
                                     </div>
                                 </div>
 
-                                <div className="flex items-start gap-6">
-                                    <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center text-indigo-400 shrink-0">
-                                        <Phone className="h-6 w-6" />
+                                <div className="flex items-start gap-5">
+                                    <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-white/60 shrink-0">
+                                        <Phone className="h-5 w-5" />
                                     </div>
                                     <div>
-                                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Voice Frequency</p>
-                                        <p className="text-lg font-bold tracking-tight uppercase">+880 1234-567890<br />+880 1876-543210</p>
+                                        <p className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1.5">Phone</p>
+                                        <p className="text-sm font-semibold tracking-tight">01857045449</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-6">
-                            <div className="p-8 bg-white border border-gray-100 rounded-[2.5rem] flex flex-col items-center text-center group hover:border-indigo-100 transition-all">
-                                <Globe className="h-6 w-6 text-gray-300 group-hover:text-indigo-600 mb-4 transition-colors" />
-                                <span className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em]">Social Protocol</span>
-                                <span className="text-xs font-bold text-gray-900 mt-2 uppercase tracking-tight">@BIGBAZAR_BD</span>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="p-6 bg-white border border-neutral-100 rounded-xl flex flex-col items-center text-center group hover:border-neutral-300 transition-all">
+                                <Globe className="h-5 w-5 text-neutral-300 group-hover:text-neutral-900 mb-3 transition-colors" />
+                                <span className="text-[9px] font-black text-neutral-400 uppercase tracking-[0.2em]">Social Media</span>
+                                <span className="text-xs font-bold text-neutral-900 mt-1.5 uppercase tracking-tight">@BIGBAZAR_BD</span>
                             </div>
-                            <div className="p-8 bg-white border border-gray-100 rounded-[2.5rem] flex flex-col items-center text-center group hover:border-indigo-100 transition-all">
-                                <MessageSquare className="h-6 w-6 text-gray-300 group-hover:text-indigo-600 mb-4 transition-colors" />
-                                <span className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em]">Support Protocol</span>
-                                <span className="text-xs font-bold text-gray-900 mt-2 uppercase tracking-tight">LIVE CHAT 24/7</span>
+                            <div className="p-6 bg-white border border-neutral-100 rounded-xl flex flex-col items-center text-center group hover:border-neutral-300 transition-all">
+                                <MessageSquare className="h-5 w-5 text-neutral-300 group-hover:text-neutral-900 mb-3 transition-colors" />
+                                <span className="text-[9px] font-black text-neutral-400 uppercase tracking-[0.2em]">Customer Support</span>
+                                <span className="text-xs font-bold text-neutral-900 mt-1.5 uppercase tracking-tight">LIVE CHAT 24/7</span>
                             </div>
                         </div>
                     </div>
 
-                    {/* Contact Form Terminal */}
+                    {/* Contact Form */}
                     <div className="lg:col-span-7">
-                        <div className="bg-white rounded-[4rem] p-10 lg:p-16 border border-gray-100 shadow-sm">
+                        <div className="bg-neutral-50 rounded-xl p-8 lg:p-12 border border-neutral-100">
                             {submitted ? (
                                 <motion.div 
                                     initial={{ opacity: 0, scale: 0.95 }}
                                     animate={{ opacity: 1, scale: 1 }}
-                                    className="text-center py-20"
+                                    className="text-center py-16"
                                 >
-                                    <div className="w-24 h-24 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-8">
-                                        <Send className="h-10 w-10" />
+                                    <div className="w-20 h-20 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                                        <Send className="h-8 w-8" />
                                     </div>
-                                    <h2 className="text-3xl font-black text-gray-900 uppercase tracking-tighter mb-4">Transmission Successful</h2>
-                                    <p className="text-gray-400 font-bold uppercase tracking-widest text-xs mb-10">Our curators will respond to your frequency shortly.</p>
-                                    <Button onClick={() => setSubmitted(false)} variant="outline" className="rounded-xl h-12 px-8 text-[10px] font-black uppercase tracking-widest">
-                                        Initiate New Session
+                                    <h2 className="text-2xl font-playfair font-bold text-neutral-900 mb-3">Message Sent!</h2>
+                                    <p className="text-neutral-500 text-sm mb-8">We&apos;ll get back to you within 24 hours.</p>
+                                    <Button onClick={() => setSubmitted(false)} variant="outline" className="rounded-xl h-11 px-6 text-[10px] font-black uppercase tracking-widest border-neutral-200">
+                                        Send Another Message
                                     </Button>
                                 </motion.div>
                             ) : (
-                                <form onSubmit={handleSubmit} className="space-y-8">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                        <div className="space-y-3">
-                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">Entity Identification</label>
+                                <form onSubmit={handleSubmit} className="space-y-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest pl-1">Full Name</label>
                                             <Input 
                                                 required
-                                                placeholder="FULL NAME"
-                                                className="h-16 rounded-2xl bg-gray-50 border-gray-50 focus:bg-white focus:border-indigo-100 transition-all text-sm font-black uppercase tracking-tight"
+                                                placeholder="Enter your name"
+                                                className="h-12 rounded-xl bg-white border-neutral-200 focus:border-neutral-900 transition-all text-sm"
                                             />
                                         </div>
-                                        <div className="space-y-3">
-                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">Sync Channel (Email)</label>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest pl-1">Email Address</label>
                                             <Input 
                                                 required
                                                 type="email"
-                                                placeholder="CURATOR@DOMAIN.COM"
-                                                className="h-16 rounded-2xl bg-gray-50 border-gray-50 focus:bg-white focus:border-indigo-100 transition-all text-sm font-black uppercase tracking-tight"
+                                                placeholder="your@email.com"
+                                                className="h-12 rounded-xl bg-white border-neutral-200 focus:border-neutral-900 transition-all text-sm"
                                             />
                                         </div>
                                     </div>
-                                    <div className="space-y-3">
-                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">Subject Classification</label>
-                                        <select className="w-full h-16 px-6 rounded-2xl bg-gray-50 border-gray-50 focus:bg-white focus:border-indigo-100 transition-all text-sm font-black uppercase tracking-tight appearance-none">
-                                            <option>ACQUISITION INQUIRY</option>
-                                            <option>LOGISTICAL SUPPORT</option>
-                                            <option>PARTNERSHIP PROPOSAL</option>
-                                            <option>OTHER PROTOCOLS</option>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest pl-1">Subject</label>
+                                        <select className="w-full h-12 px-4 rounded-xl bg-white border border-neutral-200 focus:border-neutral-900 transition-all text-sm appearance-none">
+                                            <option>Order Inquiry</option>
+                                            <option>Shipping & Delivery</option>
+                                            <option>Returns & Exchange</option>
+                                            <option>Partnership</option>
+                                            <option>Other</option>
                                         </select>
                                     </div>
-                                    <div className="space-y-3">
-                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">Manifest Content</label>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest pl-1">Message</label>
                                         <Textarea 
                                             required
-                                            rows={6}
-                                            placeholder="DESCRIBE YOUR REQUEST IN DETAIL..."
-                                            className="rounded-3xl bg-gray-50 border-gray-50 focus:bg-white focus:border-indigo-100 transition-all text-sm font-black uppercase tracking-tight p-6 resize-none"
+                                            rows={5}
+                                            placeholder="How can we help you?"
+                                            className="rounded-xl bg-white border-neutral-200 focus:border-neutral-900 transition-all text-sm p-4 resize-none"
                                         />
                                     </div>
                                     <Button 
                                         type="submit"
                                         disabled={isSubmitting}
-                                        className="w-full h-20 bg-black text-white hover:bg-gray-800 rounded-3xl text-[12px] font-black uppercase tracking-[0.3em] shadow-2xl shadow-black/20 group"
+                                        className="w-full h-14 bg-neutral-900 text-white hover:bg-neutral-800 rounded-xl text-[11px] font-black uppercase tracking-[0.2em] group"
                                     >
                                         {isSubmitting ? (
-                                            <Loader2 className="h-6 w-6 animate-spin" />
+                                            <Loader2 className="h-5 w-5 animate-spin" />
                                         ) : (
-                                            <span className="flex items-center gap-3">
-                                                Transmit Message <Send className="h-5 w-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                                            <span className="flex items-center gap-2">
+                                                Send Message <Send className="h-4 w-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                                             </span>
                                         )}
                                     </Button>

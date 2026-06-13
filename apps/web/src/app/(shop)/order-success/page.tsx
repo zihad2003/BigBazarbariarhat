@@ -104,7 +104,7 @@ function OrderSuccessContent() {
                                 id: 'item-1',
                                 quantity: 2,
                                 price: 2500,
-                                product: { name: 'Premium Mock Artifact', images: [] },
+                                product: { name: 'Premium Product', images: [] },
                                 variant: { attributes: { size: 'L', color: 'Midnight Black' } }
                             }
                         ]
@@ -130,7 +130,7 @@ function OrderSuccessContent() {
                     <motion.div
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="h-24 w-24 rounded-[2.5rem] border-4 border-gray-50 border-t-black animate-spin"
+                        className="h-24 w-24 rounded-xl border-4 border-neutral-50 border-t-neutral-900 animate-spin"
                     />
                     <ShoppingBag className="h-10 w-10 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-black" />
                 </div>
@@ -144,13 +144,13 @@ function OrderSuccessContent() {
 
     if (errorMessage || !order) {
         return (
-            <div className="min-h-screen flex items-center justify-center p-6 bg-[#fafafa]">
+            <div className="min-h-screen flex items-center justify-center p-6 bg-neutral-50">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="max-w-md w-full text-center"
                 >
-                    <div className="w-24 h-24 bg-rose-50 rounded-[2.5rem] flex items-center justify-center mx-auto mb-8 border border-rose-100 shadow-xl shadow-rose-500/5">
+                    <div className="w-24 h-24 bg-rose-50 rounded-xl flex items-center justify-center mx-auto mb-8 border border-rose-100 shadow-xl shadow-rose-500/5">
                         <ShieldCheck className="h-10 w-10 text-rose-500" />
                     </div>
                     <h1 className="text-4xl font-black text-gray-900 mb-4 tracking-tight">Loading Failed</h1>
@@ -159,12 +159,12 @@ function OrderSuccessContent() {
                     </p>
                     <div className="flex flex-col gap-4">
                         <Link href="/account/orders">
-                            <Button className="h-16 w-full bg-black text-white hover:bg-gray-800 rounded-2xl uppercase tracking-widest font-black text-sm shadow-xl shadow-black/10">
+                            <Button className="h-12 w-full bg-neutral-900 text-white hover:bg-neutral-800 rounded-xl uppercase tracking-widest font-black text-xs">
                                 View Orders
                             </Button>
                         </Link>
                         <Link href="/shop">
-                            <Button variant="ghost" className="h-16 w-full text-gray-400 hover:text-black font-black uppercase tracking-widest text-xs">
+                            <Button variant="ghost" className="h-12 w-full text-neutral-400 hover:text-neutral-950 font-black uppercase tracking-widest text-xs">
                                 Return to Shop
                             </Button>
                         </Link>
@@ -177,7 +177,7 @@ function OrderSuccessContent() {
     const isPaid = order.paymentStatus === 'PAID';
 
     return (
-        <div className="min-h-screen bg-[#fafafa] relative overflow-hidden pb-24">
+        <div className="min-h-screen bg-neutral-50 relative overflow-hidden pb-24">
             <SuccessParticles />
 
             {/* Top Navigation Bar (Fixed simplified) */}
@@ -200,7 +200,7 @@ function OrderSuccessContent() {
                         initial={{ opacity: 0, scale: 0.5, rotate: -20 }}
                         animate={{ opacity: 1, scale: 1, rotate: 0 }}
                         transition={{ type: "spring", damping: 12 }}
-                        className="inline-flex items-center justify-center w-24 h-24 bg-emerald-50 rounded-[2.5rem] mb-8 border border-emerald-100 shadow-xl shadow-emerald-500/10"
+                        className="inline-flex items-center justify-center w-24 h-24 bg-emerald-50 rounded-xl mb-8 border border-emerald-100 shadow-xl shadow-emerald-500/10"
                     >
                         <CheckCircle2 className="h-12 w-12 text-emerald-500" />
                     </motion.div>
@@ -248,7 +248,7 @@ function OrderSuccessContent() {
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.3 }}
-                            className="bg-white border border-gray-100 rounded-[3rem] p-8 lg:p-12 shadow-sm"
+                            className="bg-white border border-neutral-100 rounded-xl p-8 lg:p-12 shadow-sm"
                         >
                             <div className="flex items-center justify-between border-b border-gray-50 pb-8 mb-8">
                                 <h3 className="text-2xl font-black text-gray-900">Order Summary</h3>
@@ -261,7 +261,7 @@ function OrderSuccessContent() {
                             <div className="space-y-10">
                                 {order.items.map((item: any) => (
                                     <div key={item.id} className="flex flex-col sm:flex-row gap-8 items-start group">
-                                        <div className="w-full sm:w-28 aspect-[3/4] bg-gray-50 rounded-[1.5rem] relative shrink-0 overflow-hidden border border-gray-100">
+                                        <div className="w-full sm:w-28 aspect-[3/4] bg-neutral-50 rounded-xl relative shrink-0 overflow-hidden border border-neutral-100">
                                             {item.product?.images?.[0]?.url ? (
                                                 <Image
                                                     src={item.product.images[0].url}
@@ -291,7 +291,7 @@ function OrderSuccessContent() {
                                                         Color: {item.variant.attributes.color}
                                                     </span>
                                                 )}
-                                                <span className="bg-indigo-50 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest text-indigo-500 border border-indigo-100">
+                                                <span className="bg-neutral-900 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest text-white border border-neutral-900">
                                                     QTY: {item.quantity}
                                                 </span>
                                             </div>
@@ -326,15 +326,15 @@ function OrderSuccessContent() {
                         {/* Primary Actions */}
                         <div className="flex flex-col sm:flex-row gap-6">
                             <Link href="/shop" className="flex-1">
-                                <Button className="w-full h-20 bg-black text-white hover:bg-gray-800 transition-all rounded-[1.5rem] uppercase tracking-widest font-black text-sm shadow-2xl shadow-black/20 group">
-                                    <ShoppingBag className="w-5 h-5 mr-3 group-hover:scale-110 transition-transform" />
+                                <Button className="w-full h-12 bg-neutral-900 text-white hover:bg-neutral-800 transition-all rounded-xl uppercase tracking-widest font-black text-xs shadow-sm group">
+                                    <ShoppingBag className="w-4 h-4 mr-3 group-hover:scale-110 transition-transform" />
                                     Continue Shopping
                                 </Button>
                             </Link>
                             <Link href="/account/orders" className="flex-1">
-                                <Button variant="outline" className="w-full h-20 border-gray-200 hover:border-black text-gray-900 bg-white rounded-[1.5rem] uppercase tracking-widest font-black text-sm group shadow-sm transition-all hover:shadow-lg">
+                                <Button variant="outline" className="w-full h-12 border-neutral-200 hover:border-neutral-900 text-neutral-900 bg-white rounded-xl uppercase tracking-widest font-black text-xs group shadow-sm transition-all hover:shadow-md">
                                     View Orders
-                                    <ArrowRight className="w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform" />
+                                    <ArrowRight className="w-4 h-4 ml-3 group-hover:translate-x-1 transition-transform" />
                                 </Button>
                             </Link>
                         </div>
@@ -342,16 +342,15 @@ function OrderSuccessContent() {
 
                     {/* Right Column: Meta Details */}
                     <div className="lg:col-span-4 space-y-8">
-                        {/* Delivery Address Card */}
                         <motion.div
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.4 }}
-                            className="bg-white rounded-[3rem] p-10 border border-gray-100 shadow-sm group overflow-hidden relative"
+                            className="bg-white rounded-xl p-10 border border-neutral-100 shadow-sm group overflow-hidden relative"
                         >
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-bl-[5rem] group-hover:scale-110 transition-transform -mr-10 -mt-10" />
-                            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-8 flex items-center gap-3">
-                                <MapPin className="h-4 w-4 text-indigo-500" />
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-neutral-50 rounded-bl-[5rem] group-hover:scale-110 transition-transform -mr-10 -mt-10" />
+                            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-400 mb-8 flex items-center gap-3">
+                                <MapPin className="h-4 w-4 text-neutral-900" />
                                 Delivery Address
                             </h4>
 
@@ -380,15 +379,14 @@ function OrderSuccessContent() {
                             </div>
                         </motion.div>
 
-                        {/* Delivery & Shield */}
                         <motion.div
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.5 }}
-                            className="bg-gray-900 rounded-[3rem] p-10 text-white shadow-2xl relative overflow-hidden group"
+                            className="bg-neutral-900 rounded-xl p-10 text-white shadow-md relative overflow-hidden group"
                         >
                             <div className="absolute bottom-0 right-0 w-32 h-32 bg-white/5 rounded-tl-[5rem] group-hover:scale-110 transition-transform" />
-                            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-600 mb-8 flex items-center gap-3">
+                            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-400 mb-8 flex items-center gap-3">
                                 <Calendar className="h-4 w-4 text-emerald-400" />
                                 Delivery Window
                             </h4>
@@ -411,12 +409,12 @@ function OrderSuccessContent() {
                         </motion.div>
 
                         {/* Support Info */}
-                        <div className="bg-white rounded-[2.5rem] p-8 border border-gray-100 text-center">
+                        <div className="bg-white rounded-xl p-8 border border-neutral-100 text-center">
                             <h5 className="font-black text-gray-900 mb-2">Need assistance?</h5>
                             <p className="text-xs text-gray-400 font-bold mb-6">Our support team is standing by.</p>
                             <a
                                 href="mailto:support@bigbazar.com"
-                                className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600 hover:text-black transition-colors"
+                                className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-neutral-900 hover:text-neutral-700 transition-colors"
                             >
                                 Contact Support <ArrowRight className="h-3 w-3" />
                             </a>

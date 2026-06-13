@@ -1,92 +1,104 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowLeft, ShieldCheck, Lock, Eye, FileText, Scale } from 'lucide-react';
+import { ArrowLeft, ShieldCheck, Lock, Eye, UserCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function PrivacyPolicyPage() {
     return (
-        <div className="bg-[#fafafa] min-h-screen font-sans">
-            <main className="max-w-4xl mx-auto px-6 py-12 lg:py-24">
+        <div className="bg-white min-h-screen font-sans">
+            <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
                 
                 {/* Header */}
-                <div className="mb-16">
+                <div className="mb-14">
                     <div className="flex items-center gap-3 mb-4">
-                        <div className="h-px w-8 bg-black" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400">Legal Manifest</span>
+                        <div className="h-px w-8 bg-neutral-300" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-neutral-400">Legal</span>
                     </div>
-                    <h1 className="text-5xl font-black text-gray-900 tracking-tighter uppercase">Privacy Protocol</h1>
-                    <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px] mt-4">Revision: 2026.04.01 | Status: Active</p>
+                    <h1 className="text-4xl md:text-5xl font-playfair font-bold text-neutral-900 tracking-tight">Privacy Policy</h1>
+                    <p className="text-neutral-400 text-xs mt-3">Last updated: June 2026</p>
                 </div>
 
-                <div className="space-y-12 bg-white rounded-[3rem] p-10 lg:p-16 border border-gray-100 shadow-sm">
+                <div className="space-y-10 bg-neutral-50 rounded-xl p-8 lg:p-12 border border-neutral-100">
                     
-                    <section className="space-y-6">
-                        <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600">
-                                <ShieldCheck className="h-5 w-5" />
+                    <section className="space-y-4">
+                        <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 bg-neutral-900 rounded-xl flex items-center justify-center text-white">
+                                <Eye className="h-4 w-4" />
                             </div>
-                            <h2 className="text-xl font-black text-gray-900 uppercase tracking-tight">Data Sovereignty</h2>
+                            <h2 className="text-base font-bold text-neutral-900">Information We Collect</h2>
                         </div>
-                        <p className="text-gray-500 font-medium leading-relaxed">
-                            At Big Bazar Bariarhat, we recognize that your personal data is a critical asset. Our protocol is designed to ensure that you maintain sovereignty over your information at all times. We only collect the data necessary to facilitate artifact acquisition and logistical synchronization.
+                        <p className="text-neutral-500 text-sm leading-relaxed">
+                            When you place an order on Big Bazar, we collect your name, phone number, email address, and delivery address. This information is used solely to process and deliver your orders. We may also collect browsing data to improve your shopping experience.
                         </p>
                     </section>
 
-                    <section className="space-y-6">
-                        <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600">
-                                <Lock className="h-5 w-5" />
+                    <section className="space-y-4">
+                        <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 bg-neutral-900 rounded-xl flex items-center justify-center text-white">
+                                <Lock className="h-4 w-4" />
                             </div>
-                            <h2 className="text-xl font-black text-gray-900 uppercase tracking-tight">Security Encryption</h2>
+                            <h2 className="text-base font-bold text-neutral-900">Data Security</h2>
                         </div>
-                        <p className="text-gray-500 font-medium leading-relaxed">
-                            All transmissions within the Big Bazar network are protected by 256-bit SSL encryption. Your financial instruments and identity markers are stored in isolated, air-gapped security modules to prevent unauthorized access.
+                        <p className="text-neutral-500 text-sm leading-relaxed">
+                            Your personal data is stored securely and is never shared with third parties for marketing purposes. Payment information is processed through secure channels (bKash, Nagad) and we do not store any payment credentials on our servers.
                         </p>
                     </section>
 
-                    <section className="space-y-6">
-                        <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600">
-                                <Eye className="h-5 w-5" />
+                    <section className="space-y-4">
+                        <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 bg-neutral-900 rounded-xl flex items-center justify-center text-white">
+                                <ShieldCheck className="h-4 w-4" />
                             </div>
-                            <h2 className="text-xl font-black text-gray-900 uppercase tracking-tight">Transparency Manifest</h2>
+                            <h2 className="text-base font-bold text-neutral-900">How We Use Your Data</h2>
                         </div>
-                        <p className="text-gray-500 font-medium leading-relaxed">
-                            We do not participate in the trade of consumer profiles. Your data is used exclusively for:
+                        <p className="text-neutral-500 text-sm leading-relaxed mb-3">
+                            We do not sell or trade your personal information. Your data is used exclusively for:
                         </p>
-                        <ul className="space-y-4 text-gray-500 font-medium pl-4">
+                        <ul className="space-y-3 text-sm text-neutral-500">
                             <li className="flex items-center gap-3">
-                                <div className="w-1.5 h-1.5 bg-indigo-600 rounded-full" />
-                                <span>Logistical coordination of your artifacts.</span>
+                                <div className="w-1.5 h-1.5 bg-neutral-900 rounded-full" />
+                                <span>Processing and delivering your orders.</span>
                             </li>
                             <li className="flex items-center gap-3">
-                                <div className="w-1.5 h-1.5 bg-indigo-600 rounded-full" />
-                                <span>Synchronization of your curation history.</span>
+                                <div className="w-1.5 h-1.5 bg-neutral-900 rounded-full" />
+                                <span>Keeping you updated on order status via SMS.</span>
                             </li>
                             <li className="flex items-center gap-3">
-                                <div className="w-1.5 h-1.5 bg-indigo-600 rounded-full" />
-                                <span>Optimization of the storefront experience.</span>
+                                <div className="w-1.5 h-1.5 bg-neutral-900 rounded-full" />
+                                <span>Improving your shopping experience on our website.</span>
                             </li>
                         </ul>
                     </section>
 
-                    <div className="pt-12 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-8">
-                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                            Questions regarding the legal manifest?
+                    <section className="space-y-4">
+                        <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 bg-neutral-900 rounded-xl flex items-center justify-center text-white">
+                                <UserCheck className="h-4 w-4" />
+                            </div>
+                            <h2 className="text-base font-bold text-neutral-900">Your Rights</h2>
+                        </div>
+                        <p className="text-neutral-500 text-sm leading-relaxed">
+                            You can request access to, correction of, or deletion of your personal data at any time by contacting us at infobigbazar01@gmail.com or calling 01857045449. We will process your request within 7 business days.
+                        </p>
+                    </section>
+
+                    <div className="pt-8 border-t border-neutral-200 flex flex-col sm:flex-row items-center justify-between gap-6">
+                        <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">
+                            Questions about your privacy?
                         </p>
                         <Link href="/contact">
-                            <Button variant="outline" className="rounded-xl h-12 px-8 text-[10px] font-black uppercase tracking-widest border-gray-100">
-                                Contact Legal Hub
+                            <Button variant="outline" className="rounded-xl h-11 px-8 text-[10px] font-black uppercase tracking-widest border-neutral-200">
+                                Contact Us
                             </Button>
                         </Link>
                     </div>
                 </div>
 
-                <div className="mt-12 text-center">
+                <div className="mt-10 text-center">
                     <Link href="/">
-                        <Button variant="ghost" className="text-gray-400 hover:text-black text-[10px] font-black uppercase tracking-widest gap-2">
-                            <ArrowLeft className="h-4 w-4" /> Back to Storefront
+                        <Button variant="ghost" className="text-neutral-400 hover:text-neutral-900 text-[10px] font-black uppercase tracking-widest gap-2">
+                            <ArrowLeft className="h-4 w-4" /> Back to Shop
                         </Button>
                     </Link>
                 </div>

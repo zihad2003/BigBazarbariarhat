@@ -107,13 +107,15 @@ export default function SalePage() {
                     { label: t?.common?.sale || 'Sale', active: true }
                 ]} 
             />
-            <h1 className="text-4xl lg:text-5xl font-black mb-12 text-red-600 tracking-tight">Flash Sale</h1>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-playfair font-bold tracking-tight text-neutral-900 mb-12">
+                Flash <span className="text-emerald-600 font-bold italic">Sale</span>
+            </h1>
 
             <div className="flex flex-col lg:flex-row gap-8">
                 {/* Mobile Filter Sheet */}
                 <Sheet>
                     <SheetTrigger asChild>
-                        <Button variant="outline" className="lg:hidden mb-4 w-full flex items-center gap-2">
+                        <Button variant="outline" className="lg:hidden mb-4 w-full flex items-center justify-center gap-2 rounded-xl border-neutral-200 h-11 text-xs font-bold uppercase tracking-wider">
                             <SlidersHorizontal className="h-4 w-4" /> Filters
                         </Button>
                     </SheetTrigger>
@@ -124,11 +126,11 @@ export default function SalePage() {
                         <div className="mt-8 space-y-8">
                             {/* Categories */}
                             <div>
-                                <h3 className="font-bold mb-4">Categories</h3>
+                                <h3 className="text-xs font-black text-neutral-900 uppercase tracking-[0.2em] mb-4">Categories</h3>
                                 <div className="space-y-2">
                                     <button
                                         onClick={() => handleFilterChange('categoryId', undefined)}
-                                        className={`block w-full text-left text-sm ${!filters.categoryId ? 'font-bold text-black' : 'text-gray-500'}`}
+                                        className={`block w-full text-left px-3 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all ${!filters.categoryId ? 'bg-neutral-900 text-white shadow-sm' : 'text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900'}`}
                                     >
                                         All Categories
                                     </button>
@@ -136,7 +138,7 @@ export default function SalePage() {
                                         <button
                                             key={cat.id}
                                             onClick={() => handleFilterChange('categoryId', cat.id)}
-                                            className={`block w-full text-left text-sm ${filters.categoryId === cat.id ? 'font-bold text-black' : 'text-gray-500'}`}
+                                            className={`block w-full text-left px-3 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all ${filters.categoryId === cat.id ? 'bg-neutral-900 text-white shadow-sm' : 'text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900'}`}
                                         >
                                             {cat.name}
                                         </button>
@@ -151,11 +153,11 @@ export default function SalePage() {
                 {/* Desktop Sidebar */}
                 <div className="hidden lg:block w-64 flex-shrink-0 space-y-8">
                     <div>
-                        <h3 className="font-black text-xl mb-6">Categories</h3>
-                        <div className="space-y-3">
+                        <h3 className="text-xs font-black text-neutral-900 uppercase tracking-[0.2em] mb-6">Categories</h3>
+                        <div className="space-y-2">
                             <button
                                 onClick={() => handleFilterChange('categoryId', undefined)}
-                                className={`block w-full text-left transition-colors ${!filters.categoryId ? 'font-bold text-black' : 'text-gray-500 hover:text-black'}`}
+                                className={`block w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all ${!filters.categoryId ? 'bg-neutral-900 text-white shadow-sm' : 'text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900'}`}
                             >
                                 All Categories
                             </button>
@@ -163,7 +165,7 @@ export default function SalePage() {
                                 <button
                                     key={cat.id}
                                     onClick={() => handleFilterChange('categoryId', cat.id)}
-                                    className={`block w-full text-left transition-colors ${filters.categoryId === cat.id ? 'font-bold text-black' : 'text-gray-500 hover:text-black'}`}
+                                    className={`block w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all ${filters.categoryId === cat.id ? 'bg-neutral-900 text-white shadow-sm' : 'text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900'}`}
                                 >
                                     {cat.name}
                                 </button>
@@ -174,8 +176,8 @@ export default function SalePage() {
 
                     {(filters.categoryId || filters.minPrice || filters.maxPrice || filters.search) && (
                         <Button
-                            variant="destructive"
-                            className="w-full"
+                            variant="outline"
+                            className="w-full rounded-xl border-dashed border-2 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 transition-all text-xs font-bold uppercase tracking-wider h-11"
                             onClick={clearFilters}
                         >
                             <X className="h-4 w-4 mr-2" /> Clear Filters
@@ -188,17 +190,17 @@ export default function SalePage() {
                     {/* Toolbar */}
                     <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8">
                         <div className="relative w-full sm:w-96">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
                             <Input
                                 placeholder="Search sale items..."
-                                className="pl-10"
+                                className="pl-11 rounded-xl border-neutral-200 focus:ring-neutral-900/10 text-sm font-medium"
                                 value={filters.search}
                                 onChange={(e) => handleFilterChange('search', e.target.value)}
                             />
                         </div>
 
                         <select
-                            className="w-full sm:w-auto px-4 py-2 border rounded-md bg-white font-medium text-sm focus:outline-none focus:ring-2 focus:ring-black"
+                            className="w-full sm:w-auto h-10 px-4 border border-neutral-200 rounded-xl bg-white text-xs font-bold uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-neutral-900/10 cursor-pointer"
                             value={filters.sortBy}
                             onChange={(e) => handleFilterChange('sortBy', e.target.value)}
                         >
@@ -224,16 +226,18 @@ export default function SalePage() {
                                         variant="outline"
                                         disabled={filters.page === 1}
                                         onClick={() => handleFilterChange('page', (filters.page || 1) - 1)}
+                                        className="h-10 rounded-xl border-neutral-200 text-xs font-bold uppercase tracking-wider"
                                     >
                                         Previous
                                     </Button>
-                                    <span className="flex items-center px-4 font-bold text-sm">
+                                    <span className="flex items-center px-4 font-bold text-xs text-neutral-500 uppercase tracking-widest">
                                         Page {filters.page} of {Math.ceil(total / (filters.limit || 12))}
                                     </span>
                                     <Button
                                         variant="outline"
                                         disabled={filters.page! * (filters.limit || 12) >= total}
                                         onClick={() => handleFilterChange('page', (filters.page || 1) + 1)}
+                                        className="h-10 rounded-xl border-neutral-200 text-xs font-bold uppercase tracking-wider"
                                     >
                                         Next
                                     </Button>

@@ -82,7 +82,7 @@ export default function OrderConfirmationPage() {
           {error || "We couldn't locate this order. It may have been placed on a different device."}
         </p>
         <Link href="/products">
-          <Button className="h-14 px-10 bg-black text-white hover:bg-gray-900 rounded-sm font-bold text-xs uppercase tracking-widest">
+          <Button className="h-11 px-8 bg-neutral-900 text-white hover:bg-neutral-800 rounded-xl font-bold text-xs uppercase tracking-widest">
             Back to Shop
           </Button>
         </Link>
@@ -101,10 +101,10 @@ export default function OrderConfirmationPage() {
 
   return (
     <div className="bg-white min-h-screen font-sans">
-      <header className="border-b border-gray-100 py-8">
+      <header className="border-b border-neutral-100 py-8">
         <div className="max-w-4xl mx-auto px-6 flex justify-center">
-          <Link href="/" className="text-2xl font-bold tracking-tighter uppercase">
-            BIG BAZAR
+          <Link href="/" className="text-2xl font-black font-playfair tracking-widest uppercase">
+            <span className="text-[#E11D48]">BIG</span> <span className="text-neutral-900">BAZAR</span>
           </Link>
         </div>
       </header>
@@ -119,7 +119,7 @@ export default function OrderConfirmationPage() {
           >
             <Check className="h-10 w-10 text-white stroke-[3px]" />
           </motion.div>
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 uppercase tracking-tight mb-4">
+          <h1 className="text-3xl md:text-4xl font-playfair font-bold text-neutral-900 mb-4 uppercase tracking-tight">
             Thank you for your order
           </h1>
           <p className="text-gray-500 text-base max-w-md mx-auto">
@@ -130,7 +130,7 @@ export default function OrderConfirmationPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 text-left bg-gray-50 rounded-sm p-10 md:p-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 text-left bg-neutral-50 border border-neutral-100 rounded-xl p-10 md:p-12">
           {/* Shipping Details */}
           <div className="space-y-10">
             <div>
@@ -187,14 +187,14 @@ export default function OrderConfirmationPage() {
 
         <div className="mt-16 space-y-6">
           <Link href="/products">
-            <Button className="h-16 px-12 bg-black text-white hover:bg-gray-900 rounded-sm font-bold text-xs uppercase tracking-widest gap-3">
+            <Button className="h-12 px-8 bg-neutral-900 text-white hover:bg-neutral-800 rounded-xl font-bold text-xs uppercase tracking-widest gap-3">
               Continue Shopping <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>
           <div>
             <Link
               href="/account/orders"
-              className="text-[10px] font-bold text-gray-400 hover:text-black uppercase tracking-widest transition-colors border-b border-gray-100 hover:border-black pb-1"
+              className="text-[10px] font-bold text-gray-400 hover:text-black uppercase tracking-widest transition-colors border-b border-neutral-100 hover:border-black pb-1"
             >
               Manage your orders
             </Link>

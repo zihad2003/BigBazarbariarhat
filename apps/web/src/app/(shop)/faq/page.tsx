@@ -16,7 +16,7 @@ const faqs = [
   },
   {
     q: 'Can I return or exchange an item?',
-    a: 'Yes. Items can be returned or exchanged within 30 days of delivery, provided they are unused and in original packaging with tags intact.',
+    a: 'Please inspect your order upon delivery in front of the courier rider. Returns and exchanges are only accepted at the time of delivery. Once the rider leaves, we cannot process return requests. For damaged items, contact us within 48 hours with photos.',
   },
   {
     q: 'How do I track my order?',
@@ -40,19 +40,19 @@ export default function FaqPage() {
   const [open, setOpen] = useState<number | null>(null);
 
   return (
-    <div className="bg-[#fafafa] min-h-screen font-sans">
+    <div className="bg-white min-h-screen font-sans">
       <main className="max-w-3xl mx-auto px-6 py-12 lg:py-24">
         <div className="mb-16">
           <div className="flex items-center gap-3 mb-4">
-            <div className="h-px w-8 bg-black" />
+            <div className="h-px w-8 bg-neutral-300" />
             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400">Help Center</span>
           </div>
-          <h1 className="text-5xl font-black text-gray-900 tracking-tighter uppercase">FAQs</h1>
+          <h1 className="text-4xl md:text-5xl font-playfair font-bold text-neutral-900 tracking-tight">Frequently Asked Questions</h1>
         </div>
 
         <div className="space-y-2">
           {faqs.map((item, i) => (
-            <div key={i} className="bg-white border border-gray-100 rounded-2xl overflow-hidden">
+            <div key={i} className="bg-neutral-50 border border-neutral-100 rounded-xl overflow-hidden">
               <button
                 onClick={() => setOpen(open === i ? null : i)}
                 className="w-full flex items-center justify-between px-8 py-6 text-left"
@@ -71,7 +71,7 @@ export default function FaqPage() {
           ))}
         </div>
 
-        <div className="mt-16 bg-white rounded-3xl p-10 border border-gray-100 shadow-sm text-center">
+        <div className="mt-16 bg-neutral-50 rounded-xl p-8 border border-neutral-100 text-center">
           <p className="text-sm font-black text-gray-900 uppercase tracking-tight mb-2">Still have questions?</p>
           <p className="text-gray-400 text-sm font-medium mb-8">Our team is ready to help.</p>
           <Link href="/contact">

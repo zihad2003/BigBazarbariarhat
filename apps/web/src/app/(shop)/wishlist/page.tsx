@@ -115,12 +115,12 @@ export default function WishlistPage() {
                     >
                         <div className="flex flex-col items-start md:items-end">
                             <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">
-                                {language === 'bn' ? 'সংরক্ষিত পণ্য' : 'Saved Curations'}
+                                {language === 'bn' ? 'সংরক্ষিত পণ্য' : 'Saved Items'}
                             </span>
                             <div className="flex items-center gap-3 bg-gray-50 border border-gray-100 px-5 py-3 rounded-xl shadow-sm">
-                                <Heart className="h-4 w-4 text-rose-500 fill-rose-500 animate-pulse" />
+                                <Heart className="h-4 w-4 text-rose-500 fill-rose-500" />
                                 <span className="text-[10px] font-black uppercase tracking-widest text-gray-900 font-mono">
-                                    {items.length} {language === 'bn' ? 'টি পণ্য' : `Curated Item${items.length !== 1 ? 's' : ''}`}
+                                    {items.length} {language === 'bn' ? 'টি পণ্য' : `Item${items.length !== 1 ? 's' : ''}`}
                                 </span>
                             </div>
                         </div>
@@ -229,7 +229,7 @@ export default function WishlistPage() {
                                         <p className="text-gray-400 font-medium text-sm max-w-sm">
                                             {language === 'bn' 
                                                 ? 'তাত্ক্ষণিকভাবে কেনাকাটা সম্পন্ন করতে আপনার সংরক্ষিত সব পণ্য কার্টে স্থানান্তরিত করুন।' 
-                                                : 'Consolidate all curated items into your cart to complete purchase instantly.'}
+                                                : 'Move all your saved items into the cart for a quick checkout.'}
                                         </p>
                                     </div>
                                     <Button

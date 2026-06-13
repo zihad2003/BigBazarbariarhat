@@ -34,7 +34,7 @@ const getNavCategories = (t: any): any[] => [
     {
         name: t?.categories?.men || 'Men',
         href: '/products?category=men',
-        featured: 'https://images.unsplash.com/photo-1516259762381-22954d7d3ad2?q=80&w=800&auto=format&fit=crop',
+        featured: 'https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?q=80&w=800&auto=format&fit=crop',
         subcategories: [
             { name: 'T-Shirts', href: '/products?category=men&subcategory=men-t-shirts' },
             { name: 'Denim', href: '/products?category=men&subcategory=men-denim' },
@@ -127,7 +127,7 @@ export function Header() {
 
         // Fetch live DB categories to populate the dropdown menu dynamically!
         const defaultImages: Record<string, string> = {
-            'Men': 'https://images.unsplash.com/photo-1516259762381-22954d7d3ad2?q=80&w=800&auto=format&fit=crop',
+            'Men': 'https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?q=80&w=800&auto=format&fit=crop',
             'Women': 'https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=800&auto=format&fit=crop',
             'Kids(Boys)': 'https://images.unsplash.com/photo-1503919545889-aef636e10ad4?q=80&w=800&auto=format&fit=crop',
             'Kids(Girls)': 'https://images.unsplash.com/photo-1518837695005-2083093ee35b?q=80&w=800&auto=format&fit=crop',
