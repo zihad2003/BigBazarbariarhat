@@ -27,8 +27,54 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { cn } from '@/lib/utils';
+import { useLanguageStore, useTranslation } from '@bigbazar/shared';
+
+// --- Local Translations ---
+const localTranslations: Record<string, any> = {
+    en: {
+        headerSubtitle: 'Just In',
+        headerTitle1: 'Shop ',
+        headerTitle2: 'New Arrivals',
+        headerDesc: 'Explore our latest masterworks and fresh additions to the collection.',
+        totalItems: 'Total Items',
+        products: 'products',
+        searchPlaceholder: 'Search new items...',
+        allCategories: 'All Categories',
+        categories: 'Categories',
+        sortNewest: 'Newest First',
+        sortPriceLow: 'Price: Low to High',
+        sortPriceHigh: 'Price: High to Low',
+        sortRating: 'Best Rating',
+        filters: 'Filters',
+        resetFilters: 'Reset Filters',
+        previous: 'Previous',
+        next: 'Next',
+    },
+    bn: {
+        headerSubtitle: 'সদ্য এসেছে',
+        headerTitle1: 'কেনাকাটা করুন ',
+        headerTitle2: 'নতুন কালেকশন',
+        headerDesc: 'আমাদের সর্বশেষ পণ্য এবং কালেকশনে নতুন সংযোজন দেখুন।',
+        totalItems: 'মোট পণ্য',
+        products: 'টি পণ্য',
+        searchPlaceholder: 'নতুন পণ্য খুঁজুন...',
+        allCategories: 'সকল ক্যাটাগরি',
+        categories: 'ক্যাটাগরি',
+        sortNewest: 'নতুন প্রথমে',
+        sortPriceLow: 'দাম: কম থেকে বেশি',
+        sortPriceHigh: 'দাম: বেশি থেকে কম',
+        sortRating: 'সেরা রেটিং',
+        filters: 'ফিল্টার',
+        resetFilters: 'ফিল্টার রিসেট করুন',
+        previous: 'পূর্ববর্তী',
+        next: 'পরবর্তী',
+    }
+};
 
 export default function NewArrivalsPage() {
+    const { language } = useLanguageStore();
+    const t = useTranslation();
+    const ct = localTranslations[language] || localTranslations.en;
     // UI State
     const [isLoading, setIsLoading] = useState(true);
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -46,7 +92,16 @@ export default function NewArrivalsPage() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }, [currentPage]);
 
-    const categories = ['All Categories', 'New Arrivals', 'Men', 'Women', 'Kids(Boys)', 'Kids(Girls)', 'Wedding Touch', 'Sale'];
+    const categories = [
+        { key: 'All Categories', label: ct.allCategories },
+        { key: 'New Arrivals', label: t?.newArrivals?.title || 'New Arrivals' },
+        { key: 'Men', label: t?.categories?.men || 'Men' },
+        { key: 'Women', label: t?.categories?.women || 'Women' },
+        { key: 'Kids(Boys)', label: t?.categories?.kidsBoys || 'Kids(Boys)' },
+        { key: 'Kids(Girls)', label: t?.categories?.kidsGirls || 'Kids(Girls)' },
+        { key: 'Wedding Touch', label: t?.categories?.weddingTouch || 'Wedding Touch' },
+        { key: 'Sale', label: t?.common?.sale || 'Sale' },
+    ];
 
     // Load actual products from Database
     useEffect(() => {
@@ -121,18 +176,18 @@ export default function NewArrivalsPage() {
     const FilterContent = () => (
         <div className="space-y-10">
             <div>
-                <h3 className="text-xs font-black text-gray-900 uppercase tracking-[0.2em] mb-6">Categories</h3>
+                <h3 className="text-xs font-black text-gray-900 uppercase tracking-[0.2em] mb-6">{ct.categories}</h3>
                 <div className="space-y-2">
-                    {categories.map(cat => (
+                    {categories.map(catItem => (
                         <button
-                            key={cat}
-                            onClick={() => { setSelectedCategory(cat === 'All Categories' ? null : cat); setCurrentPage(1); }}
+                            key={catItem.key}
+                            onClick={() => { setSelectedCategory(catItem.key === 'All Categories' ? null : catItem.key); setCurrentPage(1); }}
                             className={cn(
                                 "w-full text-left px-4 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all",
-                                (selectedCategory === cat || (cat === 'All Categories' && selectedCategory === null)) ? "bg-neutral-900 text-white shadow-sm" : "text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900"
+                                (selectedCategory === catItem.key || (catItem.key === 'All Categories' && selectedCategory === null)) ? "bg-neutral-900 text-white shadow-sm" : "text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900"
                             )}
                         >
-                            {cat}
+                            {catItem.label}
                         </button>
                     ))}
                 </div>
@@ -144,7 +199,7 @@ export default function NewArrivalsPage() {
                 onClick={clearAllFilters}
             >
                 <FilterX className="h-4 w-4 mr-2" />
-                Reset Filters
+                {ct.resetFilters}
             </Button>
         </div>
     );
@@ -158,19 +213,19 @@ export default function NewArrivalsPage() {
                     <div className="space-y-4">
                         <div className="flex items-center gap-3">
                             <div className="h-px w-8 bg-emerald-600" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600">Just In</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600">{ct.headerSubtitle}</span>
                         </div>
                         <h1 className="text-4xl lg:text-5xl font-playfair font-bold tracking-tight text-neutral-900 leading-tight">
-                            Shop <span className="text-emerald-600 font-bold italic">New Arrivals</span>
+                            {ct.headerTitle1}<span className="text-emerald-600 font-bold italic">{ct.headerTitle2}</span>
                         </h1>
                         <p className="text-gray-500 font-medium max-w-md">
-                            Explore our latest masterworks and fresh additions to the collection.
+                            {ct.headerDesc}
                         </p>
                     </div>
                     <div className="flex items-center gap-4">
                         <div className="bg-neutral-50 px-6 py-3 rounded-xl border border-neutral-100">
-                            <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest block mb-1">Total Items</span>
-                            <span className="text-xl font-black text-neutral-900">{filteredProducts.length} <span className="text-sm font-medium text-neutral-400">products</span></span>
+                            <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest block mb-1">{ct.totalItems}</span>
+                            <span className="text-xl font-black text-neutral-900">{filteredProducts.length} <span className="text-sm font-medium text-neutral-400">{ct.products}</span></span>
                         </div>
                     </div>
                 </div>
@@ -198,7 +253,7 @@ export default function NewArrivalsPage() {
                                     </SheetTrigger>
                                     <SheetContent side="left" className="w-full sm:max-w-md overflow-y-auto">
                                         <SheetHeader className="mb-8">
-                                            <SheetTitle className="text-2xl font-black tracking-tighter">Filters</SheetTitle>
+                                            <SheetTitle className="text-2xl font-black tracking-tighter">{ct.filters}</SheetTitle>
                                         </SheetHeader>
                                         <FilterContent />
                                     </SheetContent>
@@ -207,7 +262,7 @@ export default function NewArrivalsPage() {
                                 <div className="relative flex-1 sm:w-80">
                                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                                     <Input
-                                        placeholder="Search new items..."
+                                        placeholder={ct.searchPlaceholder}
                                         value={searchQuery}
                                         onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
                                         className="h-12 pl-12 pr-4 bg-white border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900/10 transition-all font-medium text-sm"
@@ -242,10 +297,10 @@ export default function NewArrivalsPage() {
                                         <SelectValue placeholder="Sort By" />
                                     </SelectTrigger>
                                     <SelectContent className="rounded-xl border-neutral-100 shadow-2xl">
-                                        <SelectItem value="newest" className="font-bold text-xs uppercase tracking-widest py-3">Newest First</SelectItem>
-                                        <SelectItem value="price_low" className="font-bold text-xs uppercase tracking-widest py-3">Price: Low to High</SelectItem>
-                                        <SelectItem value="price_high" className="font-bold text-xs uppercase tracking-widest py-3">Price: High to Low</SelectItem>
-                                        <SelectItem value="rating" className="font-bold text-xs uppercase tracking-widest py-3">Best Rating</SelectItem>
+                                        <SelectItem value="newest" className="font-bold text-xs uppercase tracking-widest py-3">{ct.sortNewest}</SelectItem>
+                                        <SelectItem value="price_low" className="font-bold text-xs uppercase tracking-widest py-3">{ct.sortPriceLow}</SelectItem>
+                                        <SelectItem value="price_high" className="font-bold text-xs uppercase tracking-widest py-3">{ct.sortPriceHigh}</SelectItem>
+                                        <SelectItem value="rating" className="font-bold text-xs uppercase tracking-widest py-3">{ct.sortRating}</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -269,7 +324,7 @@ export default function NewArrivalsPage() {
                                     onClick={() => setCurrentPage(prev => prev - 1)}
                                     className="h-11 px-6 rounded-xl border-neutral-200 font-bold uppercase tracking-wider text-xs"
                                 >
-                                    Previous
+                                    {ct.previous}
                                 </Button>
                                 <div className="flex items-center gap-2">
                                     {[...Array(totalPages)].map((_, i) => (
@@ -293,7 +348,7 @@ export default function NewArrivalsPage() {
                                     onClick={() => setCurrentPage(prev => prev + 1)}
                                     className="h-11 px-6 rounded-xl border-neutral-200 font-bold uppercase tracking-wider text-xs"
                                 >
-                                    Next
+                                    {ct.next}
                                 </Button>
                             </div>
                         )}

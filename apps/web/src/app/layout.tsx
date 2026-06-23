@@ -35,6 +35,20 @@ export const metadata: Metadata = {
     locale: "bn_BD",
     url: "https://bigbazarbariarhat.pages.dev",
     siteName: "Big Bazar Bariarhat",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Big Bazar Bariarhat — Your Local Online Shop",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Big Bazar Bariarhat — Your Local Online Shop",
+    description: "Shop online from Big Bazar Bariarhat. Best prices on groceries, electronics, clothing and more delivered to your door in Bariarhat.",
+    images: ["/og-image.png"],
   },
 };
 

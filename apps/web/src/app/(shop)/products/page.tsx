@@ -35,10 +35,54 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { useLanguageStore, useTranslation } from '@bigbazar/shared';
+import { motion } from 'framer-motion';
+
+// --- Local Translations ---
+const localTranslations: Record<string, any> = {
+    en: {
+        headerSubtitle: 'Collection',
+        headerTitle1: 'Shop ',
+        headerTitle2: 'Our Products',
+        headerDesc: 'Explore our curated collection of premium fashion for the whole family.',
+        totalItems: 'Total Items',
+        products: 'products',
+        searchPlaceholder: 'Search products...',
+        allCategories: 'All Categories',
+        sortNewest: 'Newest First',
+        sortPriceLow: 'Price: Low to High',
+        sortPriceHigh: 'Price: High to Low',
+        sortRating: 'Best Rating',
+        filters: 'Filters',
+        categories: 'Categories',
+        resetFilters: 'Reset Filters',
+        previous: 'Previous',
+        next: 'Next',
+    },
+    bn: {
+        headerSubtitle: 'কালেকশন',
+        headerTitle1: 'কেনাকাটা করুন ',
+        headerTitle2: 'আমাদের পণ্যসমূহ',
+        headerDesc: 'পুরো পরিবারের জন্য আমাদের প্রিমিয়াম ফ্যাশন কালেকশন দেখুন।',
+        totalItems: 'মোট পণ্য',
+        products: 'টি পণ্য',
+        searchPlaceholder: 'পণ্য খুঁজুন...',
+        allCategories: 'সকল ক্যাটাগরি',
+        sortNewest: 'নতুন প্রথমে',
+        sortPriceLow: 'দাম: কম থেকে বেশি',
+        sortPriceHigh: 'দাম: বেশি থেকে কম',
+        sortRating: 'সেরা রেটিং',
+        filters: 'ফিল্টার',
+        categories: 'ক্যাটাগরি',
+        resetFilters: 'ফিল্টার রিসেট করুন',
+        previous: 'পূর্ববর্তী',
+        next: 'পরবর্তী',
+    }
+};
 
 export default function ProductsPage() {
     const { language } = useLanguageStore();
     const t = useTranslation();
+    const ct = localTranslations[language] || localTranslations.en;
     const router = useRouter();
     const searchParams = useSearchParams();
 
@@ -108,7 +152,7 @@ export default function ProductsPage() {
         { key: 'kids-boys', label: t?.categories?.kidsBoys || 'Kids(Boys)' },
         { key: 'kids-girls', label: t?.categories?.kidsGirls || 'Kids(Girls)' },
         { key: 'wedding-touch', label: t?.categories?.weddingTouch || 'Wedding Touch' },
-        { key: 'Sale', label: 'Sale' },
+        { key: 'Sale', label: t?.common?.sale || 'Sale' },
     ];
 
     const brands = useMemo(() => {
@@ -142,7 +186,7 @@ export default function ProductsPage() {
         <div className="space-y-10">
             {/* Categories */}
             <div>
-                <h3 className="text-xs font-black text-neutral-900 uppercase tracking-[0.2em] mb-6">{t?.categories?.title || 'Categories'}</h3>
+                <h3 className="text-xs font-black text-neutral-900 uppercase tracking-[0.2em] mb-6">{ct.categories}</h3>
                 <div className="space-y-2">
                     <button
                         onClick={() => { setSelectedCategory(null); setCurrentPage(1); }}
@@ -151,7 +195,7 @@ export default function ProductsPage() {
                             selectedCategory === null ? "bg-neutral-900 text-white shadow-sm" : "text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900"
                         )}
                     >
-                        {t?.common?.viewAll || 'All Categories'}
+                        {ct.allCategories}
                     </button>
                     {categoryOptions.map(cat => (
                         <button
@@ -167,29 +211,63 @@ export default function ProductsPage() {
                     ))}
                 </div>
             </div>
+
+            <Button 
+                variant="outline" 
+                className="w-full h-11 rounded-xl border-dashed border-2 font-black uppercase tracking-widest text-[10px] hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 transition-all"
+                onClick={clearAllFilters}
+            >
+                <FilterX className="h-4 w-4 mr-2" />
+                {ct.resetFilters}
+            </Button>
         </div>
     );
 
     return (
         <div className="min-h-screen bg-white">
-            <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-10">
+            <div className="max-w-7xl mx-auto px-6 lg:px-8 py-6 lg:py-10">
                 <Breadcrumbs 
                     items={[
                         { label: t?.common?.products || 'Products', active: true }
                     ]} 
                 />
 
-                {/* Header */}
-                <div className="mb-4 sm:mb-8">
-                    <h1 className="text-xl sm:text-3xl lg:text-4xl font-playfair font-bold tracking-tight text-neutral-900">
-                        Shop <span className="text-emerald-600 font-bold italic">Our Products</span>
-                    </h1>
-                </div>
+                {/* Header — Premium style matching new-arrivals */}
+                <motion.div 
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8"
+                >
+                    <div className="space-y-3">
+                        <div className="flex items-center gap-3">
+                            <div className="h-px w-8 bg-emerald-600" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-600">{ct.headerSubtitle}</span>
+                        </div>
+                        <h1 className="text-4xl lg:text-5xl font-playfair font-bold tracking-tight text-neutral-900 leading-tight">
+                            {ct.headerTitle1}<span className="text-emerald-600 font-bold italic">{ct.headerTitle2}</span>
+                        </h1>
+                        <p className="text-gray-500 font-medium max-w-md">
+                            {ct.headerDesc}
+                        </p>
+                    </div>
+                    <motion.div
+                        initial={{ opacity: 0, y: 15 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 }}
+                    >
+                        <div className="flex items-center gap-4">
+                            <div className="bg-neutral-50 px-6 py-3 rounded-xl border border-neutral-100">
+                                <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest block mb-1">{ct.totalItems}</span>
+                                <span className="text-xl font-black text-neutral-900">{totalProducts} <span className="text-sm font-medium text-neutral-400">{ct.products}</span></span>
+                            </div>
+                        </div>
+                    </motion.div>
+                </motion.div>
 
-                <div className="flex flex-col lg:flex-row gap-4 lg:gap-12">
+                <div className="flex flex-col lg:flex-row gap-10">
                     
                     {/* Desktop Sidebar Module */}
-                    <aside className="hidden lg:block w-60 shrink-0">
+                    <aside className="hidden lg:block w-72 shrink-0">
                         <div className="sticky top-32">
                             <FilterContent />
                         </div>
@@ -198,62 +276,75 @@ export default function ProductsPage() {
                     {/* Main Content Module */}
                     <main className="flex-1">
                         
-                        {/* Toolbar — minimal row */}
-                        <div className="flex items-center justify-between mb-4 sm:mb-8">
-                            <div className="flex items-center gap-2">
+                        {/* Toolbar — Matching new-arrivals */}
+                        <motion.div 
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.15 }}
+                            className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8 bg-neutral-50/50 p-3 rounded-xl border border-neutral-100"
+                        >
+                            <div className="flex items-center gap-4 w-full sm:w-auto">
                                 {/* Mobile Filter Trigger */}
                                 <Sheet>
                                     <SheetTrigger asChild>
-                                        <Button variant="outline" className="lg:hidden h-8 w-8 rounded-lg p-0 border-neutral-200">
-                                            <SlidersHorizontal className="h-3.5 w-3.5" />
+                                        <Button variant="outline" className="lg:hidden h-12 w-12 rounded-xl p-0 border-neutral-200 hover:bg-white hover:shadow-md transition-all">
+                                            <SlidersHorizontal className="h-5 w-5" />
                                         </Button>
                                     </SheetTrigger>
                                     <SheetContent side="left" className="w-full sm:max-w-md overflow-y-auto">
                                         <SheetHeader className="mb-8">
-                                            <SheetTitle className="text-2xl font-black tracking-tighter">Filters</SheetTitle>
+                                            <SheetTitle className="text-2xl font-black tracking-tighter">{ct.filters}</SheetTitle>
                                         </SheetHeader>
                                         <FilterContent />
                                     </SheetContent>
                                 </Sheet>
 
-                                <span className="text-xs text-neutral-400 font-medium">{totalProducts} products</span>
+                                <div className="relative flex-1 sm:w-80">
+                                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                    <Input
+                                        placeholder={ct.searchPlaceholder}
+                                        value={searchQuery}
+                                        onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
+                                        className="h-12 pl-12 pr-4 bg-white border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900/10 transition-all font-medium text-sm"
+                                    />
+                                </div>
                             </div>
 
-                            <div className="flex items-center gap-2">
-                                <div className="hidden sm:flex items-center border border-neutral-100 rounded-lg p-0.5">
+                            <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
+                                <div className="hidden sm:flex items-center bg-white border border-neutral-100 rounded-xl p-1 shadow-sm">
                                     <button 
                                         onClick={() => setViewMode('grid')}
                                         className={cn(
-                                            "h-7 w-7 flex items-center justify-center rounded-md transition-all",
-                                            viewMode === 'grid' ? "bg-neutral-900 text-white" : "text-neutral-400 hover:text-black"
+                                            "h-10 w-10 flex items-center justify-center rounded-xl transition-all",
+                                            viewMode === 'grid' ? "bg-neutral-900 text-white shadow-md shadow-neutral-900/10" : "text-neutral-400 hover:text-black"
                                         )}
                                     >
-                                        <LayoutGrid className="h-3.5 w-3.5" />
+                                        <LayoutGrid className="h-4 w-4" />
                                     </button>
                                     <button 
                                         onClick={() => setViewMode('list')}
                                         className={cn(
-                                            "h-7 w-7 flex items-center justify-center rounded-md transition-all",
-                                            viewMode === 'list' ? "bg-neutral-900 text-white" : "text-neutral-400 hover:text-black"
+                                            "h-10 w-10 flex items-center justify-center rounded-xl transition-all",
+                                            viewMode === 'list' ? "bg-neutral-900 text-white shadow-md shadow-neutral-900/10" : "text-neutral-400 hover:text-black"
                                         )}
                                     >
-                                        <List className="h-3.5 w-3.5" />
+                                        <List className="h-4 w-4" />
                                     </button>
                                 </div>
 
                                 <Select value={sortBy} onValueChange={(val) => setSortBy(val)}>
-                                    <SelectTrigger className="w-[120px] sm:w-[150px] h-8 rounded-lg border-neutral-200 bg-white text-[10px] sm:text-xs font-medium focus:ring-black/5">
-                                        <SelectValue placeholder="Sort" />
+                                    <SelectTrigger className="w-[180px] h-12 rounded-xl border-neutral-200 bg-white font-bold text-xs uppercase tracking-widest focus:ring-neutral-900/10 transition-all">
+                                        <SelectValue placeholder="Sort By" />
                                     </SelectTrigger>
-                                    <SelectContent className="rounded-xl border-neutral-100 shadow-xl">
-                                        <SelectItem value="newest" className="text-xs py-2">Newest</SelectItem>
-                                        <SelectItem value="price_low" className="text-xs py-2">Price: Low to High</SelectItem>
-                                        <SelectItem value="price_high" className="text-xs py-2">Price: High to Low</SelectItem>
-                                        <SelectItem value="rating" className="text-xs py-2">Best Rating</SelectItem>
+                                    <SelectContent className="rounded-xl border-neutral-100 shadow-2xl">
+                                        <SelectItem value="newest" className="font-bold text-xs uppercase tracking-widest py-3">{ct.sortNewest}</SelectItem>
+                                        <SelectItem value="price_low" className="font-bold text-xs uppercase tracking-widest py-3">{ct.sortPriceLow}</SelectItem>
+                                        <SelectItem value="price_high" className="font-bold text-xs uppercase tracking-widest py-3">{ct.sortPriceHigh}</SelectItem>
+                                        <SelectItem value="rating" className="font-bold text-xs uppercase tracking-widest py-3">{ct.sortRating}</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
-                        </div>
+                        </motion.div>
 
 
                         {/* Grid Module */}
@@ -274,7 +365,7 @@ export default function ProductsPage() {
                                     onClick={() => setCurrentPage(prev => prev - 1)}
                                     className="h-11 px-6 rounded-xl border-neutral-200 font-bold uppercase tracking-wider text-xs"
                                 >
-                                    Previous
+                                    {ct.previous}
                                 </Button>
                                 <div className="flex items-center gap-2">
                                     {[...Array(totalPages)].map((_, i) => (
@@ -298,7 +389,7 @@ export default function ProductsPage() {
                                     onClick={() => setCurrentPage(prev => prev + 1)}
                                     className="h-11 px-6 rounded-xl border-neutral-200 font-bold uppercase tracking-wider text-xs"
                                 >
-                                    Next
+                                    {ct.next}
                                 </Button>
                             </div>
                         )}
