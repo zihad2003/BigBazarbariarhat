@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@bigbazar/db';
+import { auth } from '@/auth';
 
 export async function GET(req: NextRequest) {
   try {
@@ -24,6 +25,12 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
+    const session = await auth();
+    const role = (session?.user as any)?.role;
+    if (!session || (role !== 'ADMIN' && role !== 'SUPER_ADMIN')) {
+      return NextResponse.json({ success: false, error: 'Admin access required.' }, { status: 403 });
+    }
+
     const body = await req.json();
     const { title, subtitle, imageDesktop, imageMobile, videoUrl, linkUrl, linkText, position, displayOrder, isActive } = body;
 

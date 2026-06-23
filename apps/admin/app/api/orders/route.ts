@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@bigbazar/db';
 import { getCache, setCache } from '@/lib/cache';
+import { checkAdminAuth } from '@/lib/auth-utils';
 
 export async function GET(req: NextRequest) {
     try {
+        const authCheck = await checkAdminAuth();
+        if (!authCheck.authorized) {
+            return authCheck.response;
+        }
+
         const { searchParams } = new URL(req.url);
         const page = parseInt(searchParams.get('page') || '1');
         const limit = parseInt(searchParams.get('limit') || '10');

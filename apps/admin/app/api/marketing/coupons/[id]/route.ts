@@ -1,11 +1,17 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@bigbazar/db';
+import { checkAdminAuth } from '@/lib/auth-utils';
 
 export async function GET(
     req: Request,
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const authCheck = await checkAdminAuth();
+        if (!authCheck.authorized) {
+            return authCheck.response;
+        }
+
         const { id } = await params;
         const coupon = await prisma.coupon.findUnique({
             where: { id }
@@ -24,6 +30,11 @@ export async function PATCH(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const authCheck = await checkAdminAuth();
+        if (!authCheck.authorized) {
+            return authCheck.response;
+        }
+
         const { id } = await params;
         const body = await req.json();
         const coupon = await prisma.coupon.update({
@@ -45,6 +56,11 @@ export async function DELETE(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const authCheck = await checkAdminAuth();
+        if (!authCheck.authorized) {
+            return authCheck.response;
+        }
+
         const { id } = await params;
         await prisma.coupon.delete({
             where: { id }

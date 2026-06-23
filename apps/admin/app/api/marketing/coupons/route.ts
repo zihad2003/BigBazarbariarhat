@@ -1,8 +1,14 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@bigbazar/db';
+import { checkAdminAuth } from '@/lib/auth-utils';
 
 export async function GET(req: Request) {
     try {
+        const authCheck = await checkAdminAuth();
+        if (!authCheck.authorized) {
+            return authCheck.response;
+        }
+
         const { searchParams } = new URL(req.url);
         const query = searchParams.get('q')?.toLowerCase();
         
@@ -24,6 +30,11 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
     try {
+        const authCheck = await checkAdminAuth();
+        if (!authCheck.authorized) {
+            return authCheck.response;
+        }
+
         const body = await req.json();
         const coupon = await prisma.coupon.create({
             data: {

@@ -10,6 +10,10 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ success: true, data: [] });
     }
 
+    if (query.length > 100) {
+        return NextResponse.json({ success: false, message: 'Search query too long.' }, { status: 400 });
+    }
+
     try {
         const results = await prisma.product.findMany({
             where: {

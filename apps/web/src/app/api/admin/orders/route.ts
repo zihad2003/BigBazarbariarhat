@@ -4,7 +4,8 @@ import { prisma } from '@bigbazar/db';
 
 export async function GET(req: NextRequest) {
     const session = await auth();
-    if (!session || (session.user as any)?.role !== 'admin') {
+    const role = (session?.user as any)?.role;
+    if (!session || (role !== 'ADMIN' && role !== 'SUPER_ADMIN')) {
         return NextResponse.json({ success: false, message: 'Admin access required.' }, { status: 403 });
     }
 

@@ -1,8 +1,37 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@bigbazar/db';
 
+interface RateLimitRecord {
+  timestamps: number[];
+}
+
+// In-memory global cache for rate limiting
+(globalThis as any).__rateLimitCache ??= new Map<string, RateLimitRecord>();
+const rateLimitCache = (globalThis as any).__rateLimitCache as Map<string, RateLimitRecord>;
+
+const RATE_LIMIT_COUNT = 5;
+const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute
+
 export async function POST(req: NextRequest) {
     try {
+        // Rate limiting checks
+        const ip = req.headers.get('x-forwarded-for') || 'anonymous';
+        const currentTimestamp = Date.now();
+        const record = rateLimitCache.get(ip) || { timestamps: [] };
+
+        record.timestamps = record.timestamps.filter(t => currentTimestamp - t < RATE_LIMIT_WINDOW_MS);
+
+        if (record.timestamps.length >= RATE_LIMIT_COUNT) {
+            return NextResponse.json({
+                success: false,
+                valid: false,
+                message: 'Too many coupon validation attempts. Please try again in a minute.'
+            }, { status: 429 });
+        }
+
+        record.timestamps.push(currentTimestamp);
+        rateLimitCache.set(ip, record);
+
         const { code, cartTotal } = await req.json();
         if (!code) {
             return NextResponse.json({ success: false, valid: false, message: 'Coupon code is required.' }, { status: 400 });

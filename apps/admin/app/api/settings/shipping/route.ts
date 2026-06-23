@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@bigbazar/db';
-import { auth } from '@/auth';
+import { checkAdminAuth } from '@/lib/auth-utils';
 
 export async function GET() {
     try {
+        const authCheck = await checkAdminAuth();
+        if (!authCheck.authorized) {
+            return authCheck.response;
+        }
         const zones = await prisma.shippingZone.findMany({
             orderBy: {
                 createdAt: 'desc'
@@ -22,9 +26,9 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
     try {
-        const session = await auth();
-        if (!session) {
-            return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+        const authCheck = await checkAdminAuth();
+        if (!authCheck.authorized) {
+            return authCheck.response;
         }
 
         const body = await req.json();

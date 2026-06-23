@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@bigbazar/db';
+import { checkAdminAuth } from '@/lib/auth-utils';
 
 const categoriesToSeed = [
   {
@@ -36,6 +37,11 @@ const categoriesToSeed = [
 
 export async function GET() {
   try {
+    const authCheck = await checkAdminAuth();
+    if (!authCheck.authorized) {
+      return authCheck.response;
+    }
+
     for (const group of categoriesToSeed) {
       let parent = await prisma.category.findUnique({ where: { slug: group.slug } });
       

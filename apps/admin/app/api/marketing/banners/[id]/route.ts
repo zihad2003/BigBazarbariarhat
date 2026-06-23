@@ -1,12 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@bigbazar/db';
-import { auth } from '@/auth';
+import { checkAdminAuth } from '@/lib/auth-utils';
 
 export async function GET(
     req: NextRequest,
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const authCheck = await checkAdminAuth();
+        if (!authCheck.authorized) {
+            return authCheck.response;
+        }
+
         const { id } = await params;
         const banner = await prisma.banner.findUnique({
             where: { id }
@@ -23,9 +28,12 @@ export async function PATCH(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const authCheck = await checkAdminAuth();
+        if (!authCheck.authorized) {
+            return authCheck.response;
+        }
+
         const { id } = await params;
-        const session = await auth();
-        if (!session) return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
 
         const body = await req.json();
         const banner = await prisma.banner.update({
@@ -44,9 +52,12 @@ export async function DELETE(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const authCheck = await checkAdminAuth();
+        if (!authCheck.authorized) {
+            return authCheck.response;
+        }
+
         const { id } = await params;
-        const session = await auth();
-        if (!session) return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
 
         await prisma.banner.delete({
             where: { id }

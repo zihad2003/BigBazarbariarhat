@@ -18,7 +18,14 @@ export async function GET(req: NextRequest) {
             basePrice: Number(p.price),
             salePrice: p.salePrice ? Number(p.salePrice) : null,
         }));
-        return NextResponse.json({ success: true, data: mappedFeatured });
+        return NextResponse.json(
+            { success: true, data: mappedFeatured },
+            {
+                headers: {
+                    'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
+                }
+            }
+        );
     } catch (error) {
         console.error('Featured Products API Error:', error);
         return NextResponse.json({ success: false, message: 'Failed to fetch featured products.' }, { status: 500 });

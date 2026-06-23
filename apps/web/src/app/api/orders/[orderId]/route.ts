@@ -26,16 +26,23 @@ export async function GET(
       return NextResponse.json({ success: false, message: 'Order not found' }, { status: 404 });
     }
 
-    // For authenticated users: verify ownership (unless admin)
+    // Verify order access privileges
     const session = await auth();
-    if (session?.user?.id) {
-      const isOwner = order.userId === session.user.id;
-      const isAdmin = (session.user as any).role === 'ADMIN' || (session.user as any).role === 'SUPER_ADMIN';
+    const isOwner = session?.user?.id ? order.userId === session.user.id : false;
+    const isAdmin = session?.user?.id ? ((session.user as any).role === 'ADMIN' || (session.user as any).role === 'SUPER_ADMIN') : false;
+
+    if (order.userId !== null) {
+      // Registered order: Must be owner or admin
       if (!isOwner && !isAdmin) {
         return NextResponse.json({ success: false, message: 'Order not found' }, { status: 404 });
       }
+    } else {
+      // Guest order: Allow only if queried by orderNumber, OR if requester is an admin
+      const queriedByOrderNumber = order.orderNumber === orderId;
+      if (!queriedByOrderNumber && !isAdmin) {
+        return NextResponse.json({ success: false, message: 'Order not found' }, { status: 404 });
+      }
     }
-    // Guest users can view orders by orderNumber (no auth required for confirmation page)
 
     return NextResponse.json({ success: true, data: order });
   } catch (error) {

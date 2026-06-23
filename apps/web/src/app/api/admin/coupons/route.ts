@@ -4,7 +4,8 @@ import { prisma } from '@bigbazar/db';
 
 export async function GET() {
     const session = await auth();
-    if (!session || (session.user as any)?.role !== 'admin') {
+    const role = (session?.user as any)?.role;
+    if (!session || (role !== 'ADMIN' && role !== 'SUPER_ADMIN')) {
         return NextResponse.json({ success: false, message: 'Admin access required.' }, { status: 403 });
     }
 
@@ -21,7 +22,8 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
     const session = await auth();
-    if (!session || (session.user as any)?.role !== 'admin') {
+    const role = (session?.user as any)?.role;
+    if (!session || (role !== 'ADMIN' && role !== 'SUPER_ADMIN')) {
         return NextResponse.json({ success: false, message: 'Admin access required.' }, { status: 403 });
     }
 
