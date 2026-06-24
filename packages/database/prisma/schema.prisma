@@ -76,6 +76,9 @@ model Product {
   @@index([createdAt])
   @@index([stock])
   @@index([isActive])
+  @@index([featured])
+  @@index([categoryId])
+  @@index([isSale])
 }
 
 model Order {
@@ -99,6 +102,7 @@ model Order {
   @@index([createdAt])
   @@index([status])
   @@index([customerPhone])
+  @@index([userId])
 }
 
 enum OrderStatus {

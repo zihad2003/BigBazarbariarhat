@@ -97,6 +97,7 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
                                 isHovered && secondaryImage ? 'scale-110 opacity-0' : 'scale-100 opacity-100'
                             )}
                             quality={90}
+                            sizes="(max-width: 768px) 100vw, 320px"
                         />
                         {secondaryImage && (
                             <Image
@@ -108,6 +109,7 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
                                     isHovered ? 'scale-105 opacity-100' : 'scale-125 opacity-0'
                                 )}
                                 quality={90}
+                                sizes="(max-width: 768px) 100vw, 320px"
                             />
                         )}
                     </Link>

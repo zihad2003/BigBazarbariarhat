@@ -1,11 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@bigbazar/db';
+import { auth } from '@/auth';
 
 export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await auth();
+    const role = (session?.user as any)?.role;
+    if (!session || (role !== 'ADMIN' && role !== 'SUPER_ADMIN')) {
+      return NextResponse.json({ success: false, error: 'Admin access required.' }, { status: 403 });
+    }
+
     const { id } = await params;
     const body = await req.json();
 
@@ -41,6 +48,12 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await auth();
+    const role = (session?.user as any)?.role;
+    if (!session || (role !== 'ADMIN' && role !== 'SUPER_ADMIN')) {
+      return NextResponse.json({ success: false, error: 'Admin access required.' }, { status: 403 });
+    }
+
     const { id } = await params;
 
     const banner = await prisma.banner.findUnique({ where: { id } });
