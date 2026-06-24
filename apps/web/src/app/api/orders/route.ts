@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
   try {
     const session = await auth();
     const body = await req.json();
-    const { items, shippingAddress, totalAmount, paymentMethod, paymentTransactionId } = body;
+    const { items, shippingAddress, totalAmount, paymentMethod, paymentTransactionId, paymentScreenshot, couponCode } = body;
 
     // Validate required fields
     if (!items || !Array.isArray(items) || items.length === 0) {
@@ -39,6 +39,13 @@ export async function POST(req: NextRequest) {
     const isBDPhone = /^01[3-9]\d{8}$/.test(shippingAddress.phone);
     if (!isBDPhone) {
       return NextResponse.json({ success: false, message: 'সঠিক বাংলাদেশী মোবাইল নম্বর প্রদান করুন (যেমন: 017XXXXXXXX)।' }, { status: 400 });
+    }
+
+    // S3: Validate paymentScreenshot URL matches Cloudinary pattern
+    if (paymentScreenshot && typeof paymentScreenshot === 'string') {
+      if (!paymentScreenshot.startsWith('https://res.cloudinary.com/')) {
+        return NextResponse.json({ success: false, message: 'Invalid payment screenshot URL. Must be uploaded to Cloudinary.' }, { status: 400 });
+      }
     }
 
     if (!totalAmount || isNaN(Number(totalAmount))) {
@@ -59,6 +66,40 @@ export async function POST(req: NextRequest) {
 
     // Create the order and decrement product stock within a database transaction to prevent overselling
     const order = await prisma.$transaction(async (tx) => {
+      // DB2: If coupon code is used, validate it and increment currentUsage inside the transaction
+      if (couponCode) {
+        const coupon = await tx.coupon.findUnique({
+          where: { code: couponCode.trim().toUpperCase() },
+        });
+
+        if (!coupon || !coupon.isActive) {
+          throw new Error('COUPON_ERROR: Invalid or inactive coupon code.');
+        }
+
+        const now = new Date();
+        if (now < coupon.startDate || now > coupon.endDate) {
+          throw new Error('COUPON_ERROR: This coupon has expired.');
+        }
+
+        if (coupon.usageLimit && coupon.currentUsage >= coupon.usageLimit) {
+          throw new Error('COUPON_ERROR: This coupon usage limit has been reached.');
+        }
+
+        const subtotal = items.reduce((sum, item) => sum + Number(item.price) * item.quantity, 0);
+        if (subtotal < Number(coupon.minOrderAmount)) {
+          throw new Error(`COUPON_ERROR: Minimum order of ৳${coupon.minOrderAmount} required for this coupon.`);
+        }
+
+        await tx.coupon.update({
+          where: { id: coupon.id },
+          data: {
+            currentUsage: {
+              increment: 1,
+            },
+          },
+        });
+      }
+
       // 1. Verify and decrement available stock for each order item
       for (const item of items) {
         const prod = await tx.product.findUnique({
@@ -70,7 +111,7 @@ export async function POST(req: NextRequest) {
         }
 
         if (prod.stock < item.quantity) {
-          throw new Error(`Insufficient stock for product "${prod.name}". Available: ${prod.stock}, requested: ${item.quantity}.`);
+          throw new Error(`STOCK_ERROR: Insufficient stock for product "${prod.name}". Available: ${prod.stock}, requested: ${item.quantity}.`);
         }
 
         // Decrement stock atomically
@@ -94,6 +135,7 @@ export async function POST(req: NextRequest) {
           shippingAddress,
           paymentMethod: paymentMethod ?? 'CASH_ON_DELIVERY',
           paymentTransactionId: paymentTransactionId || null,
+          paymentScreenshot: paymentScreenshot || null,
           status: 'PENDING',
           items: {
             create: items.map((item: { productId: string; quantity: number; price: number }) => ({
@@ -108,8 +150,29 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({ success: true, data: order }, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Order POST error:', error);
-    return NextResponse.json({ success: false, message: 'Failed to create order' }, { status: 500 });
+    
+    // Return HTTP 409 for stock errors
+    if (error.message && error.message.startsWith('STOCK_ERROR:')) {
+      return NextResponse.json({
+        success: false,
+        message: error.message.replace('STOCK_ERROR:', '').trim()
+      }, { status: 409 });
+    }
+
+    // Return HTTP 400 for coupon validation errors
+    if (error.message && error.message.startsWith('COUPON_ERROR:')) {
+      return NextResponse.json({
+        success: false,
+        message: error.message.replace('COUPON_ERROR:', '').trim()
+      }, { status: 400 });
+    }
+
+    // Generic fallback for all other errors (B2 + B8)
+    return NextResponse.json({
+      success: false,
+      message: 'Failed to place order. Please try again.'
+    }, { status: 500 });
   }
 }

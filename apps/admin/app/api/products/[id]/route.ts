@@ -3,6 +3,7 @@ import { prisma } from '@bigbazar/db';
 import { auth } from '@/auth';
 import { checkAdminAuth } from '@/lib/auth-utils';
 import { getCache, setCache, invalidateCachePattern } from '@/lib/cache';
+import { productVariantsJsonSchema } from '@bigbazar/validation';
 
 export async function GET(
     req: NextRequest,
@@ -99,6 +100,13 @@ export async function PATCH(
         });
         if (!existingProduct) {
             return NextResponse.json({ success: false, message: 'Product not found' }, { status: 404 });
+        }
+
+        if (variants !== undefined && variants !== null) {
+            const parsedVariants = productVariantsJsonSchema.safeParse(variants);
+            if (!parsedVariants.success) {
+                return NextResponse.json({ success: false, message: 'Invalid product variants format' }, { status: 400 });
+            }
         }
 
         const updateData: any = {};

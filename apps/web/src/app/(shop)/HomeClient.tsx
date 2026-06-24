@@ -22,6 +22,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguageStore, useTranslation } from '@bigbazar/shared';
 import { useCartStore } from '@/store/cartStore';
+import { useWishlistStore } from '@/store/wishlistStore';
 import { useUIStore } from '@/lib/stores/ui-store';
 import { cn, formatPrice } from '@/lib/utils';
 
@@ -134,7 +135,7 @@ function HeroSlider({ dbBanners }: { dbBanners?: any[] }) {
                             <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/30 to-transparent" />
 
                             {/* Content */}
-                            <div className="absolute inset-0 flex flex-col justify-center px-8 md:px-20 max-w-3xl z-10">
+                            <div className="absolute inset-0 flex flex-col justify-center px-5 sm:px-8 md:px-20 max-w-3xl z-10">
                                 {slide.badge && (
                                     <motion.span
                                         initial={{ opacity: 0, y: 12 }}
@@ -149,7 +150,7 @@ function HeroSlider({ dbBanners }: { dbBanners?: any[] }) {
                                     initial={{ opacity: 0, y: 22 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.3 }}
-                                    className="text-4xl md:text-6xl lg:text-7xl font-playfair font-normal text-white leading-[1.08] mb-5 tracking-tight"
+                                    className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-playfair font-normal text-white leading-[1.08] mb-5 tracking-tight"
                                 >
                                     {slide.title.includes(' ') ? (
                                         <>
@@ -238,7 +239,8 @@ function ProductCard({ product, index }: { product: any; index: number }) {
     const { language } = useLanguageStore();
     const t = useTranslation();
     const [isHovered, setIsHovered] = useState(false);
-    const [inWishlist, setInWishlist] = useState(false);
+    const toggleWishlist = useWishlistStore((state) => state.toggleItem);
+    const inWishlist = useWishlistStore((state) => state.isInWishlist(product.id));
     const addItem = useCartStore((state) => state.addItem);
     const { addNotification } = useUIStore();
     const router = useRouter();
@@ -294,14 +296,14 @@ function ProductCard({ product, index }: { product: any; index: number }) {
                     )}
                     {/* Wishlist */}
                     <button
-                        onClick={(e) => { e.preventDefault(); setInWishlist(w => !w); }}
-                        className={`absolute top-2.5 right-2.5 w-8 h-8 bg-white rounded-xl flex items-center justify-center shadow-sm border border-neutral-100 transition-all duration-200 ${isHovered ? 'opacity-100 scale-100' : 'opacity-0 scale-90'}`}
+                        onClick={(e) => { e.preventDefault(); toggleWishlist(product); }}
+                        className="absolute top-2.5 right-2.5 w-8 h-8 bg-white rounded-xl flex items-center justify-center shadow-sm border border-neutral-100 transition-all duration-200 opacity-100 scale-100 sm:opacity-0 sm:scale-90 sm:group-hover:opacity-100 sm:group-hover:scale-100 z-15"
                         aria-label="Add to wishlist"
                     >
                         <Heart className={`h-3.5 w-3.5 transition-colors ${inWishlist ? 'fill-rose-500 text-rose-500' : 'text-neutral-400'}`} />
                     </button>
                     {/* Add to cart slide-up */}
-                    <div className={`absolute bottom-0 left-0 right-0 transition-all duration-300 ${isHovered ? 'translate-y-0' : 'translate-y-full'}`}>
+                    <div className="absolute bottom-0 left-0 right-0 transition-all duration-300 translate-y-0 sm:translate-y-full sm:group-hover:translate-y-0">
                         <button
                             onClick={(e) => {
                                 e.preventDefault();
@@ -360,14 +362,37 @@ function FlashSaleSection({ products }: { products: any[] }) {
     const touchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
+        const saleDurationMs = (12 * 60 * 60 + 45 * 60) * 1000;
+        let endTimestampStr = localStorage.getItem('flash_sale_end');
+        let endTimestamp = endTimestampStr ? parseInt(endTimestampStr, 10) : 0;
+        const now = Date.now();
+
+        if (!endTimestamp || endTimestamp <= now) {
+            endTimestamp = now + saleDurationMs;
+            localStorage.setItem('flash_sale_end', endTimestamp.toString());
+        }
+
+        const updateTimer = () => {
+            const currentNow = Date.now();
+            const diff = endTimestamp - currentNow;
+            if (diff <= 0) {
+                setTimeLeft({ h: 0, m: 0, s: 0 });
+                return false;
+            }
+            const totalSeconds = Math.floor(diff / 1000);
+            const h = Math.floor(totalSeconds / 3600);
+            const m = Math.floor((totalSeconds % 3600) / 60);
+            const s = totalSeconds % 60;
+            setTimeLeft({ h, m, s });
+            return true;
+        };
+
+        updateTimer();
         const timer = setInterval(() => {
-            setTimeLeft(prev => {
-                if (prev.s > 0) return { ...prev, s: prev.s - 1 };
-                if (prev.m > 0) return { ...prev, m: prev.m - 1, s: 59 };
-                if (prev.h > 0) return { ...prev, h: prev.h - 1, m: 59, s: 59 };
-                return prev;
-            });
+            const active = updateTimer();
+            if (!active) clearInterval(timer);
         }, 1000);
+
         return () => clearInterval(timer);
     }, []);
 
@@ -439,7 +464,7 @@ function FlashSaleSection({ products }: { products: any[] }) {
                         const stockLeft = p.stock > 0 ? p.stock : (5 + (p.id.charCodeAt(p.id.length - 1) % 15));
                         const reservedPct = 50 + (p.id.charCodeAt(0) % 35);
                         return (
-                            <div key={p.id} className="min-w-[75%] sm:min-w-[45%] md:min-w-[22%] snap-start flex-shrink-0">
+                            <div key={p.id} className="min-w-[65%] sm:min-w-[45%] md:min-w-[22%] snap-start flex-shrink-0">
                                 {/* White card wrapper for dark bg contrast */}
                                 <div className="bg-white rounded-xl p-3 border border-neutral-100">
                                     <ProductCard product={p} index={i} />
@@ -579,12 +604,8 @@ export default function HomeClient({
     heroBanners: any[];
     promoBanners: any[];
 }) {
-    const [mounted, setMounted] = useState(false);
-    useEffect(() => { setMounted(true); }, []);
     const { language } = useLanguageStore();
     const t = useTranslation();
-
-    if (!mounted) return <HomeSkeleton />;
 
     return (
         <main className="min-h-screen bg-white text-foreground">
@@ -593,9 +614,7 @@ export default function HomeClient({
             {/* 1. HERO SLIDER */}
             <HeroSlider dbBanners={heroBanners} />
 
-
-
-            {/* 3. SHOP BY CATEGORY */}
+            {/* 2. SHOP BY CATEGORY */}
             <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
                 <SectionHeader
                     label="Big Bazar Bariarhat"
@@ -614,7 +633,7 @@ export default function HomeClient({
                 <div className="border-t border-neutral-100" />
             </div>
 
-            {/* 4. NEW ARRIVALS */}
+            {/* 3. NEW ARRIVALS */}
             <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
                 <SectionHeader
                     label="Just Landed"
@@ -628,10 +647,10 @@ export default function HomeClient({
                 </div>
             </section>
 
-            {/* 5. FLASH SALE */}
+            {/* 4. FLASH SALE */}
             <FlashSaleSection products={flashProducts} />
 
-            {/* 6. WEDDING COLLECTION */}
+            {/* 5. WEDDING COLLECTION */}
             <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 md:pb-20">
                 <SectionHeader
                     label="Special Occasions"
@@ -684,7 +703,7 @@ export default function HomeClient({
                 </div>
             </section>
 
-            {/* 7. PROMO BANNERS */}
+            {/* 6. PROMO BANNERS */}
             {promoBanners.length > 0 && (
                 <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 md:pb-20">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">

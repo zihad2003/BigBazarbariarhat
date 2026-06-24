@@ -96,6 +96,7 @@ export function Header() {
     const [recentSearches, setRecentSearches] = useState<string[]>([]);
     const [activeMegaMenu, setActiveMegaMenu] = useState<string | null>(null);
     const searchRef = useRef<HTMLDivElement>(null);
+    const [isDesktop, setIsDesktop] = useState(false);
     
     const pathname = usePathname();
     const isHome = pathname === '/';
@@ -107,6 +108,10 @@ export function Header() {
 
     useEffect(() => {
         setMounted(true);
+        const checkWidth = () => setIsDesktop(window.innerWidth >= 1024);
+        checkWidth();
+        window.addEventListener('resize', checkWidth);
+
         let ticking = false;
         const handleScroll = () => {
             if (!ticking) {
@@ -156,7 +161,10 @@ export function Header() {
         };
         fetchNav();
 
-        return () => window.removeEventListener('scroll', handleScroll);
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+            window.removeEventListener('resize', checkWidth);
+        };
     }, [t]);
 
     // Debounced Search logic
@@ -213,7 +221,7 @@ export function Header() {
                         <Link href="/" className="group shrink-0">
                             <div className="flex items-center">
                                 <h1 className="text-xl sm:text-2xl font-black tracking-widest uppercase block font-playfair transition-all duration-300 ease-in-out">
-                                    <span className="text-[#E11D48] transition-all duration-300 ease-in-out">BIG</span>{" "}
+                                    <span className="text-destructive transition-all duration-300 ease-in-out">BIG</span>{" "}
                                     <span className={cn(
                                         "transition-all duration-300 ease-in-out",
                                         isHome && !isScrolled ? "text-white" : "text-neutral-900"
@@ -255,7 +263,7 @@ export function Header() {
 
                             {/* Search Dropdown */}
                             <AnimatePresence>
-                                {isSearchFocused && (
+                                {isSearchFocused && isDesktop && (
                                     <motion.div 
                                         initial={{ opacity: 0, y: 10 }}
                                         animate={{ opacity: 1, y: 0 }}
@@ -280,7 +288,7 @@ export function Header() {
                                                                 </div>
                                                                 <div className="flex-1 min-w-0 text-left">
                                                                     <p className="text-[11px] font-black text-slate-900 uppercase tracking-tight truncate group-hover:text-primary transition-colors">{p.name}</p>
-                                                                    <p className="text-[10px] font-black text-slate-400 font-mono mt-1">{formatPrice(p.salePrice || p.basePrice)}</p>
+                                                                    <p className="text-[10px] font-black text-slate-400 font-mono mt-1">{formatPrice(p.salePrice ?? p.basePrice ?? p.price ?? 0, language)}</p>
                                                                 </div>
                                                             </Link>
                                                         ))}
@@ -305,10 +313,15 @@ export function Header() {
                                                     </div>
                                                 </div>
                                                 <div>
-                                                    <h3 className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em] mb-4 flex items-center gap-2"><TrendingUp className="h-3 w-3" /> Popular</h3>
+                                                    <h3 className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em] mb-4 flex items-center gap-2"><TrendingUp className="h-3 w-3" /> {language === 'bn' ? 'জনপ্রিয়' : 'Popular'}</h3>
                                                     <div className="flex flex-col gap-2">
-                                                        {['Men', 'Women', 'Kids', 'Sale'].map(s => (
-                                                            <button key={s} onClick={() => handleSearch(undefined, s)} className="text-[10px] font-black text-slate-600 hover:text-primary transition-all uppercase tracking-widest text-left">{s}</button>
+                                                        {[
+                                                            { name: t?.categories?.men || 'Men', query: 'Men' },
+                                                            { name: t?.categories?.women || 'Women', query: 'Women' },
+                                                            { name: language === 'bn' ? 'বাচ্চাদের' : 'Kids', query: 'Kids' },
+                                                            { name: t?.common?.sale || 'Sale', query: 'Sale' }
+                                                        ].map(item => (
+                                                            <button key={item.query} onClick={() => handleSearch(undefined, item.query)} className="text-[10px] font-black text-slate-600 hover:text-primary transition-all uppercase tracking-widest text-left">{item.name}</button>
                                                         ))}
                                                     </div>
                                                 </div>

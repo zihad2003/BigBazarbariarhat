@@ -57,7 +57,7 @@ export function MegaMenu({ isOpen, items, categoryName, featuredImage }: MegaMen
                         </div>
 
                         {/* Featured Image Column - Spans 4 columns */}
-                        <div className="col-span-4 bg-muted rounded-sm overflow-hidden relative min-h-[250px] group">
+                        <div className="col-span-4 bg-neutral-100 rounded-sm overflow-hidden relative min-h-[250px] group animate-pulse">
                             {featuredImage ? (
                                 <Image
                                     src={featuredImage}

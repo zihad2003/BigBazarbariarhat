@@ -58,6 +58,7 @@ model Product {
   salePrice        Decimal?  @db.Decimal(10, 2)
   sku              String    @unique
   stock            Int       @default(0)
+  /// Expected shape: Array of image objects, e.g., { url: string, isFeatured?: boolean, displayOrder?: number }
   images           Json?
   instagramReelUrl String?
   categoryId       String
@@ -67,6 +68,7 @@ model Product {
   isSale           Boolean   @default(false)
   isHot            Boolean   @default(false)
   isNew            Boolean   @default(false)
+  /// Expected shape: Array of product variants, e.g., { name: string, options: string[], priceAdjustments?: number[] }
   variants         Json?
   orderItems       OrderItem[]
   reviews          Review[]
@@ -128,6 +130,9 @@ model OrderItem {
   product   Product @relation(fields: [productId], references: [id])
   quantity  Int
   price     Decimal @db.Decimal(10, 2)
+
+  @@index([orderId])
+  @@index([productId])
 }
 
 model Review {
@@ -140,6 +145,8 @@ model Review {
   product   Product @relation(fields: [productId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@unique([userId, productId])
 }
 
 model Coupon {
@@ -201,7 +208,9 @@ model StoreSetting {
 model ShippingZone {
   id        String   @id @default(cuid())
   name      String
+  /// Expected shape: Array of strings (names of cities/towns in this zone)
   cities    Json     // Array of strings
+  /// Expected shape: Array of rate objects (e.g., { minWeight?: number, maxWeight?: number, rate: number })
   rates     Json     // Array of rate objects
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())

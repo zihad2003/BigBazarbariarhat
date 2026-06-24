@@ -48,8 +48,34 @@ export async function POST(
 
     try {
         const { rating, comment } = await req.json();
-        const review = await prisma.review.create({
-            data: {
+        
+        // B4: Pre-check for existing review and return error if duplicate
+        const existingReview = await prisma.review.findUnique({
+            where: {
+                userId_productId: {
+                    userId: session.user.id,
+                    productId: id
+                }
+            }
+        });
+
+        if (existingReview) {
+            return NextResponse.json({ success: false, message: 'You have already submitted a review for this product.' }, { status: 400 });
+        }
+
+        // B4: Use upsert instead of create to safely handle review creation/updates
+        const review = await prisma.review.upsert({
+            where: {
+                userId_productId: {
+                    userId: session.user.id,
+                    productId: id
+                }
+            },
+            update: {
+                rating: Number(rating),
+                comment,
+            },
+            create: {
                 productId: id,
                 userId: session.user.id,
                 rating: Number(rating),
@@ -57,8 +83,10 @@ export async function POST(
             },
             include: { user: { select: { name: true } } }
         });
+
         return NextResponse.json({ success: true, data: review }, { status: 201 });
     } catch (error) {
+        console.error('Reviews POST Error:', error);
         return NextResponse.json({ success: false, message: 'Failed to submit review.' }, { status: 500 });
     }
 }

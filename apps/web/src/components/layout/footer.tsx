@@ -46,7 +46,7 @@ export function Footer() {
             { name: 'Store Locations', href: '/stores' },
         ],
         legal: [
-            { name: 'Privacy Policy', href: '/privacy' },
+            { name: 'Privacy Policy', href: '/privacy-policy' },
             { name: 'Terms of Service', href: '/terms' },
             { name: 'Refund Policy', href: '/refund-policy' },
         ],
@@ -73,11 +73,11 @@ export function Footer() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
                         {features.map((feature) => (
                             <div key={feature.title} className="flex items-center gap-3 sm:gap-5 group p-3 sm:p-4 rounded-2xl hover:bg-card/50 transition-colors duration-300 border border-transparent hover:border-border/50">
-                                <div className="flex-shrink-0 w-10 h-10 sm:w-14 sm:h-14 bg-background rounded-full flex items-center justify-center border border-border shadow-sm group-hover:border-destructive group-hover:shadow-md group-hover:shadow-destructive/10 group-hover:scale-110 transition-all duration-300">
-                                    <feature.icon className="h-5 w-5 sm:h-6 sm:w-6 text-muted-foreground transition-colors group-hover:text-destructive" />
+                                <div className="flex-shrink-0 w-10 h-10 sm:w-14 sm:h-14 bg-background rounded-full flex items-center justify-center border border-border shadow-sm group-hover:border-primary group-hover:shadow-md group-hover:shadow-primary/10 group-hover:scale-110 transition-all duration-300">
+                                    <feature.icon className="h-5 w-5 sm:h-6 sm:w-6 text-muted-foreground transition-colors group-hover:text-primary" />
                                 </div>
                                 <div>
-                                    <h4 className="font-playfair font-bold text-foreground text-sm uppercase tracking-wider mb-1 group-hover:text-destructive transition-colors">{feature.title}</h4>
+                                    <h4 className="font-playfair font-bold text-foreground text-sm uppercase tracking-wider mb-1 group-hover:text-primary transition-colors">{feature.title}</h4>
                                     <p className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">{feature.description}</p>
                                 </div>
                             </div>
@@ -131,7 +131,7 @@ export function Footer() {
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 aria-label="Facebook"
-                                className="w-10 h-10 bg-card border border-border rounded-full flex items-center justify-center text-muted-foreground hover:text-white hover:bg-destructive hover:border-destructive transition-all duration-300"
+                                className="w-10 h-10 bg-card border border-border rounded-full flex items-center justify-center text-muted-foreground hover:text-white hover:bg-primary hover:border-primary transition-all duration-300"
                             >
                                 <Facebook className="h-4 w-4" />
                             </a>
@@ -140,7 +140,7 @@ export function Footer() {
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 aria-label="Instagram"
-                                className="w-10 h-10 bg-card border border-border rounded-full flex items-center justify-center text-muted-foreground hover:text-white hover:bg-destructive hover:border-destructive transition-all duration-300"
+                                className="w-10 h-10 bg-card border border-border rounded-full flex items-center justify-center text-muted-foreground hover:text-white hover:bg-primary hover:border-primary transition-all duration-300"
                             >
                                 <Instagram className="h-4 w-4" />
                             </a>
@@ -149,7 +149,7 @@ export function Footer() {
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 aria-label="TikTok"
-                                className="w-10 h-10 bg-card border border-border rounded-full flex items-center justify-center text-muted-foreground hover:text-white hover:bg-destructive hover:border-destructive transition-all duration-300"
+                                className="w-10 h-10 bg-card border border-border rounded-full flex items-center justify-center text-muted-foreground hover:text-white hover:bg-primary hover:border-primary transition-all duration-300"
                             >
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-music-2">
                                     <circle cx="8" cy="18" r="4" />
@@ -283,7 +283,7 @@ export function Footer() {
                                 <button 
                                     onClick={() => setLanguage('en')}
                                     className={`px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full transition-all ${
-                                        language === 'en' ? 'bg-destructive text-white shadow-sm' : 'text-muted-foreground hover:text-foreground'
+                                        language === 'en' ? 'bg-primary text-white shadow-sm' : 'text-muted-foreground hover:text-foreground'
                                     }`}
                                 >
                                     English
@@ -291,7 +291,7 @@ export function Footer() {
                                 <button 
                                     onClick={() => setLanguage('bn')}
                                     className={`px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full transition-all ${
-                                        language === 'bn' ? 'bg-destructive text-white shadow-sm' : 'text-muted-foreground hover:text-foreground'
+                                        language === 'bn' ? 'bg-primary text-white shadow-sm' : 'text-muted-foreground hover:text-foreground'
                                     }`}
                                 >
                                     বাংলা

@@ -15,4 +15,35 @@ export const db = prisma;
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 
+export interface ProductImage {
+  url: string;
+  isFeatured?: boolean;
+  displayOrder?: number;
+}
+
+export function parseProductImages(imagesJson: any): ProductImage[] {
+  if (!imagesJson) return [];
+  try {
+    const parsed = typeof imagesJson === 'string' ? JSON.parse(imagesJson) : imagesJson;
+    if (Array.isArray(parsed)) {
+      const result: ProductImage[] = [];
+      for (const img of parsed) {
+        if (typeof img === 'string') {
+          result.push({ url: img, isFeatured: false, displayOrder: 0 });
+        } else if (img && typeof img === 'object' && typeof img.url === 'string') {
+          result.push({
+            url: img.url,
+            isFeatured: !!img.isFeatured,
+            displayOrder: typeof img.displayOrder === 'number' ? img.displayOrder : 0,
+          });
+        }
+      }
+      return result;
+    }
+  } catch (error) {
+    console.error('Error parsing product images JSON:', error);
+  }
+  return [];
+}
+
 export * from '@prisma/client';

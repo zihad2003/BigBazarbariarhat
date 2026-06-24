@@ -1,14 +1,9 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, Playfair_Display, Lato } from 'next/font/google';
+import { Playfair_Display, Lato } from 'next/font/google';
 import Providers from './providers';
 import { Toaster } from '@/components/ui/toaster';
+import { cookies } from 'next/headers';
 import './globals.css';
-
-const inter = Inter({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-inter',
-});
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
@@ -59,13 +54,16 @@ export const viewport: Viewport = {
   maximumScale: 5,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const cookieStore = await cookies();
+  const lang = cookieStore.get('language')?.value || 'en';
+
   return (
-    <html lang="en" className={`${inter.variable} ${playfair.variable} ${lato.variable}`}>
+    <html lang={lang} className={`${playfair.variable} ${lato.variable}`}>
       <body className={`${lato.className} bg-background text-foreground`}>
         <Providers>
           {children}

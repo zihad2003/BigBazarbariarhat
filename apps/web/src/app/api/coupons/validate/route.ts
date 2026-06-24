@@ -5,6 +5,7 @@ interface RateLimitRecord {
   timestamps: number[];
 }
 
+// TODO: This in-memory rate limiter will not persist across serverless invocations.
 // In-memory global cache for rate limiting
 (globalThis as any).__rateLimitCache ??= new Map<string, RateLimitRecord>();
 const rateLimitCache = (globalThis as any).__rateLimitCache as Map<string, RateLimitRecord>;

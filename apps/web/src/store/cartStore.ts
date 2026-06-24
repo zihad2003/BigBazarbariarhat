@@ -18,13 +18,14 @@ interface CartState {
     savedItems: CartItem[];
     couponCode: string | null;
     discount: number;
+    couponType: string | null;
     
     // Actions
     addItem: (item: Omit<CartItem, 'id'>) => void;
     removeItem: (id: string) => void;
     updateQuantity: (id: string, quantity: number) => void;
     clearCart: () => void;
-    applyCoupon: (code: string) => { success: boolean, message: string };
+    applyCoupon: (code: string) => Promise<{ success: boolean, message: string }>;
     saveForLater: (id: string) => void;
     moveToCart: (id: string) => void;
     removeSavedItem: (id: string) => void;
@@ -49,11 +50,6 @@ interface CartState {
     removeCoupon: () => void;
 }
 
-const MOCK_COUPONS: Record<string, number> = {
-    'BIGBAZAR10': 0.1, // 10% off
-    'SAVE50': 50,      // ৳50 off
-};
-
 export const useCartStore = create<CartState>()(
     persist(
         (set, get) => ({
@@ -61,6 +57,7 @@ export const useCartStore = create<CartState>()(
             savedItems: [],
             couponCode: null,
             discount: 0,
+            couponType: null,
 
             addItem: (newItem) => {
                 const { items } = get();
@@ -114,18 +111,50 @@ export const useCartStore = create<CartState>()(
             },
 
             clearCart: () => {
-                set({ items: [], couponCode: null, discount: 0 });
+                set({ items: [], couponCode: null, discount: 0, couponType: null });
             },
 
-            applyCoupon: (code) => {
-                const discountValue = MOCK_COUPONS[code.toUpperCase()];
-                if (discountValue !== undefined) {
-                    set({ couponCode: code.toUpperCase(), discount: discountValue });
-                    const message = 'Promo code accepted! discount applied.';
-                    toast.success(message);
-                    return { success: true, message };
-                } else {
-                    const message = 'Invalid promo code.';
+            applyCoupon: async (code) => {
+                try {
+                    const response = await fetch('/api/coupons/validate', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            code,
+                            cartTotal: get().getSubtotal(),
+                        }),
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok || !data.valid) {
+                        const message = data.message || 'Invalid promo code.';
+                        toast.error(message);
+                        return { success: false, message };
+                    }
+
+                    const { discountType, discountValue, message } = data;
+                    let localDiscount = 0;
+                    if (discountType === 'PERCENTAGE') {
+                        localDiscount = Number(discountValue) / 100;
+                    } else if (discountType === 'FIXED_AMOUNT') {
+                        localDiscount = Number(discountValue);
+                    }
+
+                    set({
+                        couponCode: code.toUpperCase(),
+                        discount: localDiscount,
+                        couponType: discountType,
+                    });
+
+                    const successMessage = message || 'Promo code accepted! discount applied.';
+                    toast.success(successMessage);
+                    return { success: true, message: successMessage };
+                } catch (error) {
+                    console.error('Apply Coupon Error:', error);
+                    const message = 'Failed to apply coupon.';
                     toast.error(message);
                     return { success: false, message };
                 }
@@ -159,7 +188,7 @@ export const useCartStore = create<CartState>()(
             },
 
             removeCoupon: () => {
-                set({ couponCode: null, discount: 0 });
+                set({ couponCode: null, discount: 0, couponType: null });
             },
 
             addProduct: (product, quantity = 1, variantLabel) => {
@@ -183,13 +212,14 @@ export const useCartStore = create<CartState>()(
             getDiscountAmount: () => {
                 const sub = get().getSubtotal();
                 const disc = get().discount;
-                if (disc > 0 && disc < 1) {
+                if (get().couponType === 'PERCENTAGE') {
                     return sub * disc;
                 }
                 return disc;
             },
 
             getShippingCost: () => {
+                if (get().couponType === 'FREE_SHIPPING') return 0;
                 return get().getSubtotal() > 1000 ? 0 : 60;
             },
 

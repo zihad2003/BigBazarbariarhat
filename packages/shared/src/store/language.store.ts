@@ -159,7 +159,13 @@ export const useLanguageStore = create<LanguageState>()(
     persist(
         (set) => ({
             language: 'en',
-            setLanguage: (lang) => set({ language: lang }),
+            setLanguage: (lang) => {
+                set({ language: lang });
+                if (typeof window !== 'undefined') {
+                    document.cookie = `language=${lang}; path=/; max-age=31536000; SameSite=Lax`;
+                    document.documentElement.lang = lang;
+                }
+            },
         }),
         {
             name: 'language-storage',

@@ -11,7 +11,7 @@ const fallbackCategoryImages: Record<string, string> = {
 };
 
 const defaultPromoBanners = [
-    { id: '1', title: 'Summer Edit', subtitle: 'New Arrival', imageDesktop: 'https://images.unsplash.com/photo-1604671801908-6f0c6a092c05?q=80&w=800&auto=format&fit=crop', linkUrl: '/collections/summer', linkText: 'Shop Now' },
+    { id: '1', title: 'Summer Edit', subtitle: 'New Arrival', imageDesktop: 'https://images.unsplash.com/photo-1604671801908-6f0c6a092c05?q=80&w=800&auto=format&fit=crop', linkUrl: '/products?sort=newest', linkText: 'Shop Now' },
     { id: '2', title: 'Flash Sale', subtitle: '50% Off', imageDesktop: 'https://images.unsplash.com/photo-1607083206869-4c7672e72a8a?q=80&w=800&auto=format&fit=crop', linkUrl: '/sale', linkText: 'Shop Now' },
 ];
 

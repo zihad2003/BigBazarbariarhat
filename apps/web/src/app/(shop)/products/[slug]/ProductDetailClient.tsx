@@ -33,6 +33,7 @@ import { useCartStore } from '@/store/cartStore';
 import { useWishlistStore } from '@/store/wishlistStore';
 import { useUIStore } from '@/lib/stores/ui-store';
 import { useLanguageStore, useTranslation } from '@bigbazar/shared';
+import { productVariantsJsonSchema } from '@bigbazar/validation';
 
 interface ProductDetailClientProps {
     product: any;
@@ -85,37 +86,47 @@ export default function ProductDetailClient({
     const isInWishlist = useWishlistStore((state) => state.isInWishlist);
     const { openCart, addNotification } = useUIStore();
 
-    const sizes = useMemo(() => {
-        if (!product?.variants) return [];
-        // Check if new structured variants object
-        if (typeof product.variants === 'object' && !Array.isArray(product.variants)) {
-            if (Array.isArray(product.variants.sizes)) {
-                return product.variants.sizes.map((s: string) => ({ name: s }));
-            }
-            return [];
+    const validatedVariants = useMemo(() => {
+        if (!product?.variants) return null;
+        const result = productVariantsJsonSchema.safeParse(product.variants);
+        if (!result.success) {
+            console.error('Invalid product variants format:', result.error);
+            return null;
         }
-        // Legacy flat array
-        if (Array.isArray(product.variants)) {
-            return product.variants.filter((v: any) => !v.hex) || [];
-        }
-        return [];
+        return product.variants;
     }, [product]);
 
-    const colors = useMemo(() => {
-        if (!product?.variants) return [];
+    const sizes = useMemo(() => {
+        if (!validatedVariants) return [];
         // Check if new structured variants object
-        if (typeof product.variants === 'object' && !Array.isArray(product.variants)) {
-            if (Array.isArray(product.variants.colors)) {
-                return product.variants.colors.map((c: any) => ({ name: c.name, hex: c.hex }));
+        if (typeof validatedVariants === 'object' && !Array.isArray(validatedVariants)) {
+            if (Array.isArray((validatedVariants as any).sizes)) {
+                return (validatedVariants as any).sizes.map((s: string) => ({ name: s }));
             }
             return [];
         }
         // Legacy flat array
-        if (Array.isArray(product.variants)) {
-            return product.variants.filter((v: any) => v.hex) || [];
+        if (Array.isArray(validatedVariants)) {
+            return validatedVariants.filter((v: any) => !v.hex) || [];
         }
         return [];
-    }, [product]);
+    }, [validatedVariants]);
+
+    const colors = useMemo(() => {
+        if (!validatedVariants) return [];
+        // Check if new structured variants object
+        if (typeof validatedVariants === 'object' && !Array.isArray(validatedVariants)) {
+            if (Array.isArray((validatedVariants as any).colors)) {
+                return (validatedVariants as any).colors.map((c: any) => ({ name: c.name, hex: c.hex }));
+            }
+            return [];
+        }
+        // Legacy flat array
+        if (Array.isArray(validatedVariants)) {
+            return validatedVariants.filter((v: any) => v.hex) || [];
+        }
+        return [];
+    }, [validatedVariants]);
 
     useEffect(() => {
         if (product) {

@@ -83,17 +83,46 @@ export const createProductSchema = z.object({
 });
 
 export const productVariantSchema = z.object({
+  name: z.string(),
+  options: z.array(z.object({
+    label: z.string(),
+    priceAdjustment: z.number().default(0),
+    stock: z.number().optional(),
+  }))
+});
+
+export type ProductVariant = z.infer<typeof productVariantSchema>;
+
+export const structuredProductVariantsSchema = z.object({
+    sizes: z.array(z.string()).optional(),
+    colors: z.array(z.object({
+        name: z.string(),
+        hex: z.string().optional(),
+        stock: z.number().optional()
+    })).optional(),
+    fabric: z.string().optional(),
+    care: z.string().optional()
+});
+
+export const legacyProductVariantSchema = z.object({
     name: z.string().min(1, 'Variant name is required'),
-    sku: z.string().min(1, 'SKU is required'),
+    sku: z.string().min(1, 'SKU is required').optional(),
     size: z.string().optional(),
     color: z.string().optional(),
     colorHex: z.string().optional(),
     material: z.string().optional(),
     priceAdjustment: z.number().optional(),
-    stockQuantity: z.number().min(0).default(0),
-    images: z.array(z.string()).default([]),
-    isActive: z.boolean().default(true),
+    stockQuantity: z.number().min(0).default(0).optional(),
+    images: z.array(z.string()).default([]).optional(),
+    isActive: z.boolean().default(true).optional(),
 });
+
+export const productVariantsJsonSchema = z.union([
+    z.array(productVariantSchema),
+    structuredProductVariantsSchema,
+    z.array(legacyProductVariantSchema),
+    z.null()
+]);
 
 // ==================== CART SCHEMAS ====================
 
@@ -243,6 +272,14 @@ export const createBannerSchema = z.object({
 });
 
 // ==================== SHIPPING SCHEMAS ====================
+
+export const shippingZoneRateItemSchema = z.object({
+  name: z.string().min(1, 'Rate name is required'),
+  baseRate: z.number().min(0, 'Base rate must be positive'),
+  estimatedDays: z.string().optional()
+});
+
+export const shippingZoneRatesSchema = z.array(shippingZoneRateItemSchema);
 
 export const createShippingZoneSchema = z.object({
     name: z.string().min(1, 'Zone name is required'),

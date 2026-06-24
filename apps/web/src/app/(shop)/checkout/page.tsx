@@ -134,7 +134,7 @@ const localTranslations: Record<string, any> = {
         validationDistrict: 'District is required',
         validationAddress: 'Full address is required',
         policyTitle: 'Return & Inspection Policy',
-        policySubtitle: 'রিটার্ন পলিসি',
+        policySubtitle: 'Return Policy',
     },
     bn: {
         secureCheckout: 'নিরাপদ চেকআউট',

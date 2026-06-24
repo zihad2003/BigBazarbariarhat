@@ -1,36 +1,55 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@bigbazar/db';
 import type { Prisma } from '@prisma/client';
+import { productVariantsJsonSchema } from '@bigbazar/validation';
 
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const categorySlug = searchParams.get('category');
+    const subcategorySlug = searchParams.get('subcategory');
     const minPrice = searchParams.get('minPrice') ? Number(searchParams.get('minPrice')) : undefined;
     const maxPrice = searchParams.get('maxPrice') ? Number(searchParams.get('maxPrice')) : undefined;
     const query = searchParams.get('q') || searchParams.get('search') || '';
     const sort = searchParams.get('sort') || searchParams.get('sortBy') || 'newest';
-        const page = Math.max(1, Number(searchParams.get('page')) || 1);
+    const page = Math.max(1, Number(searchParams.get('page')) || 1);
     const limit = Math.min(50, Math.max(1, Number(searchParams.get('limit')) || 12));
     const skip = (page - 1) * limit;
 
-    // Build Prisma filters with proper types
+    // Build Prisma filters with proper types — use AND to combine independent filters
     const where: Prisma.ProductWhereInput = {
       isActive: true,
     };
 
+    const conditions: Prisma.ProductWhereInput[] = [];
+
     if (query) {
-      where.OR = [
-        { name: { startsWith: query } },
-        { sku: { startsWith: query } },
-      ];
+      conditions.push({
+        OR: [
+          { name: { contains: query } },
+          { description: { contains: query } },
+          { sku: { contains: query } },
+        ]
+      });
     }
 
-    if (categorySlug) {
-      where.OR = [
-        { category: { slug: categorySlug } },
-        { category: { parent: { slug: categorySlug } } }
-      ];
+    if (subcategorySlug) {
+      // Subcategory takes precedence — filter by exact subcategory slug
+      conditions.push({
+        category: { slug: subcategorySlug }
+      });
+    } else if (categorySlug) {
+      // Parent category — include both direct matches and children
+      conditions.push({
+        OR: [
+          { category: { slug: categorySlug } },
+          { category: { parent: { slug: categorySlug } } },
+        ]
+      });
+    }
+
+    if (conditions.length > 0) {
+      where.AND = conditions;
     }
 
     if (minPrice !== undefined || maxPrice !== undefined) {
@@ -82,7 +101,8 @@ export async function POST(req: NextRequest) {
   try {
     const { auth } = await import('@/auth');
     const session = await auth();
-    if (!session || (session.user as any)?.role !== 'ADMIN') {
+    const userRole = (session?.user as any)?.role;
+    if (!session || !['ADMIN', 'SUPER_ADMIN'].includes(userRole)) {
       return NextResponse.json({ success: false, message: 'Admin access required.' }, { status: 403 });
     }
 
@@ -113,6 +133,13 @@ export async function POST(req: NextRequest) {
     }
     if (!regularPrice || isNaN(Number(regularPrice))) {
       return NextResponse.json({ success: false, message: 'Valid price is required.' }, { status: 400 });
+    }
+
+    if (variants !== undefined && variants !== null) {
+      const parsedVariants = productVariantsJsonSchema.safeParse(variants);
+      if (!parsedVariants.success) {
+        return NextResponse.json({ success: false, message: 'Invalid product variants format.' }, { status: 400 });
+      }
     }
 
     // Resolve categoryId

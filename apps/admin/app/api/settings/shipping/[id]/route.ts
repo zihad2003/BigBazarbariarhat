@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@bigbazar/db';
 import { checkAdminAuth } from '@/lib/auth-utils';
+import { shippingZoneRatesSchema } from '@bigbazar/validation';
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
@@ -12,6 +13,13 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         const { id } = await params;
         const body = await req.json();
         const { name, cities, rates, isActive } = body;
+
+        if (rates !== undefined && rates !== null) {
+            const parsedRates = shippingZoneRatesSchema.safeParse(rates);
+            if (!parsedRates.success) {
+                return NextResponse.json({ success: false, message: 'Invalid shipping rates format' }, { status: 400 });
+            }
+        }
 
         const zone = await prisma.shippingZone.update({
             where: { id },

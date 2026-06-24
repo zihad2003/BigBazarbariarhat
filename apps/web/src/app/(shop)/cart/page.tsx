@@ -49,9 +49,9 @@ const localTranslations: Record<string, any> = {
         standard: 'Standard',
     },
     bn: {
-        emptyCart: 'Your Shopping Bag is Empty',
-        emptyCartDesc: "You haven't added any products to your cart yet. Explore our latest collections to find your perfect style.",
-        startShopping: 'Start Shopping',
+        emptyCart: 'আপনার শপিং ব্যাগটি খালি',
+        emptyCartDesc: 'আপনি এখনও আপনার কার্টে কোনো পণ্য যোগ করেননি। আপনার পছন্দের পণ্যটি খুঁজে পেতে আমাদের নতুন কালেকশনগুলো দেখুন।',
+        startShopping: 'কেনাকাটা শুরু করুন',
         yourCart: 'আপনার ব্যাগ (কার্ট)',
         items: 'টি পণ্য',
         item: 'টি পণ্য',

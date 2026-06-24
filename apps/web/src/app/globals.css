@@ -23,9 +23,9 @@
   --color-ring: var(--ring);
 
   /* Luxury brand palette */
-  --color-luxury-red: var(--luxury-red);
-  --color-luxury-red-accent: var(--luxury-red-accent);
-  --color-luxury-red-bright: var(--luxury-red-bright);
+  --color-brand-green: var(--brand-green);
+  --color-brand-green-dark: var(--brand-green-dark);
+  --color-brand-green-bright: var(--brand-green-bright);
   --color-luxury-gold: var(--luxury-gold);
   --color-luxury-gold-bright: var(--luxury-gold-bright);
   --color-luxury-gold-dark: var(--luxury-gold-dark);
@@ -42,9 +42,9 @@
 
 :root {
   /* Premium Luxury Palette */
-  --luxury-red: #1A6B3C;
-  --luxury-red-accent: #14532D;
-  --luxury-red-bright: #16A34A;
+  --brand-green: #1A6B3C;
+  --brand-green-dark: #14532D;
+  --brand-green-bright: #16A34A;
 
   --luxury-gold: #D4A017;
   /* Gold Accent */
@@ -159,8 +159,8 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--luxury-black);
-  border-left: 1px solid var(--luxury-black-lighter);
+  background: var(--muted);
+  border-left: 1px solid var(--border);
 }
 
 ::-webkit-scrollbar-thumb {
@@ -188,8 +188,8 @@ body {
   background: linear-gradient(135deg, var(--luxury-gold-dark) 0%, var(--luxury-gold) 50%, var(--luxury-gold-bright) 100%);
 }
 
-.bg-luxury-gradient-red {
-  background: linear-gradient(135deg, var(--luxury-red) 0%, var(--luxury-red-accent) 50%, var(--luxury-red-bright) 100%);
+.bg-brand-gradient-green {
+  background: linear-gradient(135deg, var(--brand-green) 0%, var(--brand-green-dark) 50%, var(--brand-green-bright) 100%);
 }
 
 /* Glass morphism effects */
@@ -215,8 +215,8 @@ body {
   background-clip: text;
 }
 
-.text-gradient-red {
-  background: linear-gradient(135deg, var(--luxury-red) 0%, var(--luxury-red-accent) 50%, var(--luxury-red-bright) 100%);
+.text-gradient-green {
+  background: linear-gradient(135deg, var(--brand-green) 0%, var(--brand-green-dark) 50%, var(--brand-green-bright) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -247,10 +247,10 @@ body {
     linear-gradient(135deg, var(--luxury-gold-dark), var(--luxury-gold), var(--luxury-gold-bright)) border-box;
 }
 
-.border-luxury-red {
+.border-brand-green {
   border: 1px solid transparent;
   background: linear-gradient(var(--luxury-black), var(--luxury-black)) padding-box,
-    linear-gradient(135deg, var(--luxury-red), var(--luxury-red-accent), var(--luxury-red-bright)) border-box;
+    linear-gradient(135deg, var(--brand-green), var(--brand-green-dark), var(--brand-green-bright)) border-box;
 }
 
 /* Luxury card hover effect */
@@ -466,10 +466,10 @@ body {
   border: 1px solid var(--luxury-gold-bright);
 }
 
-.badge-luxury-red {
-  background: linear-gradient(135deg, var(--luxury-red), var(--luxury-red-accent));
+.badge-brand-green {
+  background: linear-gradient(135deg, var(--brand-green), var(--brand-green-dark));
   color: white;
-  border: 1px solid var(--luxury-red-bright);
+  border: 1px solid var(--brand-green-bright);
 }
 
 /* Focus styles for accessibility */
@@ -518,4 +518,13 @@ body.drawer-open [data-mobile-bottom-nav] {
   transform: translateY(100%);
   opacity: 0;
   pointer-events: none;
+}
+
+.page-bottom-safe {
+  padding-bottom: 6rem;
+}
+@media (min-width: 768px) {
+  .page-bottom-safe {
+    padding-bottom: 0px;
+  }
 }

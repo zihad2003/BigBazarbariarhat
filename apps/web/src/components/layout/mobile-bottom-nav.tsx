@@ -18,12 +18,13 @@ export function MobileBottomNav() {
         setMounted(true);
     }, []);
 
+    const { language } = useLanguageStore();
     const cartCount = useCartStore(state => state.getItemCount());
     const wishlistCount = useWishlistStore(state => state.getItemCount());
 
     const navItems = [
-        { label: t?.common?.back || 'Home', icon: Home, href: '/' },
-        { label: t?.categories?.title || 'Sectors', icon: LayoutGrid, href: '/products' },
+        { label: t?.common?.home || 'Home', icon: Home, href: '/' },
+        { label: language === 'bn' ? 'বিভাগ' : 'Shop', icon: LayoutGrid, href: '/products' },
         { label: t?.common?.cart || 'Cart', icon: ShoppingBag, href: '/cart', badge: cartCount },
         { label: t?.common?.wishlist || 'Wishlist', icon: Heart, href: '/wishlist', badge: wishlistCount },
         { label: t?.common?.account || 'Account', icon: User, href: '/account' },

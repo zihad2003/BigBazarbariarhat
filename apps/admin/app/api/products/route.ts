@@ -3,6 +3,7 @@ import { prisma } from '@bigbazar/db';
 import { auth } from '@/auth';
 import { checkAdminAuth } from '@/lib/auth-utils';
 import { getCache, setCache, invalidateCachePattern } from '@/lib/cache';
+import { productVariantsJsonSchema } from '@bigbazar/validation';
 
 export async function GET(req: NextRequest) {
     try {
@@ -127,6 +128,13 @@ export async function POST(req: NextRequest) {
         // Validation
         if (!name || price === undefined || !categoryId) {
             return NextResponse.json({ success: false, message: 'Missing required fields' }, { status: 400 });
+        }
+
+        if (variants !== undefined && variants !== null) {
+            const parsedVariants = productVariantsJsonSchema.safeParse(variants);
+            if (!parsedVariants.success) {
+                return NextResponse.json({ success: false, message: 'Invalid product variants format' }, { status: 400 });
+            }
         }
 
         // Generate SKU if not provided or generate a default one
