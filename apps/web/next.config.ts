@@ -101,6 +101,7 @@ const nextConfig: NextConfig = {
 
   // ─── Experimental Features ───────────────────────────────────
   experimental: {
+    outputFileTracingRoot: path.resolve(__dirname, '../../'),
     optimizePackageImports: [
       'lucide-react',
       'framer-motion',
