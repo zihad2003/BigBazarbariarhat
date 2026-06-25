@@ -3,7 +3,7 @@ import { prisma } from '@bigbazar/db';
 import { startOfDay, subDays, format } from 'date-fns';
 import {
     DollarSign, ShoppingCart, Package, Users,
-    ArrowUpRight, AlertTriangle
+    ArrowUpRight, AlertTriangle, Plus
 } from 'lucide-react';
 import DashboardChartsWrapper from '@/components/dashboard/dashboard-charts-wrapper';
 
@@ -133,10 +133,13 @@ export default async function DashboardPage() {
                     <p className="text-[13px] text-muted-foreground mt-0.5">Real-time store overview.</p>
                 </div>
                 <div className="flex gap-2">
-                    <button className="px-3.5 py-2 text-[13px] font-medium border border-border rounded-lg hover:bg-muted/60 transition-colors">Download</button>
-                    <Link href="/orders" className="px-3.5 py-2 text-[13px] font-medium bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-1.5">
+                    <Link href="/products/new" className="px-3.5 py-2 text-[13px] font-medium bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-1.5">
+                        <Plus className="w-3.5 h-3.5" />
+                        Add Product
+                    </Link>
+                    <Link href="/orders" className="px-3.5 py-2 text-[13px] font-medium border border-border rounded-lg hover:bg-muted/60 transition-colors flex items-center gap-1.5">
                         View Orders
-                        <ArrowUpRight className="w-3.5 h-3.5" />
+                        <ArrowUpRight className="w-3.5 h-3.5 text-muted-foreground" />
                     </Link>
                 </div>
             </div>
