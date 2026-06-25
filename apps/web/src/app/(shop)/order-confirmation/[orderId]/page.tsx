@@ -104,7 +104,7 @@ export default function OrderConfirmationPage() {
       <header className="border-b border-neutral-100 py-8">
         <div className="max-w-4xl mx-auto px-6 flex justify-center">
           <Link href="/" className="text-2xl font-black font-playfair tracking-widest uppercase">
-            <span className="text-[hsl(var(--primary))]">BIG</span> <span className="text-neutral-900">BAZAR</span>
+            <span className="text-[#E11D48]">BIG</span> <span className="text-neutral-900">BAZAR</span>
           </Link>
         </div>
       </header>

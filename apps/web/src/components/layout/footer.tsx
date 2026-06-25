@@ -95,9 +95,9 @@ export function Footer() {
                     <div className="col-span-1 sm:col-span-2 lg:col-span-2 space-y-8">
                         <Link href="/" className="inline-block group">
                             <span className="text-3xl font-black uppercase tracking-[0.15em] font-playfair transition-colors duration-300">
-                                <span className="text-primary">BIG</span> <span className="text-foreground">BAZAR</span>
+                                <span className="text-destructive">BIG</span> <span className="text-foreground">BAZAR</span>
                             </span>
-                            <div className="h-0.5 w-12 bg-primary mt-2 group-hover:w-full transition-all duration-500" />
+                            <div className="h-0.5 w-12 bg-destructive mt-2 group-hover:w-full transition-all duration-500" />
                         </Link>
                         <p className="text-sm text-muted-foreground max-w-xs leading-relaxed">
                             Your one-stop destination for premium fashion from top brands. Quality clothing for the whole family.
@@ -105,11 +105,11 @@ export function Footer() {
 
                         {/* Contact Info */}
                         <div className="space-y-4">
-                            <a href="tel:01857045449" className="flex items-center gap-3 text-sm text-muted-foreground hover:text-primary transition-colors">
+                            <a href="tel:01857045449" className="flex items-center gap-3 text-sm text-muted-foreground hover:text-destructive transition-colors">
                                 <Phone className="h-4 w-4" />
                                 01857045449
                             </a>
-                            <a href="mailto:infobigbazar01@gmail.com" className="flex items-center gap-3 text-sm text-muted-foreground hover:text-primary transition-colors">
+                            <a href="mailto:infobigbazar01@gmail.com" className="flex items-center gap-3 text-sm text-muted-foreground hover:text-destructive transition-colors">
                                 <Mail className="h-4 w-4" />
                                 infobigbazar01@gmail.com
                             </a>
@@ -117,7 +117,7 @@ export function Footer() {
                                 href="https://www.google.com/maps?q=22.894359,91.535009"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-center gap-3 text-sm text-muted-foreground hover:text-primary transition-colors"
+                                className="flex items-center gap-3 text-sm text-muted-foreground hover:text-destructive transition-colors"
                             >
                                 <MapPin className="h-4 w-4" />
                                 Bariarhat, Mirsharai, Chattogram
@@ -131,7 +131,7 @@ export function Footer() {
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 aria-label="Facebook"
-                                className="w-10 h-10 bg-card border border-border rounded-full flex items-center justify-center text-muted-foreground hover:text-white hover:bg-primary hover:border-primary transition-all duration-300"
+                                className="w-10 h-10 bg-card border border-border rounded-full flex items-center justify-center text-muted-foreground hover:text-white hover:bg-destructive hover:border-destructive transition-all duration-300"
                             >
                                 <Facebook className="h-4 w-4" />
                             </a>
@@ -140,7 +140,7 @@ export function Footer() {
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 aria-label="Instagram"
-                                className="w-10 h-10 bg-card border border-border rounded-full flex items-center justify-center text-muted-foreground hover:text-white hover:bg-primary hover:border-primary transition-all duration-300"
+                                className="w-10 h-10 bg-card border border-border rounded-full flex items-center justify-center text-muted-foreground hover:text-white hover:bg-destructive hover:border-destructive transition-all duration-300"
                             >
                                 <Instagram className="h-4 w-4" />
                             </a>
@@ -149,7 +149,7 @@ export function Footer() {
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 aria-label="TikTok"
-                                className="w-10 h-10 bg-card border border-border rounded-full flex items-center justify-center text-muted-foreground hover:text-white hover:bg-primary hover:border-primary transition-all duration-300"
+                                className="w-10 h-10 bg-card border border-border rounded-full flex items-center justify-center text-muted-foreground hover:text-white hover:bg-destructive hover:border-destructive transition-all duration-300"
                             >
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-music-2">
                                     <circle cx="8" cy="18" r="4" />
@@ -178,7 +178,7 @@ export function Footer() {
                         )}>
                             {footerLinks.shop.map((link) => (
                                 <li key={link.name}>
-                                    <Link href={link.href} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-all duration-300 block w-fit relative after:absolute after:-bottom-1 after:left-0 after:h-[2px] after:w-0 after:bg-primary hover:after:w-full after:transition-all after:duration-300">
+                                    <Link href={link.href} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-all duration-300 block w-fit relative after:absolute after:-bottom-1 after:left-0 after:h-[2px] after:w-0 after:bg-destructive hover:after:w-full after:transition-all after:duration-300">
                                         {link.name}
                                     </Link>
                                 </li>
@@ -283,7 +283,7 @@ export function Footer() {
                                 <button 
                                     onClick={() => setLanguage('en')}
                                     className={`px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full transition-all ${
-                                        language === 'en' ? 'bg-primary text-white shadow-sm' : 'text-muted-foreground hover:text-foreground'
+                                        language === 'en' ? 'bg-destructive text-white shadow-sm' : 'text-muted-foreground hover:text-foreground'
                                     }`}
                                 >
                                     English
@@ -291,7 +291,7 @@ export function Footer() {
                                 <button 
                                     onClick={() => setLanguage('bn')}
                                     className={`px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full transition-all ${
-                                        language === 'bn' ? 'bg-primary text-white shadow-sm' : 'text-muted-foreground hover:text-foreground'
+                                        language === 'bn' ? 'bg-destructive text-white shadow-sm' : 'text-muted-foreground hover:text-foreground'
                                     }`}
                                 >
                                     বাংলা
