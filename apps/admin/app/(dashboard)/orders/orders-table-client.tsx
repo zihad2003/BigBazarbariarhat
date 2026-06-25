@@ -7,7 +7,6 @@ import {
     Search,
     Filter,
     Download,
-    Eye,
     ChevronLeft,
     ChevronRight,
     Package
@@ -119,13 +118,12 @@ export default function OrdersTableClient({
                                 <th className="px-6 py-4 text-[12px] font-bold text-muted-foreground uppercase tracking-wider">Date</th>
                                 <th className="px-6 py-4 text-[12px] font-bold text-muted-foreground uppercase tracking-wider">Total</th>
                                 <th className="px-6 py-4 text-[12px] font-bold text-muted-foreground uppercase tracking-wider">Status</th>
-                                <th className="px-6 py-4 text-right text-[12px] font-bold text-muted-foreground uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-border">
                             {initialOrders.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6} className="py-20 text-center">
+                                    <td colSpan={5} className="py-20 text-center">
                                         <Package className="w-10 h-10 text-muted-foreground/30 mx-auto mb-4" />
                                         <p className="text-[13px] text-muted-foreground">No orders found.</p>
                                     </td>
@@ -138,7 +136,11 @@ export default function OrdersTableClient({
                                     (order.shippingAddress && typeof order.shippingAddress === 'object' && (order.shippingAddress as any).phone) || 
                                     '';
                                 return (
-                                    <tr key={order.id} className="hover:bg-muted/10 transition-colors group">
+                                    <tr 
+                                        key={order.id} 
+                                        onClick={() => router.push(`/orders/${order.id}`)}
+                                        className="hover:bg-muted/10 transition-colors group cursor-pointer"
+                                    >
                                         <td className="px-6 py-4 text-[14px] font-bold text-foreground">#{order.orderNumber}</td>
                                         <td className="px-6 py-4">
                                             <div className="text-[14px] font-semibold text-foreground">{customerName}</div>
@@ -152,15 +154,6 @@ export default function OrdersTableClient({
                                             <span className={`px-2.5 py-1 rounded text-[10px] font-bold border ${getStatusStyle(order.status)}`}>
                                                 {order.status}
                                             </span>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <div className="flex items-center justify-end gap-2">
-                                                <Link href={`/orders/${order.id}`}>
-                                                    <button className="p-2 hover:bg-muted rounded-lg transition-colors text-muted-foreground hover:text-foreground">
-                                                        <Eye className="w-4 h-4" />
-                                                    </button>
-                                                </Link>
-                                            </div>
                                         </td>
                                     </tr>
                                 );

@@ -50,6 +50,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const toggle = (label: string) =>
         setExpanded(p => (p.includes(label) ? p.filter(i => i !== label) : [...p, label]));
     const active = (href: string) => path === href || path.startsWith(href + '/');
+
+    // Close mobile sidebar on route change
+    useEffect(() => {
+        setOpen(false);
+    }, [path]);
     
     useEffect(() => {
         if (open) {
@@ -162,7 +167,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </aside>
 
             {/* ── Main ── */}
-            <div className="flex-1 lg:pl-[260px] flex flex-col min-h-screen">
+            <div className="flex-1 lg:pl-[260px] flex flex-col min-h-screen min-w-0 overflow-hidden">
                 {/* Header */}
                 <header className="sticky top-0 z-30 h-14 bg-background/80 backdrop-blur-md border-b border-border shrink-0">
                     <div className="flex items-center justify-between h-full px-4 lg:px-6">
@@ -183,7 +188,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 </header>
 
                 {/* Content */}
-                <main className="flex-1 p-4 lg:p-6">
+                <main className="flex-1 p-4 lg:p-6 min-w-0">
                     {children}
                 </main>
             </div>
