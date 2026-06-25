@@ -7,7 +7,7 @@ const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
 const apiKey = process.env.CLOUDINARY_API_KEY;
 const apiSecret = process.env.CLOUDINARY_API_SECRET;
 
-const isCloudinaryConfigured = 
+const isCloudinaryConfigured =
     cloudName && cloudName !== 'your_cloud_name' &&
     apiKey && apiKey !== 'your_api_key' &&
     apiSecret && apiSecret !== 'your_api_secret';

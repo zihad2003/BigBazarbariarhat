@@ -177,7 +177,7 @@ export default function ProductDetailClient({
         } else {
             addNotification({
                 type: 'success',
-                message: language === 'bn' 
+                message: language === 'bn'
                     ? `${product.name} (${variantLabel || 'ডিফল্ট'}) কার্টে যোগ করা হয়েছে।`
                     : `${product.name} (${variantLabel || 'Default'}) added to cart.`
             });
@@ -209,17 +209,17 @@ export default function ProductDetailClient({
     return (
         <div className="bg-white min-h-screen overflow-x-hidden w-full relative">
             <div className="max-w-7xl mx-auto px-6 lg:px-12 py-8 lg:py-12 w-full relative overflow-x-hidden">
-                
-                <Breadcrumbs 
+
+                <Breadcrumbs
                     items={[
                         { label: t?.common?.products || 'Products', href: '/products' },
                         { label: product.category?.name || 'Category', href: `/products?category=${product.category?.slug}` },
                         { label: product.name, active: true }
-                    ]} 
+                    ]}
                 />
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 mb-20 w-full overflow-x-hidden">
-                    
+
                     <div className="lg:col-span-6">
                         <motion.div
                             initial={{ opacity: 0, x: -20 }}
@@ -359,8 +359,8 @@ export default function ProductDetailClient({
                                                     )}
                                                 >
                                                     {color.hex && (
-                                                        <span 
-                                                            className="w-5 h-5 rounded-full border border-black/10 shrink-0 block shadow-inner" 
+                                                        <span
+                                                            className="w-5 h-5 rounded-full border border-black/10 shrink-0 block shadow-inner"
                                                             style={{ backgroundColor: color.hex }}
                                                         />
                                                     )}
@@ -448,9 +448,9 @@ export default function ProductDetailClient({
                                 </div>
 
                                 <div className="pt-4 border-t border-gray-50 mt-4">
-                                    <SocialShare 
-                                        url={typeof window !== 'undefined' ? window.location.href : ''} 
-                                        title={product.name} 
+                                    <SocialShare
+                                        url={typeof window !== 'undefined' ? window.location.href : ''}
+                                        title={product.name}
                                         className="mt-0"
                                     />
                                 </div>

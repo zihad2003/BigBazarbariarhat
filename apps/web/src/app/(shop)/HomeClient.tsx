@@ -5,13 +5,13 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-    Star, 
-    Heart, 
-    ShoppingBag, 
-    ArrowRight, 
-    ChevronLeft, 
-    ChevronRight, 
+import {
+    Star,
+    Heart,
+    ShoppingBag,
+    ArrowRight,
+    ChevronLeft,
+    ChevronRight,
     Clock,
     Sparkles,
     Gift,
@@ -28,11 +28,11 @@ import { cn, formatPrice } from '@/lib/utils';
 
 // --- DATA HELPERS ---
 const fallbackCategoryImages: Record<string, string> = {
-    'Women':        'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=500&auto=format&fit=crop',
-    'Men':          'https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?q=80&w=500&auto=format&fit=crop',
-    'Kids(Boys)':   'https://images.unsplash.com/photo-1503919545889-aef636e10ad4?q=80&w=500&auto=format&fit=crop',
-    'Kids(Girls)':  'https://images.unsplash.com/photo-1518837695005-2083093ee35b?q=80&w=500&auto=format&fit=crop',
-    'Wedding Touch':'https://images.unsplash.com/photo-1583939003579-730e3918a45a?q=80&w=500&auto=format&fit=crop',
+    'Women': 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=500&auto=format&fit=crop',
+    'Men': 'https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?q=80&w=500&auto=format&fit=crop',
+    'Kids(Boys)': 'https://images.unsplash.com/photo-1503919545889-aef636e10ad4?q=80&w=500&auto=format&fit=crop',
+    'Kids(Girls)': 'https://images.unsplash.com/photo-1518837695005-2083093ee35b?q=80&w=500&auto=format&fit=crop',
+    'Wedding Touch': 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?q=80&w=500&auto=format&fit=crop',
 };
 
 // --- HERO SLIDER ---
@@ -96,7 +96,7 @@ function HeroSlider({ dbBanners }: { dbBanners?: any[] }) {
     useEffect(() => {
         if (isVideo && videoRef.current) {
             videoRef.current.currentTime = 0;
-            videoRef.current.play().catch(() => {});
+            videoRef.current.play().catch(() => { });
         }
     }, [current, isVideo]);
 
@@ -251,11 +251,7 @@ function ProductCard({ product, index }: { product: any; index: number }) {
         : (firstImage && typeof firstImage === 'object' && 'url' in firstImage
             ? (firstImage as any).url
             : (product.image || ''));
-    
-    // Route Instagram URLs through proxy
-    if (resolvedImage && (resolvedImage.includes('instagram.com') || resolvedImage.includes('cdninstagram.com'))) {
-        resolvedImage = `/api/proxy-image?url=${encodeURIComponent(resolvedImage)}`;
-    }
+
 
     const hasImage = !!resolvedImage;
 
@@ -513,9 +509,9 @@ function CategoryCard({ cat, index, language }: { cat: any; index: number; langu
                     <span className="text-base md:text-lg font-black text-white uppercase tracking-tight block group-hover:text-emerald-400 transition-colors duration-300">
                         {language === 'bn' ? (
                             cat.key === 'men' ? 'পুরুষদের' :
-                            cat.key === 'women' ? 'মহিলাদের' :
-                            cat.key.includes('kids') ? 'বাচ্চাদের' :
-                            cat.key.includes('wedding') ? 'বিয়ের' : cat.name
+                                cat.key === 'women' ? 'মহিলাদের' :
+                                    cat.key.includes('kids') ? 'বাচ্চাদের' :
+                                        cat.key.includes('wedding') ? 'বিয়ের' : cat.name
                         ) : cat.name}
                     </span>
                     <div className="flex items-center gap-1 mt-1.5 text-[10px] text-white/60 font-bold uppercase tracking-widest group-hover:text-emerald-400 transition-colors">
@@ -551,7 +547,7 @@ function HomeSkeleton() {
                     <Skeleton className="h-4 w-16 bg-neutral-100 rounded" />
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-                    {[1,2,3,4].map(i => (
+                    {[1, 2, 3, 4].map(i => (
                         <div key={i} className="space-y-3">
                             <Skeleton className="aspect-[3/4] w-full bg-neutral-100 rounded-xl" />
                             <Skeleton className="h-4 w-2/3 bg-neutral-100 rounded" />
