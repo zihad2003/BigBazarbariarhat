@@ -298,7 +298,7 @@ function ProductCard({ product, index }: { product: any; index: number }) {
                     >
                         <Heart className={`h-3.5 w-3.5 transition-colors ${inWishlist ? 'fill-rose-500 text-rose-500' : 'text-neutral-400'}`} />
                     </button>
-                    {/* Add to cart slide-up */}
+                    {/* Order now slide-up */}
                     <div className="absolute bottom-0 left-0 right-0 transition-all duration-300 translate-y-0 sm:translate-y-full sm:group-hover:translate-y-0">
                         <button
                             onClick={(e) => {
@@ -311,12 +311,12 @@ function ProductCard({ product, index }: { product: any; index: number }) {
                                     quantity: 1,
                                     stock: 100,
                                 });
-                                addNotification({ type: 'success', message: `${product.name} added to cart` });
+                                router.push('/checkout');
                             }}
                             className="w-full bg-neutral-900 text-white text-[10px] uppercase tracking-widest font-bold py-3 flex items-center justify-center gap-2 hover:bg-neutral-700 transition-colors"
                         >
                             <ShoppingBag className="h-3.5 w-3.5" />
-                            {t.common.addToCart}
+                            {t?.common?.orderNow || 'Order Now'}
                         </button>
                     </div>
                 </div>

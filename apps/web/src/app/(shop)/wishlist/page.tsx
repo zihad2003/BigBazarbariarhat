@@ -30,7 +30,7 @@ export default function WishlistPage() {
     const { addNotification } = useUIStore();
     const router = useRouter();
 
-    const handleAddToCart = (product: any) => {
+    const handleOrderNow = (product: any) => {
         addItem({
             productId: product.id,
             name: product.name,
@@ -39,11 +39,7 @@ export default function WishlistPage() {
             quantity: 1,
             stock: 100,
         });
-        addNotification({
-            type: 'success',
-            message: `${product.name} added to cart`
-        });
-        router.push('/cart');
+        router.push('/checkout');
     };
 
     const handleRemove = (productId: string, name: string) => {
@@ -54,7 +50,7 @@ export default function WishlistPage() {
         });
     };
 
-    const handleMoveAllToCart = () => {
+    const handleMoveAllToCheckout = () => {
         items.forEach(item => {
             if (item) {
                 addItem({
@@ -70,9 +66,9 @@ export default function WishlistPage() {
         clearWishlist();
         addNotification({
             type: 'success',
-            message: 'All items moved to cart'
+            message: language === 'bn' ? 'সব পণ্য চেকআউটে পাঠানো হয়েছে' : 'All items moved to checkout'
         });
-        router.push('/cart');
+        router.push('/checkout');
     };
 
     return (
@@ -193,7 +189,7 @@ export default function WishlistPage() {
                                             </span>
                                             
                                             <Button
-                                                onClick={() => handleAddToCart({
+                                                onClick={() => handleOrderNow({
                                                     id: item.productId,
                                                     name: item.name,
                                                     price: item.price,
@@ -202,8 +198,8 @@ export default function WishlistPage() {
                                                 })}
                                                 className="w-full bg-black text-white hover:bg-gray-800 rounded-lg h-9 text-[9px] font-bold uppercase tracking-widest gap-2 shadow-sm transition-all duration-300"
                                             >
-                                                <ShoppingBag className="h-3 w-3" />
-                                                Add to Cart
+                                                <ArrowRight className="h-3 w-3" />
+                                                {t?.common?.orderNow || 'Order Now'}
                                             </Button>
                                         </div>
                                     </motion.div>
@@ -224,20 +220,20 @@ export default function WishlistPage() {
                                             <Sparkles className="h-5 w-5 animate-spin-slow" />
                                         </div>
                                         <h3 className="text-3xl font-playfair font-black tracking-tight leading-none uppercase">
-                                            {language === 'bn' ? 'সম্পূর্ণ তালিকাটি কার্টে যোগ করুন' : 'Move whole list to cart'}
+                                            {language === 'bn' ? 'সম্পূর্ণ তালিকাটি অর্ডার করুন' : 'Order whole list'}
                                         </h3>
                                         <p className="text-gray-400 font-medium text-sm max-w-sm">
                                             {language === 'bn' 
-                                                ? 'তাত্ক্ষণিকভাবে কেনাকাটা সম্পন্ন করতে আপনার সংরক্ষিত সব পণ্য কার্টে স্থানান্তরিত করুন।' 
-                                                : 'Move all your saved items into the cart for a quick checkout.'}
+                                                ? 'তাত্ক্ষণিকভাবে কেনাকাটা সম্পন্ন করতে আপনার সংরক্ষিত সব পণ্য চেকআউটে স্থানান্তরিত করুন।' 
+                                                : 'Move all your saved items into checkout for a quick order.'}
                                         </p>
                                     </div>
                                     <Button
-                                        onClick={handleMoveAllToCart}
+                                        onClick={handleMoveAllToCheckout}
                                         className="bg-white text-gray-950 hover:bg-luxury-gold hover:text-luxury-black rounded-lg h-14 px-10 text-[10px] font-black uppercase tracking-[0.2em] shadow-xl transition-all duration-500 hover:scale-[1.02]"
                                     >
-                                        <ShoppingBag className="h-4 w-4 mr-2" />
-                                        {language === 'bn' ? 'সবগুলো কার্টে যোগ করুন' : 'Add All to Cart'}
+                                        <ArrowRight className="h-4 w-4 mr-2" />
+                                        {language === 'bn' ? 'সবগুলো অর্ডার করুন' : 'Order All Now'}
                                     </Button>
                                 </div>
                             </motion.div>

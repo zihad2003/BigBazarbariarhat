@@ -218,6 +218,7 @@ export function ProductQuickView({ product, isOpen, onClose }: ProductQuickViewP
                                             quantity,
                                             stock: product.stock,
                                         });
+                                        onClose();
                                         router.push('/checkout');
                                     }}
                                     disabled={isOutOfStock}

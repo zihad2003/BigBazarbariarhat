@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { Heart, Trash2, ArrowRight, Star, ShoppingBag, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -12,6 +13,7 @@ import { formatPrice } from '@/lib/utils';
 import { useUIStore } from '@/lib/stores/ui-store';
 
 export default function AccountWishlistPage() {
+    const router = useRouter();
     const { items: wishlistItems, removeItem: removeFromWishlist } = useWishlistStore();
     const { addItem: addToCart } = useCartStore();
     const { openCart, addNotification } = useUIStore();
@@ -21,7 +23,7 @@ export default function AccountWishlistPage() {
         setIsLoaded(true);
     }, []);
 
-    const handleAddToCart = (item: any) => {
+    const handleOrderNow = (item: any) => {
         addToCart({
             productId: item.productId,
             name: item.name ?? '',
@@ -30,8 +32,7 @@ export default function AccountWishlistPage() {
             quantity: 1,
             stock: 99,
         });
-        addNotification({ type: 'success', message: `${item.name ?? 'Item'} added to cart.` });
-        openCart();
+        router.push('/checkout');
     };
 
     if (!isLoaded) return null;
@@ -92,10 +93,10 @@ export default function AccountWishlistPage() {
                                     </div>
                                     <div className="absolute bottom-3 left-3 right-3">
                                         <Button 
-                                            onClick={() => handleAddToCart(item)}
+                                            onClick={() => handleOrderNow(item)}
                                             className="w-full bg-neutral-900/90 backdrop-blur-sm text-white rounded-xl h-10 font-bold text-[10px] uppercase tracking-widest opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300"
                                         >
-                                            <ShoppingBag className="h-3.5 w-3.5 mr-2" /> Add to Cart
+                                            <ArrowRight className="h-3.5 w-3.5 mr-2" /> Order Now
                                         </Button>
                                     </div>
                                 </div>

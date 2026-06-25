@@ -43,7 +43,7 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
         ? Math.round(((product.basePrice - product.salePrice) / product.basePrice) * 100)
         : 0;
 
-    const handleAddToCart = async (e: React.MouseEvent) => {
+    const handleOrderNow = async (e: React.MouseEvent) => {
         e.preventDefault()
         e.stopPropagation()
         if (isOutOfStock || isAdding) return
@@ -61,7 +61,7 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
             stock: product.stock,
         })
         setIsAdding(false)
-        router.push('/cart')
+        router.push('/checkout')
     }
 
     const handleToggleWishlist = (e: React.MouseEvent) => {
@@ -184,16 +184,16 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
 
                         <div className="flex items-center gap-4 w-full sm:w-auto">
                             <Button
-                                onClick={handleAddToCart}
+                                onClick={handleOrderNow}
                                 disabled={isOutOfStock || isAdding}
                                 className="flex-1 sm:w-64 h-16 bg-black text-white hover:bg-gray-800 font-black uppercase tracking-widest text-[10px] rounded-2xl shadow-2xl shadow-black/10 relative overflow-hidden group/btn"
                             >
                                 {isAdding ? (
-                                    <span>Adding...</span>
+                                    <span>{language === 'bn' ? 'অর্ডার হচ্ছে...' : 'Ordering...'}</span>
                                 ) : (
                                     <span className="flex items-center gap-2">
-                                        <ShoppingBag className="h-4 w-4" />
-                                        Add to Cart
+                                        <ArrowRight className="h-4 w-4" />
+                                        {t?.common?.orderNow || 'Order Now'}
                                     </span>
                                 )}
                             </Button>
@@ -290,33 +290,14 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
                     </button>
                 </div>
 
-                {/* Dynamic Action: Cart & Checkout */}
+                {/* Dynamic Action: Cart & Checkout (Desktop hover only) */}
                 <div className={cn(
-                    "absolute inset-x-2 bottom-2 md:inset-x-6 md:bottom-6 z-10 flex flex-col gap-1 md:gap-2 transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]",
+                    "hidden md:flex absolute inset-x-2 bottom-2 md:inset-x-6 md:bottom-6 z-10 flex-col gap-1 md:gap-2 transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]",
                     isHovered && !isOutOfStock 
                         ? "translate-y-0 opacity-100 scale-100" 
                         : "translate-y-8 opacity-0 scale-95 pointer-events-none"
                 )}>
                     {/* Add to Cart */}
-                    <Button
-                        onClick={handleAddToCart}
-                        disabled={isAdding || isOutOfStock}
-                        className="w-full h-7 md:h-12 bg-luxury-gold text-luxury-black hover:bg-white hover:text-luxury-black font-black uppercase tracking-[0.2em] text-[7px] md:text-[9px] rounded-lg md:rounded-xl shadow-xl shadow-luxury-gold/20 flex items-center justify-center gap-1 md:gap-3 border border-white/10 transition-all duration-300 px-1 md:px-3"
-                    >
-                        {isAdding ? (
-                            <div className="flex items-center gap-1 md:gap-2 justify-center">
-                                <div className="h-2 w-2 md:h-3 md:w-3 border-2 border-luxury-black/30 border-t-luxury-black rounded-full animate-spin" />
-                                <span>{language === 'bn' ? 'যোগ...' : 'Adding...'}</span>
-                            </div>
-                        ) : (
-                            <div className="flex items-center gap-1 md:gap-2 justify-center">
-                                <ShoppingBag className="h-2.5 w-2.5 md:h-3.5 md:w-3.5" />
-                                <span>{t?.common?.addToCart || 'Add to Cart'}</span>
-                            </div>
-                        )}
-                    </Button>
-
-                    {/* Order Now (Quick Buy) */}
                     <Button
                         onClick={(e) => {
                             e.preventDefault();
@@ -329,13 +310,35 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
                                 quantity: 1,
                                 stock: product.stock,
                             });
-                            router.push('/checkout');
+                            addNotification({
+                                type: 'success',
+                                message: language === 'bn' ? `${product.name} কার্টে যোগ করা হয়েছে` : `${product.name} added to cart`
+                            });
                         }}
                         disabled={isOutOfStock}
+                        className="w-full h-7 md:h-12 bg-luxury-gold text-luxury-black hover:bg-white hover:text-luxury-black font-black uppercase tracking-[0.2em] text-[7px] md:text-[9px] rounded-lg md:rounded-xl shadow-xl shadow-luxury-gold/20 flex items-center justify-center gap-1 md:gap-3 border border-white/10 transition-all duration-300 px-1 md:px-3"
+                    >
+                        <ShoppingBag className="h-2.5 w-2.5 md:h-3.5 md:w-3.5" />
+                        <span>{t?.common?.addToCart || 'Add to Cart'}</span>
+                    </Button>
+
+                    {/* Order Now */}
+                    <Button
+                        onClick={handleOrderNow}
+                        disabled={isAdding || isOutOfStock}
                         className="w-full h-6 md:h-10 bg-black text-white hover:bg-gray-800 font-black uppercase tracking-[0.2em] text-[6px] md:text-[8px] rounded-lg md:rounded-xl shadow-lg border border-white/10 transition-all duration-300"
                     >
-                        <ArrowRight className="h-2 w-2 md:h-3 md:w-3 mr-1 md:mr-2 inline" />
-                        {t?.common?.orderNow || 'Order Now'}
+                        {isAdding ? (
+                            <div className="flex items-center gap-1 justify-center">
+                                <div className="h-2 w-2 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                <span>{language === 'bn' ? 'অর্ডার...' : 'Ordering...'}</span>
+                            </div>
+                        ) : (
+                            <div className="flex items-center gap-1 justify-center">
+                                <ArrowRight className="h-2 w-2 md:h-3 md:w-3" />
+                                <span>{t?.common?.orderNow || 'Order Now'}</span>
+                            </div>
+                        )}
                     </Button>
                 </div>
             </div>
@@ -369,6 +372,44 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
                     )}
                 </div>
             </div>
+
+                {/* Stable actions for mobile */}
+                {!isOutOfStock && (
+                    <div className="flex md:hidden flex-col gap-1.5 mt-3 px-1">
+                        {/* Add to Cart */}
+                        <Button
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                addItem({
+                                    productId: product.id,
+                                    name: product.name,
+                                    price: product.salePrice ?? product.basePrice,
+                                    image: typeof product.images?.[0] === 'string' ? product.images[0] : (product.images?.[0]?.url ?? '/placeholder.png'),
+                                    quantity: 1,
+                                    stock: product.stock,
+                                });
+                                addNotification({
+                                    type: 'success',
+                                    message: language === 'bn' ? `${product.name} কার্টে যোগ করা হয়েছে` : `${product.name} added to cart`
+                                });
+                            }}
+                            className="w-full h-8 bg-neutral-100 hover:bg-neutral-200 text-neutral-800 font-bold uppercase tracking-[0.1em] text-[8px] rounded-lg shadow-sm flex items-center justify-center gap-1"
+                        >
+                            <ShoppingBag className="h-2.5 w-2.5" />
+                            <span>{t?.common?.addToCart || 'Add to Cart'}</span>
+                        </Button>
+
+                        {/* Order Now */}
+                        <Button
+                            onClick={handleOrderNow}
+                            className="w-full h-8 bg-black text-white hover:bg-neutral-800 font-bold uppercase tracking-[0.1em] text-[8px] rounded-lg shadow-sm flex items-center justify-center gap-1"
+                        >
+                            <ArrowRight className="h-2.5 w-2.5" />
+                            <span>{t?.common?.orderNow || 'Order Now'}</span>
+                        </Button>
+                    </div>
+                )}
             {isQuickViewOpen && (
                 <ProductQuickView
                     product={product}

@@ -4,9 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { ProductGrid } from '@/components/shop/product-grid';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { 
-    Search, 
     SlidersHorizontal, 
     X, 
     LayoutGrid, 
@@ -98,6 +96,7 @@ export default function SalePage() {
     const [total, setTotal] = useState(0);
     const [totalPages, setTotalPages] = useState(1);
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
 
     // Filter State
     const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
@@ -158,15 +157,17 @@ export default function SalePage() {
     };
 
     const FilterContent = () => (
-        <div className="space-y-10">
+        <div className="space-y-8 lg:space-y-10">
             <div>
-                <h3 className="text-xs font-black text-neutral-900 uppercase tracking-[0.2em] mb-6">{ct.categories}</h3>
-                <div className="space-y-2">
+                <h3 className="text-xs font-black text-neutral-900 uppercase tracking-[0.2em] mb-4 lg:mb-6">{ct.categories}</h3>
+                <div className="grid grid-cols-2 gap-2 lg:flex lg:flex-col lg:gap-2">
                     <button
-                        onClick={() => { setSelectedCategory(null); setCurrentPage(1); }}
+                        onClick={() => { setSelectedCategory(null); setCurrentPage(1); setIsFilterOpen(false); }}
                         className={cn(
-                            "w-full text-left px-4 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all",
-                            selectedCategory === null ? "bg-neutral-900 text-white shadow-sm" : "text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900"
+                            "w-full text-center lg:text-left px-4 py-3 lg:py-2.5 rounded-xl text-sm transition-all uppercase tracking-widest text-[10px] font-bold border",
+                            selectedCategory === null 
+                                ? "bg-neutral-900 text-white shadow-sm border-neutral-900" 
+                                : "text-neutral-500 bg-neutral-50/50 border-neutral-100 hover:bg-neutral-100/50 hover:text-neutral-900"
                         )}
                     >
                         {ct.allCategories}
@@ -174,10 +175,12 @@ export default function SalePage() {
                     {categories.map((cat: any) => (
                         <button
                             key={cat.id}
-                            onClick={() => { setSelectedCategory(cat.id); setCurrentPage(1); }}
+                            onClick={() => { setSelectedCategory(cat.id); setCurrentPage(1); setIsFilterOpen(false); }}
                             className={cn(
-                                "w-full text-left px-4 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all",
-                                selectedCategory === cat.id ? "bg-neutral-900 text-white shadow-sm" : "text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900"
+                                "w-full text-center lg:text-left px-4 py-3 lg:py-2.5 rounded-xl text-sm transition-all uppercase tracking-widest text-[10px] font-bold border",
+                                selectedCategory === cat.id 
+                                    ? "bg-neutral-900 text-white shadow-sm border-neutral-900" 
+                                    : "text-neutral-500 bg-neutral-50/50 border-neutral-100 hover:bg-neutral-100/50 hover:text-neutral-900"
                             )}
                         >
                             {cat.name}
@@ -189,8 +192,8 @@ export default function SalePage() {
             {(selectedCategory || searchQuery) && (
                 <Button 
                     variant="outline" 
-                    className="w-full h-11 rounded-xl border-dashed border-2 font-black uppercase tracking-widest text-[10px] hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 transition-all"
-                    onClick={clearAllFilters}
+                    className="w-full h-11 rounded-xl border-dashed border-2 font-black uppercase tracking-widest text-[10px] hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 transition-all mt-4 lg:mt-0"
+                    onClick={() => { clearAllFilters(); setIsFilterOpen(false); }}
                 >
                     <FilterX className="h-4 w-4 mr-2" />
                     {ct.resetFilters}
@@ -226,36 +229,13 @@ export default function SalePage() {
                             {ct.headerDesc}
                         </p>
                     </div>
-                    <motion.div
-                        initial={{ opacity: 0, y: 15 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 }}
-                    >
-                        <div className="flex items-center gap-4">
-                            <div className="bg-rose-50 px-6 py-3 rounded-xl border border-rose-100">
-                                <span className="text-[10px] font-black text-rose-400 uppercase tracking-widest block mb-1">{ct.totalItems}</span>
-                                <span className="text-xl font-black text-neutral-900">{total} <span className="text-sm font-medium text-neutral-400">{ct.products}</span></span>
-                            </div>
-                        </div>
-                    </motion.div>
+
                 </motion.div>
 
                 <div className="flex flex-col lg:flex-row gap-16">
                     
                     {/* Mobile Filter Sheet */}
-                    <Sheet>
-                        <SheetTrigger asChild>
-                            <Button variant="outline" className="lg:hidden mb-4 w-full flex items-center justify-center gap-2 rounded-xl border-neutral-200 h-12 text-[10px] font-black uppercase tracking-widest">
-                                <SlidersHorizontal className="h-4 w-4" /> {ct.filters}
-                            </Button>
-                        </SheetTrigger>
-                        <SheetContent side="left" className="w-full sm:max-w-md overflow-y-auto">
-                            <SheetHeader className="mb-8">
-                                <SheetTitle className="text-2xl font-black tracking-tighter">{ct.filters}</SheetTitle>
-                            </SheetHeader>
-                            <FilterContent />
-                        </SheetContent>
-                    </Sheet>
+
 
                     {/* Desktop Sidebar */}
                     <aside className="hidden lg:block w-72 shrink-0">
@@ -271,21 +251,26 @@ export default function SalePage() {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.15 }}
-                            className="flex flex-col sm:flex-row items-center justify-between gap-6 mb-12 bg-neutral-50/50 p-4 rounded-xl border border-neutral-100"
+                            className="flex flex-row items-center justify-between gap-4 mb-12 bg-neutral-50/50 p-3 rounded-xl border border-neutral-100"
                         >
-                            <div className="flex items-center gap-4 w-full sm:w-auto">
-                                <div className="relative flex-1 sm:w-80">
-                                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                                    <Input
-                                        placeholder={ct.searchPlaceholder}
-                                        className="h-12 pl-12 pr-4 bg-white border-neutral-200 rounded-xl focus:ring-2 focus:ring-neutral-900/10 transition-all font-medium text-sm"
-                                        value={searchQuery}
-                                        onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
-                                    />
-                                </div>
+                            <div className="flex items-center gap-4 w-auto">
+                                <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
+                                    <SheetTrigger asChild>
+                                        <Button variant="outline" className="lg:hidden h-9 w-9 rounded-xl p-0 border-neutral-200 hover:bg-white hover:shadow-md transition-all">
+                                            <SlidersHorizontal className="h-4 w-4" />
+                                        </Button>
+                                    </SheetTrigger>
+                                    <SheetContent side="bottom" className="h-[75vh] rounded-t-[2.5rem] overflow-y-auto w-full max-w-lg mx-auto border-t border-neutral-100 shadow-2xl bg-white pb-10">
+                                        <div className="w-12 h-1.5 bg-neutral-200 rounded-full mx-auto mb-6" />
+                                        <SheetHeader className="mb-8">
+                                            <SheetTitle className="text-2xl font-black tracking-tighter text-center">{ct.filters}</SheetTitle>
+                                        </SheetHeader>
+                                        <FilterContent />
+                                    </SheetContent>
+                                </Sheet>
                             </div>
 
-                            <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
+                            <div className="flex items-center gap-4 w-auto justify-end">
                                 <div className="hidden sm:flex items-center bg-white border border-neutral-100 rounded-xl p-1 shadow-sm">
                                     <button 
                                         onClick={() => setViewMode('grid')}
@@ -308,7 +293,7 @@ export default function SalePage() {
                                 </div>
 
                                 <Select value={sortBy} onValueChange={(val) => setSortBy(val)}>
-                                    <SelectTrigger className="w-[180px] h-12 rounded-xl border-neutral-200 bg-white font-bold text-xs uppercase tracking-widest focus:ring-neutral-900/10 transition-all">
+                                    <SelectTrigger className="w-[140px] sm:w-[180px] h-9 sm:h-12 rounded-xl border-neutral-200 bg-white font-bold text-[10px] sm:text-xs uppercase tracking-widest focus:ring-neutral-900/10 transition-all">
                                         <SelectValue placeholder="Sort By" />
                                     </SelectTrigger>
                                     <SelectContent className="rounded-xl border-neutral-100 shadow-2xl">
