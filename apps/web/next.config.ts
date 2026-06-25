@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next';
+import path from 'path';
 
 const withBundleAnalyzer =
   process.env.ANALYZE === 'true'
@@ -108,7 +109,9 @@ const nextConfig: NextConfig = {
   },
 
   // ─── Turbopack Config ────────────────────────────────────────
-  turbopack: {},
+  turbopack: {
+    root: path.resolve(__dirname, '../../'),
+  },
 };
 
 export default withBundleAnalyzer(nextConfig);
