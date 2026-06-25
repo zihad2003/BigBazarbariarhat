@@ -49,8 +49,8 @@ export default function ReturnsPage() {
         {/* Header Block */}
         <div className="mb-16">
           <div className="flex items-center gap-3 mb-4">
-            <div className="h-0.5 w-8 bg-[#E11D48]" />
-            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#E11D48]">Support Center</span>
+            <div className="h-0.5 w-8 bg-[hsl(var(--primary))]" />
+            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[hsl(var(--primary))]">Support Center</span>
           </div>
           <h1 className="text-4xl md:text-5xl font-black font-playfair uppercase tracking-tight text-slate-900 leading-none">
             ডেলিভারি ও রিটার্ন পলিসি

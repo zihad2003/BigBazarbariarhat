@@ -21,13 +21,13 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
     if (q) {
         // Support searching by order number, phone number, customer name or email
         whereClause.OR = [
-            { orderNumber: { startsWith: q } },
-            { customerPhone: { startsWith: q } },
+            { orderNumber: { contains: q } },
+            { customerPhone: { contains: q } },
             {
                 user: {
                     OR: [
-                        { name: { startsWith: q } },
-                        { email: { startsWith: q } }
+                        { name: { contains: q } },
+                        { email: { contains: q } }
                     ]
                 }
             }

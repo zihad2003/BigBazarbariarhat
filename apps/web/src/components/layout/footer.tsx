@@ -95,9 +95,9 @@ export function Footer() {
                     <div className="col-span-1 sm:col-span-2 lg:col-span-2 space-y-8">
                         <Link href="/" className="inline-block group">
                             <span className="text-3xl font-black uppercase tracking-[0.15em] font-playfair transition-colors duration-300">
-                                <span className="text-destructive">BIG</span> <span className="text-foreground">BAZAR</span>
+                                <span className="text-primary">BIG</span> <span className="text-foreground">BAZAR</span>
                             </span>
-                            <div className="h-0.5 w-12 bg-destructive mt-2 group-hover:w-full transition-all duration-500" />
+                            <div className="h-0.5 w-12 bg-primary mt-2 group-hover:w-full transition-all duration-500" />
                         </Link>
                         <p className="text-sm text-muted-foreground max-w-xs leading-relaxed">
                             Your one-stop destination for premium fashion from top brands. Quality clothing for the whole family.
@@ -105,11 +105,11 @@ export function Footer() {
 
                         {/* Contact Info */}
                         <div className="space-y-4">
-                            <a href="tel:01857045449" className="flex items-center gap-3 text-sm text-muted-foreground hover:text-destructive transition-colors">
+                            <a href="tel:01857045449" className="flex items-center gap-3 text-sm text-muted-foreground hover:text-primary transition-colors">
                                 <Phone className="h-4 w-4" />
                                 01857045449
                             </a>
-                            <a href="mailto:infobigbazar01@gmail.com" className="flex items-center gap-3 text-sm text-muted-foreground hover:text-destructive transition-colors">
+                            <a href="mailto:infobigbazar01@gmail.com" className="flex items-center gap-3 text-sm text-muted-foreground hover:text-primary transition-colors">
                                 <Mail className="h-4 w-4" />
                                 infobigbazar01@gmail.com
                             </a>
@@ -117,7 +117,7 @@ export function Footer() {
                                 href="https://www.google.com/maps?q=22.894359,91.535009"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-center gap-3 text-sm text-muted-foreground hover:text-destructive transition-colors"
+                                className="flex items-center gap-3 text-sm text-muted-foreground hover:text-primary transition-colors"
                             >
                                 <MapPin className="h-4 w-4" />
                                 Bariarhat, Mirsharai, Chattogram
@@ -178,7 +178,7 @@ export function Footer() {
                         )}>
                             {footerLinks.shop.map((link) => (
                                 <li key={link.name}>
-                                    <Link href={link.href} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-all duration-300 block w-fit relative after:absolute after:-bottom-1 after:left-0 after:h-[2px] after:w-0 after:bg-destructive hover:after:w-full after:transition-all after:duration-300">
+                                    <Link href={link.href} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-all duration-300 block w-fit relative after:absolute after:-bottom-1 after:left-0 after:h-[2px] after:w-0 after:bg-primary hover:after:w-full after:transition-all after:duration-300">
                                         {link.name}
                                     </Link>
                                 </li>
