@@ -260,23 +260,7 @@ export default function SettingsPage() {
                                 </div>
                             </div>
 
-                            <div className="bg-card border border-border rounded-xl p-6">
-                                <h2 className="text-sm font-semibold mb-6 flex items-center gap-2">
-                                    <CreditCard className="w-4 h-4 text-primary" />
-                                    Store Currency
-                                </h2>
-                                <div className="flex flex-wrap gap-3">
-                                    {['BDT', 'USD', 'EUR'].map((curr) => (
-                                        <button
-                                            key={curr}
-                                            onClick={() => setSettings({ ...settings, currency: curr })}
-                                            className={`px-6 py-2 rounded-lg text-[12px] font-bold border transition-all ${settings.currency === curr ? 'bg-primary text-primary-foreground border-primary shadow-sm' : 'bg-background border-input text-muted-foreground hover:bg-muted/60'}`}
-                                        >
-                                            {curr}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
+
                         </div>
                     )}
 
