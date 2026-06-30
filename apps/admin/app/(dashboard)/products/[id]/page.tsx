@@ -365,7 +365,7 @@ export default function EditProductPage() {
                                 <ImageIcon className="w-4 h-4 text-primary" />
                                 Product Photo
                             </h2>
-                            <div className="aspect-video w-full bg-muted/40 rounded-xl border-2 border-dashed border-border flex flex-col items-center justify-center text-center p-6 relative overflow-hidden group cursor-pointer hover:bg-muted/60 transition">
+                            <div className="aspect-video w-full bg-muted/40 rounded-xl border border-border flex flex-col items-center justify-center text-center p-6 relative overflow-hidden group">
                                 {imagePreview ? (
                                     <img src={imagePreview} className="absolute inset-0 w-full h-full object-cover" />
                                 ) : (
@@ -375,18 +375,43 @@ export default function EditProductPage() {
                                         </div>
                                         <p className="text-[12px] font-medium text-foreground">Upload Photo</p>
                                         <p className="text-[11px] text-muted-foreground mt-1">PNG, JPG up to 5MB</p>
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={e => {
+                                                const file = e.target.files?.[0];
+                                                if (file) handleUpload(file);
+                                            }}
+                                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                        />
                                     </>
                                 )}
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={e => {
-                                        const file = e.target.files?.[0];
-                                        if (file) handleUpload(file);
-                                    }}
-                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                />
                             </div>
+
+                            {imagePreview && (
+                                <div className="flex items-center gap-3 justify-end mt-4">
+                                    <button type="button" className="px-4 py-2 border border-border rounded-lg text-[12px] font-bold hover:bg-muted/60 transition relative overflow-hidden">
+                                        Change Photo
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={e => {
+                                                const file = e.target.files?.[0];
+                                                if (file) handleUpload(file);
+                                            }}
+                                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                        />
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setImagePreview(null)}
+                                        className="px-4 py-2 bg-destructive/10 text-destructive rounded-lg text-[12px] font-bold hover:bg-destructive/20 transition flex items-center gap-1.5"
+                                    >
+                                        <Trash2 className="w-3.5 h-3.5" />
+                                        Remove Photo
+                                    </button>
+                                </div>
+                            )}
                         </div>
 
                         <div className="space-y-1.5 border-t border-border pt-6">
