@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
                 
                 await fs.writeFile(filepath, buffer);
                 
-                const localUrl = `${req.nextUrl.origin}/uploads/${filename}`;
+                const localUrl = `${req.nextUrl.origin}/api/uploads/${filename}`;
                 return NextResponse.json({ success: true, url: localUrl, secure_url: localUrl });
             } catch (localError: any) {
                 console.error('Local upload failed:', localError);
