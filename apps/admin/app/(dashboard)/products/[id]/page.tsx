@@ -326,6 +326,71 @@ export default function EditProductPage() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Left Column: Form */}
                 <div className="lg:col-span-2 space-y-6">
+                    {/* Media & Video */}
+                    <div className="bg-card border border-border rounded-xl p-6 space-y-6">
+                        <div>
+                            <h2 className="text-sm font-semibold mb-4 flex items-center gap-2">
+                                <ImageIcon className="w-4 h-4 text-primary" />
+                                Product Photo
+                            </h2>
+                            <div className="aspect-video w-full bg-muted/40 rounded-xl border-2 border-dashed border-border flex flex-col items-center justify-center text-center p-6 relative overflow-hidden group cursor-pointer hover:bg-muted/60 transition">
+                                {imagePreview ? (
+                                    <img src={imagePreview} className="absolute inset-0 w-full h-full object-cover" />
+                                ) : (
+                                    <>
+                                        <div className="w-10 h-10 rounded-full bg-background flex items-center justify-center mb-3 shadow-sm">
+                                            <Plus className="w-5 h-5 text-muted-foreground" />
+                                        </div>
+                                        <p className="text-[12px] font-medium text-foreground">Upload Photo</p>
+                                        <p className="text-[11px] text-muted-foreground mt-1">PNG, JPG up to 5MB</p>
+                                    </>
+                                )}
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={e => {
+                                        const file = e.target.files?.[0];
+                                        if (file) handleUpload(file);
+                                    }}
+                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="space-y-1.5 border-t border-border pt-6">
+                            <label className="text-[12px] font-medium text-muted-foreground flex items-center gap-1.5">
+                                Instagram Reel URL (Optional)
+                            </label>
+                            <input
+                                type="url"
+                                placeholder="https://www.instagram.com/reel/..."
+                                value={instagramReelUrl}
+                                onChange={e => setInstagramReelUrl(e.target.value)}
+                                className="w-full h-11 px-4 bg-background border border-input rounded-lg text-[13px] outline-none focus:ring-2 focus:ring-ring transition"
+                            />
+                            <p className="text-[10px] text-muted-foreground mt-1">Paste an Instagram reel URL to display the video on the product page.</p>
+                        </div>
+
+                        {/* Storefront Image & Video Guidelines Card */}
+                        <div className="p-4 bg-muted/40 border border-border rounded-xl space-y-3">
+                            <h4 className="text-[11px] font-bold uppercase tracking-widest text-foreground flex items-center gap-1.5">
+                                <AlertCircle className="w-3.5 h-3.5 text-primary" />
+                                Image & Video Guidelines
+                            </h4>
+                            <div className="space-y-2 text-[11px] text-muted-foreground leading-relaxed">
+                                <p>
+                                    <strong className="text-foreground font-semibold">🔴 Instagram Reel Covers / CDNs:</strong> Direct CDN links from Instagram reels expire after a few hours due to security signatures. 
+                                </p>
+                                <p>
+                                    <strong className="text-foreground font-semibold">🟢 Recommended Action:</strong> For permanent, instant, and high-speed loading on the storefront, please <span className="text-foreground underline decoration-primary font-medium">download</span> the cover frame/image and physically upload it under the <strong className="text-foreground">Product Photo</strong> section above.
+                                </p>
+                                <p>
+                                    <strong className="text-foreground font-semibold">🎬 Product Video Previews:</strong> Make sure the pasted Reel URL is a public link. Our system automatically processes and embeds the player directly into the storefront product tabs.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
                     {/* Basic Info */}
                     <div className="bg-card border border-border rounded-xl p-6">
                         <h2 className="text-sm font-semibold mb-6 flex items-center gap-2">
@@ -635,71 +700,6 @@ export default function EditProductPage() {
 
                 {/* Right Column: Settings & Photos */}
                 <div className="space-y-6">
-                    {/* Media & Video */}
-                    <div className="bg-card border border-border rounded-xl p-6 space-y-6">
-                        <div>
-                            <h2 className="text-sm font-semibold mb-4 flex items-center gap-2">
-                                <ImageIcon className="w-4 h-4 text-primary" />
-                                Product Photo
-                            </h2>
-                            <div className="aspect-square w-full bg-muted/40 rounded-xl border-2 border-dashed border-border flex flex-col items-center justify-center text-center p-6 relative overflow-hidden group cursor-pointer hover:bg-muted/60 transition">
-                                {imagePreview ? (
-                                    <img src={imagePreview} className="absolute inset-0 w-full h-full object-cover" />
-                                ) : (
-                                    <>
-                                        <div className="w-10 h-10 rounded-full bg-background flex items-center justify-center mb-3 shadow-sm">
-                                            <Plus className="w-5 h-5 text-muted-foreground" />
-                                        </div>
-                                        <p className="text-[12px] font-medium text-foreground">Upload Photo</p>
-                                        <p className="text-[11px] text-muted-foreground mt-1">PNG, JPG up to 5MB</p>
-                                    </>
-                                )}
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={e => {
-                                        const file = e.target.files?.[0];
-                                        if (file) handleUpload(file);
-                                    }}
-                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                />
-                            </div>
-                        </div>
-
-                        <div className="space-y-1.5 border-t border-border pt-6">
-                            <label className="text-[12px] font-medium text-muted-foreground flex items-center gap-1.5">
-                                Instagram Reel URL (Optional)
-                            </label>
-                            <input
-                                type="url"
-                                placeholder="https://www.instagram.com/reel/..."
-                                value={instagramReelUrl}
-                                onChange={e => setInstagramReelUrl(e.target.value)}
-                                className="w-full h-11 px-4 bg-background border border-input rounded-lg text-[13px] outline-none focus:ring-2 focus:ring-ring transition"
-                            />
-                            <p className="text-[10px] text-muted-foreground mt-1">Paste an Instagram reel URL to display the video on the product page.</p>
-                        </div>
-
-                        {/* Storefront Image & Video Guidelines Card */}
-                        <div className="p-4 bg-muted/40 border border-border rounded-xl space-y-3">
-                            <h4 className="text-[11px] font-bold uppercase tracking-widest text-foreground flex items-center gap-1.5">
-                                <AlertCircle className="w-3.5 h-3.5 text-primary" />
-                                Image & Video Guidelines
-                            </h4>
-                            <div className="space-y-2 text-[11px] text-muted-foreground leading-relaxed">
-                                <p>
-                                    <strong className="text-foreground font-semibold">🔴 Instagram Reel Covers / CDNs:</strong> Direct CDN links from Instagram reels expire after a few hours due to security signatures. 
-                                </p>
-                                <p>
-                                    <strong className="text-foreground font-semibold">🟢 Recommended Action:</strong> For permanent, instant, and high-speed loading on the storefront, please <span className="text-foreground underline decoration-primary font-medium">download</span> the cover frame/image and physically upload it under the <strong className="text-foreground">Product Photo</strong> section above.
-                                </p>
-                                <p>
-                                    <strong className="text-foreground font-semibold">🎬 Product Video Previews:</strong> Make sure the pasted Reel URL is a public link. Our system automatically processes and embeds the player directly into the storefront product tabs.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
                     {/* Organization */}
                     <div className="bg-card border border-border rounded-xl p-6">
                         <h2 className="text-sm font-semibold mb-4 flex items-center gap-2">
