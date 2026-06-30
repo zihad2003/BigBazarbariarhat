@@ -17,11 +17,19 @@ import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { useToast } from '@/components/ui/use-toast';
 
 function CategoryImage({ src, alt, isParent = false }: { src?: string | null; alt: string; isParent?: boolean }) {
-    const [errored, setErrored] = useState(!src || src.trim() === '');
+    let cleanSrc = src;
+    if (cleanSrc && cleanSrc.includes('0.0.0.0:3005')) {
+        cleanSrc = cleanSrc.replace('0.0.0.0:3005/uploads/', 'localhost:3005/api/uploads/');
+    }
+    if (cleanSrc && cleanSrc.startsWith('/uploads/')) {
+        cleanSrc = `/api/uploads${cleanSrc.substring(8)}`;
+    }
+
+    const [errored, setErrored] = useState(!cleanSrc || cleanSrc.trim() === '');
 
     useEffect(() => {
-        setErrored(!src || src.trim() === '');
-    }, [src]);
+        setErrored(!cleanSrc || cleanSrc.trim() === '');
+    }, [cleanSrc]);
 
     if (errored) {
         return isParent ? (
@@ -33,7 +41,7 @@ function CategoryImage({ src, alt, isParent = false }: { src?: string | null; al
 
     return (
         <img
-            src={src!}
+            src={cleanSrc!}
             className="w-full h-full object-cover"
             alt={alt}
             onError={() => setErrored(true)}
