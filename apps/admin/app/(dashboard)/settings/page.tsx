@@ -266,7 +266,7 @@ export default function SettingsPage() {
                                     Store Currency
                                 </h2>
                                 <div className="flex flex-wrap gap-3">
-                                    {['BDT', 'USD', 'EUR', 'GBP'].map((curr) => (
+                                    {['BDT', 'USD', 'EUR'].map((curr) => (
                                         <button
                                             key={curr}
                                             onClick={() => setSettings({ ...settings, currency: curr })}
