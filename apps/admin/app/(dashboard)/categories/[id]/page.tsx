@@ -227,49 +227,51 @@ export default function EditCategoryPage(props: { params: Promise<{ id: string }
                         Category Image
                     </h2>
                     <div className="flex items-center gap-8">
-                        <div className="w-32 h-32 bg-muted/40 rounded-xl border-2 border-dashed border-border flex flex-col items-center justify-center text-center relative overflow-hidden group cursor-pointer hover:bg-muted/60 transition">
+                        <div className="w-32 h-32 bg-muted/40 rounded-xl border border-border flex flex-col items-center justify-center text-center relative overflow-hidden group">
                             {imagePreview ? (
-                                <>
-                                    <img src={imagePreview} className="absolute inset-0 w-full h-full object-cover" />
-                                    <button
-                                        type="button"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            setImagePreview(null);
-                                        }}
-                                        className="absolute top-2 right-2 p-1.5 bg-destructive rounded-lg text-white opacity-0 group-hover:opacity-100 transition-all"
-                                    >
-                                        <Trash2 className="w-3.5 h-3.5" />
-                                    </button>
-                                </>
+                                <img src={imagePreview} className="absolute inset-0 w-full h-full object-cover" />
                             ) : (
-                                <Plus className="w-6 h-6 text-muted-foreground" />
+                                <>
+                                    <Plus className="w-6 h-6 text-muted-foreground" />
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={e => {
+                                            const file = e.target.files?.[0];
+                                            if (file) handleUpload(file);
+                                        }}
+                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                    />
+                                </>
                             )}
-                            <input
-                                type="file"
-                                accept="image/*"
-                                onChange={e => {
-                                    const file = e.target.files?.[0];
-                                    if (file) handleUpload(file);
-                                }}
-                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                            />
                         </div>
                         <div className="flex-1">
                             <p className="text-[13px] font-medium text-foreground">Update category photo</p>
                             <p className="text-[12px] text-muted-foreground mt-1">PNG, JPG up to 5MB.</p>
-                            <button className="mt-4 px-4 py-2 border border-border rounded-lg text-[12px] font-bold hover:bg-muted/60 transition relative overflow-hidden">
-                                Choose Photo
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={e => {
-                                        const file = e.target.files?.[0];
-                                        if (file) handleUpload(file);
-                                    }}
-                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                />
-                            </button>
+                            <div className="flex items-center gap-3 mt-4">
+                                <button className="px-4 py-2 border border-border rounded-lg text-[12px] font-bold hover:bg-muted/60 transition relative overflow-hidden">
+                                    Choose Photo
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={e => {
+                                            const file = e.target.files?.[0];
+                                            if (file) handleUpload(file);
+                                        }}
+                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                    />
+                                </button>
+                                {imagePreview && (
+                                    <button
+                                        type="button"
+                                        onClick={() => setImagePreview(null)}
+                                        className="px-4 py-2 bg-destructive/10 text-destructive rounded-lg text-[12px] font-bold hover:bg-destructive/20 transition flex items-center gap-1.5"
+                                    >
+                                        <Trash2 className="w-3.5 h-3.5" />
+                                        Remove Photo
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>
