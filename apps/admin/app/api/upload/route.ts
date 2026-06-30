@@ -31,15 +31,31 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ success: false, message: 'No file uploaded' }, { status: 400 });
         }
 
-        if (!isCloudinaryConfigured) {
-            console.warn('Cloudinary not configured or placeholder detected. Falling back to mock URL.');
-            // Generate a realistic looking mock Unsplash URL based on filename/time
-            const mockUrl = `https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=800&file=${encodeURIComponent(file.name)}&t=${Date.now()}`;
-            return NextResponse.json({ success: true, url: mockUrl, secure_url: mockUrl });
-        }
-
         const arrayBuffer = await file.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
+
+        if (!isCloudinaryConfigured) {
+            console.warn('Cloudinary not configured. Saving file locally to public/uploads.');
+            try {
+                const fs = require('fs/promises');
+                const path = require('path');
+                const uploadDir = path.join(process.cwd(), 'public', 'uploads');
+                
+                // Ensure directory exists
+                await fs.mkdir(uploadDir, { recursive: true });
+                
+                const filename = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '')}`;
+                const filepath = path.join(uploadDir, filename);
+                
+                await fs.writeFile(filepath, buffer);
+                
+                const localUrl = `${req.nextUrl.origin}/uploads/${filename}`;
+                return NextResponse.json({ success: true, url: localUrl, secure_url: localUrl });
+            } catch (localError: any) {
+                console.error('Local upload failed:', localError);
+                return NextResponse.json({ success: false, message: 'Local upload failed: ' + localError.message }, { status: 500 });
+            }
+        }
 
         const uploadResult = await new Promise<any>((resolve, reject) => {
             cloudinary.uploader.upload_stream(
