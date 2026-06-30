@@ -273,7 +273,7 @@ export default function CategoriesPage() {
                                                         <span className="text-[11px] font-bold text-muted-foreground bg-muted/60 px-2.5 py-0.5 rounded-full border border-border/40">
                                                             {sub._count?.products || 0} items
                                                         </span>
-                                                        <div className="flex items-center bg-background border border-border rounded-lg p-0.5 opacity-0 group-hover/row:opacity-100 transition-opacity shadow-sm">
+                                                        <div className="flex items-center bg-background border border-border rounded-lg p-0.5 shadow-sm">
                                                             <Link href={`/categories/${sub.id}`} className="p-1.5 hover:bg-muted rounded text-muted-foreground hover:text-foreground">
                                                                 <Edit className="w-3.5 h-3.5" />
                                                             </Link>
