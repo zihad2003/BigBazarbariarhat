@@ -7,6 +7,11 @@ import { productVariantsJsonSchema } from '@bigbazar/validation';
 
 export async function GET(req: NextRequest) {
     try {
+        const authCheck = await checkAdminAuth();
+        if (!authCheck.authorized) {
+            return authCheck.response;
+        }
+
         const { searchParams } = new URL(req.url);
         const page = parseInt(searchParams.get('page') || '1');
         const limit = parseInt(searchParams.get('limit') || '10');
@@ -21,9 +26,8 @@ export async function GET(req: NextRequest) {
         }
 
         // Build conditional where clause for text search and category filter
-        const whereClause: any = {
-            isActive: true
-        };
+        // Admin view: show ALL products (active and inactive)
+        const whereClause: any = {};
 
         if (q) {
             whereClause.OR = [

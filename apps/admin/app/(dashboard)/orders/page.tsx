@@ -55,9 +55,34 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
         totalPages
     };
 
+    // Map Prisma objects to plain serializable objects
+    // (Decimal and Date types can't be serialized by React Server Components)
+    const serializedOrders = orders.map((order: any) => {
+        let shipping: any = {};
+        try {
+            shipping = typeof order.shippingAddress === 'string'
+                ? JSON.parse(order.shippingAddress)
+                : order.shippingAddress;
+        } catch (e) {}
+
+        return {
+            id: order.id,
+            orderNumber: order.orderNumber,
+            status: order.status,
+            totalAmount: Number(order.totalAmount),
+            paymentStatus: order.paymentStatus,
+            paymentMethod: order.paymentMethod,
+            customerPhone: order.customerPhone,
+            createdAt: order.createdAt instanceof Date ? order.createdAt.toISOString() : order.createdAt,
+            updatedAt: order.updatedAt instanceof Date ? order.updatedAt.toISOString() : order.updatedAt,
+            userName: order.user?.name || shipping?.fullName || 'Guest',
+            userEmail: order.user?.email || shipping?.email || '',
+        };
+    });
+
     return (
         <OrdersTableClient
-            initialOrders={orders}
+            initialOrders={serializedOrders}
             pagination={pagination}
         />
     );

@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // ==================== USER SCHEMAS ====================
 
-export const userRoleSchema = z.enum(['CUSTOMER', 'ADMIN', 'SUPER_ADMIN', 'STAFF']);
+export const userRoleSchema = z.enum(['USER', 'ADMIN', 'SUPER_ADMIN']);
 
 export const registerSchema = z.object({
     email: z.string().email('Invalid email address'),
@@ -140,12 +140,10 @@ export const updateCartItemSchema = z.object({
 
 export const orderStatusSchema = z.enum([
     'PENDING',
-    'CONFIRMED',
     'PROCESSING',
     'SHIPPED',
     'DELIVERED',
     'CANCELLED',
-    'REFUNDED',
 ]);
 
 export const paymentStatusSchema = z.enum([
@@ -153,7 +151,6 @@ export const paymentStatusSchema = z.enum([
     'PAID',
     'FAILED',
     'REFUNDED',
-    'PARTIALLY_REFUNDED',
 ]);
 
 export const paymentMethodSchema = z.enum([
@@ -233,7 +230,7 @@ export const createCategorySchema = z.object({
     icon: z.string().optional(),
     parentId: z.string().optional(),
     displayOrder: z.number().default(0),
-    isActive: z.boolean().default(true),
+    isHidden: z.boolean().default(false),
 });
 
 // ==================== BRAND SCHEMAS ====================

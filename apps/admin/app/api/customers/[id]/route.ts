@@ -153,3 +153,44 @@ export async function PATCH(
     }
 }
 
+export async function DELETE(
+    req: Request,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    try {
+        const authCheck = await checkAdminAuth();
+        if (!authCheck.authorized) return authCheck.response;
+
+        const { id } = await params;
+
+        // Check if the customer exists
+        const user = await prisma.user.findUnique({ where: { id } });
+        if (!user) {
+            return NextResponse.json({ success: false, error: 'Customer not found' }, { status: 404 });
+        }
+
+        // Check if customer has orders — prevent deletion to preserve order history
+        const orderCount = await prisma.order.count({ where: { userId: id } });
+        if (orderCount > 0) {
+            return NextResponse.json({
+                success: false,
+                error: `Cannot delete this customer because they have ${orderCount} order(s). Remove their orders first or deactivate the account instead.`
+            }, { status: 409 });
+        }
+
+        // Delete reviews first (foreign key constraint)
+        await prisma.review.deleteMany({ where: { userId: id } });
+
+        // Safe to delete the user
+        await prisma.user.delete({ where: { id } });
+
+        // Invalidate customer-related caches
+        invalidateCachePattern('customers-');
+        invalidateCachePattern('dashboard-stats');
+
+        return NextResponse.json({ success: true, message: 'Customer deleted successfully' });
+    } catch (error) {
+        console.error('Customer DELETE Error:', error);
+        return NextResponse.json({ success: false, error: 'Failed to delete customer' }, { status: 500 });
+    }
+}

@@ -159,6 +159,6 @@ export async function GET() {
 
     return NextResponse.json({ success: true, message: 'Categories and default banners seeded and updated successfully' });
   } catch (error) {
-    return NextResponse.json({ success: false, error: String(error) });
+    return NextResponse.json({ success: false, error: String(error) }, { status: 500 });
   }
 }

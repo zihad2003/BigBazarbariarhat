@@ -21,14 +21,16 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
             }
         }
 
+        // Only include fields that were actually provided to prevent wiping data on partial updates
+        const updateData: any = {};
+        if (name !== undefined) updateData.name = name;
+        if (cities !== undefined) updateData.cities = cities;
+        if (rates !== undefined) updateData.rates = rates;
+        if (isActive !== undefined) updateData.isActive = isActive;
+
         const zone = await prisma.shippingZone.update({
             where: { id },
-            data: {
-                name,
-                cities,
-                rates,
-                isActive
-            }
+            data: updateData
         });
 
         return NextResponse.json({

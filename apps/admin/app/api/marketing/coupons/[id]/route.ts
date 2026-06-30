@@ -37,13 +37,22 @@ export async function PATCH(
 
         const { id } = await params;
         const body = await req.json();
+
+        // Whitelist updatable fields to prevent field injection
+        const data: any = {};
+        if (body.code !== undefined) data.code = body.code;
+        if (body.description !== undefined) data.description = body.description;
+        if (body.discountType !== undefined) data.discountType = body.discountType;
+        if (body.discountValue !== undefined) data.discountValue = Number(body.discountValue);
+        if (body.minOrderAmount !== undefined) data.minOrderAmount = Number(body.minOrderAmount);
+        if (body.usageLimit !== undefined) data.usageLimit = body.usageLimit ? Number(body.usageLimit) : null;
+        if (body.isActive !== undefined) data.isActive = body.isActive;
+        if (body.startDate) data.startDate = new Date(body.startDate);
+        if (body.endDate) data.endDate = new Date(body.endDate);
+
         const coupon = await prisma.coupon.update({
             where: { id },
-            data: {
-                ...body,
-                startDate: body.startDate ? new Date(body.startDate) : undefined,
-                endDate: body.endDate ? new Date(body.endDate) : undefined,
-            }
+            data
         });
         return NextResponse.json({ success: true, data: coupon });
     } catch (error) {
