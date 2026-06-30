@@ -200,6 +200,38 @@ export default function EditProductPage() {
         fetchProduct();
     }, [params.id]);
 
+    // Format categories hierarchically for dropdown selection
+    const getFormattedCategories = () => {
+        const rootCategories = categories.filter(c => !c.parentId);
+        const formatted: { id: string; name: string }[] = [];
+
+        rootCategories.forEach(parent => {
+            formatted.push({
+                id: parent.id,
+                name: parent.name
+            });
+            const children = categories.filter(c => c.parentId === parent.id);
+            children.forEach(child => {
+                formatted.push({
+                    id: child.id,
+                    name: `  ↳ ${child.name}`
+                });
+            });
+        });
+
+        // Add any categories with missing parent ID mapping
+        categories.forEach(c => {
+            if (c.parentId && !formatted.some(f => f.id === c.id)) {
+                formatted.push({
+                    id: c.id,
+                    name: c.name
+                });
+            }
+        });
+
+        return formatted;
+    };
+
     const handleSave = async () => {
         if (!name || !price || !category) {
             alert('Please fill in the product name, price, and category.');
@@ -715,7 +747,7 @@ export default function EditProductPage() {
                                     className="w-full h-10 px-3 bg-background border border-input rounded-lg text-[13px] outline-none"
                                 >
                                     <option value="">Select Category</option>
-                                    {categories.map(cat => (
+                                    {getFormattedCategories().map(cat => (
                                         <option key={cat.id} value={cat.id}>{cat.name}</option>
                                     ))}
                                 </select>
