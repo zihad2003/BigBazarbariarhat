@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import {
     ArrowLeft,
@@ -17,8 +17,40 @@ import {
     Search,
     ChevronRight,
     AlertCircle,
-    Eye
+    Eye,
+    Upload,
+    Palette
 } from 'lucide-react';
+
+/* ──────────────────── Color Suggestions (Bangla + English) ──────────────────── */
+
+const BANGLA_COLOR_SUGGESTIONS = [
+    { name: 'সাদা (White)', hex: '#FFFFFF' },
+    { name: 'কালো (Black)', hex: '#000000' },
+    { name: 'লাল (Red)', hex: '#DC2626' },
+    { name: 'নীল (Blue)', hex: '#2563EB' },
+    { name: 'সবুজ (Green)', hex: '#16A34A' },
+    { name: 'হলুদ (Yellow)', hex: '#EAB308' },
+    { name: 'কমলা (Orange)', hex: '#EA580C' },
+    { name: 'বেগুনি (Purple)', hex: '#9333EA' },
+    { name: 'গোলাপি (Pink)', hex: '#EC4899' },
+    { name: 'ধূসর (Grey)', hex: '#6B7280' },
+    { name: 'বাদামি (Brown)', hex: '#92400E' },
+    { name: 'মেরুন (Maroon)', hex: '#7F1D1D' },
+    { name: 'নেভি (Navy)', hex: '#1E3A5F' },
+    { name: 'আকাশি (Sky Blue)', hex: '#38BDF8' },
+    { name: 'জলপাই (Olive)', hex: '#65A30D' },
+    { name: 'ক্রিম (Cream)', hex: '#FFFDD0' },
+    { name: 'পিচ (Peach)', hex: '#FFDAB9' },
+    { name: 'সোনালি (Golden)', hex: '#D4A017' },
+    { name: 'রুপালি (Silver)', hex: '#C0C0C0' },
+    { name: 'ম্যাজেন্টা (Magenta)', hex: '#FF00FF' },
+    { name: 'তামাটে (Copper)', hex: '#B87333' },
+    { name: 'টিল (Teal)', hex: '#0D9488' },
+    { name: 'অফ-হোয়াইট (Off-White)', hex: '#FAF9F6' },
+    { name: 'কয়লা (Charcoal)', hex: '#36454F' },
+    { name: 'রাণী (Rani)', hex: '#D63384' },
+];
 
 /* ──────────────────── Types ──────────────────── */
 
@@ -49,9 +81,11 @@ export default function EditProductPage() {
     const [description, setDescription] = useState('');
     const [instagramReelUrl, setInstagramReelUrl] = useState('');
     // Structured clothing variant states
-    const [structuredSizes, setStructuredSizes] = useState<string[]>(['S', 'M', 'L', 'XL', 'XXL']);
+    const [structuredSizes, setStructuredSizes] = useState<string[]>([]);
     const [newSizeInput, setNewSizeInput] = useState('');
-    const [structuredColors, setStructuredColors] = useState<{ name: string, hex: string, stock: number }[]>([]);
+    const [structuredColors, setStructuredColors] = useState<{ name: string, hex: string, stock: number, image: string }[]>([]);
+    const [colorSuggestionIdx, setColorSuggestionIdx] = useState<number | null>(null);
+    const colorInputRefs = useRef<(HTMLInputElement | null)[]>([]);
     const [fabric, setFabric] = useState('');
     const [care, setCare] = useState('');
 
@@ -114,31 +148,35 @@ export default function EditProductPage() {
                     setCategory(p.categoryId);
                     setDescription(p.description || '');
                     setInstagramReelUrl(p.instagramReelUrl || '');
-                    const vData = p.variants;
                     if (vData && !Array.isArray(vData)) {
                         setStructuredSizes(vData.sizes || []);
-                        setStructuredColors(vData.colors || []);
+                        setStructuredColors((vData.colors || []).map((c: any) => ({
+                            name: c.name || '',
+                            hex: c.hex || '#000000',
+                            stock: c.stock || 0,
+                            image: c.image || ''
+                        })));
                         setFabric(vData.fabric || '');
                         setCare(vData.care || '');
                     } else if (Array.isArray(vData)) {
                         const uniqueSizes = Array.from(new Set(vData.map((v: any) => v.size).filter(Boolean))) as string[];
-                        const uniqueColorsMap: { [key: string]: { name: string; hex: string; stock: number } } = {};
+                        const uniqueColorsMap: { [key: string]: { name: string; hex: string; stock: number; image: string } } = {};
                         vData.forEach((v: any) => {
                             if (v.color) {
                                 const key = v.color.toLowerCase();
                                 if (!uniqueColorsMap[key]) {
-                                    uniqueColorsMap[key] = { name: v.color, hex: '#000000', stock: v.stock || 0 };
+                                    uniqueColorsMap[key] = { name: v.color, hex: '#000000', stock: v.stock || 0, image: '' };
                                 } else {
                                     uniqueColorsMap[key].stock += (v.stock || 0);
                                 }
                             }
                         });
-                        setStructuredSizes(uniqueSizes.length > 0 ? uniqueSizes : ['S', 'M', 'L', 'XL', 'XXL']);
+                        setStructuredSizes(uniqueSizes);
                         setStructuredColors(Object.values(uniqueColorsMap));
                         setFabric('');
                         setCare('');
                     } else {
-                        setStructuredSizes(['S', 'M', 'L', 'XL', 'XXL']);
+                        setStructuredSizes([]);
                         setStructuredColors([]);
                         setFabric('');
                         setCare('');
@@ -400,62 +438,170 @@ export default function EditProductPage() {
                         <div className="border-t border-border pt-6">
                             <div className="flex items-center justify-between mb-4">
                                 <h2 className="text-sm font-semibold flex items-center gap-2">
-                                    <LayoutGrid className="w-4 h-4 text-primary" />
+                                    <Palette className="w-4 h-4 text-primary" />
                                     Colors & Stock (রঙ ও স্টক)
                                 </h2>
                                 <button
                                     type="button"
-                                    onClick={() => setStructuredColors([...structuredColors, { name: '', hex: '#000000', stock: 0 }])}
-                                    className="px-3 py-1 bg-primary/5 text-primary rounded-lg text-xs font-bold hover:bg-primary/10 transition-colors"
+                                    onClick={() => setStructuredColors([...structuredColors, { name: '', hex: '#000000', stock: 0, image: '' }])}
+                                    className="px-3 py-1.5 bg-primary/10 text-primary rounded-lg text-xs font-bold hover:bg-primary/20 transition-colors flex items-center gap-1.5"
                                 >
-                                    + Add Color
+                                    <Plus className="w-3.5 h-3.5" />
+                                    Add Color
                                 </button>
                             </div>
                             {structuredColors.length === 0 ? (
-                                <p className="text-[12px] text-muted-foreground italic text-center py-4">No colors added yet.</p>
+                                <div className="text-center py-8 border-2 border-dashed border-border rounded-xl">
+                                    <Palette className="w-8 h-8 mx-auto mb-2 text-muted-foreground/30" />
+                                    <p className="text-[12px] text-muted-foreground">No colors added yet.</p>
+                                    <p className="text-[11px] text-muted-foreground/60 mt-0.5">Click "Add Color" to define color variants.</p>
+                                </div>
                             ) : (
                                 <div className="space-y-3">
                                     {structuredColors.map((color, idx) => (
-                                        <div key={idx} className="flex gap-3 items-center bg-muted/30 p-2.5 rounded-lg">
-                                            <input
-                                                type="text"
-                                                placeholder="Color Name (e.g. সাদা)"
-                                                value={color.name}
-                                                onChange={e => {
-                                                    const updated = [...structuredColors];
-                                                    updated[idx].name = e.target.value;
-                                                    setStructuredColors(updated);
-                                                }}
-                                                className="flex-1 h-9 px-3 bg-background border border-input rounded-lg text-xs"
-                                            />
-                                            <input
-                                                type="color"
-                                                value={color.hex}
-                                                onChange={e => {
-                                                    const updated = [...structuredColors];
-                                                    updated[idx].hex = e.target.value;
-                                                    setStructuredColors(updated);
-                                                }}
-                                                className="w-10 h-9 p-0 bg-transparent border-0 cursor-pointer"
-                                            />
-                                            <input
-                                                type="number"
-                                                placeholder="Stock"
-                                                value={color.stock}
-                                                onChange={e => {
-                                                    const updated = [...structuredColors];
-                                                    updated[idx].stock = parseInt(e.target.value) || 0;
-                                                    setStructuredColors(updated);
-                                                }}
-                                                className="w-20 h-9 px-3 bg-background border border-input rounded-lg text-xs"
-                                            />
-                                            <button
-                                                type="button"
-                                                onClick={() => setStructuredColors(structuredColors.filter((_, i) => i !== idx))}
-                                                className="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
-                                            >
-                                                <Trash2 className="w-4 h-4" />
-                                            </button>
+                                        <div key={idx} className="bg-muted/30 border border-border/50 p-3 rounded-xl space-y-3">
+                                            {/* Row 1: Color name with suggestions + hex picker swatch */}
+                                            <div className="flex gap-3 items-start">
+                                                <div className="relative flex-1">
+                                                    <input
+                                                        ref={el => { colorInputRefs.current[idx] = el; }}
+                                                        type="text"
+                                                        placeholder="রঙের নাম লিখুন (e.g. সাদা, লাল, নীল)"
+                                                        value={color.name}
+                                                        onChange={e => {
+                                                            const updated = [...structuredColors];
+                                                            updated[idx].name = e.target.value;
+                                                            setStructuredColors(updated);
+                                                            setColorSuggestionIdx(e.target.value.length > 0 ? idx : null);
+                                                        }}
+                                                        onFocus={() => { if (color.name.length > 0) setColorSuggestionIdx(idx); }}
+                                                        onBlur={() => setTimeout(() => setColorSuggestionIdx(null), 150)}
+                                                        className="w-full h-9 px-3 bg-background border border-input rounded-lg text-xs outline-none focus:ring-2 focus:ring-ring transition"
+                                                    />
+                                                    {/* Bangla color suggestions dropdown */}
+                                                    {colorSuggestionIdx === idx && color.name.length > 0 && (() => {
+                                                        const q = color.name.toLowerCase();
+                                                        const matches = BANGLA_COLOR_SUGGESTIONS.filter(s =>
+                                                            s.name.toLowerCase().includes(q)
+                                                        ).slice(0, 6);
+                                                        if (matches.length === 0) return null;
+                                                        return (
+                                                            <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-card border border-border rounded-lg shadow-xl overflow-hidden">
+                                                                {matches.map((s, si) => (
+                                                                    <button
+                                                                        key={si}
+                                                                        type="button"
+                                                                        onMouseDown={(e) => {
+                                                                            e.preventDefault();
+                                                                            const updated = [...structuredColors];
+                                                                            updated[idx].name = s.name;
+                                                                            updated[idx].hex = s.hex;
+                                                                            setStructuredColors(updated);
+                                                                            setColorSuggestionIdx(null);
+                                                                        }}
+                                                                        className="w-full px-3 py-2 flex items-center gap-2.5 hover:bg-muted/60 transition-colors text-left"
+                                                                    >
+                                                                        <span
+                                                                            className="w-5 h-5 rounded-full border border-border/60 shrink-0"
+                                                                            style={{ backgroundColor: s.hex }}
+                                                                        />
+                                                                        <span className="text-xs font-medium text-foreground">{s.name}</span>
+                                                                    </button>
+                                                                ))}
+                                                            </div>
+                                                        );
+                                                    })()}
+                                                </div>
+
+                                                {/* Color picker swatch */}
+                                                <div className="relative shrink-0">
+                                                    <div
+                                                        className="w-9 h-9 rounded-lg border-2 border-border cursor-pointer shadow-sm hover:scale-110 transition-transform"
+                                                        style={{ backgroundColor: color.hex }}
+                                                        title="Pick color"
+                                                    />
+                                                    <input
+                                                        type="color"
+                                                        value={color.hex}
+                                                        onChange={e => {
+                                                            const updated = [...structuredColors];
+                                                            updated[idx].hex = e.target.value;
+                                                            setStructuredColors(updated);
+                                                        }}
+                                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                                    />
+                                                </div>
+
+                                                {/* Stock input */}
+                                                <input
+                                                    type="number"
+                                                    placeholder="Stock"
+                                                    value={color.stock}
+                                                    onChange={e => {
+                                                        const updated = [...structuredColors];
+                                                        updated[idx].stock = parseInt(e.target.value) || 0;
+                                                        setStructuredColors(updated);
+                                                    }}
+                                                    className="w-20 h-9 px-3 bg-background border border-input rounded-lg text-xs shrink-0"
+                                                />
+
+                                                {/* Delete */}
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setStructuredColors(structuredColors.filter((_, i) => i !== idx))}
+                                                    className="p-2 text-rose-500 hover:bg-rose-500/10 rounded-lg transition-colors shrink-0"
+                                                >
+                                                    <Trash2 className="w-4 h-4" />
+                                                </button>
+                                            </div>
+
+                                            {/* Row 2: Color photo upload */}
+                                            <div className="flex items-center gap-3 pl-0.5">
+                                                {color.image ? (
+                                                    <div className="relative w-14 h-14 rounded-lg overflow-hidden border border-border group">
+                                                        <img src={color.image} className="w-full h-full object-cover" alt={color.name} />
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => {
+                                                                const updated = [...structuredColors];
+                                                                updated[idx].image = '';
+                                                                setStructuredColors(updated);
+                                                            }}
+                                                            className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                                                        >
+                                                            <Trash2 className="w-3.5 h-3.5 text-white" />
+                                                        </button>
+                                                    </div>
+                                                ) : (
+                                                    <label className="flex items-center gap-2 px-3 py-2 bg-background border border-dashed border-border rounded-lg cursor-pointer hover:bg-muted/40 transition-colors">
+                                                        <Upload className="w-3.5 h-3.5 text-muted-foreground" />
+                                                        <span className="text-[11px] text-muted-foreground font-medium">Color Photo</span>
+                                                        <input
+                                                            type="file"
+                                                            accept="image/*"
+                                                            className="hidden"
+                                                            onChange={async (e) => {
+                                                                const file = e.target.files?.[0];
+                                                                if (!file) return;
+                                                                try {
+                                                                    const formData = new FormData();
+                                                                    formData.append('file', file);
+                                                                    const res = await fetch('/api/upload', { method: 'POST', body: formData });
+                                                                    const result = await res.json();
+                                                                    if (result.success) {
+                                                                        const updated = [...structuredColors];
+                                                                        updated[idx].image = result.url;
+                                                                        setStructuredColors(updated);
+                                                                    }
+                                                                } catch (err) {
+                                                                    console.error('Color image upload failed:', err);
+                                                                }
+                                                            }}
+                                                        />
+                                                    </label>
+                                                )}
+                                                <span className="text-[10px] text-muted-foreground/60">Optional: upload a swatch or fabric photo for this color</span>
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
