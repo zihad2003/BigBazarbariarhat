@@ -129,6 +129,8 @@ export default function EditCategoryPage(props: { params: Promise<{ id: string }
         );
     }
 
+    const isDefault = slug === 'uncategorized';
+
     return (
         <div className="max-w-[800px] mx-auto pb-20">
             {/* Header */}
@@ -172,8 +174,9 @@ export default function EditCategoryPage(props: { params: Promise<{ id: string }
                                     type="text"
                                     value={name}
                                     onChange={e => setName(e.target.value)}
-                                    onBlur={generateSlug}
-                                    className="w-full h-11 px-4 bg-background border border-input rounded-lg text-[13px] outline-none focus:ring-2 focus:ring-ring transition"
+                                    onBlur={isDefault ? undefined : generateSlug}
+                                    disabled={isDefault}
+                                    className="w-full h-11 px-4 bg-background border border-input rounded-lg text-[13px] outline-none focus:ring-2 focus:ring-ring transition disabled:opacity-50 disabled:bg-muted"
                                 />
                             </div>
                             <div className="space-y-1.5">
@@ -182,7 +185,8 @@ export default function EditCategoryPage(props: { params: Promise<{ id: string }
                                     type="text"
                                     value={slug}
                                     onChange={e => setSlug(e.target.value)}
-                                    className="w-full h-11 px-4 bg-background border border-input rounded-lg text-[13px] outline-none focus:ring-2 focus:ring-ring transition text-muted-foreground"
+                                    disabled={isDefault}
+                                    className="w-full h-11 px-4 bg-background border border-input rounded-lg text-[13px] outline-none focus:ring-2 focus:ring-ring transition text-muted-foreground disabled:opacity-50 disabled:bg-muted"
                                 />
                             </div>
                         </div>
@@ -192,7 +196,8 @@ export default function EditCategoryPage(props: { params: Promise<{ id: string }
                             <select 
                                 value={parentId} 
                                 onChange={e => setParentId(e.target.value)} 
-                                className="w-full h-11 px-3 bg-background border border-input rounded-lg text-[13px] outline-none transition"
+                                disabled={isDefault}
+                                className="w-full h-11 px-3 bg-background border border-input rounded-lg text-[13px] outline-none transition disabled:opacity-50 disabled:bg-muted"
                             >
                                 <option value="">None (Top Level Category)</option>
                                 {parentCategories.map(cat => (

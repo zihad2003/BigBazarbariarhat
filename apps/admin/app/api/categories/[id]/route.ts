@@ -77,6 +77,22 @@ export async function DELETE(
 
         const { id } = await params;
 
+        // Fetch category to check if it's the system default
+        const category = await prisma.category.findUnique({
+            where: { id }
+        });
+
+        if (!category) {
+            return NextResponse.json({ success: false, message: 'Category not found' }, { status: 404 });
+        }
+
+        if (category.slug === 'uncategorized') {
+            return NextResponse.json({
+                success: false,
+                message: 'The system default "Uncategorized" category cannot be deleted.'
+            }, { status: 400 });
+        }
+
         // 1. Orphan any subcategories (set parentId to null) so they are not deleted
         await prisma.category.updateMany({
             where: { parentId: id },

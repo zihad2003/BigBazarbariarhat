@@ -227,18 +227,20 @@ export default function CategoriesPage() {
                                             <Link href={`/categories/${parent.id}`} className="p-2 hover:bg-muted rounded-md text-muted-foreground hover:text-foreground transition-colors" title="Edit Parent Section">
                                                 <Edit className="w-4 h-4" />
                                             </Link>
-                                            <button
-                                                onClick={() => handleDeleteClick(parent.id)}
-                                                disabled={deletingId !== null}
-                                                className="p-2 hover:bg-destructive/10 rounded-md text-muted-foreground hover:text-destructive transition-colors disabled:opacity-50"
-                                                title="Delete Parent Section"
-                                            >
-                                                {deletingId === parent.id ? (
-                                                    <Loader2 className="w-4 h-4 animate-spin text-destructive" />
-                                                ) : (
-                                                    <Trash2 className="w-4 h-4" />
-                                                )}
-                                            </button>
+                                            {parent.slug !== 'uncategorized' && (
+                                                <button
+                                                    onClick={() => handleDeleteClick(parent.id)}
+                                                    disabled={deletingId !== null}
+                                                    className="p-2 hover:bg-destructive/10 rounded-md text-muted-foreground hover:text-destructive transition-colors disabled:opacity-50"
+                                                    title="Delete Parent Section"
+                                                >
+                                                    {deletingId === parent.id ? (
+                                                        <Loader2 className="w-4 h-4 animate-spin text-destructive" />
+                                                    ) : (
+                                                        <Trash2 className="w-4 h-4" />
+                                                    )}
+                                                </button>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -275,17 +277,19 @@ export default function CategoriesPage() {
                                                             <Link href={`/categories/${sub.id}`} className="p-1.5 hover:bg-muted rounded text-muted-foreground hover:text-foreground">
                                                                 <Edit className="w-3.5 h-3.5" />
                                                             </Link>
-                                                            <button 
-                                                                onClick={() => handleDeleteClick(sub.id)} 
-                                                                disabled={deletingId !== null}
-                                                                className="p-1.5 hover:bg-destructive/10 rounded text-muted-foreground hover:text-destructive disabled:opacity-50"
-                                                            >
-                                                                {deletingId === sub.id ? (
-                                                                    <Loader2 className="w-3.5 h-3.5 animate-spin text-destructive" />
-                                                                ) : (
-                                                                    <Trash2 className="w-3.5 h-3.5" />
-                                                                )}
-                                                            </button>
+                                                            {sub.slug !== 'uncategorized' && (
+                                                                <button 
+                                                                    onClick={() => handleDeleteClick(sub.id)} 
+                                                                    disabled={deletingId !== null}
+                                                                    className="p-1.5 hover:bg-destructive/10 rounded text-muted-foreground hover:text-destructive disabled:opacity-50"
+                                                                >
+                                                                    {deletingId === sub.id ? (
+                                                                        <Loader2 className="w-3.5 h-3.5 animate-spin text-destructive" />
+                                                                    ) : (
+                                                                        <Trash2 className="w-3.5 h-3.5" />
+                                                                    )}
+                                                                </button>
+                                                            )}
                                                         </div>
                                                     </div>
                                                 </div>
