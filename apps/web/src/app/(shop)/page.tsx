@@ -10,10 +10,6 @@ const fallbackCategoryImages: Record<string, string> = {
     'Wedding Touch': 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?q=80&w=500&auto=format&fit=crop',
 };
 
-const defaultPromoBanners = [
-    { id: '1', title: 'Summer Edit', subtitle: 'New Arrival', imageDesktop: 'https://images.unsplash.com/photo-1604671801908-6f0c6a092c05?q=80&w=800&auto=format&fit=crop', linkUrl: '/products?sort=newest', linkText: 'Shop Now' },
-    { id: '2', title: 'Flash Sale', subtitle: '50% Off', imageDesktop: 'https://images.unsplash.com/photo-1607083206869-4c7672e72a8a?q=80&w=800&auto=format&fit=crop', linkUrl: '/sale', linkText: 'Shop Now' },
-];
 
 export const revalidate = 60; // Revalidate dynamic home page content every 60 seconds
 
@@ -103,13 +99,11 @@ export default async function HomePage() {
         updatedAt: b.updatedAt.toISOString(),
     }));
 
-    const promoBanners = dbSecondaryBanners.length > 0 
-        ? dbSecondaryBanners.map(b => ({
-            ...b,
-            createdAt: b.createdAt.toISOString(),
-            updatedAt: b.updatedAt.toISOString(),
-        }))
-        : defaultPromoBanners;
+    const promoBanners = dbSecondaryBanners.map(b => ({
+        ...b,
+        createdAt: b.createdAt.toISOString(),
+        updatedAt: b.updatedAt.toISOString(),
+    }));
 
     return (
         <HomeClient
