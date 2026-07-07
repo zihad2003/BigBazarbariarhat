@@ -137,6 +137,7 @@ function ErrorFallback({
                         <RefreshCw className="h-4 w-4" />
                         Try Again
                     </button>
+                    {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
                     <a
                         href="/"
                         className="flex items-center gap-3 px-8 py-4 bg-gray-50 text-gray-700 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-gray-100 transition-all border border-gray-100"

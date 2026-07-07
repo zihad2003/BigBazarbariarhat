@@ -156,7 +156,7 @@ export default function SalePage() {
         setCurrentPage(1);
     };
 
-    const FilterContent = () => (
+    const renderFilterContent = () => (
         <div className="space-y-8 lg:space-y-10">
             <div>
                 <h3 className="text-xs font-black text-neutral-900 uppercase tracking-[0.2em] mb-4 lg:mb-6">{ct.categories}</h3>
@@ -240,7 +240,7 @@ export default function SalePage() {
                     {/* Desktop Sidebar */}
                     <aside className="hidden lg:block w-72 shrink-0">
                         <div className="sticky top-32">
-                            <FilterContent />
+                            {renderFilterContent()}
                         </div>
                     </aside>
 
@@ -265,7 +265,7 @@ export default function SalePage() {
                                         <SheetHeader className="mb-8">
                                             <SheetTitle className="text-2xl font-black tracking-tighter text-center">{ct.filters}</SheetTitle>
                                         </SheetHeader>
-                                        <FilterContent />
+                                        {renderFilterContent()}
                                     </SheetContent>
                                 </Sheet>
                             </div>

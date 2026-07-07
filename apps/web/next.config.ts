@@ -1,12 +1,14 @@
 import type { NextConfig } from 'next';
 import path from 'path';
+import withBundleAnalyzerInit from '@next/bundle-analyzer';
 
 const withBundleAnalyzer =
   process.env.ANALYZE === 'true'
-    ? require('@next/bundle-analyzer')({ enabled: true })
+    ? withBundleAnalyzerInit({ enabled: true })
     : (config: NextConfig) => config;
 
 const nextConfig: NextConfig = {
+  reactCompiler: false,
   outputFileTracingRoot: path.resolve(__dirname, '../../'),
   devIndicators: false,
 
@@ -83,13 +85,6 @@ const nextConfig: NextConfig = {
   },
 
   transpilePackages: ['@bigbazar/shared', '@bigbazar/ui'],
-
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
 
   // ─── Webpack Optimizations ───────────────────────────────────
   webpack: (config, { isServer }) => {

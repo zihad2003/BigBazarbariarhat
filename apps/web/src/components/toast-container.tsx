@@ -60,6 +60,11 @@ function ToastItem({
     const Icon = config.icon;
     const duration = notification.duration ?? 5000;
 
+    const handleDismiss = () => {
+        setIsExiting(true);
+        setTimeout(() => onDismiss(notification.id), 300);
+    };
+
     useEffect(() => {
         const startTime = Date.now();
         const interval = setInterval(() => {
@@ -75,11 +80,6 @@ function ToastItem({
 
         return () => clearInterval(interval);
     }, [duration]);
-
-    const handleDismiss = () => {
-        setIsExiting(true);
-        setTimeout(() => onDismiss(notification.id), 300);
-    };
 
     return (
         <div

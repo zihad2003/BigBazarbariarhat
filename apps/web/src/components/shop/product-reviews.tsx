@@ -64,19 +64,23 @@ export function ProductReviews({ reviews = mockReviews, averageRating = 4.5, rev
 
                     {/* Rating Breakdown */}
                     <div className="space-y-3 w-full pt-6 border-t border-gray-100">
-                        {[5, 4, 3, 2, 1].map((stars) => (
-                            <div key={stars} className="flex items-center gap-4 text-[10px] font-black">
-                                <span className="w-4 text-gray-400">{stars}</span>
-                                <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
-                                    <motion.div
-                                        initial={{ width: 0 }}
-                                        animate={{ width: `${Math.random() * 80 + 10}%` }}
-                                        transition={{ duration: 1, delay: 0.5 }}
-                                        className="h-full bg-indigo-600 rounded-full shadow-lg shadow-indigo-200"
-                                    />
+                        {[5, 4, 3, 2, 1].map((stars) => {
+                            const count = reviews.filter(r => r.rating === stars).length;
+                            const percentage = reviews.length > 0 ? (count / reviews.length) * 100 : 0;
+                            return (
+                                <div key={stars} className="flex items-center gap-4 text-[10px] font-black">
+                                    <span className="w-4 text-gray-400">{stars}</span>
+                                    <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                                        <motion.div
+                                            initial={{ width: 0 }}
+                                            animate={{ width: `${percentage}%` }}
+                                            transition={{ duration: 1, delay: 0.5 }}
+                                            className="h-full bg-indigo-600 rounded-full shadow-lg shadow-indigo-200"
+                                        />
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
 
                     <Button className="w-full h-14 bg-black text-white hover:bg-gray-800 rounded-2xl text-[10px] font-black uppercase tracking-widest mt-4">

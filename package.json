@@ -26,7 +26,6 @@
     "type-check": "npm run type-check -w apps/web"
   },
   "devDependencies": {
-    "@cloudflare/next-on-pages": "^1.13.16",
     "@prisma/client": "^5.10.0",
     "eslint-import-resolver-typescript": "3.8.7",
     "prettier": "^3.0.0",
@@ -37,7 +36,8 @@
     "ajv-keywords": "^5.1.0"
   },
   "overrides": {
-    "eslint-import-resolver-typescript": "3.8.7"
+    "eslint-import-resolver-typescript": "3.8.7",
+    "next": "16.2.10"
   },
   "optionalDependencies": {
     "@next/swc-linux-x64-gnu": "16.1.6",

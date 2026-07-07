@@ -181,7 +181,7 @@ export default function ProductsPage() {
         setCurrentPage(1);
     };
 
-    const FilterContent = () => (
+    const renderFilterContent = () => (
         <div className="space-y-8 lg:space-y-10">
             {/* Categories */}
             <div>
@@ -259,7 +259,7 @@ export default function ProductsPage() {
                     {/* Desktop Sidebar Module */}
                     <aside className="hidden lg:block w-72 shrink-0">
                         <div className="sticky top-32">
-                            <FilterContent />
+                            {renderFilterContent()}
                         </div>
                     </aside>
 
@@ -286,7 +286,7 @@ export default function ProductsPage() {
                                         <SheetHeader className="mb-8">
                                             <SheetTitle className="text-2xl font-black tracking-tighter text-center">{ct.filters}</SheetTitle>
                                         </SheetHeader>
-                                        <FilterContent />
+                                        {renderFilterContent()}
                                     </SheetContent>
                                 </Sheet>
                             </div>

@@ -1,7 +1,11 @@
 name = "bigbazar-web"
-compatibility_date = "2024-09-23"
+main = ".open-next/worker.js"
+compatibility_date = "2026-07-08"
 compatibility_flags = ["nodejs_compat"]
-pages_build_output_dir = ".vercel/output/static"
+
+[assets]
+binding = "ASSETS"
+directory = ".open-next/assets"
 
 [vars]
 NEXT_PUBLIC_APP_URL = "https://bigbazarbariarhat.pages.dev"

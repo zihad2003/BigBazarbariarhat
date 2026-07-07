@@ -66,41 +66,10 @@ export async function POST(req: NextRequest) {
 
     // Create the order and decrement product stock within a database transaction to prevent overselling
     const order = await prisma.$transaction(async (tx) => {
-      // DB2: If coupon code is used, validate it and increment currentUsage inside the transaction
-      if (couponCode) {
-        const coupon = await tx.coupon.findUnique({
-          where: { code: couponCode.trim().toUpperCase() },
-        });
+      let serverSubtotal = 0;
+      const serverOrderItems = [];
 
-        if (!coupon || !coupon.isActive) {
-          throw new Error('COUPON_ERROR: Invalid or inactive coupon code.');
-        }
-
-        const now = new Date();
-        if (now < coupon.startDate || now > coupon.endDate) {
-          throw new Error('COUPON_ERROR: This coupon has expired.');
-        }
-
-        if (coupon.usageLimit && coupon.currentUsage >= coupon.usageLimit) {
-          throw new Error('COUPON_ERROR: This coupon usage limit has been reached.');
-        }
-
-        const subtotal = items.reduce((sum, item) => sum + Number(item.price) * item.quantity, 0);
-        if (subtotal < Number(coupon.minOrderAmount)) {
-          throw new Error(`COUPON_ERROR: Minimum order of ৳${coupon.minOrderAmount} required for this coupon.`);
-        }
-
-        await tx.coupon.update({
-          where: { id: coupon.id },
-          data: {
-            currentUsage: {
-              increment: 1,
-            },
-          },
-        });
-      }
-
-      // 1. Verify and decrement available stock for each order item
+      // 1. Verify and decrement available stock for each order item, and compute server subtotal
       for (const item of items) {
         const prod = await tx.product.findUnique({
           where: { id: item.productId },
@@ -123,26 +92,98 @@ export async function POST(req: NextRequest) {
             },
           },
         });
+
+        const activePrice = prod.salePrice ? Number(prod.salePrice) : Number(prod.price);
+        serverSubtotal += activePrice * item.quantity;
+        serverOrderItems.push({
+          productId: item.productId,
+          quantity: item.quantity,
+          price: activePrice,
+        });
       }
 
-      // 2. Create the final order record
+      // 2. If coupon code is used, validate it and increment currentUsage inside the transaction
+      let discountAmount = 0;
+      let isFreeShipping = false;
+
+      if (couponCode) {
+        const coupon = await tx.coupon.findUnique({
+          where: { code: couponCode.trim().toUpperCase() },
+        });
+
+        if (!coupon || !coupon.isActive) {
+          throw new Error('COUPON_ERROR: Invalid or inactive coupon code.');
+        }
+
+        const now = new Date();
+        if (now < coupon.startDate || now > coupon.endDate) {
+          throw new Error('COUPON_ERROR: This coupon has expired.');
+        }
+
+        if (coupon.usageLimit && coupon.currentUsage >= coupon.usageLimit) {
+          throw new Error('COUPON_ERROR: This coupon usage limit has been reached.');
+        }
+
+        if (serverSubtotal < Number(coupon.minOrderAmount)) {
+          throw new Error(`COUPON_ERROR: Minimum order of ৳${coupon.minOrderAmount} required for this coupon.`);
+        }
+
+        if (coupon.discountType === 'PERCENTAGE') {
+          discountAmount = serverSubtotal * (Number(coupon.discountValue) / 100);
+        } else if (coupon.discountType === 'FIXED_AMOUNT') {
+          discountAmount = Number(coupon.discountValue);
+        } else if (coupon.discountType === 'FREE_SHIPPING') {
+          isFreeShipping = true;
+        }
+
+        await tx.coupon.update({
+          where: { id: coupon.id },
+          data: {
+            currentUsage: {
+              increment: 1,
+            },
+          },
+        });
+      }
+
+      // 3. Compute shipping cost
+      let shippingCost = 150;
+      if (isFreeShipping) {
+        shippingCost = 0;
+      } else {
+        const district = shippingAddress.district;
+        const upazila = shippingAddress.upazila || '';
+        if (district === 'Chittagong' && upazila === 'Mirsharai') {
+          shippingCost = 0;
+        } else if (district === 'Chittagong') {
+          shippingCost = 100;
+        } else {
+          shippingCost = 150;
+        }
+      }
+
+      const serverTotalAmount = Math.max(0, serverSubtotal - discountAmount + shippingCost);
+
+      // Verify server total against client total
+      const diff = Math.abs(Number(totalAmount) - serverTotalAmount);
+      if (diff > 1.0) {
+        throw new Error(`PRICE_ERROR: Total amount mismatch. Client submitted ৳${totalAmount}, but server computed ৳${serverTotalAmount}.`);
+      }
+
+      // 4. Create the final order record using server calculated values
       return await tx.order.create({
         data: {
           orderNumber,
           userId: userId,
           customerPhone: shippingAddress.phone,
-          totalAmount: Number(totalAmount),
+          totalAmount: serverTotalAmount,
           shippingAddress,
           paymentMethod: paymentMethod ?? 'CASH_ON_DELIVERY',
           paymentTransactionId: paymentTransactionId || null,
           paymentScreenshot: paymentScreenshot || null,
           status: 'PENDING',
           items: {
-            create: items.map((item: { productId: string; quantity: number; price: number }) => ({
-              productId: item.productId,
-              quantity: item.quantity,
-              price: Number(item.price),
-            })),
+            create: serverOrderItems,
           },
         },
         include: { items: true },
@@ -166,6 +207,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({
         success: false,
         message: error.message.replace('COUPON_ERROR:', '').trim()
+      }, { status: 400 });
+    }
+
+    // Return HTTP 400 for price validation errors
+    if (error.message && error.message.startsWith('PRICE_ERROR:')) {
+      return NextResponse.json({
+        success: false,
+        message: error.message.replace('PRICE_ERROR:', '').trim()
       }, { status: 400 });
     }
 
