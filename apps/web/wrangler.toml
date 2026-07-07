@@ -1,6 +1,6 @@
 name = "bigbazar-web"
 main = ".open-next/worker.js"
-compatibility_date = "2026-07-08"
+compatibility_date = "2025-01-01"
 compatibility_flags = ["nodejs_compat"]
 
 [assets]
@@ -8,4 +8,4 @@ binding = "ASSETS"
 directory = ".open-next/assets"
 
 [vars]
-NEXT_PUBLIC_APP_URL = "https://bigbazarbariarhat.pages.dev"
+NEXT_PUBLIC_APP_URL = "https://bigbazar-web.zihadlaptopasus.workers.dev"
