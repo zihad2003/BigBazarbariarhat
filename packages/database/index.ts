@@ -1,6 +1,11 @@
 import { PrismaClient } from '@prisma/client';
 import { withAccelerate } from '@prisma/extension-accelerate';
 
+if (!process.env.DATABASE_URL) {
+  console.warn("⚠️ DATABASE_URL is not set. Using placeholder for build/dev.");
+  process.env.DATABASE_URL = "mysql://placeholder_user:placeholder_pass@localhost:3306/placeholder_db";
+}
+
 const globalForPrisma = globalThis as unknown as { prisma: ReturnType<typeof createClient> | undefined };
 
 function createClient() {
