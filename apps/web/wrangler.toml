@@ -3,9 +3,12 @@ main = ".open-next/worker.js"
 compatibility_date = "2026-07-08"
 compatibility_flags = ["nodejs_compat"]
 
+[build]
+command = "npm run build:cloudflare"
+
 [assets]
 binding = "ASSETS"
 directory = ".open-next/assets"
 
 [vars]
-NEXT_PUBLIC_APP_URL = "https://bigbazar-web.<subdomain>.workers.dev"
+NEXT_PUBLIC_APP_URL = "https://bigbazar-web.zihadlaptopasus.workers.dev"
