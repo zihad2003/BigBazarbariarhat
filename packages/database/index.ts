@@ -29,9 +29,17 @@ function createClient() {
     );
   }
 
-  return new PrismaClient({
+  const client = new PrismaClient({
     log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-  }).$extends(withAccelerate());
+  });
+
+  if (url.startsWith('prisma://') || url.startsWith('prisma+postgres://') || url.startsWith('prisma+mysql://')) {
+    console.log("Prisma Client: Using Accelerate proxy connection");
+    return client.$extends(withAccelerate());
+  }
+
+  console.log("Prisma Client: Using direct database connection");
+  return client;
 }
 
 // Lazy proxy: createClient() is called only when the client is first used (at request time),
