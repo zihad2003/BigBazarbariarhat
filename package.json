@@ -33,6 +33,7 @@
     "prisma": "^5.10.0"
   },
   "dependencies": {
+    "@radix-ui/react-select": "^2.3.3",
     "ajv": "^8.18.0",
     "ajv-keywords": "^5.1.0"
   },
