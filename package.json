@@ -44,6 +44,8 @@
     "next": "16.2.10"
   },
   "optionalDependencies": {
+    "@ast-grep/napi-linux-x64-gnu": "0.40.5",
+    "@ast-grep/napi-linux-x64-musl": "0.40.5",
     "@next/swc-linux-x64-gnu": "16.1.6",
     "@next/swc-linux-x64-musl": "16.1.6",
     "@tailwindcss/oxide-linux-x64-gnu": "4.1.18",
