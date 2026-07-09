@@ -5,9 +5,17 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@bigbazar/db";
 import { authConfig } from "./auth.config";
 
+if (!process.env.AUTH_SECRET && process.env.NEXTAUTH_SECRET) {
+  process.env.AUTH_SECRET = process.env.NEXTAUTH_SECRET;
+}
+
+if (!process.env.AUTH_SECRET) {
+  console.warn("⚠️ AUTH_SECRET is not set. Using placeholder for build/dev.");
+  process.env.AUTH_SECRET = "placeholder-secret-for-build-and-dev-purposes-only";
+}
+
 if (!process.env.NEXTAUTH_SECRET) {
-  console.warn("⚠️ NEXTAUTH_SECRET is not set. Using placeholder for build/dev.");
-  process.env.NEXTAUTH_SECRET = "placeholder-secret-for-build-and-dev-purposes-only";
+  process.env.NEXTAUTH_SECRET = process.env.AUTH_SECRET;
 }
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
