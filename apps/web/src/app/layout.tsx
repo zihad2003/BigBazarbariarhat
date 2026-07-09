@@ -1,5 +1,3 @@
-export const runtime = 'edge';
-
 import type { Metadata, Viewport } from 'next';
 import localFont from 'next/font/local';
 import Providers from './providers';
