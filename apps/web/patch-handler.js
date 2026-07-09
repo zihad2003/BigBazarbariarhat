@@ -16,9 +16,9 @@ const regex = /import\("[^"]+?query_engine[^"]+?\.wasm"\)/g;
 const matches = content.match(regex);
 if (matches) {
   console.log('Found matches to patch:', matches);
-  content = content.replace(regex, 'Promise.resolve({ default: null })');
+  content = content.replace(regex, 'import("../../node_modules/.prisma/client/query_engine_bg.wasm")');
   fs.writeFileSync(handlerPath, content, 'utf8');
-  console.log('Successfully patched handler.mjs paths for Windows.');
+  console.log('Successfully patched handler.mjs paths with relative WASM imports.');
 } else {
   console.log('No matches found to patch in handler.mjs.');
 }
