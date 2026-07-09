@@ -28,11 +28,11 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.61.1",
-    "@prisma/client": "^5.10.0",
+    "@prisma/client": "^6.19.3",
     "@types/node": "^26.1.1",
     "eslint-import-resolver-typescript": "3.8.7",
     "prettier": "^3.0.0",
-    "prisma": "^5.10.0"
+    "prisma": "^6.19.3"
   },
   "dependencies": {
     "@radix-ui/react-select": "^2.3.3",

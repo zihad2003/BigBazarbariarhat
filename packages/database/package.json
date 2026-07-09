@@ -5,18 +5,20 @@
   "main": "./index.ts",
   "types": "./index.ts",
   "scripts": {
-    "db:generate": "prisma generate",
-    "db:push": "prisma db push",
-    "db:seed:admin": "ts-node seed-admin.ts",
-    "db:seed:categories": "ts-node seed-categories.ts",
-    "db:import:products": "ts-node import-products.ts"
+    "db:generate": "npx prisma generate",
+    "db:push": "npx prisma db push",
+    "db:seed:admin": "npx ts-node seed-admin.ts",
+    "db:seed:categories": "npx ts-node seed-categories.ts",
+    "db:import:products": "npx ts-node import-products.ts"
   },
   "dependencies": {
-    "@prisma/client": "^5.10.0",
-    "@prisma/extension-accelerate": "^1.0.0"
+    "@prisma/client": "^6.19.3",
+    "@prisma/extension-accelerate": "^1.0.0",
+    "@tidbcloud/prisma-adapter": "^6.17.0",
+    "@tidbcloud/serverless": "^0.3.0"
   },
   "devDependencies": {
-    "prisma": "^5.10.0",
+    "prisma": "^6.19.3",
     "typescript": "^5.0.0"
   }
 }

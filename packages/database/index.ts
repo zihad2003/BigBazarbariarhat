@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { withAccelerate } from '@prisma/extension-accelerate';
+import { PrismaTiDBCloud } from '@tidbcloud/prisma-adapter';
 
 const PLACEHOLDER_URL = "mysql://placeholder_user:placeholder_pass@localhost:3306/placeholder_db";
 
@@ -33,16 +34,21 @@ function createClient(): ExtendedPrismaClient {
     );
   }
 
-  const client = new PrismaClient({
-    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-  });
-
   if (url.startsWith('prisma://') || url.startsWith('prisma+postgres://') || url.startsWith('prisma+mysql://')) {
     console.log("Prisma Client: Using Accelerate proxy connection");
+    const client = new PrismaClient({
+      log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+    });
     return client.$extends(withAccelerate()) as unknown as ExtendedPrismaClient;
   }
 
-  console.log("Prisma Client: Using direct database connection");
+  console.log("Prisma Client: Using TiDB Cloud Serverless Driver connection");
+  const adapter = new PrismaTiDBCloud({ url });
+  const client = new PrismaClient({
+    adapter,
+    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+  });
+
   return client as unknown as ExtendedPrismaClient;
 }
 
