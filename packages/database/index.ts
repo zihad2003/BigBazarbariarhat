@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client/edge';
+import { PrismaClient } from '@prisma/client';
 import { withAccelerate } from '@prisma/extension-accelerate';
 
 const PLACEHOLDER_URL = "mysql://placeholder_user:placeholder_pass@localhost:3306/placeholder_db";
