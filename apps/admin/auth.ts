@@ -5,7 +5,12 @@ import { prisma } from "@bigbazar/db";
 import { authConfig } from "./auth.config";
 
 if (!process.env.AUTH_SECRET && !process.env.NEXTAUTH_SECRET) {
-  throw new Error("AUTH_SECRET environment variable is not set.");
+  if (process.env.NEXT_PHASE === 'phase-production-build') {
+    console.warn("⚠️ AUTH_SECRET / NEXTAUTH_SECRET not set — using placeholder for build.");
+    process.env.AUTH_SECRET = "placeholder-secret-for-build-purposes-only";
+  } else {
+    throw new Error("AUTH_SECRET environment variable is not set.");
+  }
 }
 
 export const { auth, handlers, signIn, signOut } = NextAuth({

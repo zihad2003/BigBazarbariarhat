@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 import { handlers } from "@/auth"
 const { GET: _GET, POST: _POST } = handlers
 export const GET = _GET as any

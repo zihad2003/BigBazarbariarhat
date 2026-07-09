@@ -148,6 +148,7 @@ export default function EditProductPage() {
                     setCategory(p.categoryId);
                     setDescription(p.description || '');
                     setInstagramReelUrl(p.instagramReelUrl || '');
+                    const vData = p.variants;
                     if (vData && !Array.isArray(vData)) {
                         setStructuredSizes(vData.sizes || []);
                         setStructuredColors((vData.colors || []).map((c: any) => ({

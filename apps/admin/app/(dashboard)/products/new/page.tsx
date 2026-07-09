@@ -51,7 +51,7 @@ const BANGLA_COLOR_SUGGESTIONS = [
     { name: 'রাণী (Rani)', hex: '#D63384' },
 ];
 
-interface Category { id: string; name: string; }
+interface Category { id: string; name: string; parentId?: string | null; }
 
 /* ──────────────────── Page ──────────────────── */
 

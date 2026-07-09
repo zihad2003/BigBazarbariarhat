@@ -8,7 +8,8 @@ import {
     Loader2,
     Plus,
     Tag,
-    Check
+    Check,
+    Trash2
 } from 'lucide-react';
 
 function NewCategoryPageContent() {

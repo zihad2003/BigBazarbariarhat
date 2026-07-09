@@ -13,6 +13,7 @@
     "db:generate": "npm run db:generate -w packages/database",
     "build": "npm run db:generate && npm run build:web",
     "build:web": "npm run build:cloudflare -w apps/web",
+    "build:admin": "npm run db:generate && npm run build:cloudflare -w apps/admin",
     "build:all": "turbo build",
     "deploy:web": "cd apps/web && npm run deploy",
     "deploy:admin": "cd apps/admin && npm run deploy",
@@ -23,7 +24,7 @@
     "test": "npm run test -w apps/web",
     "test:watch": "npm run test:watch -w apps/web",
     "test:coverage": "npm run test:coverage -w apps/web",
-    "type-check": "npm run type-check -w apps/web"
+    "type-check": "npm run type-check -w apps/web && npm run type-check -w apps/admin"
   },
   "devDependencies": {
     "@prisma/client": "^5.10.0",

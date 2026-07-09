@@ -1,25 +1,62 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client/edge';
 import { withAccelerate } from '@prisma/extension-accelerate';
 
-if (!process.env.DATABASE_URL) {
-  console.warn("⚠️ DATABASE_URL is not set. Using placeholder for build/dev.");
-  process.env.DATABASE_URL = "mysql://placeholder_user:placeholder_pass@localhost:3306/placeholder_db";
+const PLACEHOLDER_URL = "mysql://placeholder_user:placeholder_pass@localhost:3306/placeholder_db";
+
+const isBuildPhase =
+  process.env.NEXT_PHASE === 'phase-production-build' ||
+  process.env.BUILDING === 'true' ||
+  process.env.NODE_ENV === 'test';
+
+// During build, always force the placeholder so PrismaClient is never instantiated
+// at static-page-generation time (even if .env.local provides a real DATABASE_URL).
+if (isBuildPhase) {
+  process.env.DATABASE_URL = PLACEHOLDER_URL;
 }
 
-const globalForPrisma = globalThis as unknown as { prisma: ReturnType<typeof createClient> | undefined };
+
+// Use a lazy getter so PrismaClient is only instantiated on first request,
+// never at module-evaluation time during the build phase.
+const globalForPrisma = globalThis as unknown as {
+  prisma: ReturnType<typeof createClient> | undefined;
+};
 
 function createClient() {
+  const url = process.env.DATABASE_URL;
+  if (!url || url === PLACEHOLDER_URL) {
+    throw new Error(
+      "DATABASE_URL is not configured — set it in Cloudflare Pages → Settings → Environment variables."
+    );
+  }
+
   return new PrismaClient({
     log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
   }).$extends(withAccelerate());
 }
 
-export const prisma = globalForPrisma.prisma ?? createClient();
+// Lazy proxy: createClient() is called only when the client is first used (at request time),
+// not when this module is imported (which happens during build).
+let _prisma: ReturnType<typeof createClient> | undefined;
+
+function getPrisma() {
+  if (globalForPrisma.prisma) return globalForPrisma.prisma;
+  if (!_prisma) {
+    _prisma = createClient();
+    if (process.env.NODE_ENV !== 'production') {
+      globalForPrisma.prisma = _prisma;
+    }
+  }
+  return _prisma;
+}
+
+export const prisma = new Proxy({} as ReturnType<typeof createClient>, {
+  get(_target, prop) {
+    return (getPrisma() as any)[prop];
+  },
+});
 
 // Alias for backwards compatibility
 export const db = prisma;
-
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 
 export interface ProductImage {
   url: string;

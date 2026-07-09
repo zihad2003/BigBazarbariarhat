@@ -5,9 +5,6 @@ const nextConfig = {
         unoptimized: true,
     },
     transpilePackages: ['@bigbazar/types', '@bigbazar/validation', 'next-themes'],
-    typescript: {
-        ignoreBuildErrors: true,
-    },
     async headers() {
         return [
             {

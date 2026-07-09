@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { prisma } from '@bigbazar/db';
 import OrdersTableClient from './orders-table-client';
 

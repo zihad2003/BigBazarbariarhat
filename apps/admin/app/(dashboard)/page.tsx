@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import Link from 'next/link';
 import { prisma } from '@bigbazar/db';
 import { startOfDay, subDays, format } from 'date-fns';

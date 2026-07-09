@@ -1,21 +1,46 @@
 import type { Metadata, Viewport } from 'next';
-import { Playfair_Display, Lato } from 'next/font/google';
+import localFont from 'next/font/local';
 import Providers from './providers';
 import { Toaster } from '@/components/ui/toaster';
 import { cookies } from 'next/headers';
 import './globals.css';
 
-const playfair = Playfair_Display({
-  subsets: ['latin'],
-  display: 'swap',
+const playfair = localFont({
+  src: '../../public/fonts/PlayfairDisplay-Variable.woff2',
   variable: '--font-playfair',
+  display: 'swap',
 });
 
-const lato = Lato({
-  weight: ['100', '300', '400', '700', '900'],
-  subsets: ['latin'],
-  display: 'swap',
+const lato = localFont({
+  src: [
+    {
+      path: '../../public/fonts/Lato-Thin.woff2',
+      weight: '100',
+      style: 'normal',
+    },
+    {
+      path: '../../public/fonts/Lato-Light.woff2',
+      weight: '300',
+      style: 'normal',
+    },
+    {
+      path: '../../public/fonts/Lato-Regular.woff2',
+      weight: '400',
+      style: 'normal',
+    },
+    {
+      path: '../../public/fonts/Lato-Bold.woff2',
+      weight: '700',
+      style: 'normal',
+    },
+    {
+      path: '../../public/fonts/Lato-Black.woff2',
+      weight: '900',
+      style: 'normal',
+    },
+  ],
   variable: '--font-lato',
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
