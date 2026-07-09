@@ -14,6 +14,10 @@ if (!process.env.AUTH_SECRET) {
   process.env.AUTH_SECRET = "placeholder-secret-for-build-and-dev-purposes-only";
 }
 
+if (!process.env.AUTH_URL && process.env.NEXT_PUBLIC_APP_URL) {
+  process.env.AUTH_URL = process.env.NEXT_PUBLIC_APP_URL;
+}
+
 if (!process.env.NEXTAUTH_SECRET) {
   process.env.NEXTAUTH_SECRET = process.env.AUTH_SECRET;
 }
