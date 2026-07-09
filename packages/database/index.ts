@@ -13,15 +13,19 @@ const isBuildPhase =
 if (isBuildPhase) {
   process.env.DATABASE_URL = PLACEHOLDER_URL;
 }
-
+// Helper to define type of extended client without executing it
+function createClientHelper() {
+  return new PrismaClient().$extends(withAccelerate());
+}
+type ExtendedPrismaClient = ReturnType<typeof createClientHelper>;
 
 // Use a lazy getter so PrismaClient is only instantiated on first request,
 // never at module-evaluation time during the build phase.
 const globalForPrisma = globalThis as unknown as {
-  prisma: ReturnType<typeof createClient> | undefined;
+  prisma: ExtendedPrismaClient | undefined;
 };
 
-function createClient() {
+function createClient(): ExtendedPrismaClient {
   const url = process.env.DATABASE_URL;
   if (!url || url === PLACEHOLDER_URL) {
     throw new Error(
@@ -35,11 +39,11 @@ function createClient() {
 
   if (url.startsWith('prisma://') || url.startsWith('prisma+postgres://') || url.startsWith('prisma+mysql://')) {
     console.log("Prisma Client: Using Accelerate proxy connection");
-    return client.$extends(withAccelerate());
+    return client.$extends(withAccelerate()) as unknown as ExtendedPrismaClient;
   }
 
   console.log("Prisma Client: Using direct database connection");
-  return client;
+  return client as unknown as ExtendedPrismaClient;
 }
 
 // Lazy proxy: createClient() is called only when the client is first used (at request time),
