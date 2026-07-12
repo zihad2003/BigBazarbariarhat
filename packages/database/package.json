@@ -12,13 +12,9 @@
     "db:import:products": "npx ts-node import-products.ts"
   },
   "dependencies": {
-    "@prisma/client": "^6.19.3",
-    "@prisma/extension-accelerate": "^1.0.0",
-    "@tidbcloud/prisma-adapter": "^6.17.0",
     "@tidbcloud/serverless": "^0.3.0"
   },
   "devDependencies": {
-    "prisma": "^6.19.3",
     "typescript": "^5.0.0"
   }
 }

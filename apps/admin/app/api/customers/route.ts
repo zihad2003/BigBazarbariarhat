@@ -57,7 +57,7 @@ export async function GET(req: Request) {
                 name: user.name || 'Anonymous',
                 email: user.email,
                 phone: user.phone || '',
-                orderCount: user._count.orders,
+                orderCount: user._count?.orders || 0,
                 totalSpent: totalSpent,
                 createdAt: user.createdAt,
             };

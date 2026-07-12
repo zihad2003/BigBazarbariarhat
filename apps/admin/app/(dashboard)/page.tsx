@@ -250,7 +250,7 @@ export default async function DashboardPage() {
                 <div className="absolute -top-20 -right-20 w-56 h-56 bg-primary/15 rounded-full blur-3xl" />
                 <div className="relative z-10">
                     <h3 className="text-base font-semibold mb-1">Operational Health</h3>
-                    <p className="text-sm opacity-60 mb-6">Database connected to <span className="text-primary font-semibold opacity-100 italic">Aiven Cloud MySQL</span></p>
+                    <p className="text-sm opacity-60 mb-6">Database connected to <span className="text-primary font-semibold opacity-100 italic">TiDB Cloud Serverless</span></p>
                     <div className="flex gap-8">
                         <div>
                             <p className="text-3xl font-semibold">Active</p>

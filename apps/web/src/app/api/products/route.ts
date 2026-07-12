@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@bigbazar/db';
-import type { Prisma } from '@prisma/client';
+import { prisma, type Prisma } from '@bigbazar/db';
 import { productVariantsJsonSchema } from '@bigbazar/validation';
 
 export async function GET(req: NextRequest) {

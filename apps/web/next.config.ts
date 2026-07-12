@@ -88,6 +88,11 @@ const nextConfig: NextConfig = {
 
   // ─── Webpack Optimizations ───────────────────────────────────
   webpack: (config, { isServer }) => {
+    config.experiments = {
+      ...config.experiments,
+      asyncWebAssembly: true,
+    };
+
     // Optimize client-side bundle
     if (!isServer) {
       config.resolve.fallback = {

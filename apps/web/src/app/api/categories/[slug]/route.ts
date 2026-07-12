@@ -83,7 +83,7 @@ export async function DELETE(
       return NextResponse.json({ success: false, error: 'Category not found' }, { status: 404 });
     }
 
-    if (category._count.products > 0) {
+    if (category._count?.products && category._count.products > 0) {
       return NextResponse.json({ 
         success: false, 
         error: `Cannot delete category with ${category._count.products} linked products. Remove or reassign them first.` 
@@ -91,7 +91,7 @@ export async function DELETE(
     }
 
     // Delete children first if any
-    if (category._count.children > 0) {
+    if (category._count?.children && category._count.children > 0) {
       await prisma.category.deleteMany({ where: { parentId: category.id } });
     }
 

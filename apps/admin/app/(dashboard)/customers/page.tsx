@@ -60,7 +60,7 @@ export default async function CustomersPage({ searchParams }: CustomersPageProps
             name: user.name || 'Anonymous',
             email: user.email,
             phone: user.phone || '',
-            orderCount: user._count.orders,
+            orderCount: user._count?.orders || 0,
             totalSpent: totalSpent,
             createdAt: user.createdAt
         };

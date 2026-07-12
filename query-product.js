@@ -2,7 +2,7 @@ const { PrismaClient } = require('@prisma/client');
 
 // DATABASE_URL is read from the environment (.env)
 if (!process.env.DATABASE_URL) {
-  process.env.DATABASE_URL = "mysql://avnadmin:PLACEHOLDER@bigbazarbd-bigbazar.d.aivencloud.com:20105/defaultdb?sslmode=REQUIRED";
+  process.env.DATABASE_URL = "mysql://3z52LRpdPAtCvCS.root:K0Ggvhr30tVRMO3w@gateway01.ap-northeast-1.prod.aws.tidbcloud.com:4000/test?sslaccept=strict";
 }
 
 const prisma = new PrismaClient();
