@@ -26,7 +26,7 @@ export default function ProfilePage() {
 
     useEffect(() => {
         if (status !== 'loading' && (!session || !session?.user)) {
-            router.push('/login?callbackUrl=/account/profile');
+            router.push('/sign-in?callbackUrl=/account/profile');
         }
     }, [status, session, router]);
 

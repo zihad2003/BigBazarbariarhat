@@ -53,7 +53,7 @@ export default function MyOrdersPage() {
 
     useEffect(() => {
         if (status === 'unauthenticated') {
-            router.push('/login?callbackUrl=/account/orders');
+            router.push('/sign-in?callbackUrl=/account/orders');
         }
         setIsLoaded(true);
     }, [status, router]);

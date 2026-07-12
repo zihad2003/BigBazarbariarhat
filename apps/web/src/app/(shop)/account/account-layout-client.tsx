@@ -35,7 +35,7 @@ export default function AccountLayoutClient({ children }: { children: React.Reac
 
     useEffect(() => {
         if (status === 'unauthenticated') {
-            router.push('/login?callbackUrl=' + pathname);
+            router.push('/sign-in?callbackUrl=' + pathname);
         }
     }, [status, pathname, router]);
 

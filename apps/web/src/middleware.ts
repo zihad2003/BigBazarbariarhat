@@ -6,7 +6,10 @@ const { auth } = NextAuth(authConfig);
 
 export default auth((req) => {
   const isLoggedIn = !!req.auth;
-  const isAuthPage = req.nextUrl.pathname.startsWith("/login");
+  const isAuthPage = req.nextUrl.pathname.startsWith("/login") ||
+                     req.nextUrl.pathname.startsWith("/sign-in") ||
+                     req.nextUrl.pathname.startsWith("/signup") ||
+                     req.nextUrl.pathname.startsWith("/sign-up");
   const isAdminPage = req.nextUrl.pathname.startsWith("/admin");
   const isAccountPage = req.nextUrl.pathname.startsWith("/account");
   const isCheckoutPage = req.nextUrl.pathname.startsWith("/checkout");
@@ -22,14 +25,14 @@ export default auth((req) => {
      if (req.nextUrl.search) {
        callbackUrl += req.nextUrl.search;
      }
-     return NextResponse.redirect(new URL(`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`, req.nextUrl));
+     return NextResponse.redirect(new URL(`/sign-in?callbackUrl=${encodeURIComponent(callbackUrl)}`, req.nextUrl));
   }
   
   // Admin pages are handled by their own middleware or layout usually, 
   // but if we handle them here:
   if (isAdminPage) {
     if (!isLoggedIn) {
-      return NextResponse.redirect(new URL(`/login?callbackUrl=${encodeURIComponent(req.nextUrl.pathname)}`, req.nextUrl));
+      return NextResponse.redirect(new URL(`/sign-in?callbackUrl=${encodeURIComponent(req.nextUrl.pathname)}`, req.nextUrl));
     }
     const role = (req.auth as any)?.user?.role;
     if (role !== 'ADMIN' && role !== 'SUPER_ADMIN') {

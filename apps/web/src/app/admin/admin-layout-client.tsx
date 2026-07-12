@@ -50,7 +50,7 @@ export default function AdminLayoutClient({ children }: { children: React.ReactN
 
     useEffect(() => {
         if (status === 'unauthenticated') {
-            router.push('/login?callbackUrl=' + pathname);
+            router.push('/sign-in?callbackUrl=' + pathname);
         } else if (status === 'authenticated' && (session?.user as any)?.role !== 'ADMIN') {
             router.push('/');
         }
