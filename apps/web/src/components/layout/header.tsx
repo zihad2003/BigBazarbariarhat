@@ -4,16 +4,16 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import { 
-    ShoppingBag, 
-    User, 
-    Search, 
-    Heart, 
-    ChevronDown, 
-    Menu, 
-    X, 
-    LayoutGrid, 
-    Clock, 
+import {
+    ShoppingBag,
+    User,
+    Search,
+    Heart,
+    ChevronDown,
+    Menu,
+    X,
+    LayoutGrid,
+    Clock,
     TrendingUp,
     ArrowRight
 } from 'lucide-react';
@@ -97,7 +97,7 @@ export function Header() {
     const [activeMegaMenu, setActiveMegaMenu] = useState<string | null>(null);
     const searchRef = useRef<HTMLDivElement>(null);
     const [isDesktop, setIsDesktop] = useState(false);
-    
+
     const pathname = usePathname();
     const isHome = pathname === '/';
     const router = useRouter();
@@ -123,10 +123,10 @@ export function Header() {
             }
         };
         window.addEventListener('scroll', handleScroll, { passive: true });
-        
+
         const saved = localStorage.getItem('recent-searches');
         if (saved) setRecentSearches(JSON.parse(saved));
-        
+
         // Initialize with translated static categories so it displays immediately
         setCategories(getNavCategories(t));
 
@@ -197,7 +197,7 @@ export function Header() {
         const updated = [term, ...recentSearches.filter(s => s !== term)].slice(0, 5);
         setRecentSearches(updated);
         localStorage.setItem('recent-searches', JSON.stringify(updated));
-        
+
         setIsSearchFocused(false);
         router.push(`/products?search=${encodeURIComponent(term)}`);
     };
@@ -205,12 +205,12 @@ export function Header() {
     return (
         <>
             <AnnouncementBar />
-            
+
             <header className={cn(
                 "z-50 transition-all duration-300 ease-in-out w-full h-14 lg:h-16 xl:h-[114px]",
-                isHome 
-                    ? (isScrolled 
-                        ? "fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-md shadow-xl shadow-black/5 text-slate-900 border-b border-slate-100" 
+                isHome
+                    ? (isScrolled
+                        ? "fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-md shadow-xl shadow-black/5 text-slate-900 border-b border-slate-100"
                         : "absolute left-0 right-0 bg-transparent text-white border-b border-white/10")
                     : "sticky top-0 bg-white/95 backdrop-blur-md shadow-xl shadow-black/5 text-slate-900 border-b border-slate-100"
             )}>
@@ -251,8 +251,8 @@ export function Header() {
                                     )}
                                 />
                                 {searchQuery && (
-                                    <button 
-                                        type="button" 
+                                    <button
+                                        type="button"
                                         onClick={() => setSearchQuery('')}
                                         className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-slate-50/10 rounded-full"
                                     >
@@ -264,7 +264,7 @@ export function Header() {
                             {/* Search Dropdown */}
                             <AnimatePresence>
                                 {isSearchFocused && isDesktop && (
-                                    <motion.div 
+                                    <motion.div
                                         initial={{ opacity: 0, y: 10 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         exit={{ opacity: 0, y: 10 }}
@@ -335,17 +335,17 @@ export function Header() {
                         {/* Right Actions */}
                         <div className="flex items-center gap-4 lg:gap-6 shrink-0">
                             {/* Search trigger for mobile */}
-                            <button 
+                            <button
                                 onClick={() => openSearch()}
-                                className="lg:hidden p-2.5 rounded-full transition-all duration-300 ease-in-out bg-transparent hover:bg-white/10" 
+                                className="lg:hidden p-2.5 rounded-full transition-all duration-300 ease-in-out bg-transparent hover:bg-white/10"
                                 aria-label="Search"
                             >
                                 <Search className={cn("h-5 w-5 transition-all duration-300 ease-in-out", isHome && !isScrolled ? "text-white" : "text-slate-900")} />
                             </button>
 
                             {/* Wishlist */}
-                            <Link 
-                                href="/wishlist" 
+                            <Link
+                                href="/wishlist"
                                 className="hidden sm:block p-2.5 rounded-full transition-all duration-300 ease-in-out relative hover:bg-white/10"
                             >
                                 <Heart className={cn("h-5 w-5 transition-all duration-300 ease-in-out", isHome && !isScrolled ? "text-white" : "text-slate-900")} />
@@ -357,7 +357,7 @@ export function Header() {
                             </Link>
 
                             {/* Cart */}
-                            <Link 
+                            <Link
                                 href="/cart"
                                 className="p-2.5 rounded-full transition-all relative duration-300 ease-in-out hover:bg-white/10"
                             >
@@ -394,14 +394,14 @@ export function Header() {
                             {categories.filter(c => !c.isHidden).map((category) => {
                                 const isSale = category.name.toLowerCase().includes('sale') || category.name.toLowerCase().includes('discount') || category.name.toLowerCase().includes('exclusive');
                                 return (
-                                    <div 
+                                    <div
                                         key={category.name}
                                         className="relative group/mega"
                                         onMouseEnter={() => setActiveMegaMenu(category.name)}
                                         onMouseLeave={() => setActiveMegaMenu(null)}
                                     >
-                                        <Link 
-                                            href={category.href} 
+                                        <Link
+                                            href={category.href}
                                             className={cn(
                                                 "flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest transition-all duration-300 ease-in-out py-1 relative block",
                                                 isSale
@@ -455,9 +455,9 @@ export function Header() {
 
             {/* Click outside search closer */}
             {isSearchFocused && (
-                <div 
-                    className="fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-[45]" 
-                    onClick={() => setIsSearchFocused(false)} 
+                <div
+                    className="fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-[45]"
+                    onClick={() => setIsSearchFocused(false)}
                 />
             )}
         </>

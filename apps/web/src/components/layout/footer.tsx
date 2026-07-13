@@ -161,7 +161,7 @@ export function Footer() {
 
                     {/* Shop Links */}
                     <div className="border-b border-border/40 sm:border-none py-3 sm:py-0">
-                        <button 
+                        <button
                             type="button"
                             onClick={() => toggleSection('shop')}
                             className="flex items-center justify-between w-full sm:cursor-default text-left group"
@@ -188,7 +188,7 @@ export function Footer() {
 
                     {/* Help Links */}
                     <div className="border-b border-border/40 sm:border-none py-3 sm:py-0">
-                        <button 
+                        <button
                             type="button"
                             onClick={() => toggleSection('help')}
                             className="flex items-center justify-between w-full sm:cursor-default text-left group"
@@ -215,7 +215,7 @@ export function Footer() {
 
                     {/* Company Links */}
                     <div className="border-b border-border/40 sm:border-none py-3 sm:py-0">
-                        <button 
+                        <button
                             type="button"
                             onClick={() => toggleSection('company')}
                             className="flex items-center justify-between w-full sm:cursor-default text-left group"
@@ -242,7 +242,7 @@ export function Footer() {
 
                     {/* Legal Links */}
                     <div className="border-b border-border/40 sm:border-none py-3 sm:py-0">
-                        <button 
+                        <button
                             type="button"
                             onClick={() => toggleSection('legal')}
                             className="flex items-center justify-between w-full sm:cursor-default text-left group"
@@ -277,22 +277,20 @@ export function Footer() {
                             <p className="text-xs text-muted-foreground font-medium">
                                 © {new Date().getFullYear()} BIG BAZAR. All rights reserved.
                             </p>
-                            
+
                             {/* Language Switcher */}
                             <div className="flex items-center bg-background border border-border rounded-full p-1 shadow-sm">
-                                <button 
+                                <button
                                     onClick={() => setLanguage('en')}
-                                    className={`px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full transition-all ${
-                                        language === 'en' ? 'bg-destructive text-white shadow-sm' : 'text-muted-foreground hover:text-foreground'
-                                    }`}
+                                    className={`px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full transition-all ${language === 'en' ? 'bg-destructive text-white shadow-sm' : 'text-muted-foreground hover:text-foreground'
+                                        }`}
                                 >
                                     English
                                 </button>
-                                <button 
+                                <button
                                     onClick={() => setLanguage('bn')}
-                                    className={`px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full transition-all ${
-                                        language === 'bn' ? 'bg-destructive text-white shadow-sm' : 'text-muted-foreground hover:text-foreground'
-                                    }`}
+                                    className={`px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full transition-all ${language === 'bn' ? 'bg-destructive text-white shadow-sm' : 'text-muted-foreground hover:text-foreground'
+                                        }`}
                                 >
                                     বাংলা
                                 </button>

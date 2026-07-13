@@ -288,7 +288,7 @@ export default function ShopClient({
                         </div>
 
                         <div className="flex items-center gap-6">
-                          <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2">
                                 <span className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest hidden sm:inline">Sort:</span>
                                 <select
                                     value={filters.sortBy}

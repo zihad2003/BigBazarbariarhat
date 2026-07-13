@@ -892,6 +892,20 @@ export const prisma = new Proxy({} as any, {
             const whereRes = buildWhere(args.where);
             const whereSql = whereRes.sql ? ` WHERE ${whereRes.sql}` : '';
 
+            // Handle increment/decrement objects
+            const arithmeticUpdates: Record<string, string> = {};
+            for (const [col, val] of Object.entries(data)) {
+              if (val && typeof val === 'object' && ('increment' in val || 'decrement' in val)) {
+                if ('increment' in val) {
+                  arithmeticUpdates[col] = `\`${col}\` + ?`;
+                  data[col] = (val as any).increment;
+                } else if ('decrement' in val) {
+                  arithmeticUpdates[col] = `\`${col}\` - ?`;
+                  data[col] = (val as any).decrement;
+                }
+              }
+            }
+
             // Stringify JSON fields & serialize Dates
             for (const [col, val] of Object.entries(data)) {
               if (val && typeof val === 'object' && !(val instanceof Date)) {
@@ -904,7 +918,13 @@ export const prisma = new Proxy({} as any, {
             }
 
             const safeKeys = Object.keys(data).filter(c => /^[a-zA-Z0-9_]+$/.test(c));
-            const sets = safeKeys.map(c => `\`${c}\` = ?`).join(', ');
+            const sets = safeKeys.map(c => {
+              if (arithmeticUpdates[c]) {
+                return `\`${c}\` = ${arithmeticUpdates[c]}`;
+              }
+              return `\`${c}\` = ?`;
+            }).join(', ');
+
             const sql = `UPDATE \`${tableName}\` SET ${sets}${whereSql}`;
             const values = safeKeys.map(k => data[k]);
             await client.execute(sql, [...values, ...whereRes.params]);
@@ -946,6 +966,20 @@ export const prisma = new Proxy({} as any, {
             const whereRes = buildWhere(args.where);
             const whereSql = whereRes.sql ? ` WHERE ${whereRes.sql}` : '';
 
+            // Handle increment/decrement objects
+            const arithmeticUpdates: Record<string, string> = {};
+            for (const [col, val] of Object.entries(data)) {
+              if (val && typeof val === 'object' && ('increment' in val || 'decrement' in val)) {
+                if ('increment' in val) {
+                  arithmeticUpdates[col] = `\`${col}\` + ?`;
+                  data[col] = (val as any).increment;
+                } else if ('decrement' in val) {
+                  arithmeticUpdates[col] = `\`${col}\` - ?`;
+                  data[col] = (val as any).decrement;
+                }
+              }
+            }
+
             // Stringify JSON fields & serialize Dates
             for (const [col, val] of Object.entries(data)) {
               if (val && typeof val === 'object' && !(val instanceof Date)) {
@@ -958,7 +992,13 @@ export const prisma = new Proxy({} as any, {
             }
 
             const safeKeys = Object.keys(data).filter(c => /^[a-zA-Z0-9_]+$/.test(c));
-            const sets = safeKeys.map(c => `\`${c}\` = ?`).join(', ');
+            const sets = safeKeys.map(c => {
+              if (arithmeticUpdates[c]) {
+                return `\`${c}\` = ${arithmeticUpdates[c]}`;
+              }
+              return `\`${c}\` = ?`;
+            }).join(', ');
+
             const sql = `UPDATE \`${tableName}\` SET ${sets}${whereSql}`;
             const values = safeKeys.map(k => data[k]);
             const res = await client.execute(sql, [...values, ...whereRes.params]);
