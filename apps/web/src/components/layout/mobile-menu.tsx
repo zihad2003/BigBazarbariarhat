@@ -121,7 +121,7 @@ export function MobileMenu() {
                     <SheetTitle className="text-left">
                         <Link href="/" className="flex items-center gap-2" onClick={handleLinkClick}>
                             <span className="text-xl font-black uppercase tracking-[0.15em] transition-colors duration-300 font-playfair">
-                                <span className="text-destructive">BIG</span> <span className="text-foreground">BAZAR</span>
+                                <span className="text-destructive">BIG</span> <span className="text-black">BAZAR</span>
                             </span>
                         </Link>
                     </SheetTitle>

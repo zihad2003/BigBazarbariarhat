@@ -220,12 +220,9 @@ export function Header() {
                         {/* Logo */}
                         <Link href="/" className="group shrink-0">
                             <div className="flex items-center">
-                                <h1 className="text-xl sm:text-2xl font-black tracking-widest uppercase block font-playfair transition-all duration-300 ease-in-out">
-                                    <span className="text-destructive transition-all duration-300 ease-in-out">BIG</span>{" "}
-                                    <span className={cn(
-                                        "transition-all duration-300 ease-in-out",
-                                        isHome && !isScrolled ? "text-white" : "text-neutral-900"
-                                    )}>BAZAR</span>
+                                <h1 className="text-2xl sm:text-3xl font-black uppercase block font-playfair-sc transition-all duration-300 ease-in-out">
+                                    <span className="text-[#FF0000] transition-all duration-300 ease-in-out">BIG</span>{" "}
+                                    <span className="text-black transition-all duration-300 ease-in-out">BAZAR</span>
                                 </h1>
                             </div>
                         </Link>

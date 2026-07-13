@@ -40,18 +40,41 @@ export default async function ShopPage({ params: paramsPromise }: { params: Prom
     ]);
 
     // Map models to JSON-serializable types for Next.js Client Components (e.g. serialize Date and Decimal objects)
-    const products = dbProducts.map((p) => ({
-        ...p,
-        price: Number(p.price),
-        salePrice: p.salePrice ? Number(p.salePrice) : null,
-        createdAt: p.createdAt.toISOString(),
-        updatedAt: p.updatedAt.toISOString(),
-        category: p.category ? {
-            ...p.category,
-            createdAt: p.category.createdAt.toISOString(),
-            updatedAt: p.category.updatedAt.toISOString(),
-        } : null,
-    }));
+    const products = dbProducts.map((p) => {
+        let productImages: any[] = [];
+        try {
+            productImages = typeof p.images === 'string'
+                ? JSON.parse(p.images)
+                : (Array.isArray(p.images) ? p.images : []);
+        } catch (e) {}
+
+        return {
+            id: p.id,
+            name: p.name,
+            slug: p.slug,
+            description: p.description,
+            price: Number(p.price),
+            salePrice: p.salePrice ? Number(p.salePrice) : null,
+            sku: p.sku,
+            stock: p.stock,
+            images: productImages,
+            instagramReelUrl: p.instagramReelUrl,
+            categoryId: p.categoryId,
+            isActive: p.isActive,
+            featured: p.featured,
+            isSale: p.isSale,
+            isHot: p.isHot,
+            isNew: p.isNew,
+            variants: p.variants,
+            createdAt: p.createdAt.toISOString(),
+            updatedAt: p.updatedAt.toISOString(),
+            category: p.category ? {
+                ...p.category,
+                createdAt: p.category.createdAt.toISOString(),
+                updatedAt: p.category.updatedAt.toISOString(),
+            } : null,
+        };
+    });
 
     const mappedCategory = category ? {
         ...category,

@@ -75,11 +75,21 @@ export async function GET(req: NextRequest) {
       prisma.product.count({ where }),
     ]);
 
-    const mappedProducts = products.map((p) => ({
-      ...p,
-      basePrice: Number(p.price),
-      salePrice: p.salePrice ? Number(p.salePrice) : null,
-    }));
+    const mappedProducts = products.map((p) => {
+      let productImages: any[] = [];
+      try {
+        productImages = typeof p.images === 'string'
+          ? JSON.parse(p.images)
+          : (Array.isArray(p.images) ? p.images : []);
+      } catch (e) {}
+
+      return {
+        ...p,
+        basePrice: Number(p.price),
+        salePrice: p.salePrice ? Number(p.salePrice) : null,
+        images: productImages,
+      };
+    });
 
     return NextResponse.json({
       success: true,

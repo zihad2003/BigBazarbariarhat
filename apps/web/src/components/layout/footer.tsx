@@ -94,10 +94,10 @@ export function Footer() {
                     {/* Brand Column */}
                     <div className="col-span-1 sm:col-span-2 lg:col-span-2 space-y-8">
                         <Link href="/" className="inline-block group">
-                            <span className="text-3xl font-black uppercase tracking-[0.15em] font-playfair transition-colors duration-300">
-                                <span className="text-destructive">BIG</span> <span className="text-foreground">BAZAR</span>
+                            <span className="text-3xl font-black uppercase font-playfair-sc transition-colors duration-300">
+                                <span className="text-[#FF0000]">BIG</span> <span className="text-black">BAZAR</span>
                             </span>
-                            <div className="h-0.5 w-12 bg-destructive mt-2 group-hover:w-full transition-all duration-500" />
+                            <div className="h-0.5 w-12 bg-[#FF0000] mt-2 group-hover:w-full transition-all duration-500" />
                         </Link>
                         <p className="text-sm text-muted-foreground max-w-xs leading-relaxed">
                             Your one-stop destination for premium fashion from top brands. Quality clothing for the whole family.

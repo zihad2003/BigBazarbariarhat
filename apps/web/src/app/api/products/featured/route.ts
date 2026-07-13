@@ -14,11 +14,21 @@ export async function GET(req: NextRequest) {
             take: limit,
             include: { category: true }
         });
-        const mappedFeatured = featured.map((p: any) => ({
-            ...p,
-            basePrice: Number(p.price),
-            salePrice: p.salePrice ? Number(p.salePrice) : null,
-        }));
+        const mappedFeatured = featured.map((p: any) => {
+            let productImages: any[] = [];
+            try {
+                productImages = typeof p.images === 'string'
+                    ? JSON.parse(p.images)
+                    : (Array.isArray(p.images) ? p.images : []);
+            } catch (e) {}
+
+            return {
+                ...p,
+                basePrice: Number(p.price),
+                salePrice: p.salePrice ? Number(p.salePrice) : null,
+                images: productImages,
+            };
+        });
         return NextResponse.json(
             { success: true, data: mappedFeatured },
             {

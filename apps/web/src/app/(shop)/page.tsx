@@ -96,13 +96,52 @@ export default async function HomePage() {
         dbSecondaryBanners = mockPromoBanners;
     }
 
+    // If the database successfully connected but returned empty tables, fall back to mock data so the storefront renders fully.
+    if (!dbNewProducts || dbNewProducts.length === 0) {
+        dbNewProducts = mockProducts;
+    }
+    if (!dbFeaturedProducts || dbFeaturedProducts.length === 0) {
+        dbFeaturedProducts = mockProducts.filter(p => p.featured);
+    }
+    if (!dbCategories || dbCategories.length === 0) {
+        dbCategories = mockCategories;
+    }
+    if (!dbHeroBanners || dbHeroBanners.length === 0) {
+        dbHeroBanners = mockHeroBanners;
+    }
+    if (!dbSecondaryBanners || dbSecondaryBanners.length === 0) {
+        dbSecondaryBanners = mockPromoBanners;
+    }
+
     // Map database models to plain JS/JSON serializable types
      const newArrivals = dbNewProducts.map((p) => {
         const cat = p.category as any;
+        let productImages: any[] = [];
+        try {
+            productImages = typeof p.images === 'string'
+                ? JSON.parse(p.images)
+                : (Array.isArray(p.images) ? p.images : []);
+        } catch (e) {}
+
         return {
-            ...p,
-            price: typeof p.price === 'string' ? Number(p.price) : p.price,
-            salePrice: p.salePrice ? (typeof p.salePrice === 'string' ? Number(p.salePrice) : p.salePrice) : null,
+            id: p.id,
+            originalId: p.originalId,
+            name: p.name,
+            slug: p.slug,
+            description: p.description,
+            price: Number(p.price),
+            salePrice: p.salePrice ? Number(p.salePrice) : null,
+            sku: p.sku,
+            stock: p.stock,
+            images: productImages,
+            instagramReelUrl: p.instagramReelUrl,
+            categoryId: p.categoryId,
+            isActive: p.isActive,
+            featured: p.featured,
+            isSale: p.isSale,
+            isHot: p.isHot,
+            isNew: p.isNew,
+            variants: p.variants,
             createdAt: p.createdAt instanceof Date ? p.createdAt.toISOString() : p.createdAt,
             updatedAt: p.updatedAt instanceof Date ? p.updatedAt.toISOString() : p.updatedAt,
             category: cat ? {
@@ -110,15 +149,38 @@ export default async function HomePage() {
                 createdAt: cat.createdAt instanceof Date ? cat.createdAt.toISOString() : cat.createdAt,
                 updatedAt: cat.updatedAt instanceof Date ? cat.updatedAt.toISOString() : cat.updatedAt,
             } : null,
+            reviews: p.reviews,
         };
     });
 
     const flashProducts = dbFeaturedProducts.map((p) => {
         const cat = p.category as any;
+        let productImages: any[] = [];
+        try {
+            productImages = typeof p.images === 'string'
+                ? JSON.parse(p.images)
+                : (Array.isArray(p.images) ? p.images : []);
+        } catch (e) {}
+
         return {
-            ...p,
-            price: typeof p.price === 'string' ? Number(p.price) : p.price,
-            salePrice: p.salePrice ? (typeof p.salePrice === 'string' ? Number(p.salePrice) : p.salePrice) : null,
+            id: p.id,
+            originalId: p.originalId,
+            name: p.name,
+            slug: p.slug,
+            description: p.description,
+            price: Number(p.price),
+            salePrice: p.salePrice ? Number(p.salePrice) : null,
+            sku: p.sku,
+            stock: p.stock,
+            images: productImages,
+            instagramReelUrl: p.instagramReelUrl,
+            categoryId: p.categoryId,
+            isActive: p.isActive,
+            featured: p.featured,
+            isSale: p.isSale,
+            isHot: p.isHot,
+            isNew: p.isNew,
+            variants: p.variants,
             createdAt: p.createdAt instanceof Date ? p.createdAt.toISOString() : p.createdAt,
             updatedAt: p.updatedAt instanceof Date ? p.updatedAt.toISOString() : p.updatedAt,
             category: cat ? {
@@ -126,6 +188,7 @@ export default async function HomePage() {
                 createdAt: cat.createdAt instanceof Date ? cat.createdAt.toISOString() : cat.createdAt,
                 updatedAt: cat.updatedAt instanceof Date ? cat.updatedAt.toISOString() : cat.updatedAt,
             } : null,
+            reviews: p.reviews,
         };
     });
 
