@@ -12,8 +12,6 @@ directory = ".open-next/assets"
 
 [vars]
 NEXT_PUBLIC_APP_URL = "https://bigbazarbariarhat.zihadlaptopasus.workers.dev"
-CLOUDINARY_API_KEY = "654569961594865"
-CLOUDINARY_API_SECRET = "HBDTFLNgUC960bhxcksT-fnKjjc"
 NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME = "v9vy86bk"
 GOOGLE_CLIENT_ID = "119653193512-ro9proqvm72128itatu73crkep3kv9ue.apps.googleusercontent.com"
 

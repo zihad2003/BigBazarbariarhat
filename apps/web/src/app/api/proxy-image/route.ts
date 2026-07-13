@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
     const allowedDomains = ['instagram.com', 'cdninstagram.com', 'fbcdn.net', 'unsplash.com'];
     try {
         const urlObj = new URL(imageUrl);
-        const isAllowed = allowedDomains.some(d => urlObj.hostname.endsWith(d));
+        const isAllowed = allowedDomains.some(d => urlObj.hostname === d || urlObj.hostname.endsWith('.' + d));
         if (!isAllowed) {
             return new NextResponse('Domain not allowed', { status: 403 });
         }

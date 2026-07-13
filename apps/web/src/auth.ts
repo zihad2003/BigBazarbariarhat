@@ -10,8 +10,12 @@ if (!process.env.AUTH_SECRET && process.env.NEXTAUTH_SECRET) {
 }
 
 if (!process.env.AUTH_SECRET) {
-  console.warn("⚠️ AUTH_SECRET is not set. Using placeholder for build/dev.");
-  process.env.AUTH_SECRET = "placeholder-secret-for-build-and-dev-purposes-only";
+  if (process.env.NEXT_PHASE === 'phase-production-build') {
+    console.warn("⚠️ AUTH_SECRET not set — using placeholder for build.");
+    process.env.AUTH_SECRET = "placeholder-secret-for-build-purposes-only";
+  } else {
+    throw new Error("AUTH_SECRET environment variable is not set.");
+  }
 }
 
 if (!process.env.AUTH_URL && process.env.NEXT_PUBLIC_APP_URL) {

@@ -167,6 +167,28 @@ export async function PATCH(
 
         const noteToSave = adminNotes !== undefined ? adminNotes : (adminNote !== undefined ? adminNote : undefined);
 
+        // If changing status to CANCELLED, restore stock first
+        if (status === 'CANCELLED') {
+            const currentOrder = await prisma.order.findUnique({
+                where: { id },
+                include: { items: true }
+            });
+
+            if (currentOrder && currentOrder.status !== 'CANCELLED') {
+                // Restore stock for each order item
+                for (const item of currentOrder.items) {
+                    await prisma.product.update({
+                        where: { id: item.productId },
+                        data: {
+                            stock: {
+                                increment: item.quantity,
+                            },
+                        },
+                    });
+                }
+            }
+        }
+
         const updatedOrder = await prisma.order.update({
             where: { id },
             data: {

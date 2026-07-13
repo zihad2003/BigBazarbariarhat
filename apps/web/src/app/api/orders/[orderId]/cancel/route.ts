@@ -14,7 +14,8 @@ export async function POST(
 
     try {
         const order = await prisma.order.findUnique({
-            where: { id: orderId }
+            where: { id: orderId },
+            include: { items: true }
         });
 
         if (!order || order.userId !== session.user.id) {
@@ -23,6 +24,18 @@ export async function POST(
 
         if (order.status !== 'PENDING') {
             return NextResponse.json({ success: false, message: 'Only pending orders can be cancelled.' }, { status: 400 });
+        }
+
+        // Restore stock for each order item
+        for (const item of order.items) {
+            await prisma.product.update({
+                where: { id: item.productId },
+                data: {
+                    stock: {
+                        increment: item.quantity,
+                    },
+                },
+            });
         }
 
         const cancelled = await prisma.order.update({

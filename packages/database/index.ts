@@ -505,6 +505,77 @@ function getClient() {
   return _client;
 }
 
+async function findCategoryIdsByFilter(filter: any, client: any): Promise<string[]> {
+  if (!filter || typeof filter !== 'object') return [];
+
+  if (filter.parent) {
+    const parentIds = await findCategoryIdsByFilter(filter.parent, client);
+    if (parentIds.length === 0) return [];
+    
+    const placeholders = parentIds.map(() => '?').join(', ');
+    const sql = `SELECT \`id\` FROM \`Category\` WHERE \`parentId\` IN (${placeholders})`;
+    const rows = await client.execute(sql, parentIds);
+    return rows.map((r: any) => r.id);
+  }
+
+  const clauses: string[] = [];
+  const params: any[] = [];
+  
+  for (const [key, val] of Object.entries(filter)) {
+    if (!/^[a-zA-Z0-9_]+$/.test(key)) continue;
+    
+    if (val && typeof val === 'object') {
+      for (const [op, opVal] of Object.entries(val)) {
+        if (op === 'equals') {
+          clauses.push(`\`${key}\` = ?`);
+          params.push(opVal);
+        } else if (op === 'in' && Array.isArray(opVal)) {
+          if (opVal.length > 0) {
+            const placeholders = opVal.map(() => '?').join(', ');
+            clauses.push(`\`${key}\` IN (${placeholders})`);
+            params.push(...opVal);
+          } else {
+            clauses.push('1 = 0');
+          }
+        }
+      }
+    } else {
+      clauses.push(`\`${key}\` = ?`);
+      params.push(val);
+    }
+  }
+
+  const whereSql = clauses.length > 0 ? ` WHERE ${clauses.join(' AND ')}` : '';
+  const sql = `SELECT \`id\` FROM \`Category\`${whereSql}`;
+  const rows = await client.execute(sql, params);
+  return rows.map((r: any) => r.id);
+}
+
+async function resolveRelationFilters(where: any, client: any): Promise<any> {
+  if (!where || typeof where !== 'object') return where;
+
+  if (Array.isArray(where)) {
+    const resolved = [];
+    for (const item of where) {
+      resolved.push(await resolveRelationFilters(item, client));
+    }
+    return resolved;
+  }
+
+  const resolved: any = {};
+  for (const [key, value] of Object.entries(where)) {
+    if (key === 'AND' || key === 'OR' || key === 'NOT') {
+      resolved[key] = await resolveRelationFilters(value, client);
+    } else if (key === 'category') {
+      const matchedCategoryIds = await findCategoryIdsByFilter(value, client);
+      resolved['categoryId'] = { in: matchedCategoryIds };
+    } else {
+      resolved[key] = value;
+    }
+  }
+  return resolved;
+}
+
 export interface PrismaClientMock {
   user: {
     findMany(args?: any): Promise<User[]>;
@@ -664,6 +735,9 @@ export const prisma = new Proxy({} as any, {
 
         return async (args: any = {}) => {
           const client = getClient();
+          if (args.where) {
+            args.where = await resolveRelationFilters(args.where, client);
+          }
 
           // ── findMany ─────────────────────────────────────────────────
           if (methodName === 'findMany') {
@@ -890,9 +964,9 @@ export const prisma = new Proxy({} as any, {
             }
 
             const whereRes = buildWhere(args.where);
-            const whereSql = whereRes.sql ? ` WHERE ${whereRes.sql}` : '';
+            let whereSql = whereRes.sql ? ` WHERE ${whereRes.sql}` : '';
 
-            // Handle increment/decrement objects
+            // Handle increment/decrement objects with stock guard for Product.stock
             const arithmeticUpdates: Record<string, string> = {};
             for (const [col, val] of Object.entries(data)) {
               if (val && typeof val === 'object' && ('increment' in val || 'decrement' in val)) {
@@ -902,6 +976,11 @@ export const prisma = new Proxy({} as any, {
                 } else if ('decrement' in val) {
                   arithmeticUpdates[col] = `\`${col}\` - ?`;
                   data[col] = (val as any).decrement;
+                  // Add stock guard for Product.stock decrements to prevent negative stock
+                  if (tableName === 'Product' && col === 'stock') {
+                    whereSql = whereSql ? `${whereSql} AND \`${col}\` >= ?` : ` WHERE \`${col}\` >= ?`;
+                    whereRes.params.push(data[col]);
+                  }
                 }
               }
             }
