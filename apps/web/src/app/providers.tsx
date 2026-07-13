@@ -37,11 +37,11 @@ function LanguageInitializer({ children }: { children: React.ReactNode }) {
                 if (result.success && result.data?.default_language) {
                     setLanguage(result.data.default_language as any);
                 } else {
-                    setLanguage('en');
+                    setLanguage('bn');
                 }
             } catch (error) {
                 console.error('Failed to initialize language from admin settings:', error);
-                setLanguage('en');
+                setLanguage('bn');
             }
         };
         initLanguage();
