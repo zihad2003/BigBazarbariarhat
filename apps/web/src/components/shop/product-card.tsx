@@ -14,6 +14,7 @@ import { useUIStore } from '@/lib/stores/ui-store'
 import { useWishlistStore } from '@/store/wishlistStore'
 import { DeliveryInfoModal } from './delivery-info-modal'
 import { useLanguageStore, useTranslation } from '@bigbazar/shared'
+import { t as getTranslation } from '@/lib/i18n/translations'
 
 const ProductQuickView = dynamic(() => import('./product-quick-view').then(mod => mod.ProductQuickView), {
     ssr: false
@@ -76,7 +77,8 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
     }
 
     const firstImage = product.images?.[0]
-    const image = typeof firstImage === 'string' ? firstImage : (firstImage && typeof firstImage === 'object' && 'url' in firstImage ? (firstImage as any).url : '/placeholder.png')
+    const image = typeof firstImage === 'string' ? firstImage : (firstImage && typeof firstImage === 'object' && 'url' in firstImage ? (firstImage as any).url : '')
+    const hasImage = !!image && image !== '/placeholder.png'
 
     if (layout === 'list') {
         return (
@@ -87,19 +89,28 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
             >
                 {/* Visual Module */}
                 <div className="relative w-full md:w-64 lg:w-80 aspect-[4/5] shrink-0 overflow-hidden bg-gray-50 rounded-[2rem]">
-                    <Link href={`/products/${product.slug || product.id}`} className="block h-full">
-                        <Image
-                            src={image}
-                            alt={product.name}
-                            fill
-                            className={cn(
-                                "object-cover transition-all duration-1000",
-                                isHovered && secondaryImage ? 'scale-110 opacity-0' : 'scale-100 opacity-100'
-                            )}
-                            quality={90}
-                            sizes="(max-width: 768px) 100vw, 320px"
-                        />
-                        {secondaryImage && (
+                    <Link href={`/products/${product.slug || product.id}`} className="absolute inset-0 block">
+                        {hasImage ? (
+                            <Image
+                                src={image}
+                                alt={product.name}
+                                fill
+                                className={cn(
+                                    "object-cover transition-all duration-1000",
+                                    isHovered && secondaryImage ? 'scale-110 opacity-0' : 'scale-100 opacity-100'
+                                )}
+                                quality={90}
+                                sizes="(max-width: 768px) 100vw, 320px"
+                            />
+                        ) : (
+                            <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-neutral-100 to-neutral-200">
+                                <div className="w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-neutral-300/50 flex items-center justify-center mb-3">
+                                    <ShoppingBag className="h-5 w-5 md:h-7 md:w-7 text-neutral-400" />
+                                </div>
+                                <span className="text-[8px] md:text-[10px] font-bold uppercase tracking-widest text-neutral-400">No Image</span>
+                            </div>
+                        )}
+                        {hasImage && secondaryImage && (
                             <Image
                                 src={secondaryImage}
                                 alt={product.name}
@@ -189,7 +200,7 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
                                 className="flex-1 sm:w-64 h-16 bg-black text-white hover:bg-gray-800 font-black uppercase tracking-widest text-[10px] rounded-2xl shadow-2xl shadow-black/10 relative overflow-hidden group/btn"
                             >
                                 {isAdding ? (
-                                    <span>{language === 'bn' ? 'অর্ডার হচ্ছে...' : 'Ordering...'}</span>
+                                    <span>{getTranslation('product.ordering', language)}</span>
                                 ) : (
                                     <span className="flex items-center gap-2">
                                         <ArrowRight className="h-4 w-4" />
@@ -212,19 +223,28 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
         >
             {/* Visual Module */}
             <div className="relative aspect-[3/4] overflow-hidden bg-gray-50 rounded-[1rem] md:rounded-[2.5rem] border border-gray-100 transition-all duration-700 group-hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.15)] group-hover:border-transparent">
-                <Link href={`/products/${product.slug || product.id}`} className="block w-full h-full relative">
+                <Link href={`/products/${product.slug || product.id}`} className="absolute inset-0 block">
                     {/* Primary Image */}
-                    <Image
-                        src={image}
-                        alt={product.name}
-                        fill
-                        className={`object-cover transition-all duration-1000 ${isHovered && secondaryImage ? 'scale-110 opacity-0 blur-sm' : 'scale-100 opacity-100 blur-0'}`}
-                        quality={90}
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    />
+                    {hasImage ? (
+                        <Image
+                            src={image}
+                            alt={product.name}
+                            fill
+                            className={`object-cover transition-all duration-1000 ${isHovered && secondaryImage ? 'scale-110 opacity-0 blur-sm' : 'scale-100 opacity-100 blur-0'}`}
+                            quality={90}
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        />
+                    ) : (
+                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-neutral-100 to-neutral-200">
+                            <div className="w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-neutral-300/50 flex items-center justify-center mb-3">
+                                <ShoppingBag className="h-5 w-5 md:h-7 md:w-7 text-neutral-400" />
+                            </div>
+                            <span className="text-[8px] md:text-[10px] font-bold uppercase tracking-widest text-neutral-400">No Image</span>
+                        </div>
+                    )}
 
                     {/* Secondary Image Overlay */}
-                    {secondaryImage && (
+                    {hasImage && secondaryImage && (
                         <Image
                             src={secondaryImage}
                             alt={product.name}
@@ -312,7 +332,7 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
                             });
                             addNotification({
                                 type: 'success',
-                                message: language === 'bn' ? `${product.name} কার্টে যোগ করা হয়েছে` : `${product.name} added to cart`
+                                message: `${product.name} ${getTranslation('product.addedToCart', language)}`
                             });
                         }}
                         disabled={isOutOfStock}
@@ -331,7 +351,7 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
                         {isAdding ? (
                             <div className="flex items-center gap-1 justify-center">
                                 <div className="h-2 w-2 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                <span>{language === 'bn' ? 'অর্ডার...' : 'Ordering...'}</span>
+                                <span>{getTranslation('product.ordering', language)}</span>
                             </div>
                         ) : (
                             <div className="flex items-center gap-1 justify-center">
@@ -391,7 +411,7 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
                                 });
                                 addNotification({
                                     type: 'success',
-                                    message: language === 'bn' ? `${product.name} কার্টে যোগ করা হয়েছে` : `${product.name} added to cart`
+                                    message: `${product.name} ${getTranslation('product.addedToCart', language)}`
                                 });
                             }}
                             className="w-full h-8 bg-neutral-100 hover:bg-neutral-200 text-neutral-800 font-bold uppercase tracking-[0.1em] text-[8px] rounded-lg shadow-sm flex items-center justify-center gap-1"

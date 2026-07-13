@@ -21,6 +21,7 @@ import { SocialShare } from './social-share';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DeliveryInfoModal } from './delivery-info-modal';
 import { useLanguageStore, useTranslation } from '@bigbazar/shared';
+import { t as getTranslation } from '@/lib/i18n/translations';
 
 interface ProductQuickViewProps {
     product: Product;
@@ -196,7 +197,7 @@ export function ProductQuickView({ product, isOpen, onClose }: ProductQuickViewP
                                         {isAdding ? (
                                             <motion.div key="adding" initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -10, opacity: 0 }} className="flex items-center gap-2">
                                                 <Loader2 className="h-4 w-4 animate-spin" />
-                                                <span>{language === 'bn' ? 'যোগ করা হচ্ছে...' : 'Adding...'}</span>
+                                                <span>{getTranslation('product.adding', language)}</span>
                                             </motion.div>
                                         ) : (
                                             <motion.div key="idle" initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -10, opacity: 0 }} className="flex items-center gap-2">

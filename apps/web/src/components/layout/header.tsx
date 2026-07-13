@@ -20,6 +20,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { useLanguageStore, useTranslation } from '@bigbazar/shared';
+import { t as getTranslation } from '@/lib/i18n/translations';
 import { useCartStore } from '@/store/cartStore';
 import { useWishlistStore } from '@/store/wishlistStore';
 import { useUIStore } from '@/lib/stores/ui-store';
@@ -310,13 +311,13 @@ export function Header() {
                                                     </div>
                                                 </div>
                                                 <div>
-                                                    <h3 className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em] mb-4 flex items-center gap-2"><TrendingUp className="h-3 w-3" /> {language === 'bn' ? 'জনপ্রিয়' : 'Popular'}</h3>
+                                                    <h3 className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em] mb-4 flex items-center gap-2"><TrendingUp className="h-3 w-3" /> {getTranslation('common.popular', language)}</h3>
                                                     <div className="flex flex-col gap-2">
                                                         {[
-                                                            { name: t?.categories?.men || 'Men', query: 'Men' },
-                                                            { name: t?.categories?.women || 'Women', query: 'Women' },
-                                                            { name: language === 'bn' ? 'বাচ্চাদের' : 'Kids', query: 'Kids' },
-                                                            { name: t?.common?.sale || 'Sale', query: 'Sale' }
+                                                            { name: getTranslation('categories.men', language), query: 'Men' },
+                                                            { name: getTranslation('categories.women', language), query: 'Women' },
+                                                            { name: getTranslation('categories.kids', language), query: 'Kids' },
+                                                            { name: getTranslation('common.sale', language), query: 'Sale' }
                                                         ].map(item => (
                                                             <button key={item.query} onClick={() => handleSearch(undefined, item.query)} className="text-[10px] font-black text-slate-600 hover:text-primary transition-all uppercase tracking-widest text-left">{item.name}</button>
                                                         ))}

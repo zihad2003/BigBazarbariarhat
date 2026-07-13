@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, LayoutGrid, ShoppingBag, Heart, User } from 'lucide-react';
 import { useLanguageStore, useTranslation } from '@bigbazar/shared';
+import { t as getTranslation } from '@/lib/i18n/translations';
 import { useCartStore } from '@/store/cartStore';
 import { useWishlistStore } from '@/store/wishlistStore';
 import { cn } from '@/lib/utils';
@@ -23,11 +24,11 @@ export function MobileBottomNav() {
     const wishlistCount = useWishlistStore(state => state.getItemCount());
 
     const navItems = [
-        { label: t?.common?.home || 'Home', icon: Home, href: '/' },
-        { label: language === 'bn' ? 'বিভাগ' : 'Shop', icon: LayoutGrid, href: '/products' },
-        { label: t?.common?.cart || 'Cart', icon: ShoppingBag, href: '/cart', badge: cartCount },
-        { label: t?.common?.wishlist || 'Wishlist', icon: Heart, href: '/wishlist', badge: wishlistCount },
-        { label: t?.common?.account || 'Account', icon: User, href: '/account' },
+        { label: getTranslation('common.home', language), icon: Home, href: '/' },
+        { label: getTranslation('common.shop', language), icon: LayoutGrid, href: '/products' },
+        { label: getTranslation('common.cart', language), icon: ShoppingBag, href: '/cart', badge: cartCount },
+        { label: getTranslation('common.wishlist', language), icon: Heart, href: '/wishlist', badge: wishlistCount },
+        { label: getTranslation('common.account', language), icon: User, href: '/account' },
     ];
 
     return (

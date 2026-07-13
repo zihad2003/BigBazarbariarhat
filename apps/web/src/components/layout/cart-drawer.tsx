@@ -10,6 +10,7 @@ import { useUIStore } from '@/lib/stores/ui-store';
 import { Button } from '@/components/ui/button';
 import { formatPrice } from '@/lib/utils';
 import { useLanguageStore } from '@bigbazar/shared';
+import { t as getTranslation } from '@/lib/i18n/translations';
 import { useThrottle } from '@/hooks/use-throttle';
 
 export function CartDrawer() {
@@ -142,15 +143,15 @@ export function CartDrawer() {
                                         <span className="text-emerald-600">FREE</span>
                                     </div>
                                     <div className="flex justify-between items-center text-[10px] font-bold">
-                                        <span className="text-slate-500">Chittagong</span>
-                                        <span className="text-slate-900">{language === 'bn' ? '৳১০০' : '৳100'}</span>
+                                        <span className="text-slate-500">{getTranslation('shipping.chittagong', language)}</span>
+                                        <span className="text-slate-900">{getTranslation('currency.bdt100', language)}</span>
                                     </div>
                                     <div className="flex justify-between items-center text-[10px] font-bold">
-                                        <span className="text-slate-500">Outside</span>
-                                        <span className="text-slate-900">{language === 'bn' ? '৳১৫০+' : '৳150+'}</span>
+                                        <span className="text-slate-500">{getTranslation('shipping.outside', language)}</span>
+                                        <span className="text-slate-900">{getTranslation('currency.bdt150', language)}</span>
                                     </div>
                                 </div>
-                                <p className="text-[9px] font-medium text-slate-400 italic">Charges applied at checkout stage.</p>
+                                <p className="text-[9px] font-medium text-slate-400 italic">{getTranslation('shipping.chargesApplied', language)}</p>
                             </div>
                         )}
                     </div>

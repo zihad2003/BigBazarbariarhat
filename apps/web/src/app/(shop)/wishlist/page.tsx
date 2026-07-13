@@ -20,6 +20,7 @@ import { useWishlistStore } from '@/store/wishlistStore';
 import { motion, AnimatePresence } from 'framer-motion';
 import { formatPrice, cn } from '@/lib/utils';
 import { useLanguageStore, useTranslation } from '@bigbazar/shared';
+import { t as getTranslation } from '@/lib/i18n/translations';
 import { Breadcrumbs } from '@/components/shop/breadcrumbs';
 
 export default function WishlistPage() {
@@ -66,7 +67,7 @@ export default function WishlistPage() {
         clearWishlist();
         addNotification({
             type: 'success',
-            message: language === 'bn' ? 'সব পণ্য চেকআউটে পাঠানো হয়েছে' : 'All items moved to checkout'
+            message: getTranslation('wishlist.allItemsMoved', language)
         });
         router.push('/checkout');
     };
@@ -80,7 +81,7 @@ export default function WishlistPage() {
                 <div className="mb-6">
                     <Breadcrumbs 
                         items={[
-                            { label: language === 'bn' ? 'উইশলিস্ট' : 'Wishlist', active: true }
+                            { label: getTranslation('common.wishlist', language), active: true }
                         ]} 
                     />
                 </div>
