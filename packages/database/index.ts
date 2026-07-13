@@ -817,6 +817,17 @@ export const prisma = new Proxy({} as any, {
               }
             }
 
+            const now = new Date();
+            const tablesWithCreatedAt = ['User', 'Category', 'Product', 'Order', 'Review', 'Coupon', 'Banner', 'ShippingZone'];
+            const tablesWithUpdatedAt = ['User', 'Category', 'Product', 'Order', 'Review', 'Coupon', 'Banner', 'StoreSetting', 'ShippingZone'];
+
+            if (tablesWithCreatedAt.includes(tableName) && data.createdAt === undefined) {
+              data.createdAt = now;
+            }
+            if (tablesWithUpdatedAt.includes(tableName) && data.updatedAt === undefined) {
+              data.updatedAt = now;
+            }
+
             // Extract any nested creations/connections
             const nestedOps: Record<string, any> = {};
             for (const [col, val] of Object.entries(data)) {
@@ -871,6 +882,13 @@ export const prisma = new Proxy({} as any, {
           // ── update ───────────────────────────────────────────────────
           if (methodName === 'update') {
             const data = { ...args.data };
+
+            const now = new Date();
+            const tablesWithUpdatedAt = ['User', 'Category', 'Product', 'Order', 'Review', 'Coupon', 'Banner', 'StoreSetting', 'ShippingZone'];
+            if (tablesWithUpdatedAt.includes(tableName) && data.updatedAt === undefined) {
+              data.updatedAt = now;
+            }
+
             const whereRes = buildWhere(args.where);
             const whereSql = whereRes.sql ? ` WHERE ${whereRes.sql}` : '';
 
@@ -918,6 +936,13 @@ export const prisma = new Proxy({} as any, {
           // ── updateMany ───────────────────────────────────────────────
           if (methodName === 'updateMany') {
             const data = { ...args.data };
+
+            const now = new Date();
+            const tablesWithUpdatedAt = ['User', 'Category', 'Product', 'Order', 'Review', 'Coupon', 'Banner', 'StoreSetting', 'ShippingZone'];
+            if (tablesWithUpdatedAt.includes(tableName) && data.updatedAt === undefined) {
+              data.updatedAt = now;
+            }
+
             const whereRes = buildWhere(args.where);
             const whereSql = whereRes.sql ? ` WHERE ${whereRes.sql}` : '';
 
