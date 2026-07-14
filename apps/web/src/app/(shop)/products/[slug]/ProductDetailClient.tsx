@@ -587,13 +587,24 @@ export default function ProductDetailClient({
 
                                 {activeTab === 'video' && product.instagramReelUrl && (
                                     <div className="flex flex-col items-center justify-center py-8">
-                                        <div className="w-full max-w-sm overflow-hidden rounded-[2rem] shadow-2xl border border-gray-100 bg-gray-50 aspect-[9/16] relative">
+                                        <div className="w-full max-w-sm overflow-hidden rounded-[2rem] shadow-2xl border border-gray-100 bg-gray-50 aspect-[9/16] relative group cursor-pointer">
+                                            {/* Video Preview/Thumbnail */}
+                                            <div className="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                                                <div className="text-center">
+                                                    <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-xl mx-auto mb-4 group-hover:scale-110 transition-transform">
+                                                        <PlayCircle className="w-10 h-10 text-gray-900" />
+                                                    </div>
+                                                    <p className="text-sm font-medium text-gray-600">Click to play video</p>
+                                                </div>
+                                            </div>
+                                            
+                                            {/* Actual iframe - loads on click */}
                                             <iframe
                                                 src={(() => {
                                                     const baseUrl = product.instagramReelUrl.split('?')[0];
                                                     return baseUrl.endsWith('/') ? `${baseUrl}embed/` : `${baseUrl}/embed/`;
                                                 })()}
-                                                className="absolute inset-0 w-full h-full"
+                                                className="absolute inset-0 w-full h-full opacity-0 group-hover:opacity-100 transition-opacity"
                                                 frameBorder="0"
                                                 scrolling="no"
                                                 allowTransparency={true}

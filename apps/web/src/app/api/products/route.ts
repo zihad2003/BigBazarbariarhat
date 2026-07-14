@@ -88,6 +88,12 @@ export async function GET(req: NextRequest) {
         basePrice: Number(p.price),
         salePrice: p.salePrice ? Number(p.salePrice) : null,
         images: productImages,
+        rating: 0,
+        reviewCount: 0,
+        isFeatured: p.featureed || false,
+        isNew: p.isNew || false,
+        tags: [],
+        status: p.isActive ? 'active' : 'inactive',
       };
     });
 
