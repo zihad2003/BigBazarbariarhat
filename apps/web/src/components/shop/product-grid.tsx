@@ -14,7 +14,7 @@ export function ProductGrid({ products, isLoading, viewMode = 'grid' }: ProductG
         return (
             <div className={cn(
                 "grid gap-2 md:gap-6 animate-pulse",
-                viewMode === 'grid' ? "grid-cols-3 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4" : "grid-cols-1"
+                viewMode === 'grid' ? "grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid-cols-1"
             )}>
                 {[...Array(15)].map((_, i) => (
                     <ProductCardSkeleton key={i} />
@@ -34,7 +34,7 @@ export function ProductGrid({ products, isLoading, viewMode = 'grid' }: ProductG
     return (
         <div className={cn(
             "grid gap-2 md:gap-6 animate-in fade-in slide-in-from-bottom-4 duration-700",
-            viewMode === 'grid' ? "grid-cols-3 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4" : "grid-cols-1"
+            viewMode === 'grid' ? "grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4" : "grid-cols-1"
         )}>
             {products.map((product) => (
                 <ProductCard

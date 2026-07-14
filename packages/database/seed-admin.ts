@@ -6,10 +6,8 @@
  *   ADMIN_EMAIL    (default: admin@bigbazar.com)
  *   ADMIN_PASSWORD (required — no default for security)
  */
-import { PrismaClient } from '@prisma/client';
+import { prisma } from './index';
 import bcrypt from 'bcryptjs';
-
-const prisma = new PrismaClient();
 
 async function main() {
   const email = process.env.ADMIN_EMAIL ?? 'admin@bigbazar.com';

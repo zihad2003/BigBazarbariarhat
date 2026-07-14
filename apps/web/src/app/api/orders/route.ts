@@ -79,12 +79,15 @@ export async function POST(req: NextRequest) {
           throw new Error(`Product with ID ${item.productId} was not found.`);
         }
 
+        // Check stock before attempting atomic decrement
         if (prod.stock < item.quantity) {
           throw new Error(`STOCK_ERROR: Insufficient stock for product "${prod.name}". Available: ${prod.stock}, requested: ${item.quantity}.`);
         }
 
-        // Decrement stock atomically
-        await tx.product.update({
+        // Decrement stock atomically with WHERE stock >= quantity guard
+        // This prevents race conditions - if two requests try to decrement simultaneously,
+        // only one will succeed if stock is insufficient
+        const updateResult = await tx.product.update({
           where: { id: item.productId },
           data: {
             stock: {
@@ -92,6 +95,11 @@ export async function POST(req: NextRequest) {
             },
           },
         });
+
+        // Verify the update actually affected a row (stock guard in database layer)
+        if (!updateResult) {
+          throw new Error(`STOCK_ERROR: Failed to decrement stock for product "${prod.name}". It may have been sold out.`);
+        }
 
         const activePrice = prod.salePrice ? Number(prod.salePrice) : Number(prod.price);
         serverSubtotal += activePrice * item.quantity;

@@ -21,6 +21,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguageStore, useTranslation } from '@bigbazar/shared';
+import { t as getTranslation } from '@/lib/i18n/translations';
 import { useCartStore } from '@/store/cartStore';
 import { useWishlistStore } from '@/store/wishlistStore';
 import { useUIStore } from '@/lib/stores/ui-store';
@@ -424,19 +425,19 @@ function FlashSaleSection({ products }: { products: any[] }) {
                         </div>
                         <div>
                             <h2 className="text-2xl md:text-3xl font-black text-white uppercase tracking-tight">
-                                {language === 'bn' ? 'ফ্ল্যাশ সেল' : 'Flash Sale'}
+                                {getTranslation('home.flashSale', language)}
                             </h2>
                             <p className="text-rose-400 font-bold text-[10px] uppercase tracking-widest mt-1">
-                                {language === 'bn' ? 'সীমিত সময়ের অফার' : 'Limited time offer'}
+                                {getTranslation('home.limitedTimeOffer', language)}
                             </p>
                         </div>
                     </div>
 
                     <div className="flex items-center gap-3">
                         {[
-                            { val: timeLeft.h, label: language === 'bn' ? 'ঘণ্টা' : 'H' },
-                            { val: timeLeft.m, label: language === 'bn' ? 'মিনিট' : 'M' },
-                            { val: timeLeft.s, label: language === 'bn' ? 'সেকেন্ড' : 'S' }
+                            { val: timeLeft.h, label: getTranslation('home.hours', language) },
+                            { val: timeLeft.m, label: getTranslation('home.minutes', language) },
+                            { val: timeLeft.s, label: getTranslation('home.seconds', language) }
                         ].map((t, i) => (
                             <div key={i} className="flex flex-col items-center">
                                 <div className="w-14 h-14 bg-white/10 border border-white/10 rounded-xl flex items-center justify-center text-2xl font-black text-white tabular-nums">

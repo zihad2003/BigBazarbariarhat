@@ -147,6 +147,9 @@ body {
 .font-playfair {
   font-family: var(--font-playfair), 'Playfair Display', Georgia, serif;
 }
+.font-playfair-sc {
+  font-family: var(--font-playfair-sc), 'Playfair Display SC', Georgia, serif;
+}
 
 .font-lato {
   font-family: var(--font-lato), 'Lato', 'Montserrat', sans-serif;

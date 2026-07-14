@@ -33,6 +33,7 @@ import { useCartStore } from '@/store/cartStore';
 import { useWishlistStore } from '@/store/wishlistStore';
 import { useUIStore } from '@/lib/stores/ui-store';
 import { useLanguageStore, useTranslation } from '@bigbazar/shared';
+import { t as getTranslation } from '@/lib/i18n/translations';
 import { productVariantsJsonSchema } from '@bigbazar/validation';
 
 interface ProductDetailClientProps {
@@ -140,18 +141,18 @@ export default function ProductDetailClient({
         if (!product) return;
 
         if (sizes.length > 0 && !selectedSize) {
-            setError(language === 'bn' ? 'অনুগ্রহ করে একটি সাইজ সিলেক্ট করুন' : 'Please select a size');
+            setError(getTranslation('product.selectSize', language));
             addNotification({
                 type: 'error',
-                message: language === 'bn' ? 'অনুগ্রহ করে একটি সাইজ সিলেক্ট করুন' : 'Please select a size'
+                message: getTranslation('product.selectSize', language)
             });
             return;
         }
         if (colors.length > 0 && !selectedColor) {
-            setError(language === 'bn' ? 'অনুগ্রহ করে একটি কালার সিলেক্ট করুন' : 'Please select a color');
+            setError(getTranslation('product.selectColor', language));
             addNotification({
                 type: 'error',
-                message: language === 'bn' ? 'অনুগ্রহ করে একটি কালার সিলেক্ট করুন' : 'Please select a color'
+                message: getTranslation('product.selectColor', language)
             });
             return;
         }
@@ -177,9 +178,7 @@ export default function ProductDetailClient({
         } else {
             addNotification({
                 type: 'success',
-                message: language === 'bn'
-                    ? `${product.name} (${variantLabel || 'ডিফল্ট'}) কার্টে যোগ করা হয়েছে।`
-                    : `${product.name} (${variantLabel || 'Default'}) added to cart.`
+                message: `${product.name} (${variantLabel || getTranslation('product.default', language)}) ${getTranslation('product.addedToCartWithVariant', language)}`
             });
             openCart();
         }

@@ -97,10 +97,10 @@ export default function WishlistPage() {
                             <div className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center group-hover:bg-black group-hover:border-black group-hover:text-white transition-all duration-300">
                                 <ArrowLeft className="h-3.5 w-3.5" />
                             </div>
-                            {language === 'bn' ? 'শপিং চালিয়ে যান' : 'Continue Shopping'}
+                            {getTranslation('wishlist.continueShopping', language)}
                         </Link>
                         <h1 className="text-4xl md:text-5xl font-playfair font-black text-gray-900 tracking-tight leading-none uppercase">
-                            {language === 'bn' ? 'আপনার উইশলিস্ট' : 'Your Wishlist'}
+                            {getTranslation('wishlist.yourWishlist', language)}
                         </h1>
                     </motion.div>
 
@@ -112,12 +112,12 @@ export default function WishlistPage() {
                     >
                         <div className="flex flex-col items-start md:items-end">
                             <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">
-                                {language === 'bn' ? 'সংরক্ষিত পণ্য' : 'Saved Items'}
+                                {getTranslation('wishlist.savedItems', language)}
                             </span>
                             <div className="flex items-center gap-3 bg-gray-50 border border-gray-100 px-5 py-3 rounded-xl shadow-sm">
                                 <Heart className="h-4 w-4 text-rose-500 fill-rose-500" />
                                 <span className="text-[10px] font-black uppercase tracking-widest text-gray-900 font-mono">
-                                    {items.length} {language === 'bn' ? 'টি পণ্য' : `Item${items.length !== 1 ? 's' : ''}`}
+                                    {items.length} {getTranslation('wishlist.items', language)}
                                 </span>
                             </div>
                         </div>
@@ -221,12 +221,10 @@ export default function WishlistPage() {
                                             <Sparkles className="h-5 w-5 animate-spin-slow" />
                                         </div>
                                         <h3 className="text-3xl font-playfair font-black tracking-tight leading-none uppercase">
-                                            {language === 'bn' ? 'সম্পূর্ণ তালিকাটি অর্ডার করুন' : 'Order whole list'}
+                                            {getTranslation('wishlist.orderWholeList', language)}
                                         </h3>
                                         <p className="text-gray-400 font-medium text-sm max-w-sm">
-                                            {language === 'bn' 
-                                                ? 'তাত্ক্ষণিকভাবে কেনাকাটা সম্পন্ন করতে আপনার সংরক্ষিত সব পণ্য চেকআউটে স্থানান্তরিত করুন।' 
-                                                : 'Move all your saved items into checkout for a quick order.'}
+                                            {getTranslation('wishlist.moveAllToCheckout', language)}
                                         </p>
                                     </div>
                                     <Button
@@ -234,7 +232,7 @@ export default function WishlistPage() {
                                         className="bg-white text-gray-950 hover:bg-luxury-gold hover:text-luxury-black rounded-lg h-14 px-10 text-[10px] font-black uppercase tracking-[0.2em] shadow-xl transition-all duration-500 hover:scale-[1.02]"
                                     >
                                         <ArrowRight className="h-4 w-4 mr-2" />
-                                        {language === 'bn' ? 'সবগুলো অর্ডার করুন' : 'Order All Now'}
+                                        {getTranslation('wishlist.orderAllNow', language)}
                                     </Button>
                                 </div>
                             </motion.div>
@@ -250,16 +248,14 @@ export default function WishlistPage() {
                                 <Heart className="h-10 w-10 text-gray-200 group-hover:text-rose-400 group-hover:scale-110 transition-all duration-500" />
                             </div>
                             <h2 className="text-2xl md:text-3xl font-playfair font-black text-gray-900 mb-3 tracking-tight uppercase">
-                                {language === 'bn' ? 'আপনার উইশলিস্ট খালি' : 'Your Wishlist is Empty'}
+                                {getTranslation('wishlist.emptyWishlist', language)}
                             </h2>
                             <p className="text-gray-500 mb-8 max-w-md mx-auto text-sm md:text-base font-serif italic">
-                                {language === 'bn' 
-                                    ? 'আমাদের নতুন কালেকশন দেখুন এবং আপনার পছন্দের পোশাকগুলো এখানে সংরক্ষণ করুন।' 
-                                    : 'Explore our latest arrivals and save your favorite pieces to compile your dream collection.'}
+                                {getTranslation('wishlist.emptyWishlistDesc', language)}
                             </p>
                             <Link href="/products">
                                 <Button className="bg-black text-white hover:bg-gray-800 rounded-lg px-8 h-12 text-[10px] font-black uppercase tracking-[0.2em] shadow-lg hover:scale-105 transition-all">
-                                    {language === 'bn' ? 'ক্যাটালগ দেখুন' : 'Explore Catalog'} <ArrowRight className="h-4 w-4 ml-2 inline" />
+                                    {getTranslation('wishlist.exploreCatalog', language)} <ArrowRight className="h-4 w-4 ml-2 inline" />
                                 </Button>
                             </Link>
                         </motion.div>

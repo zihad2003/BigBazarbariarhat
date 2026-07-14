@@ -1006,7 +1006,13 @@ export const prisma = new Proxy({} as any, {
 
             const sql = `UPDATE \`${tableName}\` SET ${sets}${whereSql}`;
             const values = safeKeys.map(k => data[k]);
-            await client.execute(sql, [...values, ...whereRes.params]);
+            const result = await client.execute(sql, [...values, ...whereRes.params]);
+
+            // Check if stock guard prevented the update (no rows affected)
+            // This happens when WHERE stock >= ? guard fails
+            if (result.affectedRows === 0 && whereSql.includes('stock >= ')) {
+              throw new Error('STOCK_GUARD_FAILED: Insufficient stock for this operation');
+            }
 
             // Return full updated record
             let updated = await prisma[key].findFirst({ where: args.where, include: args.include });

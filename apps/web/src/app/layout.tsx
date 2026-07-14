@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import localFont from 'next/font/local';
+import { Playfair_Display_SC } from 'next/font/google';
 import Providers from './providers';
 import { Toaster } from '@/components/ui/toaster';
 import { cookies } from 'next/headers';
@@ -8,6 +9,13 @@ import './globals.css';
 const playfair = localFont({
   src: '../../public/fonts/PlayfairDisplay-Variable.woff2',
   variable: '--font-playfair',
+  display: 'swap',
+});
+
+const playfairSC = Playfair_Display_SC({
+  weight: ['400', '700', '900'],
+  subsets: ['latin'],
+  variable: '--font-playfair-sc',
   display: 'swap',
 });
 
@@ -88,7 +96,7 @@ export default async function RootLayout({
   const lang = cookieStore.get('language')?.value || 'en';
 
   return (
-    <html lang={lang} className={`${playfair.variable} ${lato.variable}`}>
+    <html lang={lang} className={`${playfair.variable} ${lato.variable} ${playfairSC.variable}`}>
       <body className={`${lato.className} bg-background text-foreground`}>
         <Providers>
           {children}

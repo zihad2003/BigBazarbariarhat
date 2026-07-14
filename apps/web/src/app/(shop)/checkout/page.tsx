@@ -27,6 +27,7 @@ import { useUIStore } from '@/lib/stores/ui-store';
 import { cn, formatPrice } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguageStore, useTranslation } from '@bigbazar/shared';
+import { t as getTranslation } from '@/lib/i18n/translations';
 import { Breadcrumbs } from '@/components/shop/breadcrumbs';
 import {
     BD_DISTRICTS,
@@ -811,7 +812,7 @@ export default function CheckoutPage() {
                                                                         "block text-[8px] font-black uppercase tracking-widest mb-1",
                                                                         method.id === 'bkash' ? "text-pink-500" : "text-orange-500"
                                                                     )}>
-                                                                        {language === 'bn' ? 'টাকা পাঠান এই নাম্বারে (সেন্ড মানি)' : 'Send Money to (Personal)'}
+                                                                        {getTranslation('checkout.sendMoney', language)} ({getTranslation('checkout.personal', language)})
                                                                     </span>
                                                                     <span className="text-base font-black text-gray-900 tracking-wider font-mono select-all">
                                                                         {method.id === 'bkash' ? bkashNumberConfig : nagadNumberConfig}
