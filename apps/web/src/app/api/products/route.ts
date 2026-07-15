@@ -90,7 +90,7 @@ export async function GET(req: NextRequest) {
         images: productImages,
         rating: 0,
         reviewCount: 0,
-        isFeatured: p.featureed || false,
+        isFeatured: p.featured || false,
         isNew: p.isNew || false,
         tags: [],
         status: p.isActive ? 'active' : 'inactive',
