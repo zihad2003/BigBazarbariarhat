@@ -85,10 +85,10 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
             <div
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
-                className="group relative flex flex-col md:flex-row gap-8 lg:gap-12 bg-white p-6 lg:p-10 rounded-[3rem] border border-gray-100 hover:border-transparent transition-all duration-700 hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.12)]"
+                className="group relative flex flex-col md:flex-row gap-6 lg:gap-8 bg-white p-5 lg:p-6 rounded-2xl border border-gray-100 hover:border-transparent transition-all duration-700 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.08)]"
             >
                 {/* Visual Module */}
-                <div className="relative w-full md:w-64 lg:w-80 aspect-[4/5] shrink-0 overflow-hidden bg-gray-50 rounded-[2rem]">
+                <div className="relative w-full md:w-48 lg:w-60 aspect-[4/5] shrink-0 overflow-hidden bg-gray-50 rounded-xl">
                     <Link href={`/products/${product.slug || product.id}`} className="absolute inset-0 block">
                         {hasImage ? (
                             <Image
@@ -100,14 +100,14 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
                                     isHovered && secondaryImage ? 'scale-110 opacity-0' : 'scale-100 opacity-100'
                                 )}
                                 quality={90}
-                                sizes="(max-width: 768px) 100vw, 320px"
+                                sizes="(max-width: 768px) 100vw, 240px"
                             />
                         ) : (
-                            <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-neutral-100 to-neutral-200">
-                                <div className="w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-neutral-300/50 flex items-center justify-center mb-3">
-                                    <ShoppingBag className="h-5 w-5 md:h-7 md:w-7 text-neutral-400" />
+                            <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-neutral-50 to-neutral-100/70">
+                                <div className="w-10 h-10 rounded-xl bg-neutral-200/40 flex items-center justify-center mb-2">
+                                    <ShoppingBag className="h-4.5 w-4.5 text-neutral-400" />
                                 </div>
-                                <span className="text-[8px] md:text-[10px] font-bold uppercase tracking-widest text-neutral-400">No Image</span>
+                                <span className="text-[8px] font-bold uppercase tracking-widest text-neutral-400">No Image</span>
                             </div>
                         )}
                         {hasImage && secondaryImage && (
@@ -120,23 +120,23 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
                                     isHovered ? 'scale-105 opacity-100' : 'scale-125 opacity-0'
                                 )}
                                 quality={90}
-                                sizes="(max-width: 768px) 100vw, 320px"
+                                sizes="(max-width: 768px) 100vw, 240px"
                             />
                         )}
                     </Link>
 
                     {/* Quick Access Actions */}
-                    <div className="absolute top-6 right-6 flex flex-col gap-3 z-10 translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-500">
+                    <div className="absolute top-4 right-4 flex flex-col gap-2 z-10 translate-x-3 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-550">
                         <button
                             onClick={handleToggleWishlist}
                             className={cn(
-                                "w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300 shadow-xl",
+                                "w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 shadow-md",
                                 isInWishlist(product.id)
-                                    ? 'bg-rose-500 text-white shadow-rose-500/20'
-                                    : 'bg-white/90 backdrop-blur-md text-gray-400 hover:text-rose-500 hover:bg-white'
+                                    ? 'bg-rose-500 text-white shadow-rose-500/10'
+                                    : 'bg-white/90 backdrop-blur-sm text-gray-450 hover:text-rose-500 hover:bg-white'
                             )}
                         >
-                            <Heart className={cn("h-5 w-5", isInWishlist(product.id) && 'fill-current')} />
+                            <Heart className={cn("h-4.5 w-4.5", isInWishlist(product.id) && 'fill-current')} />
                         </button>
                         <button
                             onClick={(e) => {
@@ -144,10 +144,10 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
                                 e.stopPropagation();
                                 setIsQuickViewOpen(true);
                             }}
-                            className="w-12 h-12 rounded-2xl flex items-center justify-center bg-white/90 backdrop-blur-md text-gray-400 hover:text-black hover:bg-white transition-all duration-300 shadow-xl"
+                            className="w-10 h-10 rounded-xl flex items-center justify-center bg-white/90 backdrop-blur-sm text-gray-455 hover:text-black hover:bg-white transition-all duration-300 shadow-md"
                             aria-label="Quick view"
                         >
-                            <Plus className="h-5 w-5" />
+                            <Plus className="h-4.5 w-4.5" />
                         </button>
                         {isQuickViewOpen && (
                             <ProductQuickView
@@ -160,51 +160,51 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
                 </div>
 
                 {/* Content Module */}
-                <div className="flex-1 flex flex-col py-2">
-                    <div className="flex items-center justify-between mb-4">
-                        <span className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.2em] bg-indigo-50 px-3 py-1 rounded-lg">
+                <div className="flex-1 flex flex-col py-1">
+                    <div className="flex items-center justify-between mb-2">
+                        <span className="text-[9px] font-bold text-emerald-600 uppercase tracking-widest bg-emerald-50 px-2 py-0.5 rounded-md">
                             {typeof product.category === 'object' ? (product.category as any)?.name : (product.category || 'Collection')}
                         </span>
-                        <div className="flex items-center gap-1.5 bg-amber-50 px-3 py-1 rounded-lg">
+                        <div className="flex items-center gap-1.0 bg-amber-50 px-2 py-0.5 rounded-md">
                             <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                            <span className="text-[10px] font-black text-amber-600">{product.rating || '5.0'}</span>
+                            <span className="text-[9px] font-bold text-amber-600">{product.rating || '5.0'}</span>
                         </div>
                     </div>
 
-                    <h3 className="text-3xl lg:text-4xl font-black text-gray-900 mb-4 group-hover:text-indigo-600 transition-colors duration-500 tracking-tighter leading-tight">
+                    <h3 className="text-xl lg:text-2xl font-bold text-neutral-905 mb-2 group-hover:text-emerald-600 transition-colors duration-400 tracking-tight">
                         <Link href={`/products/${product.slug || product.id}`}>
                             {product.name}
                         </Link>
                     </h3>
 
-                    <p className="text-gray-500 text-lg font-medium leading-relaxed mb-8 line-clamp-3 lg:line-clamp-none max-w-2xl font-serif italic">
-                        {product.description || "Discover the synthesis of craftsmanship and contemporary design. A testament to Big Bazar's commitment to excellence and timeless artifact curation."}
+                    <p className="text-neutral-500 text-sm leading-relaxed mb-4 max-w-xl line-clamp-3">
+                        {product.description || "Discover the synthesis of craftsmanship and contemporary design. A testament to Big Bazar's commitment to excellence and timeless curation."}
                     </p>
 
-                    <div className="mt-auto flex flex-col sm:flex-row items-start sm:items-center gap-8 lg:gap-12 pt-6 border-t border-gray-50">
-                        <div className="flex items-center gap-4">
-                            <p className="text-3xl font-black text-gray-900 font-mono tracking-tighter">
+                    <div className="mt-auto flex flex-col sm:flex-row items-start sm:items-center gap-4 pt-4 border-t border-gray-100">
+                        <div className="flex items-center gap-3">
+                            <p className="text-xl font-bold text-neutral-950 font-mono tracking-tight">
                                 {formatPrice(price, language)}
                             </p>
                             {product.salePrice && (
-                                <p className="text-base font-bold text-gray-300 line-through font-mono">
+                                <p className="text-xs font-semibold text-neutral-350 line-through font-mono">
                                     {formatPrice(product.basePrice, language)}
                                 </p>
                             )}
                         </div>
 
-                        <div className="flex items-center gap-4 w-full sm:w-auto">
+                        <div className="flex items-center gap-2 w-full sm:w-auto ml-auto">
                             <Button
                                 onClick={handleOrderNow}
                                 disabled={isOutOfStock || isAdding}
-                                className="flex-1 sm:w-64 h-16 bg-black text-white hover:bg-gray-800 font-black uppercase tracking-widest text-[10px] rounded-2xl shadow-2xl shadow-black/10 relative overflow-hidden group/btn"
+                                className="flex-1 sm:w-48 h-10 bg-neutral-950 hover:bg-neutral-850 text-white font-bold uppercase tracking-wider text-[9px] rounded-xl shadow-lg transition-all duration-300"
                             >
                                 {isAdding ? (
                                     <span>{getTranslation('product.ordering', language)}</span>
                                 ) : (
-                                    <span className="flex items-center gap-2">
-                                        <ArrowRight className="h-4 w-4" />
-                                        {t?.common?.orderNow || 'Order Now'}
+                                    <span className="flex items-center gap-1">
+                                        <ArrowRight className="h-3.5 w-3.5 mr-1" />
+                                        Buy Now
                                     </span>
                                 )}
                             </Button>
@@ -222,7 +222,7 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
             className="group relative"
         >
             {/* Visual Module */}
-            <div className="relative aspect-[3/4] overflow-hidden bg-gray-50 rounded-[1rem] md:rounded-[2.5rem] border border-gray-100 transition-all duration-700 group-hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.15)] group-hover:border-transparent">
+            <div className="relative aspect-[3/4] overflow-hidden bg-gray-50 rounded-xl md:rounded-2xl border border-gray-100 transition-all duration-700 group-hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] group-hover:border-transparent">
                 <Link href={`/products/${product.slug || product.id}`} className="absolute inset-0 block">
                     {/* Primary Image */}
                     {hasImage ? (
@@ -230,16 +230,19 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
                             src={image}
                             alt={product.name}
                             fill
-                            className={`object-cover transition-all duration-1000 ${isHovered && secondaryImage ? 'scale-110 opacity-0 blur-sm' : 'scale-100 opacity-100 blur-0'}`}
+                            className={cn(
+                                "object-cover transition-all duration-700",
+                                isHovered && secondaryImage ? 'scale-105 opacity-0' : 'scale-100 opacity-100'
+                            )}
                             quality={90}
-                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
                         />
                     ) : (
-                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-neutral-100 to-neutral-200">
-                            <div className="w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-neutral-300/50 flex items-center justify-center mb-3">
-                                <ShoppingBag className="h-5 w-5 md:h-7 md:w-7 text-neutral-400" />
+                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-neutral-50 to-neutral-100/70">
+                            <div className="w-10 h-10 rounded-xl bg-neutral-200/40 flex items-center justify-center mb-2">
+                                <ShoppingBag className="h-4.5 w-4.5 text-neutral-400" />
                             </div>
-                            <span className="text-[8px] md:text-[10px] font-bold uppercase tracking-widest text-neutral-400">No Image</span>
+                            <span className="text-[8px] font-bold uppercase tracking-widest text-neutral-400">No Image</span>
                         </div>
                     )}
 
@@ -249,22 +252,25 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
                             src={secondaryImage}
                             alt={product.name}
                             fill
-                            className={`object-cover absolute inset-0 transition-all duration-1000 ${isHovered ? 'scale-105 opacity-100 blur-0' : 'scale-125 opacity-0 blur-md'}`}
+                            className={cn(
+                                "object-cover absolute inset-0 transition-all duration-700",
+                                isHovered ? 'scale-100 opacity-100' : 'scale-105 opacity-0'
+                            )}
                             quality={90}
-                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
                         />
                     )}
                 </Link>
 
                 {/* Badges Overlay */}
-                <div className="absolute top-2 left-2 md:top-6 md:left-6 z-10 flex flex-col gap-1 md:gap-3 pointer-events-none">
+                <div className="absolute top-2 left-2 md:top-4 md:left-4 z-10 flex flex-col gap-1 pointer-events-none">
                     {discount > 0 && (
-                        <span className="bg-indigo-600 text-white text-[7px] md:text-[10px] font-black px-2 py-0.5 md:px-4 md:py-2 rounded-md md:rounded-xl uppercase tracking-widest shadow-xl shadow-indigo-500/20">
+                        <span className="bg-emerald-600 text-white text-[7px] md:text-[8px] font-bold px-2 py-1 rounded-md uppercase tracking-wider shadow-sm">
                             -{discount}%
                         </span>
                     )}
                     {isOutOfStock && (
-                        <span className="bg-black text-white text-[7px] md:text-[10px] font-black px-2 py-0.5 md:px-4 md:py-2 rounded-md md:rounded-xl uppercase tracking-widest shadow-xl">
+                        <span className="bg-neutral-900 text-white text-[7px] md:text-[8px] font-bold px-2 py-1 rounded-md uppercase tracking-wider">
                             Archived
                         </span>
                     )}
@@ -272,8 +278,8 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
 
                 {/* Out of stock overlay */}
                 {isOutOfStock && (
-                    <div className="absolute inset-0 bg-white/60 backdrop-blur-md z-[5] flex items-center justify-center p-2 md:p-8 pointer-events-none">
-                        <div className="bg-black text-white px-2 py-1 text-[7px] md:px-6 md:py-3 md:text-[10px] font-black uppercase tracking-[0.3em] border border-white/20 shadow-2xl">
+                    <div className="absolute inset-0 bg-white/60 backdrop-blur-sm z-[5] flex items-center justify-center p-4 pointer-events-none">
+                        <div className="bg-neutral-950 text-white px-3 py-1.5 text-[8px] md:text-[9px] font-bold uppercase tracking-wider rounded-md shadow-md">
                             Out of Stock
                         </div>
                     </div>
@@ -281,21 +287,23 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
 
                 {/* Quick Access Actions */}
                 <div className={cn(
-                    "absolute top-2 right-2 md:top-6 md:right-6 flex flex-col gap-1 md:gap-3 z-10 transition-all duration-500",
+                    "absolute top-2 right-2 md:top-4 md:right-4 flex flex-col gap-1.5 z-10 transition-all duration-500",
                     isInWishlist(product.id)
                         ? "translate-x-0 opacity-100"
-                        : "translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100"
+                        : "translate-x-3 opacity-0 group-hover:translate-x-0 group-hover:opacity-100"
                 )}>
                     <button
                         onClick={handleToggleWishlist}
                         aria-label={isInWishlist(product.id) ? "Remove from wishlist" : "Add to wishlist"}
                         aria-pressed={isInWishlist(product.id)}
-                        className={`w-7 h-7 md:w-12 md:h-12 rounded-lg md:rounded-2xl flex items-center justify-center transition-all duration-300 shadow-xl ${isInWishlist(product.id)
-                            ? 'bg-rose-500 text-white shadow-rose-500/20'
-                            : 'bg-white/90 backdrop-blur-md text-gray-400 hover:text-rose-500 hover:bg-white'
-                            }`}
+                        className={cn(
+                            "w-8 h-8 md:w-10 md:h-10 rounded-xl flex items-center justify-center transition-all duration-300 shadow-md",
+                            isInWishlist(product.id)
+                                ? 'bg-rose-500 text-white shadow-rose-500/10'
+                                : 'bg-white/95 backdrop-blur-sm text-gray-400 hover:text-rose-500 hover:bg-white'
+                        )}
                     >
-                        <Heart className={`h-3.5 w-3.5 md:h-5 md:w-5 ${isInWishlist(product.id) ? 'fill-current' : ''}`} />
+                        <Heart className={cn("h-4 w-4 md:h-4.5 md:w-4.5", isInWishlist(product.id) && 'fill-current')} />
                     </button>
                     <button
                         onClick={(e) => {
@@ -304,20 +312,19 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
                             setIsQuickViewOpen(true);
                         }}
                         aria-label="Quick view"
-                        className="w-7 h-7 md:w-12 md:h-12 rounded-lg md:rounded-2xl flex items-center justify-center bg-white/90 backdrop-blur-md text-gray-400 hover:text-black hover:bg-white transition-all duration-300 shadow-xl"
+                        className="w-8 h-8 md:w-10 md:h-10 rounded-xl flex items-center justify-center bg-white/95 backdrop-blur-sm text-gray-450 hover:text-black hover:bg-white transition-all duration-300 shadow-md"
                     >
-                        <Plus className="h-3.5 w-3.5 md:h-5 md:w-5" />
+                        <Plus className="h-4 w-4 md:h-4.5 md:w-4.5" />
                     </button>
                 </div>
 
                 {/* Dynamic Action: Cart & Checkout (Desktop hover only) */}
                 <div className={cn(
-                    "hidden md:flex absolute inset-x-2 bottom-2 md:inset-x-6 md:bottom-6 z-10 flex-col gap-1 md:gap-2 transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]",
+                    "hidden md:flex absolute inset-x-3 bottom-3 z-10 gap-2 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]",
                     isHovered && !isOutOfStock 
-                        ? "translate-y-0 opacity-100 scale-100" 
-                        : "translate-y-8 opacity-0 scale-95 pointer-events-none"
+                        ? "translate-y-0 opacity-100" 
+                        : "translate-y-3 opacity-0 pointer-events-none"
                 )}>
-                    {/* Add to Cart */}
                     <Button
                         onClick={(e) => {
                             e.preventDefault();
@@ -335,28 +342,23 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
                                 message: `${product.name} ${getTranslation('product.addedToCart', language)}`
                             });
                         }}
-                        disabled={isOutOfStock}
-                        className="w-full h-7 md:h-12 bg-luxury-gold text-luxury-black hover:bg-white hover:text-luxury-black font-black uppercase tracking-[0.2em] text-[7px] md:text-[9px] rounded-lg md:rounded-xl shadow-xl shadow-luxury-gold/20 flex items-center justify-center gap-1 md:gap-3 border border-white/10 transition-all duration-300 px-1 md:px-3"
+                        className="flex-1 h-9 bg-white/95 backdrop-blur text-neutral-900 hover:bg-black hover:text-white font-bold uppercase tracking-wider text-[8px] rounded-xl shadow-lg border border-neutral-100 transition-all duration-300"
                     >
-                        <ShoppingBag className="h-2.5 w-2.5 md:h-3.5 md:w-3.5" />
-                        <span>{t?.common?.addToCart || 'Add to Cart'}</span>
+                        <ShoppingBag className="h-3 w-3 mr-1" />
+                        <span>Add</span>
                     </Button>
 
-                    {/* Order Now */}
                     <Button
                         onClick={handleOrderNow}
-                        disabled={isAdding || isOutOfStock}
-                        className="w-full h-6 md:h-10 bg-black text-white hover:bg-gray-800 font-black uppercase tracking-[0.2em] text-[6px] md:text-[8px] rounded-lg md:rounded-xl shadow-lg border border-white/10 transition-all duration-300"
+                        disabled={isAdding}
+                        className="flex-1 h-9 bg-emerald-600/95 backdrop-blur text-white hover:bg-emerald-700 font-bold uppercase tracking-wider text-[8px] rounded-xl shadow-lg transition-all duration-300"
                     >
                         {isAdding ? (
-                            <div className="flex items-center gap-1 justify-center">
-                                <div className="h-2 w-2 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                <span>{getTranslation('product.ordering', language)}</span>
-                            </div>
+                            <div className="h-3.5 w-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin mx-auto" />
                         ) : (
                             <div className="flex items-center gap-1 justify-center">
-                                <ArrowRight className="h-2 w-2 md:h-3 md:w-3" />
-                                <span>{t?.common?.orderNow || 'Order Now'}</span>
+                                <ArrowRight className="h-3 w-3" />
+                                <span>Buy</span>
                             </div>
                         )}
                     </Button>
@@ -364,72 +366,70 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
             </div>
 
             {/* Information Module */}
-            <div className="mt-3 md:mt-8 px-1 md:px-2 space-y-1 md:space-y-3">
-                <div className="flex items-center justify-between">
-                    <span className="text-[7px] md:text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
+            <div className="mt-2.5 md:mt-3.5 px-0.5 space-y-1">
+                <div className="flex items-center justify-between text-[9px] md:text-[10px] font-bold text-neutral-450 uppercase tracking-wider">
+                    <span>
                         {typeof product.category === 'object' ? (product.category as any)?.name : (product.category || 'Big Bazar')}
                     </span>
-                    <div className="flex items-center gap-0.5 md:gap-1">
-                        <Star className="h-2 w-2 md:h-3 md:w-3 fill-amber-400 text-amber-400" />
-                        <span className="text-[7px] md:text-[10px] font-black text-gray-900">{product.rating || '5.0'}</span>
+                    <div className="flex items-center gap-0.5 font-bold text-neutral-800">
+                        <Star className="h-2.5 w-2.5 fill-amber-400 text-amber-400" />
+                        <span>{product.rating || '5.0'}</span>
                     </div>
                 </div>
 
-                <h3 className="text-[10px] md:text-xl font-black text-gray-900 group-hover:text-indigo-600 transition-colors duration-500 line-clamp-2 leading-tight md:leading-snug tracking-tight min-h-[2rem] md:min-h-[3rem]">
+                <h3 className="text-xs md:text-sm font-semibold text-neutral-900 group-hover:text-emerald-600 transition-colors duration-300 line-clamp-2 leading-tight tracking-tight min-h-[2rem] md:min-h-[2.5rem]">
                     <Link href={`/products/${product.slug || product.id}`}>
                         {product.name}
                     </Link>
                 </h3>
 
-                <div className="flex items-center gap-1.5 md:gap-4 pt-1 md:pt-3">
-                    <p className="text-[10px] md:text-2xl font-black text-gray-900 font-mono tracking-tighter">
+                <div className="flex items-baseline gap-1.5 pt-0.5">
+                    <p className="text-[11px] md:text-base font-bold text-neutral-950 font-mono tracking-tight">
                         {formatPrice(price, language)}
                     </p>
                     {product.salePrice && (
-                        <p className="text-[8px] md:text-sm font-bold text-gray-300 line-through font-mono">
+                        <p className="text-[9px] md:text-xs font-semibold text-neutral-350 line-through font-mono">
                             {formatPrice(product.basePrice, language)}
                         </p>
                     )}
                 </div>
             </div>
 
-                {/* Stable actions for mobile */}
-                {!isOutOfStock && (
-                    <div className="flex md:hidden flex-col gap-1.5 mt-3 px-1">
-                        {/* Add to Cart */}
-                        <Button
-                            onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                addItem({
-                                    productId: product.id,
-                                    name: product.name,
-                                    price: product.salePrice ?? product.basePrice,
-                                    image: typeof product.images?.[0] === 'string' ? product.images[0] : (product.images?.[0]?.url ?? '/placeholder.png'),
-                                    quantity: 1,
-                                    stock: product.stock,
-                                });
-                                addNotification({
-                                    type: 'success',
-                                    message: `${product.name} ${getTranslation('product.addedToCart', language)}`
-                                });
-                            }}
-                            className="w-full h-8 bg-neutral-100 hover:bg-neutral-200 text-neutral-800 font-bold uppercase tracking-[0.1em] text-[8px] rounded-lg shadow-sm flex items-center justify-center gap-1"
-                        >
-                            <ShoppingBag className="h-2.5 w-2.5" />
-                            <span>{t?.common?.addToCart || 'Add to Cart'}</span>
-                        </Button>
+            {/* Stable actions for mobile */}
+            {!isOutOfStock && (
+                <div className="flex md:hidden gap-1.5 mt-2.5 px-0.5">
+                    <Button
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            addItem({
+                                productId: product.id,
+                                name: product.name,
+                                price: product.salePrice ?? product.basePrice,
+                                image: typeof product.images?.[0] === 'string' ? product.images[0] : (product.images?.[0]?.url ?? '/placeholder.png'),
+                                quantity: 1,
+                                stock: product.stock,
+                            });
+                            addNotification({
+                                type: 'success',
+                                message: `${product.name} ${getTranslation('product.addedToCart', language)}`
+                            });
+                        }}
+                        className="flex-1 h-7.5 bg-neutral-100 hover:bg-neutral-200 text-neutral-800 font-bold uppercase tracking-wider text-[8px] rounded-lg shadow-sm flex items-center justify-center gap-1"
+                    >
+                        <ShoppingBag className="h-2.5 w-2.5" />
+                        <span>Add</span>
+                    </Button>
 
-                        {/* Order Now */}
-                        <Button
-                            onClick={handleOrderNow}
-                            className="w-full h-8 bg-black text-white hover:bg-neutral-800 font-bold uppercase tracking-[0.1em] text-[8px] rounded-lg shadow-sm flex items-center justify-center gap-1"
-                        >
-                            <ArrowRight className="h-2.5 w-2.5" />
-                            <span>{t?.common?.orderNow || 'Order Now'}</span>
-                        </Button>
-                    </div>
-                )}
+                    <Button
+                        onClick={handleOrderNow}
+                        className="flex-1 h-7.5 bg-emerald-600 text-white hover:bg-emerald-700 font-bold uppercase tracking-wider text-[8px] rounded-lg shadow-sm flex items-center justify-center gap-1"
+                    >
+                        <ArrowRight className="h-2.5 w-2.5" />
+                        <span>Buy</span>
+                    </Button>
+                </div>
+            )}
             {isQuickViewOpen && (
                 <ProductQuickView
                     product={product}
